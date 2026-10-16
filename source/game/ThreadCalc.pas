@@ -6,15 +6,15 @@ uses EC_Thread;
 
 type
   TTurnCalculationJob = (
-    tcjGalaxy = 1, tcjPlayerStar = 2, tcjPreparePlayerStar = 3,
-    tcjUnknown5 = 5 // Native hover guards exclude this job; its operation is not identified.
+    turn_job_galaxy = 1, turn_job_player_star = 2, turn_job_prepare_player_star = 3,
+    turn_job_unknown_5 = 5 // Native hover guards exclude this job; its operation is not identified.
   ); // @size 0x4
   TTurnCalculationPhase = (
-    tcpIdle = 0, // Zero-initialized phase; accepted by the native debug-key callback.
-    tcpGalaxyRunning = 1, tcpGalaxyFinished = 2,
-    tcpPlayerStarRunning = 3, tcpPlayerStarFinished = 4,
-    tcpPlayerStarPreparationRunning = 5, tcpPlayerStarPrepared = 6,
-    tcpNotStarted = $FFFFFFFF
+    turn_idle = 0, // Zero-initialized phase; accepted by the native debug-key callback.
+    turn_galaxy_running = 1, turn_galaxy_finished = 2,
+    turn_player_star_running = 3, turn_player_star_finished = 4,
+    turn_player_star_preparing = 5, turn_player_star_prepared = 6,
+    turn_not_started = $FFFFFFFF
   ); // @size 0x4
 
   TThreadCalc = class(TThreadEC) // @size 0x30
@@ -42,7 +42,7 @@ uses Windows, MMSystem, SysUtils, Math, Globals, GlobalsV, GR_Main, aGalaxy, aPl
 { @routine $6F38B0 StartGalaxyTurnCalculation }
 procedure StartGalaxyTurnCalculation;
 begin
-  TurnCalculationThread.Job := tcjGalaxy;
+  TurnCalculationThread.Job := turn_job_galaxy;
   TurnCalculationThread.Start;
 end;
 { @end $6F38B0 }
@@ -50,7 +50,7 @@ end;
 { @routine $6F38CC StartPlayerStarTurnCalculation }
 procedure StartPlayerStarTurnCalculation;
 begin
-  TurnCalculationThread.Job := tcjPlayerStar;
+  TurnCalculationThread.Job := turn_job_player_star;
   TurnCalculationThread.Start;
 end;
 { @end $6F38CC }
@@ -58,7 +58,7 @@ end;
 { @routine $6F38E8 StartPlayerStarPreparation }
 procedure StartPlayerStarPreparation;
 begin
-  TurnCalculationThread.Job := tcjPreparePlayerStar;
+  TurnCalculationThread.Job := turn_job_prepare_player_star;
   TurnCalculationThread.Start;
 end;
 { @end $6F38E8 }
@@ -88,7 +88,7 @@ begin
     if not PlayerStarDayPrepared then PrimaryFilm.Clear;
     Stage := 1;
     RecordFilm := GetPlayer.InNormalSpace or
-      ((GetPlayer.Order = soTakeoff) and ((GetPlayer.CurrentPlanet <> nil) or (GetPlayer.DockedTo <> nil))) or
+      ((GetPlayer.Order = order_takeoff) and ((GetPlayer.CurrentPlanet <> nil) or (GetPlayer.DockedTo <> nil))) or
       (GetPlayer.InHyperspace and (Cardinal(GetPlayer.OrderStateData and $FFFF) <= 1));
     PlayerStar.NextDay(RecordFilm);
     Stage := 2;
@@ -101,7 +101,7 @@ begin
     on E: Exception do
     begin
       AppendLogLineThreadSafe(E.ClassName + ' ' + E.Message);
-      RequestedScreenId := screenNone;
+      RequestedScreenId := screen_none;
       TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
       ExitScreenLoop := True;
       raise Exception.Create('Error in procedure ThCa label = ' + IntToStr(Stage));
@@ -123,9 +123,9 @@ begin
     and ControlWord, $FCFF
     fldcw ControlWord
   end;
-  if Job = tcjGalaxy then
+  if Job = turn_job_galaxy then
   begin
-    TurnCalculationPhase := tcpGalaxyRunning;
+    TurnCalculationPhase := turn_galaxy_running;
     if Galaxy.StasisModEnabled <> 1 then
     try
       if (GetPlayer <> nil) and GetPlayer.InNormalSpace then
@@ -153,11 +153,11 @@ begin
         raise;
       end;
     end;
-    TurnCalculationPhase := tcpGalaxyFinished;
+    TurnCalculationPhase := turn_galaxy_finished;
   end
-  else if Job = tcjPlayerStar then
+  else if Job = turn_job_player_star then
   begin
-    TurnCalculationPhase := tcpPlayerStarRunning;
+    TurnCalculationPhase := turn_player_star_running;
     try
       ProcessPlayerStarTurn;
     except
@@ -171,11 +171,11 @@ begin
         raise;
       end;
     end;
-    TurnCalculationPhase := tcpPlayerStarFinished;
+    TurnCalculationPhase := turn_player_star_finished;
   end
   else
   begin
-    TurnCalculationPhase := tcpPlayerStarPreparationRunning;
+    TurnCalculationPhase := turn_player_star_preparing;
     PlayerStarDayPrepared := True;
     try
       PrimaryFilm.Clear;
@@ -191,7 +191,7 @@ begin
         raise;
       end;
     end;
-    TurnCalculationPhase := tcpPlayerStarPrepared;
+    TurnCalculationPhase := turn_player_star_prepared;
   end;
 end;
 { @end $6F3B88 }

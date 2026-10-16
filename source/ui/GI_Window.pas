@@ -158,7 +158,7 @@ begin
     TopImage.IsActive := True;
     TopImage.ObjectSize := Classes.Point(Last - First, TopImage.GetContentSize.Y);
     TopImage.Pos := Classes.Point(First, 0);
-    TopImage.KindX := ikxLeftFill;
+    TopImage.KindX := image_x_tile_left;
   end;
   First := BottomLeftImage.ClientSize.X;
   Last := ClientSize.X - BottomRightImage.ClientSize.X;
@@ -168,7 +168,7 @@ begin
     BottomImage.IsActive := True;
     BottomImage.ObjectSize := Classes.Point(Last - First, BottomImage.GetContentSize.Y);
     BottomImage.Pos := Classes.Point(First, ClientSize.Y - BottomImage.ClientSize.Y);
-    BottomImage.KindX := ikxLeftFill;
+    BottomImage.KindX := image_x_tile_left;
   end;
   First := TopLeftImage.ClientSize.Y;
   Last := ClientSize.Y - BottomLeftImage.ClientSize.Y;
@@ -178,7 +178,7 @@ begin
     LeftImage.IsActive := True;
     LeftImage.ObjectSize := Classes.Point(LeftImage.GetContentSize.X, Last - First);
     LeftImage.Pos := Classes.Point(0, First);
-    LeftImage.KindY := ikyTopFill;
+    LeftImage.KindY := image_y_tile_top;
   end;
   First := TopRightImage.ClientSize.Y;
   Last := ClientSize.Y - BottomRightImage.ClientSize.Y;
@@ -188,7 +188,7 @@ begin
     RightImage.IsActive := True;
     RightImage.ObjectSize := Classes.Point(RightImage.GetContentSize.X, Last - First);
     RightImage.Pos := Classes.Point(ClientSize.X - RightImage.ClientSize.X, First);
-    RightImage.KindY := ikyTopFill;
+    RightImage.KindY := image_y_tile_top;
   end;
   Width := ClientSize.X - LeftImage.ClientSize.X - RightImage.ClientSize.X;
   Height := ClientSize.Y - TopImage.ClientSize.Y - BottomImage.ClientSize.Y;
@@ -199,8 +199,8 @@ begin
     TextureImage.IsActive := True;
     TextureImage.Pos := Classes.Point(LeftImage.ClientSize.X, TopImage.ClientSize.Y);
     TextureImage.ObjectSize := Classes.Point(Width, Height);
-    TextureImage.KindX := ikxLeftFill;
-    TextureImage.KindY := ikyTopFill;
+    TextureImage.KindX := image_x_tile_left;
+    TextureImage.KindY := image_y_tile_top;
   end;
 end;
 { @end $4BC34C }

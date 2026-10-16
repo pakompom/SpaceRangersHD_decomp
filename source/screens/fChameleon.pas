@@ -8,7 +8,7 @@ type
   TfChameleon = class(TMessageLoopGI) // @size $F4
   public
     ChameleonActive: Boolean; // @offset $D0
-    VisualType: TKlingType; // @offset $D1
+    VisualType: TDominatorKind; // @offset $D1
     Charges: array[TDominatorSeries] of Integer; // @offset $D4
     Choice: Integer; // @offset $E0 One-based: disable, Blazer, Keller, Terron.
     ChoiceImages: array[1..4] of TImageGI; // @offset $E4 Disabled choices have nil entries.
@@ -24,7 +24,7 @@ type
     procedure MainKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $4FF290
   end;
 
-function ShowChameleonDialog(Parent: TMessageLoopGI; BlazerCharges, KellerCharges: Integer; TerronCharges: Integer; VisualType: TKlingType; Active: Boolean; var Choice: Integer): Cardinal; // @addr $4FF2F8
+function ShowChameleonDialog(Parent: TMessageLoopGI; BlazerCharges, KellerCharges: Integer; TerronCharges: Integer; VisualType: TDominatorKind; Active: Boolean; var Choice: Integer): Cardinal; // @addr $4FF2F8
 
 implementation
 
@@ -60,9 +60,9 @@ var
   begin
     Result := '';
     case Series of
-      dsBlazer: Result := RedColorTag;
-      dsKeller: Result := AzureColorTag;
-      dsTerron: Result := DarkGreenColorTag;
+      series_blazer: Result := RedColorTag;
+      series_keller: Result := AzureColorTag;
+      series_terron: Result := DarkGreenColorTag;
     end;
   end;
 
@@ -86,7 +86,7 @@ begin
   AcceptButton.SetImageDownPath('GI,Bm.FormMessageBox.' + GiResourceSuffix + 'OkD');
   AcceptButton.SetSize(AcceptButton.GetMaxStateImageSize);
   AcceptButton.SetPosition(Classes.Point(Size.X div 2 - AcceptButton.ClientSize.X - GiScalePixels(5),Size.Y - WorkRect.Bottom - AcceptButton.ClientSize.Y));
-  AcceptButton.HitKind := gbhRect;
+  AcceptButton.HitKind := button_hit_bounds;
   AcceptButton.UpdateStateImagePlacement;
   AcceptButton.UpdateStateVisuals;
   AcceptButton.UpCallback := AcceptClicked;
@@ -101,7 +101,7 @@ begin
   CancelButton.SetImageDownPath('GI,Bm.FormMessageBox.' + GiResourceSuffix + 'CancelD');
   CancelButton.SetSize(CancelButton.GetMaxStateImageSize);
   CancelButton.SetPosition(Classes.Point(Size.X div 2 + GiScalePixels(5),Size.Y - WorkRect.Bottom - CancelButton.ClientSize.Y));
-  CancelButton.HitKind := gbhRect;
+  CancelButton.HitKind := button_hit_bounds;
   CancelButton.UpdateStateImagePlacement;
   CancelButton.UpdateStateVisuals;
   CancelButton.UpCallback := CancelClicked;
@@ -109,10 +109,10 @@ begin
   Caption.SetDepth(0);
   Caption.SetFontName(NormalFontName);
   Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
-  ShipName := LookupLocalizedTextByKey('ShipType.Dominator.' + DominatorSeriesNames[dsBlazer] + '.' + IntToStr(Ord(VisualType)));
+  ShipName := LookupLocalizedTextByKey('ShipType.Dominator.' + DominatorSeriesNames[series_blazer] + '.' + IntToStr(Ord(VisualType)));
   Caption.SetText(LocalizedText('ShipInfo.AddInfo.Chameleon.Name') + ' - ' + WrapTextInColor(ShipName,DialogHighlightColorTag));
-  Caption.SetTextAlignX(taxCenter);
-  Caption.SetTextAlignY(tayAuto);
+  Caption.SetTextAlignX(text_x_center);
+  Caption.SetTextAlignY(text_y_fit_height);
   Caption.SetPosition(Classes.Point(0,WorkRect.Bottom));
   Caption.SetSize(Classes.Point(Window.ClientSize.X,1));
   Y := Caption.ClientSize.Y + 10;
@@ -165,7 +165,7 @@ begin
   end;
   Image.SetPosition(Classes.Point(X,Y));
   Image.SetSize(Image.GetContentSize);
-  Image.SetImageKindY(ikyCenter);
+  Image.SetImageKindY(image_y_center);
   ChoiceImages[Index] := nil;
   if not Disabled then
   begin
@@ -181,8 +181,8 @@ begin
   Caption.SetPositionModeW(False);
   Caption.SetPosition(Classes.Point(X + Image.GetContentSize.X,Y));
   Caption.SetSize(Classes.Point(Width,1));
-  Caption.SetTextAlignX(taxLeft);
-  Caption.SetTextAlignY(tayAuto);
+  Caption.SetTextAlignX(text_x_left);
+  Caption.SetTextAlignY(text_y_fit_height);
   Caption.SetText(Text);
   if Disabled then Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(127,127,127))
   else Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
@@ -291,7 +291,7 @@ end;
 { @end $4FF2D0 }
 
 { @routine $4FF2F8 ShowChameleonDialog }
-function ShowChameleonDialog(Parent: TMessageLoopGI; BlazerCharges, KellerCharges: Integer; TerronCharges: Integer; VisualType: TKlingType; Active: Boolean; var Choice: Integer): Cardinal;
+function ShowChameleonDialog(Parent: TMessageLoopGI; BlazerCharges, KellerCharges: Integer; TerronCharges: Integer; VisualType: TDominatorKind; Active: Boolean; var Choice: Integer): Cardinal;
 var
   Dialog: TfChameleon;
   CursorState: TCursorStateGI;
@@ -307,9 +307,9 @@ begin
   try
     Dialog.ChameleonActive := Active;
     Dialog.VisualType := VisualType;
-    Dialog.Charges[dsBlazer] := BlazerCharges;
-    Dialog.Charges[dsKeller] := KellerCharges;
-    Dialog.Charges[dsTerron] := TerronCharges;
+    Dialog.Charges[series_blazer] := BlazerCharges;
+    Dialog.Charges[series_keller] := KellerCharges;
+    Dialog.Charges[series_terron] := TerronCharges;
     Result := Dialog.Run;
     Choice := Dialog.Choice;
     Parent.InvalidateViewport;

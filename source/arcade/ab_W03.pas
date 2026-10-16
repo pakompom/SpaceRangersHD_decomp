@@ -73,7 +73,7 @@ begin
   Velocity := Owner.Velocity;
   if Offset <> 0 then State := AdvanceSphericalStateOnCurrentSphere(State, Offset);
   Image := ab_WorldImage_Create(MakeVector3D(0, 0, 0), 'GAI,Bm.AB.w03_f', 'GAI,Bm.AB.w03_s', False);
-  ab_WorldImage_SetFrameMode(Image, afmRandomStart);
+  ab_WorldImage_SetFrameMode(Image, animation_random_start);
   ab_WorldImage_SetDepth(Image, HitFrontDepth, HitBackDepth);
 end;
 { @end $5539D8 }

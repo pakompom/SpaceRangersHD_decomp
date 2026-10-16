@@ -42,7 +42,7 @@ end;
 { @routine $604770 TfCustomLoop_ExecuteUiCode }
 procedure TfCustomLoop.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
-  if not ExitScreenLoop and (TurnCalculationPhase in [tcpIdle,tcpGalaxyFinished,tcpPlayerStarFinished,tcpPlayerStarPrepared]) then
+  if not ExitScreenLoop and (TurnCalculationPhase in [turn_idle,turn_galaxy_finished,turn_player_star_finished,turn_player_star_prepared]) then
   begin
     if Galaxy <> nil then Galaxy.CheckIntegrityChecksum(30011);
     ExecuteGameplayUiCode(Block,Key);

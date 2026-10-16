@@ -110,7 +110,7 @@ procedure TfLoadAB.OnOpen;
 begin
   inherited OnOpen;
   KeyHistory := '';
-  if (PreviousScreenId <> screenArcadeBattle) and (AuxRenderBuffer.GetPixels = nil) then
+  if (PreviousScreenId <> screen_arcade_battle) and (AuxRenderBuffer.GetPixels = nil) then
     CaptureScreenBackground(True, 0);
   (GetByName('BGBuf') as TGraphBufGI).BindExternalGraphBuf(AuxRenderBuffer);
   with GetByName('ButGroup0') as TGraphButtonGI do SetDown(Category = 0);
@@ -124,7 +124,7 @@ end;
 procedure TfLoadAB.OnClose;
 begin
   Entries := nil;
-  if RequestedScreenId <> screenArcadeBattle then AuxRenderBuffer.Clear;
+  if RequestedScreenId <> screen_arcade_battle then AuxRenderBuffer.Clear;
   inherited OnClose;
 end;
 { @end $5E3CF8 }
@@ -133,7 +133,7 @@ end;
 procedure TfLoadAB.ReturnToMenu(Sender: TObjectGI);
 begin
   AuxRenderBuffer.Clear;
-  RequestedScreenId := screenMainMenu;
+  RequestedScreenId := screen_main_menu;
   RequestClose(1);
 end;
 { @end $5E3D2C }
@@ -317,8 +317,8 @@ begin
   TitleLabel.ObjectSize := Classes.Point(Row.ClientSize.X - 38, Row.ClientSize.Y);
   TitleLabel.SetDepth(7);
   TitleLabel.SetFontName(NormalFontName);
-  TitleLabel.SetTextAlignX(taxLeft);
-  TitleLabel.SetTextAlignY(tayCenterEx);
+  TitleLabel.SetTextAlignX(text_x_left);
+  TitleLabel.SetTextAlignY(text_y_font_center);
   TitleLabel.Text := Entries[Index].Name;
   TitleLabel.SetTextColor(ArcadeNameColor);
   if (Entries[Index].ConfigIndex >= 0) and (Entries[Index].ConfigIndex < 10000) then
@@ -437,7 +437,7 @@ begin
   if SelectedIndex < 0 then Exit;
   if SelectedIndex > High(Entries) then Exit;
   ArcadeBattleScreen.SelectedMapName := Entries[SelectedIndex].MapName;
-  RequestedScreenId := screenArcadeBattle;
+  RequestedScreenId := screen_arcade_battle;
   RequestClose(1);
   BreakUiMessage;
 end;

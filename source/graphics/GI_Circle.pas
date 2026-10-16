@@ -5,7 +5,13 @@ interface
 uses EC_BlockPar, GI_MessageLoop, GR_GraphBuf, Types;
 
 type
-  TCircleKindGI = (ckSimple=0, ckCircle=1, ckFill=2, ckShrLight=3, ckMulLight=4); // @size 0x01
+  TCircleKindGI = (
+    circle_fit_outline = 0,
+    circle_outline = 1,
+    circle_fit_fill = 2,
+    circle_shift_light = 3,
+    circle_multiply_light = 4 // Configurable, but the native draw branch is unimplemented.
+  ); // @size 0x01
   TCircleGI = class(TObjectGI) // @size 0x140
   public
     Kind: TCircleKindGI; // @offset 0x120
@@ -46,7 +52,7 @@ uses GR_Main, GR_DX, GI_Main, EC_Mem, Classes, SysUtils, Math;
 constructor TCircleGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
-  Kind := ckSimple;
+  Kind := circle_fit_outline;
   Color := CurrentPixelFormat.PackRgbBytes(255, 255, 255);
   FillColor := CurrentPixelFormat.PackRgbBytes(255, 255, 255);
   Center := Classes.Point(0, 0);
@@ -67,7 +73,7 @@ end;
 { @routine $4843F0 TCircleGI_Clear }
 procedure TCircleGI.Clear;
 begin
-  Kind := ckSimple;
+  Kind := circle_fit_outline;
   Color := CurrentPixelFormat.PackRgbBytes(255, 255, 255);
   FillColor := CurrentPixelFormat.PackRgbBytes(255, 255, 255);
   Center := Classes.Point(0, 0);
@@ -89,7 +95,7 @@ procedure TCircleGI.SetKind(Value: TCircleKindGI);
 begin
   if Value = Kind then Exit;
   Kind := Value;
-  if (Kind = ckShrLight) or (Kind = ckMulLight) then
+  if (Kind = circle_shift_light) or (Kind = circle_multiply_light) then
   begin
     if LightBuffer = nil then LightBuffer := TGraphBufGR.Create(False);
   end
@@ -174,7 +180,7 @@ end;
 procedure TCircleGI.SetActive(Enabled: Boolean);
 begin
   inherited SetActive(Enabled);
-  if (not Active) and ((Kind = ckShrLight) or (Kind = ckMulLight)) and (LightBuffer <> nil) then LightBuffer.Clear;
+  if (not Active) and ((Kind = circle_shift_light) or (Kind = circle_multiply_light)) and (LightBuffer <> nil) then LightBuffer.Clear;
 end;
 { @end $484620 }
 
@@ -219,11 +225,11 @@ begin
   if Block.CountParams('Kind') > 0 then
   begin
     Text := Block.GetParam('Kind');
-    if Text = 'Simple' then SetKind(ckSimple)
-    else if Text = 'Circle' then SetKind(ckCircle)
-    else if Text = 'Fill' then SetKind(ckFill)
-    else if Text = 'ShrLight' then SetKind(ckShrLight)
-    else if Text = 'MulLight' then SetKind(ckMulLight);
+    if Text = 'Simple' then SetKind(circle_fit_outline)
+    else if Text = 'Circle' then SetKind(circle_outline)
+    else if Text = 'Fill' then SetKind(circle_fit_fill)
+    else if Text = 'ShrLight' then SetKind(circle_shift_light)
+    else if Text = 'MulLight' then SetKind(circle_multiply_light);
   end;
   if Block.CountParams('Color') > 0 then SetColor(GetColorGI(Block.GetParam('Color')));
   if Block.CountParams('ColorFill') > 0 then SetFillColor(GetColorGI(Block.GetParam('ColorFill')));
@@ -238,7 +244,7 @@ end;
 procedure TCircleGI.Draw(ClipRect: TRect);
 var R, X, Y, Width, Height: Integer; Bounds: TRect;
 begin
-  if Kind = ckSimple then
+  if Kind = circle_fit_outline then
   begin
     R := Min(HitTestBounds.Bottom - HitTestBounds.Top, HitTestBounds.Right - HitTestBounds.Left) div 2;
     if R > 0 then
@@ -249,14 +255,14 @@ begin
         (HitTestBounds.Bottom + HitTestBounds.Top) div 2,
         (HitTestBounds.Right + HitTestBounds.Left) div 2), R, Color, ClipRect);
   end
-  else if Kind = ckCircle then
+  else if Kind = circle_outline then
   begin
     if Radius > 0 then
       if HardwareRenderingEnabled then
         DrawCircle(Center.X, Center.Y, Radius, Color565ToArgb(Color), 255, 0, @ClipRect)
       else ScreenRenderBuffer.DrawAntialiasedCircle16(Center, Radius, Color, ClipRect);
   end
-  else if Kind = ckFill then
+  else if Kind = circle_fit_fill then
   begin
     R := Min(HitTestBounds.Bottom - HitTestBounds.Top, HitTestBounds.Right - HitTestBounds.Left) div 2;
     if R > 0 then
@@ -267,7 +273,7 @@ begin
         (HitTestBounds.Bottom + HitTestBounds.Top) div 2,
         (HitTestBounds.Right + HitTestBounds.Left) div 2), R, Color, FillColor, ClipRect);
   end
-  else if Kind = ckShrLight then
+  else if Kind = circle_shift_light then
   begin
     if HardwareRenderingEnabled then
     begin
@@ -326,7 +332,7 @@ begin
         ClipRect.Right - ClipRect.Left, ClipRect.Bottom - ClipRect.Top);
     end;
   end
-  else if Kind = ckMulLight then
+  else if Kind = circle_multiply_light then
   begin
     // The native branch retains only this renderer test.
     if HardwareRenderingEnabled then begin end;

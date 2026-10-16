@@ -32,12 +32,12 @@ constructor TCheckBoxGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
   CheckedImage := TTransImageGI.Create(Self);
-  CheckedImage.KindX := ikxCenter;
-  CheckedImage.KindY := ikyCenter;
+  CheckedImage.KindX := image_x_center;
+  CheckedImage.KindY := image_y_center;
   CheckedImage.IsActive := False;
   UncheckedImage := TTransImageGI.Create(Self);
-  UncheckedImage.KindX := ikxCenter;
-  UncheckedImage.KindY := ikyCenter;
+  UncheckedImage.KindX := image_x_center;
+  UncheckedImage.KindY := image_y_center;
   UncheckedImage.IsActive := True;
   Checked := False;
 end;

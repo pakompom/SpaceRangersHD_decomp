@@ -328,8 +328,8 @@ begin
   Path := 'Bm.FormPQuest2.' + GiResourceSuffix + 'S' + IntToWideString(QuestStyleIndex + 1) + 'Line';
   if CacheDataRoot.FileExistsByPath(Path) then Highlight.ImageSourcePath := 'GI,' + Path
   else Highlight.ImageSourcePath := 'GI,Bm.FormPQuest2.' + GiResourceSuffix + 'S1Line';
-  Highlight.KindX := ikxLeftFill;
-  Highlight.KindY := ikyTopFill;
+  Highlight.KindX := image_x_tile_left;
+  Highlight.KindY := image_y_tile_top;
   Highlight.IsActive := False;
   TextLabel := TLabelGI.Create(Panel);
   TextLabel.Name := IntToStr(ChoiceCount);
@@ -341,13 +341,13 @@ begin
   TextLabel.Pos := Classes.Point(10, 0);
   TextLabel.SetDepth(2);
   TextLabel.SetWordWrapEnabled(True);
-  TextLabel.SetTextAlignX(taxLeft);
-  TextLabel.SetTextAlignY(tayAuto);
+  TextLabel.SetTextAlignX(text_x_left);
+  TextLabel.SetTextAlignY(text_y_fit_height);
   TextLabel.Text := '<Object=0,20,14,0>' + Text;
   TextLabel.World := True;
   TextLabel.IsActive := True;
   TextLabel.CreateEmbeddedControl := CreateChoiceInlineObject;
-  TextLabel.SetTextAlignY(tayCenterEx);
+  TextLabel.SetTextAlignY(text_y_font_center);
   TextLabel.SetTextColor(GetTextColor(QuestStyleIndex));
   Panel.ObjectSize := Classes.Point(Panel.ClientSize.X, GiScalePixelsEx(2, 1) * 2 + TextLabel.ClientSize.Y);
   TextLabel.ObjectSize := Classes.Point(TextLabel.ClientSize.X, Panel.ClientSize.Y);
@@ -395,8 +395,8 @@ begin
   Path := 'Bm.FormPQuest2.' + GiResourceSuffix + 'S' + IntToWideString(QuestStyleIndex + 1) + 'Line';
   if CacheDataRoot.FileExistsByPath(Path) then Highlight.ImageSourcePath := 'GI,' + Path
   else Highlight.ImageSourcePath := 'GI,Bm.FormPQuest2.' + GiResourceSuffix + 'S1Line';
-  Highlight.KindX := ikxLeftFill;
-  Highlight.KindY := ikyTopFill;
+  Highlight.KindX := image_x_tile_left;
+  Highlight.KindY := image_y_tile_top;
   Highlight.IsActive := False;
   TextLabel := TLabelGI.Create(Panel);
   TextLabel.Name := IntToStr(ChoiceCount);
@@ -408,14 +408,14 @@ begin
   TextLabel.Pos := Classes.Point(10, 0);
   TextLabel.SetDepth(2);
   TextLabel.SetWordWrapEnabled(True);
-  TextLabel.SetTextAlignX(taxLeft);
-  TextLabel.SetTextAlignY(tayAuto);
+  TextLabel.SetTextAlignX(text_x_left);
+  TextLabel.SetTextAlignY(text_y_fit_height);
   TextLabel.Text := '<Object=0,20,14,0>' + Text;
   TextLabel.World := False;
   TextLabel.IsActive := True;
   TextLabel.UserState := 1;
   TextLabel.CreateEmbeddedControl := CreateChoiceInlineObject;
-  TextLabel.SetTextAlignY(tayCenterEx);
+  TextLabel.SetTextAlignY(text_y_font_center);
   TextLabel.SetTextColor(GetDisabledTextColor(QuestStyleIndex));
   Panel.ObjectSize := Classes.Point(Panel.ClientSize.X, GiScalePixelsEx(2, 1) * 2 + TextLabel.ClientSize.Y);
   TextLabel.ObjectSize := Panel.ClientSize;
@@ -445,7 +445,7 @@ begin
     if CacheDataRoot.FileExistsByPath(Path) then Image.ImageSourcePath := 'GI,' + Path
     else Image.ImageSourcePath := 'GI,Bm.FormPQuest2.' + GiResourceSuffix + 'S1Answer';
   end;
-  Image.KindX := ikxLeft;
+  Image.KindX := image_x_left;
   Image.ObjectSize := Image.GetContentSize;
 end;
 { @end $547488 }
@@ -690,13 +690,13 @@ begin
     if FixedWidth then TextLabel.SetFontName('Font.' + GiResourceSuffix + 'Fix')
     else TextLabel.SetFontName(NormalFontName);
     TextLabel.ObjectSize := Classes.Point(1, 1);
-    TextLabel.SetTextAlignX(taxAuto);
-    TextLabel.SetTextAlignY(tayAuto);
+    TextLabel.SetTextAlignX(text_x_fit_or_justify);
+    TextLabel.SetTextAlignY(text_y_fit_height);
     TextLabel.SetWordWrapEnabled(False);
     TextLabel.Text := Lines.CurrentText;
     TextLabel.SetTextColor(GetTextColor(0));
     TextLabel.Pos := Classes.Point(0, ParameterPanelHeight);
-    TextLabel.SetTextAlignY(tayCenterEx);
+    TextLabel.SetTextAlignY(text_y_font_center);
     if TextLabel.ClientSize.Y < 10 then TextLabel.ObjectSize := Classes.Point(TextLabel.ClientSize.X, TextLabel.ClientSize.Y + 10);
     Inc(ParameterPanelHeight, TextLabel.ClientSize.Y);
     TextLabel.UserData := Ord(FixedWidth);
@@ -786,13 +786,13 @@ var
     TextLabel.Pos := Point(0, NextTop);
     TextLabel.ObjectSize := Point(Panel.ClientSize.X, 1);
     TextLabel.SetWordWrapEnabled(True);
-    TextLabel.SetTextAlignX(taxAuto);
-    TextLabel.SetTextAlignY(tayAuto);
+    TextLabel.SetTextAlignX(text_x_fit_or_justify);
+    TextLabel.SetTextAlignY(text_y_fit_height);
     if Indent then TextLabel.Text := '     ' + Text
     else TextLabel.Text := Text;
     TextLabel.World := True;
     TextLabel.SetTextColor(GetTextColor(QuestStyleIndex));
-    TextLabel.SetTextAlignY(tayTop);
+    TextLabel.SetTextAlignY(text_y_top);
     TextLabel.ObjectSize := Point(TextLabel.ClientSize.X,
       Max(1, TextLabel.GetRenderedLineCount) * TextLabel.GetLineHeight + 4);
     NextTop := TextLabel.LocalPosition.Y + TextLabel.ClientSize.Y - 2;
@@ -991,7 +991,7 @@ begin
     ActiveQueuedTextQuest := nil;
     if Galaxy <> nil then EvictMainMenuShipCachesWhenAddressSpaceHigh;
     Stage := 1;
-    if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnEnteringForm, nil, nil, 0);
+    if GetPlayer <> nil then GetPlayer.ScriptItemsAct(event_enter_form, nil, nil, 0);
     Stage := 2;
     if (QuestStyleIndex < 0) or (QuestStyleIndex >= QuestStyleCount) then QuestStyleIndex := 0;
     GetByName('PQI').IsActive := False;
@@ -1008,7 +1008,7 @@ begin
       ((LanguageDataConfig.GetBlock('PlanetQuest').CountBlocks('PlanetQuestLic') <= 0) or
        (LanguageDataConfig.GetBlock('PlanetQuest').GetBlock('PlanetQuestLic').GetParamOrMarker(IntToStr(GetPlayer.CurrentPlanet.TextQuestId)) =
         PlanetQuestScreen.GetQuestContentHash(GetPlayer.CurrentPlanet.TextQuestId))) then
-      MoneyLimitComplement := (Galaxy.ComputeScaledBigMoney(oiHuman) + GetPlayer.Money) xor $FFFFFFFF
+      MoneyLimitComplement := (Galaxy.ComputeScaledBigMoney(owner_human) + GetPlayer.Money) xor $FFFFFFFF
     else if (GetPlayer <> nil) and (QueuedTextQuests.Count = 0) then
       MoneyLimitComplement := (GetPlayer.Money + 50000) xor $FFFFFFFF
     else MoneyLimitComplement := 1000000000 xor $FFFFFFFF;
@@ -1017,7 +1017,7 @@ begin
     begin
       Stage := 6;
       Quest := TTextQuest.Create;
-      if GetPlayer.CurrentPlanet.OwnerId <> oiPirate then LoadQuestByName('Prison')
+      if GetPlayer.CurrentPlanet.OwnerId <> owner_pirate then LoadQuestByName('Prison')
       else LoadQuestByName('PirateClanPrison');
       Stage := 7;
       Quest.ToStarText.Text := GetPlayer.CurrentStar.Name;
@@ -1075,7 +1075,7 @@ begin
           for I := 0 to GetPlayer.Quests.Count - 1 do
           begin
             GovernmentQuest := GetPlayer.Quests[I];
-            if (GovernmentQuest.QuestType = qtPlanetQuest) and
+            if (GovernmentQuest.QuestType = quest_kind_text_adventure) and
               (GovernmentQuest.ObjectiveTarget is TPlanet) and
               ((GovernmentQuest.ObjectiveTarget as TPlanet) = GetPlayer.CurrentPlanet) then
             begin
@@ -1151,7 +1151,7 @@ var
   Player: TPlayer;
 begin
   if Galaxy <> nil then Galaxy.CheckIntegrityChecksum(151);
-  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnLeavingForm, nil, nil, 0);
+  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(event_leave_form, nil, nil, 0);
   QuestId := -1;
   if PageAnimationTimer <> 0 then
   begin
@@ -1175,7 +1175,7 @@ begin
     Quest := nil;
   end;
   if GetPlayer <> nil then GetPlayer.ProcessQuestTimersAndOutcomes;
-  if (RequestedScreenId = screenMainMenu) or (RequestedScreenId = screenLoad) then
+  if (RequestedScreenId = screen_main_menu) or (RequestedScreenId = screen_asset_loading) then
     ClearPendingScriptRequests;
 end;
 { @end $549FB0 }
@@ -1290,8 +1290,8 @@ begin
         Path := 'Bm.FormPQuest2.' + GiResourceSuffix + 'S' + IntToWideString(QuestStyleIndex + 1) + 'Line';
         if CacheDataRoot.FileExistsByPath(Path) then ImageSourcePath := 'GI,' + Path
         else ImageSourcePath := 'GI,Bm.FormPQuest2.' + GiResourceSuffix + 'S1Line';
-        KindX := ikxLeftFill;
-        KindY := ikyTopFill;
+        KindX := image_x_tile_left;
+        KindY := image_y_tile_top;
       end;
       with Control.FirstChild.NextSibling as TLabelGI do
       begin
@@ -1393,8 +1393,8 @@ begin
     Galaxy := nil;
     ScreenLoadMode := 4;
     if Standalone then PostLoadScreenId := QuestReturnScreenId
-    else PostLoadScreenId := screenMainMenu;
-    RequestedScreenId := screenLoad;
+    else PostLoadScreenId := screen_main_menu;
+    RequestedScreenId := screen_asset_loading;
     RequestClose(1);
   end;
 end;
@@ -1442,14 +1442,14 @@ begin
           if GetPlayer <> nil then
           begin
             PendingLoadFileName := SaveManagerScreen.GetAutoSavePath;
-            RequestedScreenId := screenGameLoad;
+            RequestedScreenId := screen_save_loading;
             RequestClose(1);
           end
           else
           begin
             StandaloneQuestMode := True;
-            RequestedScreenId := screenPlanetQuest;
-            CurrentScreenId := screenNone;
+            RequestedScreenId := screen_text_quest;
+            CurrentScreenId := screen_none;
             RequestClose(1);
           end;
 end;
@@ -1542,7 +1542,7 @@ begin
           for I := 0 to GetPlayer.Quests.Count - 1 do
           begin
             GovernmentQuest := GetPlayer.Quests[I];
-            if (GovernmentQuest.QuestType = qtPlanetQuest) and
+            if (GovernmentQuest.QuestType = quest_kind_text_adventure) and
               (GovernmentQuest.ObjectiveTarget is TPlanet) and
               (GetPlayer.CurrentPlanet = (GovernmentQuest.ObjectiveTarget as TPlanet)) then
             begin
@@ -1552,22 +1552,22 @@ begin
                 News := PickLocalizedTextVariant('GalaxyNews.Quest.Successful.PlanetaryQuest', (Galaxy.CurrentTurn div 10) * Integer(Galaxy.GenerationSeed));
                 ReplaceTextToken(News, '<FromPlanet>', GovernmentQuest.Planet.Name, TextHighlightColorTag);
                 ReplaceTextToken(News, '<ToPlanet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag);
-                AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, News, '');
+                AddOrUpdatePlayerBubble(message_galaxy_news, Galaxy.CurrentTurn, News, '');
               end;
               ItemName := LookupLocalizedTextByKey('PlanetQuest.ItemForPlanetQuest.' + IntToStr(GovernmentQuest.QuestNumber));
               if ItemName <> 'none' then
               begin
                 Item := TUselessItem.Create;
-                Item.Init(ItemName, dsBlazer, 0, False);
+                Item.Init(ItemName, series_blazer, 0, False);
                 GetPlayer.Inventory.Add(Item);
               end;
               GetPlayer.CurrentPlanet.TextQuestId := -1;
               (GetByName('QuestPanel') as TPanelGI).IsActive := False;
-              if GetPlayer.CurrentPlanet.IsCoalitionOwned or (GetPlayer.CurrentPlanet.OwnerId = oiPirate) then
+              if GetPlayer.CurrentPlanet.IsCoalitionOwned or (GetPlayer.CurrentPlanet.OwnerId = owner_pirate) then
               begin
                 GetPlayer.CurrentPlanet.ChangeRelationToRanger(GetPlayer, Quest.SuccessRelationDelta);
                 if GetPlayer.CurrentPlanet.RelationToShip(GetPlayer) < 20 then
-                  GetPlayer.CurrentPlanet.SetRelationLevelToRanger(GetPlayer, rlBad);
+                  GetPlayer.CurrentPlanet.SetRelationLevelToRanger(GetPlayer, relation_level_bad);
               end;
               Break;
             end;
@@ -1584,7 +1584,7 @@ begin
   if ActiveQueuedTextQuest <> nil then
   begin
     ActiveQueuedTextQuest := nil;
-    CompleteQueuedTextQuest(sqsSuccess);
+    CompleteQueuedTextQuest(quest_status_succeeded);
   end;
 end;
 { @end $54BF08 }
@@ -1601,10 +1601,10 @@ begin
   begin
     GetPlayer.InPrison := False;
     if GetPlayer.CurrentPlanet <> nil then
-      if (GetPlayer.CurrentPlanet.OwnerId = oiPirate) and (MainPiratePlanet <> nil) then
-        MainPiratePlanet.SetRelationLevelToRanger(GetPlayer, rlHostile)
-      else GetPlayer.CurrentPlanet.SetRelationLevelToRanger(GetPlayer, rlHostile);
-    if not HangarScreen.TryTakeOff then RequestedScreenId := screenHangar;
+      if (GetPlayer.CurrentPlanet.OwnerId = owner_pirate) and (MainPiratePlanet <> nil) then
+        MainPiratePlanet.SetRelationLevelToRanger(GetPlayer, relation_level_hostile)
+      else GetPlayer.CurrentPlanet.SetRelationLevelToRanger(GetPlayer, relation_level_hostile);
+    if not HangarScreen.TryTakeOff then RequestedScreenId := screen_hangar;
   end
   else
   begin
@@ -1612,7 +1612,7 @@ begin
           for I := GetPlayer.Quests.Count - 1 downto 0 do
           begin
             GovernmentQuest := GetPlayer.Quests[I];
-            if (GovernmentQuest.QuestType = qtPlanetQuest) and
+            if (GovernmentQuest.QuestType = quest_kind_text_adventure) and
               (GovernmentQuest.ObjectiveTarget is TPlanet) and
               (GetPlayer.CurrentPlanet = (GovernmentQuest.ObjectiveTarget as TPlanet)) then
             begin
@@ -1622,7 +1622,7 @@ begin
               ReplaceTextToken(News, '<ToPlanet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag);
               ReplaceTextToken(News, '<FromPlanet>', GovernmentQuest.Planet.Name, TextHighlightColorTag);
               ReplaceTextToken(News, '<Relation>', GovernmentQuest.Planet.GetRelationLevelTextToShip(GetPlayer), TextHighlightColorTag);
-              AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, News, '');
+              AddOrUpdatePlayerBubble(message_galaxy_news, Galaxy.CurrentTurn, News, '');
               GetPlayer.CurrentPlanet.TextQuestId := -1;
               GetPlayer.ArchiveQuest(I);
               Break;
@@ -1632,7 +1632,7 @@ begin
       (ShowMessageBoxGI(Self, LocalizedText('Planet.NotCivil.QuestPlay.MsgLoad'), mbgOK or mbgCancel) = mbgResultOK) then
     begin
       PendingLoadFileName := SaveManagerScreen.GetAutoSavePath;
-      RequestedScreenId := screenGameLoad;
+      RequestedScreenId := screen_save_loading;
     end
     else RequestedScreenId := QuestReturnScreenId;
   end;
@@ -1640,7 +1640,7 @@ begin
   if ActiveQueuedTextQuest <> nil then
   begin
     ActiveQueuedTextQuest := nil;
-    CompleteQueuedTextQuest(sqsFailure);
+    CompleteQueuedTextQuest(quest_status_failed);
   end;
 end;
 { @end $54C394 }
@@ -1655,14 +1655,14 @@ begin
       (ShowMessageBoxGI(Self, LocalizedText('Planet.NotCivil.QuestPlay.MsgLoad'), mbgOK or mbgCancel) = mbgResultOK) then
     begin
       PendingLoadFileName := SaveManagerScreen.GetAutoSavePath;
-      RequestedScreenId := screenGameLoad;
+      RequestedScreenId := screen_save_loading;
     end
     else
     begin
       ScoreScreen.RecordPlayerResult(False);
       GetPlayer.Free;
       GameEndReason := 1;
-      RequestedScreenId := screenGameEnd;
+      RequestedScreenId := screen_game_end;
     end;
   end;
   ClearPendingScriptRequests;
@@ -1722,7 +1722,7 @@ begin
         for J := 1 to Values.Count do
           if Quest.GetParameterCount >= Values.Values[J] then
             if Quest.GetParameter(Values.Values[J]).Enabled and
-              (Quest.GetParameter(Values.Values[J]).CriticalOutcome <> qoNone) then
+              (Quest.GetParameter(Values.Values[J]).CriticalOutcome <> quest_outcome_none) then
               Quest.GetParameter(Values.Values[J]).CriticalEvent.Picture.Text := Picture;
     end;
   end;
@@ -1780,7 +1780,7 @@ begin
     if (ActiveQueuedTextQuest <> nil) and (ActiveQueuedTextQuest.Script <> nil) then
       Variable := ActiveQueuedTextQuest.Script.InitCode.LocalVar.GetVarNE(Name);
     if Variable = nil then Variable := SharedScriptVariables.GetVarNE(Name);
-    if (Variable <> nil) and (Variable.RealVType = vkInt) then
+    if (Variable <> nil) and (Variable.RealVType = value_int32) then
       Variable.SetInt(Quest.GetParameter(I).Value);
   end;
 end;
@@ -1803,7 +1803,7 @@ begin
       if (ActiveQueuedTextQuest <> nil) and (ActiveQueuedTextQuest.Script <> nil) then
         Variable := ActiveQueuedTextQuest.Script.InitCode.LocalVar.GetVarNE(Name);
       if Variable = nil then Variable := SharedScriptVariables.GetVarNE(Name);
-      if (Variable <> nil) and (Variable.RealVType = vkInt) then
+      if (Variable <> nil) and (Variable.RealVType = value_int32) then
       begin
         Quest.GetParameter(I).SetValue(Variable.GetInt);
         Variable.SetInt(Quest.GetParameter(I).Value);
@@ -1976,7 +1976,7 @@ end;
 procedure TfPlanetQuest.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
   if ExitScreenLoop then Exit;
-  if TurnCalculationPhase in [tcpIdle, tcpGalaxyFinished, tcpPlayerStarFinished, tcpPlayerStarPrepared] then
+  if TurnCalculationPhase in [turn_idle, turn_galaxy_finished, turn_player_star_finished, turn_player_star_prepared] then
   begin
     if Galaxy <> nil then Galaxy.CheckIntegrityChecksum(10109);
     ExecuteGameplayUiCode(Block, Key);

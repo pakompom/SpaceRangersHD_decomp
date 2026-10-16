@@ -237,8 +237,8 @@ begin
     end;
     DeletionPending := True;
     Galaxy.CheckIntegrityChecksum1(650);
-    Inc(GetPlayer.DominatorKillsByType[ktBoss]);
-    KellerShip.ScriptItemsAct(satOnDeath, nil, nil, 0);
+    Inc(GetPlayer.DominatorKillsByType[dominator_boss]);
+    KellerShip.ScriptItemsAct(event_death, nil, nil, 0);
     KellerShip.Free;
     Galaxy.PrimeIntegrityChecksum1(651);
   end

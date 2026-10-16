@@ -589,7 +589,7 @@ begin
     repeat
       try
         try
-          PostLoadScreenId := screenMainMenu;
+          PostLoadScreenId := screen_main_menu;
           CreateStartupLogFile;
           SelectedLanguage := '';
           AvailableLanguageCodes := '';
@@ -710,9 +710,9 @@ begin
               if HadProtectedStatus then; // Native retains this disabled status check.
             end;
             if BuildVersionMismatch then Break;
-            RequestedScreenId := screenLoad;
+            RequestedScreenId := screen_asset_loading;
             ScreenLoadMode := 0;
-            if PostLoadScreenId = screenArcadeBattle then PostLoadScreenId := screenMainMenu;
+            if PostLoadScreenId = screen_arcade_battle then PostLoadScreenId := screen_main_menu;
             if ScreenUsesCompositeLoadAssets(PostLoadScreenId) then ScreenLoadMode := 3;
             RunMainScreenStateLoop;
             timeEndPeriod(1);
@@ -726,7 +726,7 @@ begin
             FinalizeRobotRuntime;
             FinalizeGlobalUiRuntime;
             FinalizeRuntimeAndSettings;
-            if ((RequestedScreenId = screenNone) and (PostLoadScreenId = screenNone)) or ExitScreenLoop then
+            if ((RequestedScreenId = screen_none) and (PostLoadScreenId = screen_none)) or ExitScreenLoop then
             begin
               FreeDatConfigRoots;
               Break;

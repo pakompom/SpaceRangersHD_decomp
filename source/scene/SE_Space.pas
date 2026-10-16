@@ -481,7 +481,7 @@ begin
   MinimapRangeShade := TCircleGI.Create(SpaceObjectUiLoop.ContentPanel);
   with MinimapRangeShade do
   begin
-    SetKind(ckShrLight);
+    SetKind(circle_shift_light);
     Pos := Classes.Point(RenderScratchBuffer.Width shr 1, RenderScratchBuffer.Height shr 1);
     Sme := Classes.Point(RenderScratchBuffer.Width shr 1, RenderScratchBuffer.Height shr 1);
     ObjectSize := Classes.Point(RenderScratchBuffer.Width, RenderScratchBuffer.Height);
@@ -491,7 +491,7 @@ begin
   MinimapRangeCircle := TCircleGI.Create(SpaceObjectUiLoop.ContentPanel);
   with MinimapRangeCircle do
   begin
-    SetKind(ckCircle);
+    SetKind(circle_outline);
     Pos := Classes.Point(RenderScratchBuffer.Width shr 1, RenderScratchBuffer.Height shr 1);
     Sme := Classes.Point(RenderScratchBuffer.Width shr 1, RenderScratchBuffer.Height shr 1);
     ObjectSize := Classes.Point(RenderScratchBuffer.Width, RenderScratchBuffer.Height);
@@ -734,7 +734,7 @@ begin
   FreeMinimapViewport;
   MinimapViewportFrame := TFrameGI.Create(SpaceObjectUiLoop.ContentPanel);
   MinimapViewportFrame.SetDepth(-99999);
-  MinimapViewportFrame.SetKind(fkRect);
+  MinimapViewportFrame.SetKind(frame_rect_border);
   MinimapViewportFrame.SetColor(CurrentPixelFormat.PackRgbBytes(255, 255, 255));
   Width := Round(MapPanel.ClientSize.X * MinimapScale);
   Height := Round(MapPanel.ClientSize.Y * MinimapScale);

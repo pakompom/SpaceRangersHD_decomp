@@ -5,7 +5,7 @@ interface
 uses EC_BlockPar, EC_Buf, EC_File, EC_Struct, SyncObjs;
 
 type
-  TDataEntryKind = (dekFile = 1, dekSubtree = 2); // @size 0x04
+  TDataEntryKind = (data_file = 1, data_subtree = 2); // @size 0x04
 
   TDataEC = class;
 
@@ -1241,7 +1241,7 @@ begin
   if FirstEntry = nil then FirstEntry := Entry;
   Entry.Kind := EntryKind;
   case EntryKind of
-    dekFile: ;
+    data_file: ;
   else
     Entry.ChildData := TDataEC.Create;
     Entry.ChildData.SharesInternedFileList := True;
@@ -1417,7 +1417,7 @@ begin
       Result := Entry;
       Exit;
     end;
-    if Entry.Kind <> dekSubtree then Break;
+    if Entry.Kind <> data_subtree then Break;
     Data := Entry.ChildData;
   end;
   Result := nil;
@@ -1448,7 +1448,7 @@ function TDataEC.GetData(const Name: WideString): TDataEC;
 var Entry: TDataElEC;
 begin
   Entry := FindEntry(Name);
-  if (Entry = nil) or (Entry.Kind <> dekSubtree) then
+  if (Entry = nil) or (Entry.Kind <> data_subtree) then
     raise Exception.Create('TDataEC.GetData. name=' + Name);
   Result := Entry.ChildData;
 end;
@@ -1459,7 +1459,7 @@ procedure TDataEC.ReadBufferByPath(const Path: WideString; Dest: TBufEC);
 var Entry: TDataElEC;
 begin
   Entry := FindEntryByPath(Path);
-  if (Entry = nil) or (Entry.Kind <> dekFile) then
+  if (Entry = nil) or (Entry.Kind <> data_file) then
     raise Exception.Create('TDataEC.PathGetBuf. path=' + Path);
   ReadEntryBuffer(Entry, Dest);
 end;
@@ -1470,7 +1470,7 @@ function TDataEC.FileExistsByPath(const Path: WideString): Boolean;
 var Entry: TDataElEC;
 begin
   Entry := FindEntryByPath(Path);
-  if (Entry = nil) or (Entry.Kind <> dekFile) then
+  if (Entry = nil) or (Entry.Kind <> data_file) then
   begin
     Result := False;
     Exit;
@@ -1490,27 +1490,27 @@ end;
 { @routine $4D1C74 TDataEC_AddMissingFromBlock }
 procedure TDataEC.AddMissingFromBlock(Block: TBlockParEC);
 var Count, i: Integer;
-    Kind: TBlockParKind;
+    Kind: TConfigEntryKind;
     Entry: TDataElEC;
 begin
   Count := Block.Count;
   for i := 0 to Count - 1 do
   begin
     Kind := Block.EntryKinds[i];
-    if ((Kind = bpkString) or (Kind = bpkBlock)) and
+    if ((Kind = config_parameter) or (Kind = config_block)) and
       (FindEntry(Block.EntryNames[i]) <> nil) then Continue;
-    if Kind = bpkString then
+    if Kind = config_parameter then
     begin
-      Entry := AddEntry(dekFile);
+      Entry := AddEntry(data_file);
       Entry.Name := Block.EntryNames[i];
       Entry.SharedFileRef := InternFileName(Block.EntryStrings[i]);
       Entry.FileOffset := 0;
       Entry.ByteCount := -1;
       InsertIntoIndex(Entry);
     end
-    else if Kind = bpkBlock then
+    else if Kind = config_block then
     begin
-      Entry := AddEntry(dekSubtree);
+      Entry := AddEntry(data_subtree);
       Entry.Name := Block.EntryNames[i];
       InsertIntoIndex(Entry);
       Entry.ChildData.AddMissingFromBlock(Block.EntryBlocks[i]);
@@ -1527,7 +1527,7 @@ begin
   for i := 0 to IndexedEntryCount - 1 do
   begin
     Entry := IndexedEntries[i];
-    if Entry.Kind = dekFile then
+    if Entry.Kind = data_file then
       Block.AddParam(Entry.Name, Entry.SharedFileRef.FileRef.GetFileName)
     else Entry.ChildData.WriteToBlock(Block.AddChildBlock(Entry.Name));
   end;
@@ -1554,13 +1554,13 @@ begin
     end;
     // Zero remains a raw sentinel; only the named kinds have merge actions.
     if Entry.Kind <> TDataEntryKind(0) then
-      if Entry.Kind = dekFile then
+      if Entry.Kind = data_file then
       begin
         Existing.FileOffset := 0;
         Existing.ByteCount := -1;
         Existing.SharedFileRef := InternFileName(Entry.SharedFileRef.FileRef.FileName);
       end
-      else if Entry.Kind = dekSubtree then Existing.ChildData.MergeFrom(Entry.ChildData);
+      else if Entry.Kind = data_subtree then Existing.ChildData.MergeFrom(Entry.ChildData);
     Entry := Entry.Next;
   end;
   RebuildIndex;
@@ -1583,7 +1583,7 @@ begin
     Entry.Name := Buf.ReadWideString;
     Entry.FileOffset := 0;
     Entry.ByteCount := -1;
-    if Kind = dekFile then Entry.SharedFileRef := InternFileName(Buf.ReadWideString)
+    if Kind = data_file then Entry.SharedFileRef := InternFileName(Buf.ReadWideString)
     else Entry.ChildData.LoadFromDecodedBuffer(Buf);
     IndexedEntries[i] := Entry;
   end;

@@ -110,7 +110,7 @@ begin
   FirstTrailing := Film.LastCommand;
   while FirstTrailing <> nil do
   begin
-    if FirstTrailing.Kind = efcBeginTrailingEffects then Break;
+    if FirstTrailing.Kind = replay_trailing_effects_marker then Break;
     FirstTrailing := FirstTrailing.Prev;
   end;
   FirstTrailing := FirstTrailing.Next;
@@ -132,7 +132,7 @@ begin
         Command := FirstTrailing;
         while Command <> nil do
         begin
-          if (Command.Kind = efcReleaseObject) and (Command.Obj <> nil) and
+          if (Command.Kind = replay_release_object) and (Command.Obj <> nil) and
             (Command.Obj.SceneObject = Weapon.TargetObject) then
           begin
             RetainSpaceObject(Entry.RelatedObject1, Command.Obj.SceneObject);
@@ -149,7 +149,7 @@ begin
       Command := FirstTrailing;
       while Command <> nil do
       begin
-        if (Command.Kind = efcReleaseObject) and (Command.Obj <> nil) and
+        if (Command.Kind = replay_release_object) and (Command.Obj <> nil) and
           (Command.Obj.SceneObject = Obj.SceneObject) then
         begin
           Entry := AppendEntry;

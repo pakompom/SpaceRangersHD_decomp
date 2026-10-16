@@ -32,7 +32,7 @@ uses Classes, Windows, SysUtils, Math, EC_Str, EC_Struct, GI_GraphButton,
 { @routine $5BD00C TThreadCreateNewGame_Execute }
 procedure TThreadCreateNewGame.Execute;
 const
-  InitialDominatorShipMask = [stKling];
+  InitialDominatorShipMask = [ship_dominator];
 var
   ControlWord: Word;
   I, J, K, N: Integer;
@@ -268,7 +268,7 @@ begin
         end;
     end;
     TStar(Galaxy.Stars[Galaxy.Stars.Count - 1]).Name := SpecialStar.Name;
-    for OwnerId := oiMaloc to oiPirate do
+    for OwnerId := owner_maloc to owner_pirate do
     begin
       NameLists[OwnerId] := TList.Create;
       if LanguageDataConfig.GetBlock('PlanetName').CountBlocks(OwnerInfo[OwnerId].InternalName) > 0 then
@@ -298,21 +298,21 @@ begin
         end;
       end;
     end;
-    for OwnerId := oiMaloc to oiPirate do NameLists[OwnerId].Free;
+    for OwnerId := owner_maloc to owner_pirate do NameLists[OwnerId].Free;
     if Galaxy.CustomRules.StartInCenter then
     begin
       Center.X := GalaxySizeX * 0.5;
       Center.Y := GalaxySizeY * 0.5;
       StartStar := HomePlanet.CurrentStar;
-      Score := PointDistanceSquared(Center,StartStar.Position) - (StartStar.Planets.Count - StartStar.CountPlanetsByOwner(oiUninhabited)) * 10 - PointDistanceSquared(SpecialStar.Position,StartStar.Position) * 0.25;
+      Score := PointDistanceSquared(Center,StartStar.Position) - (StartStar.Planets.Count - StartStar.CountPlanetsByOwner(owner_uninhabited)) * 10 - PointDistanceSquared(SpecialStar.Position,StartStar.Position) * 0.25;
       for I := 0 to Galaxy.Stars.Count - 1 do
       begin
         Star := Galaxy.Stars[I];
         if (Star <> SpecialStar) and (Star <> StartStar) and (Star.CountPlanetsByOwner(RaceToOwner(PlayerRace)) >= 2) then
-          if PointDistanceSquared(Center,Star.Position) - (Star.Planets.Count - Star.CountPlanetsByOwner(oiUninhabited)) * 10 - PointDistanceSquared(SpecialStar.Position,Star.Position) * 0.25 < Score then
+          if PointDistanceSquared(Center,Star.Position) - (Star.Planets.Count - Star.CountPlanetsByOwner(owner_uninhabited)) * 10 - PointDistanceSquared(SpecialStar.Position,Star.Position) * 0.25 < Score then
           begin
             StartStar := Star;
-            Score := PointDistanceSquared(Center,Star.Position) - (Star.Planets.Count - Star.CountPlanetsByOwner(oiUninhabited)) * 10 - PointDistanceSquared(SpecialStar.Position,Star.Position) * 0.25;
+            Score := PointDistanceSquared(Center,Star.Position) - (Star.Planets.Count - Star.CountPlanetsByOwner(owner_uninhabited)) * 10 - PointDistanceSquared(SpecialStar.Position,Star.Position) * 0.25;
           end;
       end;
       if StartStar <> HomePlanet.CurrentStar then
@@ -335,76 +335,76 @@ begin
     case CharacterPreset of
       1:
         begin
-          Player.PreferredCareer := rcWarrior;
-          Player.CareerStatus[rcWarrior] := NextRandomIntRange(70,90,Galaxy.RandomState);
-          Player.CareerStatus[rcPirate] := (100 - Player.CareerStatus[rcWarrior]) div NextRandomIntRange(2,3,Galaxy.RandomState);
-          Player.CareerStatus[rcTrader] := 100 - Player.CareerStatus[rcWarrior] - Player.CareerStatus[rcPirate];
+          Player.PreferredCareer := career_warrior;
+          Player.CareerStatus[career_warrior] := NextRandomIntRange(70,90,Galaxy.RandomState);
+          Player.CareerStatus[career_pirate] := (100 - Player.CareerStatus[career_warrior]) div NextRandomIntRange(2,3,Galaxy.RandomState);
+          Player.CareerStatus[career_trader] := 100 - Player.CareerStatus[career_warrior] - Player.CareerStatus[career_pirate];
         end;
       2:
         begin
-          Player.PreferredCareer := rcWarrior;
-          Player.CareerStatus[rcWarrior] := NextRandomIntRange(60,70,Galaxy.RandomState);
-          Player.CareerStatus[rcPirate] := (100 - Player.CareerStatus[rcWarrior]) div NextRandomIntRange(3,4,Galaxy.RandomState);
-          Player.CareerStatus[rcTrader] := 100 - Player.CareerStatus[rcWarrior] - Player.CareerStatus[rcPirate];
+          Player.PreferredCareer := career_warrior;
+          Player.CareerStatus[career_warrior] := NextRandomIntRange(60,70,Galaxy.RandomState);
+          Player.CareerStatus[career_pirate] := (100 - Player.CareerStatus[career_warrior]) div NextRandomIntRange(3,4,Galaxy.RandomState);
+          Player.CareerStatus[career_trader] := 100 - Player.CareerStatus[career_warrior] - Player.CareerStatus[career_pirate];
         end;
       3:
         begin
-          Player.PreferredCareer := rcTrader;
-          Player.CareerStatus[rcTrader] := NextRandomIntRange(70,90,Galaxy.RandomState);
-          Player.CareerStatus[rcPirate] := (100 - Player.CareerStatus[rcTrader]) div NextRandomIntRange(2,3,Galaxy.RandomState);
-          Player.CareerStatus[rcWarrior] := 100 - Player.CareerStatus[rcTrader] - Player.CareerStatus[rcPirate];
+          Player.PreferredCareer := career_trader;
+          Player.CareerStatus[career_trader] := NextRandomIntRange(70,90,Galaxy.RandomState);
+          Player.CareerStatus[career_pirate] := (100 - Player.CareerStatus[career_trader]) div NextRandomIntRange(2,3,Galaxy.RandomState);
+          Player.CareerStatus[career_warrior] := 100 - Player.CareerStatus[career_trader] - Player.CareerStatus[career_pirate];
         end;
       4:
         begin
-          Player.PreferredCareer := rcPirate;
-          Player.CareerStatus[rcPirate] := NextRandomIntRange(60,70,Galaxy.RandomState);
-          Player.CareerStatus[rcTrader] := (100 - Player.CareerStatus[rcPirate]) div NextRandomIntRange(2,3,Galaxy.RandomState);
-          Player.CareerStatus[rcWarrior] := 100 - Player.CareerStatus[rcPirate] - Player.CareerStatus[rcTrader];
+          Player.PreferredCareer := career_pirate;
+          Player.CareerStatus[career_pirate] := NextRandomIntRange(60,70,Galaxy.RandomState);
+          Player.CareerStatus[career_trader] := (100 - Player.CareerStatus[career_pirate]) div NextRandomIntRange(2,3,Galaxy.RandomState);
+          Player.CareerStatus[career_warrior] := 100 - Player.CareerStatus[career_pirate] - Player.CareerStatus[career_trader];
         end;
       5:
         begin
-          Player.PreferredCareer := rcPirate;
-          Player.CareerStatus[rcPirate] := NextRandomIntRange(70,90,Galaxy.RandomState);
-          Player.CareerStatus[rcTrader] := (100 - Player.CareerStatus[rcPirate]) div NextRandomIntRange(2,3,Galaxy.RandomState);
-          Player.CareerStatus[rcWarrior] := 100 - Player.CareerStatus[rcPirate] - Player.CareerStatus[rcTrader];
+          Player.PreferredCareer := career_pirate;
+          Player.CareerStatus[career_pirate] := NextRandomIntRange(70,90,Galaxy.RandomState);
+          Player.CareerStatus[career_trader] := (100 - Player.CareerStatus[career_pirate]) div NextRandomIntRange(2,3,Galaxy.RandomState);
+          Player.CareerStatus[career_warrior] := 100 - Player.CareerStatus[career_pirate] - Player.CareerStatus[career_trader];
         end;
     end;
     Player.InitializePlayerAtPlanet(Planet,GalaxyDifficultyTuning[Galaxy.DifficultyLevels[1]].StartingPlayerMoney,CharacterPreset);
     case CharacterPreset of
       1:
         begin
-          Player.PreferredCareer := rcWarrior;
-          Player.CareerStatus[rcWarrior] := NextRandomIntRange(70,90,Galaxy.RandomState);
-          Player.CareerStatus[rcPirate] := (100 - Player.CareerStatus[rcWarrior]) div NextRandomIntRange(2,3,Galaxy.RandomState);
-          Player.CareerStatus[rcTrader] := 100 - Player.CareerStatus[rcWarrior] - Player.CareerStatus[rcPirate];
+          Player.PreferredCareer := career_warrior;
+          Player.CareerStatus[career_warrior] := NextRandomIntRange(70,90,Galaxy.RandomState);
+          Player.CareerStatus[career_pirate] := (100 - Player.CareerStatus[career_warrior]) div NextRandomIntRange(2,3,Galaxy.RandomState);
+          Player.CareerStatus[career_trader] := 100 - Player.CareerStatus[career_warrior] - Player.CareerStatus[career_pirate];
         end;
       2:
         begin
-          Player.PreferredCareer := rcWarrior;
-          Player.CareerStatus[rcWarrior] := NextRandomIntRange(60,70,Galaxy.RandomState);
-          Player.CareerStatus[rcPirate] := (100 - Player.CareerStatus[rcWarrior]) div NextRandomIntRange(3,4,Galaxy.RandomState);
-          Player.CareerStatus[rcTrader] := 100 - Player.CareerStatus[rcWarrior] - Player.CareerStatus[rcPirate];
+          Player.PreferredCareer := career_warrior;
+          Player.CareerStatus[career_warrior] := NextRandomIntRange(60,70,Galaxy.RandomState);
+          Player.CareerStatus[career_pirate] := (100 - Player.CareerStatus[career_warrior]) div NextRandomIntRange(3,4,Galaxy.RandomState);
+          Player.CareerStatus[career_trader] := 100 - Player.CareerStatus[career_warrior] - Player.CareerStatus[career_pirate];
         end;
       3:
         begin
-          Player.PreferredCareer := rcTrader;
-          Player.CareerStatus[rcTrader] := NextRandomIntRange(70,90,Galaxy.RandomState);
-          Player.CareerStatus[rcPirate] := (100 - Player.CareerStatus[rcTrader]) div NextRandomIntRange(2,3,Galaxy.RandomState);
-          Player.CareerStatus[rcWarrior] := 100 - Player.CareerStatus[rcTrader] - Player.CareerStatus[rcPirate];
+          Player.PreferredCareer := career_trader;
+          Player.CareerStatus[career_trader] := NextRandomIntRange(70,90,Galaxy.RandomState);
+          Player.CareerStatus[career_pirate] := (100 - Player.CareerStatus[career_trader]) div NextRandomIntRange(2,3,Galaxy.RandomState);
+          Player.CareerStatus[career_warrior] := 100 - Player.CareerStatus[career_trader] - Player.CareerStatus[career_pirate];
         end;
       4:
         begin
-          Player.PreferredCareer := rcPirate;
-          Player.CareerStatus[rcPirate] := NextRandomIntRange(60,70,Galaxy.RandomState);
-          Player.CareerStatus[rcTrader] := (100 - Player.CareerStatus[rcPirate]) div NextRandomIntRange(2,3,Galaxy.RandomState);
-          Player.CareerStatus[rcWarrior] := 100 - Player.CareerStatus[rcPirate] - Player.CareerStatus[rcTrader];
+          Player.PreferredCareer := career_pirate;
+          Player.CareerStatus[career_pirate] := NextRandomIntRange(60,70,Galaxy.RandomState);
+          Player.CareerStatus[career_trader] := (100 - Player.CareerStatus[career_pirate]) div NextRandomIntRange(2,3,Galaxy.RandomState);
+          Player.CareerStatus[career_warrior] := 100 - Player.CareerStatus[career_pirate] - Player.CareerStatus[career_trader];
         end;
       5:
         begin
-          Player.PreferredCareer := rcPirate;
-          Player.CareerStatus[rcPirate] := NextRandomIntRange(70,90,Galaxy.RandomState);
-          Player.CareerStatus[rcTrader] := (100 - Player.CareerStatus[rcPirate]) div NextRandomIntRange(2,3,Galaxy.RandomState);
-          Player.CareerStatus[rcWarrior] := 100 - Player.CareerStatus[rcPirate] - Player.CareerStatus[rcTrader];
+          Player.PreferredCareer := career_pirate;
+          Player.CareerStatus[career_pirate] := NextRandomIntRange(70,90,Galaxy.RandomState);
+          Player.CareerStatus[career_trader] := (100 - Player.CareerStatus[career_pirate]) div NextRandomIntRange(2,3,Galaxy.RandomState);
+          Player.CareerStatus[career_warrior] := 100 - Player.CareerStatus[career_pirate] - Player.CareerStatus[career_trader];
         end;
     end;
     SetPlayer(Player,Galaxy);
@@ -466,11 +466,11 @@ begin
         (Star.Constellation.Id <> 20) then
       begin
         if (BlazerShip.CurrentStar = Star) or (KellerShip.CurrentStar = Star) or
-          (TerronShip.CurrentStar = Star) then Star.ControlFaction := sfDominators;
+          (TerronShip.CurrentStar = Star) then Star.ControlFaction := faction_dominators;
         if ((Galaxy.Constellations.IndexOf(Star.Constellation) >= 5) or
           (NextRandomUnitFloat(Galaxy.RandomState) >= 0.4)) and
           ((N div 2 > I) or (NextRandomUnitFloat(Galaxy.RandomState) < 0.8)) then
-          Star.ControlFaction := sfDominators;
+          Star.ControlFaction := faction_dominators;
       end;
     end;
     Stage := 11;
@@ -485,10 +485,10 @@ begin
         ((Galaxy.Constellations.IndexOf(Star.Constellation) >= 5) or
           (NextRandomUnitFloat(Galaxy.RandomState) >= 0.4)) and
           ((N div 2 > I) or (NextRandomUnitFloat(Galaxy.RandomState) < 0.8)) then
-          Star.ControlFaction := sfPirates;
+          Star.ControlFaction := faction_pirates;
     end;
-    TStar(Galaxy.Stars[70]).ControlFaction := sfPirates;
-    TStar(Galaxy.Stars[71]).ControlFaction := sfPirates;
+    TStar(Galaxy.Stars[70]).ControlFaction := faction_pirates;
+    TStar(Galaxy.Stars[71]).ControlFaction := faction_pirates;
     Stage := 12;
     NewGameGenerationStage := 3;
     Galaxy.AssignTextQuestsToPlanets;
@@ -504,36 +504,36 @@ begin
     for I := 0 to Galaxy.Planets.Count - 1 do
     begin
       Planet := Galaxy.Planets[I];
-      if (Planet.IsCoalitionOwned or (Planet.OwnerId = oiPirate)) and
-        (Planet.CurrentStar.ControlFaction = sfDominators) then
+      if (Planet.IsCoalitionOwned or (Planet.OwnerId = owner_pirate)) and
+        (Planet.CurrentStar.ControlFaction = faction_dominators) then
       begin
-        Planet.OwnerId := oiDominator;
+        Planet.OwnerId := owner_dominator;
         Planet.UpdateOwnerFlags;
       end;
-      if (Planet.OwnerId <> oiUninhabited) and (Planet.CurrentStar.ControlFaction = sfPirates) then
+      if (Planet.OwnerId <> owner_uninhabited) and (Planet.CurrentStar.ControlFaction = faction_pirates) then
       begin
-        Planet.OwnerId := oiPirate;
+        Planet.OwnerId := owner_pirate;
         Planet.UpdateOwnerFlags;
       end;
       case Planet.OwnerId of
-        oiMaloc..oiGaal:
+        owner_maloc..owner_gaal:
           begin
             Planet.SpawnTransport(0,100);
             Planet.SpawnTransport(0,100);
             Planet.BuyWarrior(100);
-            if Galaxy.Rangers.Count < Galaxy.CountFactionStars(sfCoalition) * 1.2 then
+            if Galaxy.Rangers.Count < Galaxy.CountFactionStars(faction_coalition) * 1.2 then
             begin
               Planet.BuyRanger(100);
               Galaxy.RefreshRangerStrengthStats;
             end;
           end;
-        oiDominator:
-          while (Planet.CurrentStar.ShipTypeCounts[stKling] < 10) and
+        owner_dominator:
+          while (Planet.CurrentStar.ShipTypeCounts[ship_dominator] < 10) and
             ((Planet.CurrentStar.SumBestRangerRelativeStrength(InitialDominatorShipMask) <
               DominatorRetreatStrengthByTier[Planet.CurrentStar.Constellation.HomeDistanceTier]) or
-              (Planet.CurrentStar.ShipTypeCounts[stKling] < 8)) do
+              (Planet.CurrentStar.ShipTypeCounts[ship_dominator] < 8)) do
             Planet.SpawnWeightedDominatorShip;
-        oiPirate:
+        owner_pirate:
           begin
             Planet.BuyPirate(100);
             Planet.BuyPirate(100);
@@ -545,12 +545,12 @@ begin
     end;
     Stage := 14;
     NewGameGenerationStage := 5;
-    TRuins.Create.Init(rstRangerCenter,GetPlayer.CurrentStar,'');
-    TRuins.Create.Init(rstScienceBase,GetPlayer.CurrentStar,'');
-    TRuins.Create.Init(rstMedicalBase,GetPlayer.CurrentStar,'');
-    TRuins.Create.Init(rstPirateBase,GetPlayer.CurrentStar.StarDistances[3].Star as TStar,'');
-    TRuins.Create.Init(rstBusinessCenter,GetPlayer.CurrentStar.StarDistances[1].Star as TStar,'');
-    TRuins.Create.Init(rstMilitaryBase,GetPlayer.CurrentStar.StarDistances[2].Star as TStar,'');
+    TRuins.Create.Init(station_ranger_center,GetPlayer.CurrentStar,'');
+    TRuins.Create.Init(station_science_base,GetPlayer.CurrentStar,'');
+    TRuins.Create.Init(station_medical_base,GetPlayer.CurrentStar,'');
+    TRuins.Create.Init(station_pirate_base,GetPlayer.CurrentStar.StarDistances[3].Star as TStar,'');
+    TRuins.Create.Init(station_business_center,GetPlayer.CurrentStar.StarDistances[1].Star as TStar,'');
+    TRuins.Create.Init(station_military_base,GetPlayer.CurrentStar.StarDistances[2].Star as TStar,'');
     Galaxy.UpdateConstellationMilitaryStats;
     Stage := 15;
     for I := 1 to Galaxy.Rangers.Count - 1 do
@@ -580,7 +580,7 @@ begin
     for I := 0 to GetPlayer.CurrentStar.Ships.Count - 1 do
     begin
       Ship := GetPlayer.CurrentStar.Ships[I];
-      if Ship.TypeId = rstRangerCenter then
+      if Ship.TypeId = station_ranger_center then
       begin
         GetPlayer.DockedTo := Ship;
         Break;
@@ -589,16 +589,16 @@ begin
     if GetPlayer.DockedTo = nil then
     begin
       AppendLogLineThreadSafe('Galaxy create exception, not found rc, seed = ' + IntToStr(Integer(Galaxy.GenerationSeed)));
-      if GetPlayer.CurrentStar.ControlFaction <> sfDominators then
+      if GetPlayer.CurrentStar.ControlFaction <> faction_dominators then
         for I := 0 to GetPlayer.CurrentStar.Planets.Count - 1 do
-          if TPlanet(GetPlayer.CurrentStar.Planets[I]).OwnerId <> oiUninhabited then
+          if TPlanet(GetPlayer.CurrentStar.Planets[I]).OwnerId <> owner_uninhabited then
           begin
             GetPlayer.CurrentPlanet := GetPlayer.CurrentStar.Planets[I];
             Break;
           end;
       if GetPlayer.CurrentPlanet = nil then
         for I := 0 to GetPlayer.CurrentStar.Planets.Count - 1 do
-          if TPlanet(GetPlayer.CurrentStar.Planets[I]).OwnerId = oiUninhabited then
+          if TPlanet(GetPlayer.CurrentStar.Planets[I]).OwnerId = owner_uninhabited then
           begin
             GetPlayer.CurrentPlanet := GetPlayer.CurrentStar.Planets[I];
             Break;
@@ -648,36 +648,36 @@ begin
         50:
           begin
             Item := TWeapon.Create;
-            (Item as TWeapon).Init(t_IndustrialLaser,Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[4]),3,GetPlayer.OwnerId);
+            (Item as TWeapon).Init(item_industrial_laser,Round(WeaponInfos[item_industrial_laser].AverageSize * EquipmentSizeFactors[4]),3,GetPlayer.OwnerId);
           end;
         51:
           begin
             Item := TWeapon.Create;
-            (Item as TWeapon).Init(t_FragmentationCannon,Round(WeaponInfos[t_FragmentationCannon].AverageSize * EquipmentSizeFactors[3]),2,GetPlayer.OwnerId);
+            (Item as TWeapon).Init(item_fragmentation_cannon,Round(WeaponInfos[item_fragmentation_cannon].AverageSize * EquipmentSizeFactors[3]),2,GetPlayer.OwnerId);
           end;
         52:
           begin
             Item := TWeapon.Create;
-            (Item as TWeapon).Init(t_Flux,Round(WeaponInfos[t_Flux].AverageSize * EquipmentSizeFactors[2]),2,GetPlayer.OwnerId);
+            (Item as TWeapon).Init(item_flux,Round(WeaponInfos[item_flux].AverageSize * EquipmentSizeFactors[2]),2,GetPlayer.OwnerId);
           end;
         53:
           begin
             Item := TWeapon.Create;
-            (Item as TWeapon).Init(t_MissileLauncher,Round(WeaponInfos[t_MissileLauncher].AverageSize * EquipmentSizeFactors[3]),1,GetPlayer.OwnerId);
+            (Item as TWeapon).Init(item_missile_launcher,Round(WeaponInfos[item_missile_launcher].AverageSize * EquipmentSizeFactors[3]),1,GetPlayer.OwnerId);
           end;
         54:
           begin
             Item := TWeapon.Create;
-            (Item as TWeapon).Init(t_Treton,Round(WeaponInfos[t_Treton].AverageSize * EquipmentSizeFactors[4]),1,GetPlayer.OwnerId);
+            (Item as TWeapon).Init(item_treton,Round(WeaponInfos[item_treton].AverageSize * EquipmentSizeFactors[4]),1,GetPlayer.OwnerId);
           end;
       else
         Item := TRadar.Create;
         (Item as TRadar).Init(Round(RadarBaseSize * EquipmentSizeFactors[4]),2,GetPlayer.OwnerId);
       end;
       case Galaxy.DifficultyLevels[7] of
-        0: Item.Improve(ikMajor);
-        1: Item.Improve(ikMedium);
-        2: Item.Improve(ikMinor);
+        0: Item.Improve(upgrade_major);
+        1: Item.Improve(upgrade_medium);
+        2: Item.Improve(upgrade_minor);
       end;
       GetMem(Entry,12);
       GetPlayer.StorageEntries.Add(Entry);

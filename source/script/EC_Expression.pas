@@ -26,51 +26,51 @@ type
   TLibrarySignature = array of Dword;
   TScriptStepCallback = procedure(StatementCount: Integer);
 
-  TVarKind = (vkEmpty = 0, vkInt = 1, vkDword = 2, vkFloat = 3,
-    vkString = 4, vkExternFun = 5, vkLibraryFun = 6, vkFunction = 7,
-    vkClass = 8, vkArray = 9, vkRef = 10); // @size 0x1
+  TScriptValueKind = (value_empty = 0, value_int32 = 1, value_uint32 = 2, value_float64 = 3,
+    value_string = 4, value_host_function = 5, value_library_function = 6, value_script_function = 7,
+    value_class = 8, value_array = 9, value_reference = 10); // @size 0x1
 
-  // DLL signature words use a separate numbering from TVarKind.
-  TLibraryValueKind = (lvVoid = 0, lvInt = 1, lvDword = 2,
-    lvFloat = 3, lvString = 4, lvRef = 5, lvCode = 6); // @size 0x4
+  // DLL signature words use a separate numbering from TScriptValueKind.
+  TLibraryValueKind = (library_void = 0, library_int32 = 1, library_uint32 = 2,
+    library_float32 = 3, library_wide_cstring = 4, library_cell_pointer = 5, library_code_context = 6); // @size 0x4
 
-  TCodeTokenKind = (ctNewline = 0, ctOpenParen = 1, ctCloseParen = 2,
-    ctOpenBrace = 3, ctCloseBrace = 4, ctOpenBracket = 5, ctCloseBracket = 6,
-    ctBlockCommentStart = 7, ctBlockCommentEnd = 8, ctLineComment = 9,
-    ctDot = 10, ctArrow = 11, ctAdd = 12, ctSubtract = 13,
-    ctMultiply = 14, ctDivide = 15, ctModulo = 16, ctBitAnd = 17,
-    ctBitOr = 18, ctBitXor = 19, ctBitNot = 20, ctAnd = 21,
-    ctOr = 22, ctNot = 23, ctShiftLeft = 24, ctShiftRight = 25,
-    ctAssign = 26, ctEqual = 27, ctNotEqual = 28, ctLess = 29,
-    ctGreater = 30, ctLessEqual = 31, ctGreaterEqual = 32,
-    ctSemicolon = 33, ctColon = 34, ctComma = 35, ctWhitespace = 36,
-    ctStringLiteral = 37, ctText = 38); // @size 0x1
+  TCodeTokenKind = (token_newline = 0, token_open_paren = 1, token_close_paren = 2,
+    token_open_brace = 3, token_close_brace = 4, token_open_bracket = 5, token_close_bracket = 6,
+    token_block_comment_start = 7, token_block_comment_end = 8, token_line_comment = 9,
+    token_dot = 10, token_arrow = 11, token_plus = 12, token_minus = 13,
+    token_multiply = 14, token_divide = 15, token_modulo = 16, token_bit_and = 17,
+    token_bit_or = 18, token_bit_xor = 19, token_bit_not = 20, token_logical_and = 21,
+    token_logical_or = 22, token_logical_not = 23, token_shift_left = 24, token_shift_right = 25,
+    token_assign = 26, token_equal = 27, token_not_equal = 28, token_less = 29,
+    token_greater = 30, token_less_equal = 31, token_greater_equal = 32,
+    token_semicolon = 33, token_colon = 34, token_comma = 35, token_whitespace = 36,
+    token_string_literal = 37, token_unquoted_text = 38); // @size 0x1
 
-  TCompilerUnitKind = (cuIntLiteral = 0, cuDwordLiteral = 1,
-    cuFloatLiteral = 2, cuStringLiteral = 3, cuBinaryOperator = 4,
-    cuUnaryOperator = 5, cuOpenParen = 6, cuCloseParen = 7,
-    cuOpenBracket = 8, cuCloseBracket = 9, cuName = 10, cuCall = 11,
-    cuIndex = 12, cuVariable = 13, cuComma = 14, cuAssignment = 15); // @size 0x1
+  TCompilerTermKind = (term_int_literal = 0, term_uint_literal = 1,
+    term_float_literal = 2, term_string_literal = 3, term_binary_operator = 4,
+    term_unary_operator = 5, term_open_paren = 6, term_close_paren = 7,
+    term_open_bracket = 8, term_close_bracket = 9, term_name_path = 10, term_function_call = 11,
+    term_array_access = 12, term_value_slot = 13, term_comma = 14, term_assignment = 15); // @size 0x1
 
-  TExpressionOpcode = (eoNegate = 0, eoAdd = 1, eoSubtract = 2,
-    eoMultiply = 3, eoDivide = 4, eoModulo = 5, eoBitAnd = 6,
-    eoBitOr = 7, eoBitXor = 8, eoBitNot = 9, eoAnd = 10, eoOr = 11,
-    eoNot = 12, eoShiftLeft = 13, eoShiftRight = 14, eoLess = 15,
-    eoGreater = 16, eoEqual = 17, eoNotEqual = 18, eoLessEqual = 19,
-    eoGreaterEqual = 20, eoAssign = 21, eoCall = 22, eoIndex = 23); // @size 0x1
+  TExpressionOpcode = (expr_op_negate = 0, expr_op_add = 1, expr_op_subtract = 2,
+    expr_op_multiply = 3, expr_op_divide = 4, expr_op_modulo = 5, expr_op_bit_and = 6,
+    expr_op_bit_or = 7, expr_op_bit_xor = 8, expr_op_bit_not = 9, expr_op_logical_and = 10, expr_op_logical_or = 11,
+    expr_op_logical_not = 12, expr_op_shift_left = 13, expr_op_shift_right = 14, expr_op_less = 15,
+    expr_op_greater = 16, expr_op_equal = 17, expr_op_not_equal = 18, expr_op_less_equal = 19,
+    expr_op_greater_equal = 20, expr_op_assign = 21, expr_op_call_function = 22, expr_op_array_access = 23); // @size 0x1
 
-  TExpressionVarKind = (evNamed = 0, evOwned = 1, evIndexed = 2); // @size 0x1
+  TExpressionVarKind = (expr_var_named_value = 0, expr_var_owned_value = 1, expr_var_array_element = 2); // @size 0x1
 
-  TCodeOpcode = (coLabel = 0, coExpression = 1, coBranchFalse = 2,
-    coJump = 3, coExit = 4, coPushHandler = 5, coPopHandler = 6,
-    coThrow = 7); // @size 0x1
+  TCodeOpcode = (code_label = 0, code_evaluate = 1, code_jump_if_false = 2,
+    code_jump = 3, code_return = 4, code_push_handler = 5, code_pop_handler = 6,
+    code_throw = 7); // @size 0x1
 
   PCodeAnalyzerUnitEC = ^TCodeAnalyzerUnitEC;
 
   TVarEC = class(TObject) // @size 0x38
   public
     Name: WideString; // @offset 0x04
-    Kind: TVarKind; // @offset 0x08
+    Kind: TScriptValueKind; // @offset 0x08
     IntValue: Integer; // @offset 0x0C
     DwordValue: Dword; // @offset 0x10
     StringValue: WideString; // @offset 0x14
@@ -92,9 +92,9 @@ type
     function GetClass: TCodeEC; // @addr 0x00460F74 @note "Reference cells delegate to GetFunction in the native code."
     function GetArray: TVarArrayEC; // @addr 0x00461018
     function Resolve: TVarEC; // @addr 0x004618F0 @note "May return nil."
-    function RealVType: TVarKind; // @addr 0x00460910 @note "Returns vkRef for an unresolved reference."
+    function RealVType: TScriptValueKind; // @addr 0x00460910 @note "Returns value_reference for an unresolved reference."
     function IsTrue: Boolean; // @addr 0x00464528
-    procedure ResetKind(NewKind: TVarKind); // @addr 0x00460884
+    procedure ResetKind(NewKind: TScriptValueKind); // @addr 0x00460884
     procedure AssignFrom(Source: TVarEC; CopyArrays: Boolean); // @addr 0x00460924
     procedure Assume(Source: TVarEC; CopyArrays: Boolean); // @addr 0x00463E28 @note "Assigns through references, converting to the destination kind."
     procedure SetInt(Value: Integer); // @addr 0x004610BC
@@ -125,15 +125,15 @@ type
     procedure OLessEqual(Left, Right: TVarEC); // @addr 0x004636B4
     procedure OMoreEqual(Left, Right: TVarEC); // @addr 0x004638A0
 
-    constructor Create(InitialKind: TVarKind); // @addr 0x00460150
+    constructor Create(InitialKind: TScriptValueKind); // @addr 0x00460150
     destructor Destroy; override; // @addr 0x004601A8
 
     function IsEmpty: Boolean; // @addr 0x00460A6C @note "Tests this cell's tag without dereferencing."
     function GetString: WideString; // @addr 0x00460CE0 @note "Library cells return their import specification string."
-    procedure ConvertToKind(NewKind: TVarKind); // @addr 0x004601EC @note "Preserves the value where conversion is supported; ResetKind discards it."
+    procedure ConvertToKind(NewKind: TScriptValueKind); // @addr 0x004601EC @note "Preserves the value where conversion is supported; ResetKind discards it."
     procedure SetFloat(Value: Double); // @addr 0x004612F8
     procedure SetString(const Value: WideString); // @addr 0x0046142C @note "Assigns through references and converts to an existing destination kind; an empty cell becomes a string."
-    procedure SetClass(Value: TCodeEC); // @addr 0x00461698 @note "Value is borrowed; vkRef assignment uses the function-value setter."
+    procedure SetClass(Value: TCodeEC); // @addr 0x00461698 @note "Value is borrowed; value_reference assignment uses the function-value setter."
     procedure SetArray(Value: TVarArrayEC); // @addr 0x00461764 @note "Value is borrowed; follows references."
     procedure SetLibrarySignature(Signature: array of Dword); // @addr 0x0046E030 @note "Does not change Kind."
     procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x00464658 @note "Only scalar, string and array kinds have serialized payloads."
@@ -144,7 +144,7 @@ type
     procedure PackAnsiString; // @addr 0x00461900 @note "Stores ANSI bytes inside StringValue's UTF-16 allocation."
     procedure UnpackAnsiString; // @addr 0x004619AC @note "Non-string cells are converted to string without unpacking."
     procedure CreateArray(Dimensions: array of Integer); // @addr 0x00461CB0 @note "Requires at least one dimension."
-    procedure FreeArray; // @addr 0x00461D58 @note "Frees nested arrays; retains vkArray with a nil pointer."
+    procedure FreeArray; // @addr 0x00461D58 @note "Frees nested arrays; retains value_array with a nil pointer."
     procedure ResizeArray(Count, Dimension: Integer); // @addr $461D04 @note "Nonpositive Count frees the array; positive Count resizes only when Dimension <= 0."
 
     // Converted views follow references and retain the existing cell-kind rules.
@@ -156,7 +156,7 @@ type
     property AsFunction: TCodeEC read GetFunction write SetFunction;
     property AsClass: TCodeEC read GetClass write SetClass;
     property AsArray: TVarArrayEC read GetArray write SetArray;
-    property ValueKind: TVarKind read RealVType;
+    property ValueKind: TScriptValueKind read RealVType;
   end;
 
   TVarArrayEC = class(TObject) // @size 0x10
@@ -171,7 +171,7 @@ type
     function GetItemNE(Index: Integer): TVarEC; // @addr 0x00464B6C @note "Returns nil for an out-of-range index."
     function GetVar(const Name: WideString): TVarEC; // @addr 0x00464BB4
     function GetVarNE(const Name: WideString): TVarEC; // @addr 0x00464C5C @note "Returns nil when absent."
-    function Add(const Name: WideString; Kind: TVarKind): TVarEC; // @addr 0x00464FA4
+    function Add(const Name: WideString; Kind: TScriptValueKind): TVarEC; // @addr 0x00464FA4
 
     constructor Create; // @addr 0x004647D4
     destructor Destroy; override; // @addr 0x0046480C
@@ -241,7 +241,7 @@ type
     Opcode: TExpressionOpcode; // @offset 0x04
     OperandCount: Integer; // @offset 0x08
     // Indices into TExpressionEC.Variables: destination first, then sources.
-    // eoCall uses destination, callee, arguments; eoIndex uses destination, array, indices.
+    // expr_op_call_function uses destination, callee, arguments; expr_op_array_access uses destination, array, indices.
     Operands: array of Integer; // @offset 0x0C
 
     procedure CopyFrom(Source: TExpressionInstrEC); // @addr 0x00466F64
@@ -257,7 +257,7 @@ type
     Value: TVarEC; // @offset 0x10
 
     procedure CopyFrom(Source: TExpressionVarEC); // @addr 0x00467010
-    function Resolve(InitialKind: TVarKind): TVarEC; // @addr 0x0046722C @note "Only evOwned slots allocate values."
+    function Resolve(InitialKind: TScriptValueKind): TVarEC; // @addr 0x0046722C @note "Only expr_var_owned_value slots allocate values."
 
     destructor Destroy; override; // @addr 0x00466FC8
 
@@ -286,7 +286,7 @@ type
     constructor Create; // @addr 0x00467418
     destructor Destroy; override; // @addr 0x00467450
 
-    function AddVariable: Integer; // @addr 0x00467594 @note "Returns a zero-based index; the new slot starts with zero-initialized evNamed kind."
+    function AddVariable: Integer; // @addr 0x00467594 @note "Returns a zero-based index; the new slot starts with zero-initialized expr_var_named_value kind."
     procedure DeleteVariable(Index: Integer); // @addr 0x004675F8
     procedure SetVariable(Index: Integer; Value: TExpressionVarEC); cdecl; // @addr 0x0046767C @ida "void __cdecl $name(TExpressionEC *Self, int Index, TExpressionVarEC *Value);"
     function AddInstruction: Integer; // @addr 0x00467698
@@ -370,7 +370,7 @@ type
   public
     Prev: TCompilerUnitEC; // @offset 0x04
     Next: TCompilerUnitEC; // @offset 0x08
-    Kind: TCompilerUnitKind; // @offset 0x0C
+    Kind: TCompilerTermKind; // @offset 0x0C
     OperatorToken: TCodeTokenKind; // @offset 0x0D
     Text: WideString; // @offset 0x10
     VariableIndex: Integer; // @offset 0x14
@@ -688,21 +688,21 @@ begin
   Result := False;
   Sign := 1;
   if Current = nil then Exit;
-  if Current.TokenKind = ctSubtract then
+  if Current.TokenKind = token_minus then
   begin
     Sign := -1;
     Current := Current.Next;
     if Current = nil then Exit;
   end;
-  if Current.TokenKind <> ctText then Exit;
+  if Current.TokenKind <> token_unquoted_text then Exit;
   if not IsScriptIntegerText(Current.Text) then Exit;
   Value := ScriptStringToInt(Current.Text);
   Current := Current.Next;
   if Current = nil then Exit;
-  if Current.TokenKind <> ctDot then Exit;
+  if Current.TokenKind <> token_dot then Exit;
   Current := Current.Next;
   if Current = nil then Exit;
-  if Current.TokenKind <> ctText then Exit;
+  if Current.TokenKind <> token_unquoted_text then Exit;
   Count := Length(Current.Text);
   Fraction := 0;
   i := 0;
@@ -728,10 +728,10 @@ begin
   begin
     Current := Current.Next;
     if (Current = nil) or (Current.Next = nil) or
-       (Current.Next.TokenKind <> ctText) then Exit;
+       (Current.Next.TokenKind <> token_unquoted_text) then Exit;
     if not IsScriptIntegerText(Current.Next.Text) then Exit;
-    if Current.TokenKind = ctSubtract then Exponent := -ScriptStringToInt(Current.Next.Text)
-    else if Current.TokenKind = ctAdd then Exponent := ScriptStringToInt(Current.Next.Text)
+    if Current.TokenKind = token_minus then Exponent := -ScriptStringToInt(Current.Next.Text)
+    else if Current.TokenKind = token_plus then Exponent := ScriptStringToInt(Current.Next.Text)
     else Exit;
     Current := Current.Next.Next;
   end
@@ -754,13 +754,13 @@ begin
   Result := False;
   Sign := 1;
   if Current = nil then Exit;
-  if Current.TokenKind = ctSubtract then
+  if Current.TokenKind = token_minus then
   begin
     Sign := -1;
     Current := Current.Next;
     if Current = nil then Exit;
   end;
-  if Current.TokenKind <> ctText then Exit;
+  if Current.TokenKind <> token_unquoted_text then Exit;
   if not IsScriptIntegerText(Current.Text) then Exit;
   Value := ScriptStringToInt(Current.Text);
   Current := Current.Next;
@@ -778,7 +778,7 @@ begin
   Current := Token;
   Result := False;
   if Current = nil then Exit;
-  if Current.TokenKind <> ctStringLiteral then Exit;
+  if Current.TokenKind <> token_string_literal then Exit;
   Value := Current.Text;
   Current := Current.Next;
   Token := Current;
@@ -797,7 +797,7 @@ begin
   Current := Token;
   Result := False;
   if Current = nil then Exit;
-  if Current.TokenKind <> ctText then Exit;
+  if Current.TokenKind <> token_unquoted_text then Exit;
   Count := Length(Current.Text);
   if Count < 2 then Exit;
   C := Current.Text[Count];
@@ -828,14 +828,14 @@ end;
 function TryReadMemberName(var Token: TCodeAnalyzerUnitEC; var Name: WideString): Boolean;
 begin
   Name := '';
-  while (Token.TokenKind = ctText) and IsNonIntegerScriptText(Token.Text) do
+  while (Token.TokenKind = token_unquoted_text) and IsNonIntegerScriptText(Token.Text) do
   begin
     Name := Name + Token.Text;
     Token := Token.Next;
-    if (Token = nil) or (Token.TokenKind <> ctDot) then Break;
+    if (Token = nil) or (Token.TokenKind <> token_dot) then Break;
     Name := Name + '.';
     Token := Token.Next;
-    if (Token = nil) or (Token.TokenKind <> ctText) or not IsNonIntegerScriptText(Token.Text) then
+    if (Token = nil) or (Token.TokenKind <> token_unquoted_text) or not IsNonIntegerScriptText(Token.Text) then
     begin
       Name := '';
       Break;
@@ -846,11 +846,11 @@ end;
 { @end $4600BC }
 
 { @routine $460150 TVarEC_Create }
-constructor TVarEC.Create(InitialKind: TVarKind);
+constructor TVarEC.Create(InitialKind: TScriptValueKind);
 begin
   inherited Create;
   Kind := InitialKind;
-  if InitialKind = vkFunction then FunctionValue := TCodeEC.Create;
+  if InitialKind = value_script_function then FunctionValue := TCodeEC.Create;
 end;
 { @end $460150 }
 
@@ -868,20 +868,20 @@ end;
 { @end $4601A8 }
 
 { @routine $4601EC TVarEC_ConvertToKind }
-procedure TVarEC.ConvertToKind(NewKind: TVarKind);
+procedure TVarEC.ConvertToKind(NewKind: TScriptValueKind);
 begin
   if FunctionValue <> nil then
   begin
     FunctionValue.Free;
     FunctionValue := nil;
   end;
-  if NewKind = vkInt then
+  if NewKind = value_int32 then
   begin
-    if Kind <> vkInt then
+    if Kind <> value_int32 then
     begin
-      if Kind = vkDword then IntValue := Integer(DwordValue)
-      else if Kind = vkFloat then IntValue := Trunc(FloatValue)
-      else if Kind = vkString then IntValue := ScriptStringToInt(StringValue)
+      if Kind = value_uint32 then IntValue := Integer(DwordValue)
+      else if Kind = value_float64 then IntValue := Trunc(FloatValue)
+      else if Kind = value_string then IntValue := ScriptStringToInt(StringValue)
       else IntValue := 0;
     end;
     DwordValue := 0;
@@ -894,13 +894,13 @@ begin
     ArrayValue := nil;
     RefValue := nil;
   end
-  else if NewKind = vkDword then
+  else if NewKind = value_uint32 then
   begin
-    if Kind = vkInt then DwordValue := Dword(IntValue)
-    else if Kind <> vkDword then
+    if Kind = value_int32 then DwordValue := Dword(IntValue)
+    else if Kind <> value_uint32 then
     begin
-      if Kind = vkFloat then DwordValue := Dword(Trunc(FloatValue))
-      else if Kind = vkString then DwordValue := Dword(ScriptStringToInt(StringValue))
+      if Kind = value_float64 then DwordValue := Dword(Trunc(FloatValue))
+      else if Kind = value_string then DwordValue := Dword(ScriptStringToInt(StringValue))
       else DwordValue := 0;
     end;
     IntValue := 0;
@@ -913,13 +913,13 @@ begin
     ArrayValue := nil;
     RefValue := nil;
   end
-  else if NewKind = vkFloat then
+  else if NewKind = value_float64 then
   begin
-    if Kind = vkInt then FloatValue := IntValue
-    else if Kind = vkDword then FloatValue := DwordValue
-    else if Kind <> vkFloat then
+    if Kind = value_int32 then FloatValue := IntValue
+    else if Kind = value_uint32 then FloatValue := DwordValue
+    else if Kind <> value_float64 then
     begin
-      if Kind = vkString then FloatValue := ScriptStringToFloat(StringValue)
+      if Kind = value_string then FloatValue := ScriptStringToFloat(StringValue)
       else FloatValue := 0;
     end;
     IntValue := 0;
@@ -932,11 +932,11 @@ begin
     ArrayValue := nil;
     RefValue := nil;
   end
-  else if NewKind = vkString then
+  else if NewKind = value_string then
   begin
-    if Kind = vkInt then StringValue := IntToStr(IntValue)
-    else if Kind = vkDword then StringValue := IntToStr(Int64(DwordValue))
-    else if Kind = vkFloat then
+    if Kind = value_int32 then StringValue := IntToStr(IntValue)
+    else if Kind = value_uint32 then StringValue := IntToStr(Int64(DwordValue))
+    else if Kind = value_float64 then
     begin
       try
         StringValue := ScriptFloatToString(FloatValue);
@@ -944,7 +944,7 @@ begin
         StringValue := '';
       end;
     end
-    else if Kind <> vkString then StringValue := '';
+    else if Kind <> value_string then StringValue := '';
     IntValue := 0;
     DwordValue := 0;
     FloatValue := 0;
@@ -955,9 +955,9 @@ begin
     ArrayValue := nil;
     RefValue := nil;
   end
-  else if NewKind = vkExternFun then
+  else if NewKind = value_host_function then
   begin
-    if Kind <> vkExternFun then ExternFunValue := nil;
+    if Kind <> value_host_function then ExternFunValue := nil;
     IntValue := 0;
     DwordValue := 0;
     FloatValue := 0;
@@ -968,9 +968,9 @@ begin
     ArrayValue := nil;
     RefValue := nil;
   end
-  else if NewKind = vkLibraryFun then
+  else if NewKind = value_library_function then
   begin
-    if Kind <> vkLibraryFun then LibraryFunData := nil;
+    if Kind <> value_library_function then LibraryFunData := nil;
     IntValue := 0;
     DwordValue := 0;
     FloatValue := 0;
@@ -981,7 +981,7 @@ begin
     ArrayValue := nil;
     RefValue := nil;
   end
-  else if NewKind = vkFunction then
+  else if NewKind = value_script_function then
   begin
     IntValue := 0;
     DwordValue := 0;
@@ -995,9 +995,9 @@ begin
     ArrayValue := nil;
     RefValue := nil;
   end
-  else if NewKind = vkClass then
+  else if NewKind = value_class then
   begin
-    if (Kind <> vkClass) and (ClassValue <> nil) then
+    if (Kind <> value_class) and (ClassValue <> nil) then
     begin
       ClassValue.Free;
       ClassValue := nil;
@@ -1012,9 +1012,9 @@ begin
     ArrayValue := nil;
     RefValue := nil;
   end
-  else if NewKind = vkArray then
+  else if NewKind = value_array then
   begin
-    if Kind <> vkArray then ArrayValue := nil;
+    if Kind <> value_array then ArrayValue := nil;
     IntValue := 0;
     DwordValue := 0;
     FloatValue := 0;
@@ -1025,9 +1025,9 @@ begin
     ClassValue := nil;
     RefValue := nil;
   end
-  else if NewKind = vkRef then
+  else if NewKind = value_reference then
   begin
-    if Kind <> vkRef then RefValue := nil;
+    if Kind <> value_reference then RefValue := nil;
     IntValue := 0;
     DwordValue := 0;
     FloatValue := 0;
@@ -1043,14 +1043,14 @@ end;
 { @end $4601EC }
 
 { @routine $460884 TVarEC_ResetKind }
-procedure TVarEC.ResetKind(NewKind: TVarKind);
+procedure TVarEC.ResetKind(NewKind: TScriptValueKind);
 begin
   if FunctionValue <> nil then
   begin
     FunctionValue.Free;
     FunctionValue := nil;
   end;
-  if Kind = vkRef then
+  if Kind = value_reference then
   begin
     if RefValue <> nil then RefValue.ResetKind(NewKind);
   end
@@ -1067,18 +1067,18 @@ begin
     ClassValue := nil;
     ArrayValue := nil;
     RefValue := nil;
-    if NewKind = vkFunction then FunctionValue := TCodeEC.Create;
+    if NewKind = value_script_function then FunctionValue := TCodeEC.Create;
   end;
 end;
 { @end $460884 }
 
 { @routine $460910 TVarEC_RealVType }
-function TVarEC.RealVType: TVarKind;
+function TVarEC.RealVType: TScriptValueKind;
 var
   Value: TVarEC;
 begin
   Value := Resolve;
-  if Value = nil then Result := vkRef
+  if Value = nil then Result := value_reference
   else Result := Value.Kind;
 end;
 { @end $460910 }
@@ -1127,24 +1127,24 @@ end;
 { @routine $460A6C TVarEC_IsEmpty }
 function TVarEC.IsEmpty: Boolean;
 begin
-  Result := Kind = vkEmpty;
+  Result := Kind = value_empty;
 end;
 { @end $460A6C }
 
 { @routine $460A74 TVarEC_GetInt }
 function TVarEC.GetInt: Integer;
 begin
-  if Kind = vkEmpty then Result := 0
-  else if Kind = vkInt then Result := IntValue
-  else if Kind = vkDword then Result := Integer(DwordValue)
-  else if Kind = vkFloat then Result := Trunc(FloatValue)
-  else if Kind = vkString then Result := ScriptStringToInt(StringValue)
-  else if Kind = vkExternFun then Result := 0
-  else if Kind = vkLibraryFun then Result := 0
-  else if Kind = vkFunction then Result := 0
-  else if Kind = vkClass then Result := 0
-  else if Kind = vkArray then Result := 0
-  else if Kind = vkRef then
+  if Kind = value_empty then Result := 0
+  else if Kind = value_int32 then Result := IntValue
+  else if Kind = value_uint32 then Result := Integer(DwordValue)
+  else if Kind = value_float64 then Result := Trunc(FloatValue)
+  else if Kind = value_string then Result := ScriptStringToInt(StringValue)
+  else if Kind = value_host_function then Result := 0
+  else if Kind = value_library_function then Result := 0
+  else if Kind = value_script_function then Result := 0
+  else if Kind = value_class then Result := 0
+  else if Kind = value_array then Result := 0
+  else if Kind = value_reference then
   begin
     if RefValue = nil then Result := 0
     else Result := RefValue.AsInteger;
@@ -1156,17 +1156,17 @@ end;
 { @routine $460B1C TVarEC_GetDword }
 function TVarEC.GetDword: Dword;
 begin
-  if Kind = vkEmpty then Result := 0
-  else if Kind = vkInt then Result := Dword(IntValue)
-  else if Kind = vkDword then Result := DwordValue
-  else if Kind = vkFloat then Result := Dword(Trunc(FloatValue))
-  else if Kind = vkString then Result := Dword(ScriptStringToInt(StringValue))
-  else if Kind = vkExternFun then Result := 0
-  else if Kind = vkLibraryFun then Result := 0
-  else if Kind = vkFunction then Result := 0
-  else if Kind = vkClass then Result := 0
-  else if Kind = vkArray then Result := 0
-  else if Kind = vkRef then
+  if Kind = value_empty then Result := 0
+  else if Kind = value_int32 then Result := Dword(IntValue)
+  else if Kind = value_uint32 then Result := DwordValue
+  else if Kind = value_float64 then Result := Dword(Trunc(FloatValue))
+  else if Kind = value_string then Result := Dword(ScriptStringToInt(StringValue))
+  else if Kind = value_host_function then Result := 0
+  else if Kind = value_library_function then Result := 0
+  else if Kind = value_script_function then Result := 0
+  else if Kind = value_class then Result := 0
+  else if Kind = value_array then Result := 0
+  else if Kind = value_reference then
   begin
     if RefValue = nil then Result := 0
     else Result := RefValue.AsInteger;
@@ -1178,17 +1178,17 @@ end;
 { @routine $460BC4 TVarEC_GetFloat }
 function TVarEC.GetFloat: Double;
 begin
-  if Kind = vkEmpty then Result := 0
-  else if Kind = vkInt then Result := IntValue
-  else if Kind = vkDword then Result := DwordValue
-  else if Kind = vkFloat then Result := FloatValue
-  else if Kind = vkString then Result := ScriptStringToFloat(StringValue)
-  else if Kind = vkExternFun then Result := 0
-  else if Kind = vkLibraryFun then Result := 0
-  else if Kind = vkFunction then Result := 0
-  else if Kind = vkClass then Result := 0
-  else if Kind = vkArray then Result := 0
-  else if Kind = vkRef then
+  if Kind = value_empty then Result := 0
+  else if Kind = value_int32 then Result := IntValue
+  else if Kind = value_uint32 then Result := DwordValue
+  else if Kind = value_float64 then Result := FloatValue
+  else if Kind = value_string then Result := ScriptStringToFloat(StringValue)
+  else if Kind = value_host_function then Result := 0
+  else if Kind = value_library_function then Result := 0
+  else if Kind = value_script_function then Result := 0
+  else if Kind = value_class then Result := 0
+  else if Kind = value_array then Result := 0
+  else if Kind = value_reference then
   begin
     if RefValue = nil then Result := 0
     else Result := RefValue.AsFloat;
@@ -1200,17 +1200,17 @@ end;
 { @routine $460CE0 TVarEC_GetString }
 function TVarEC.GetString: WideString;
 begin
-  if Kind = vkEmpty then Result := ''
-  else if Kind = vkInt then Result := IntToStr(IntValue)
-  else if Kind = vkDword then Result := IntToStr(Int64(DwordValue))
-  else if Kind = vkFloat then Result := ScriptFloatToString(FloatValue)
-  else if Kind = vkString then Result := StringValue
-  else if Kind = vkExternFun then Result := ''
-  else if Kind = vkLibraryFun then Result := StringValue
-  else if Kind = vkFunction then Result := ''
-  else if Kind = vkClass then Result := ''
-  else if Kind = vkArray then Result := ''
-  else if Kind = vkRef then
+  if Kind = value_empty then Result := ''
+  else if Kind = value_int32 then Result := IntToStr(IntValue)
+  else if Kind = value_uint32 then Result := IntToStr(Int64(DwordValue))
+  else if Kind = value_float64 then Result := ScriptFloatToString(FloatValue)
+  else if Kind = value_string then Result := StringValue
+  else if Kind = value_host_function then Result := ''
+  else if Kind = value_library_function then Result := StringValue
+  else if Kind = value_script_function then Result := ''
+  else if Kind = value_class then Result := ''
+  else if Kind = value_array then Result := ''
+  else if Kind = value_reference then
   begin
     if RefValue = nil then Result := ''
     else Result := RefValue.AsString;
@@ -1222,17 +1222,17 @@ end;
 { @routine $460E2C TVarEC_GetExternFun }
 function TVarEC.GetExternFun: Pointer;
 begin
-  if Kind = vkEmpty then Result := nil
-  else if Kind = vkInt then Result := nil
-  else if Kind = vkDword then Result := nil
-  else if Kind = vkFloat then Result := nil
-  else if Kind = vkString then Result := nil
-  else if Kind = vkExternFun then Result := ExternFunValue
-  else if Kind = vkLibraryFun then Result := nil
-  else if Kind = vkFunction then Result := nil
-  else if Kind = vkClass then Result := nil
-  else if Kind = vkArray then Result := nil
-  else if Kind = vkRef then
+  if Kind = value_empty then Result := nil
+  else if Kind = value_int32 then Result := nil
+  else if Kind = value_uint32 then Result := nil
+  else if Kind = value_float64 then Result := nil
+  else if Kind = value_string then Result := nil
+  else if Kind = value_host_function then Result := ExternFunValue
+  else if Kind = value_library_function then Result := nil
+  else if Kind = value_script_function then Result := nil
+  else if Kind = value_class then Result := nil
+  else if Kind = value_array then Result := nil
+  else if Kind = value_reference then
   begin
     if RefValue = nil then Result := nil
     else Result := RefValue.AsExternFun;
@@ -1244,17 +1244,17 @@ end;
 { @routine $460ED0 TVarEC_GetFunction }
 function TVarEC.GetFunction: TCodeEC;
 begin
-  if Kind = vkEmpty then Result := nil
-  else if Kind = vkInt then Result := nil
-  else if Kind = vkDword then Result := nil
-  else if Kind = vkFloat then Result := nil
-  else if Kind = vkString then Result := nil
-  else if Kind = vkExternFun then Result := nil
-  else if Kind = vkLibraryFun then Result := nil
-  else if Kind = vkFunction then Result := FunctionValue
-  else if Kind = vkClass then Result := nil
-  else if Kind = vkArray then Result := nil
-  else if Kind = vkRef then
+  if Kind = value_empty then Result := nil
+  else if Kind = value_int32 then Result := nil
+  else if Kind = value_uint32 then Result := nil
+  else if Kind = value_float64 then Result := nil
+  else if Kind = value_string then Result := nil
+  else if Kind = value_host_function then Result := nil
+  else if Kind = value_library_function then Result := nil
+  else if Kind = value_script_function then Result := FunctionValue
+  else if Kind = value_class then Result := nil
+  else if Kind = value_array then Result := nil
+  else if Kind = value_reference then
   begin
     if RefValue = nil then Result := nil
     else Result := RefValue.AsFunction;
@@ -1266,17 +1266,17 @@ end;
 { @routine $460F74 TVarEC_GetClass }
 function TVarEC.GetClass: TCodeEC;
 begin
-  if Kind = vkEmpty then Result := nil
-  else if Kind = vkInt then Result := nil
-  else if Kind = vkDword then Result := nil
-  else if Kind = vkFloat then Result := nil
-  else if Kind = vkString then Result := nil
-  else if Kind = vkExternFun then Result := nil
-  else if Kind = vkLibraryFun then Result := nil
-  else if Kind = vkFunction then Result := nil
-  else if Kind = vkClass then Result := ClassValue
-  else if Kind = vkArray then Result := nil
-  else if Kind = vkRef then
+  if Kind = value_empty then Result := nil
+  else if Kind = value_int32 then Result := nil
+  else if Kind = value_uint32 then Result := nil
+  else if Kind = value_float64 then Result := nil
+  else if Kind = value_string then Result := nil
+  else if Kind = value_host_function then Result := nil
+  else if Kind = value_library_function then Result := nil
+  else if Kind = value_script_function then Result := nil
+  else if Kind = value_class then Result := ClassValue
+  else if Kind = value_array then Result := nil
+  else if Kind = value_reference then
   begin
     if RefValue = nil then Result := nil
     else Result := RefValue.AsFunction;
@@ -1288,17 +1288,17 @@ end;
 { @routine $461018 TVarEC_GetArray }
 function TVarEC.GetArray: TVarArrayEC;
 begin
-  if Kind = vkEmpty then Result := nil
-  else if Kind = vkInt then Result := nil
-  else if Kind = vkDword then Result := nil
-  else if Kind = vkFloat then Result := nil
-  else if Kind = vkString then Result := nil
-  else if Kind = vkExternFun then Result := nil
-  else if Kind = vkLibraryFun then Result := nil
-  else if Kind = vkFunction then Result := nil
-  else if Kind = vkClass then Result := nil
-  else if Kind = vkArray then Result := ArrayValue
-  else if Kind = vkRef then
+  if Kind = value_empty then Result := nil
+  else if Kind = value_int32 then Result := nil
+  else if Kind = value_uint32 then Result := nil
+  else if Kind = value_float64 then Result := nil
+  else if Kind = value_string then Result := nil
+  else if Kind = value_host_function then Result := nil
+  else if Kind = value_library_function then Result := nil
+  else if Kind = value_script_function then Result := nil
+  else if Kind = value_class then Result := nil
+  else if Kind = value_array then Result := ArrayValue
+  else if Kind = value_reference then
   begin
     if RefValue = nil then Result := nil
     else Result := RefValue.AsArray;
@@ -1310,31 +1310,31 @@ end;
 { @routine $4610BC TVarEC_SetInt }
 procedure TVarEC.SetInt(Value: Integer);
 begin
-  if Kind = vkEmpty then
+  if Kind = value_empty then
   begin
-    ResetKind(vkInt);
+    ResetKind(value_int32);
     IntValue := Value;
   end
-  else if Kind = vkInt then
+  else if Kind = value_int32 then
     IntValue := Value
-  else if Kind = vkDword then
+  else if Kind = value_uint32 then
     DwordValue := Dword(Value)
-  else if Kind = vkFloat then
+  else if Kind = value_float64 then
     FloatValue := Value
-  else if Kind = vkString then
+  else if Kind = value_string then
     StringValue := IntToStr(Value)
-  else if Kind = vkExternFun then
+  else if Kind = value_host_function then
     ExternFunValue := nil
-  else if Kind = vkLibraryFun then
+  else if Kind = value_library_function then
     LibraryFunData := nil
-  else if Kind = vkFunction then
+  else if Kind = value_script_function then
   begin
   end
-  else if Kind = vkClass then
+  else if Kind = value_class then
     ClassValue := nil
-  else if Kind = vkArray then
+  else if Kind = value_array then
     ArrayValue := nil
-  else if Kind = vkRef then
+  else if Kind = value_reference then
   begin
     if RefValue <> nil then RefValue.AsInteger := Value
     else raise ExceptionExpressionEC.Create('Type error');
@@ -1345,31 +1345,31 @@ end;
 { @routine $4611D4 TVarEC_SetDword }
 procedure TVarEC.SetDword(Value: Dword);
 begin
-  if Kind = vkEmpty then
+  if Kind = value_empty then
   begin
-    ResetKind(vkDword);
+    ResetKind(value_uint32);
     DwordValue := Value;
   end
-  else if Kind = vkInt then
+  else if Kind = value_int32 then
     IntValue := Integer(Value)
-  else if Kind = vkDword then
+  else if Kind = value_uint32 then
     DwordValue := Value
-  else if Kind = vkFloat then
+  else if Kind = value_float64 then
     FloatValue := Value
-  else if Kind = vkString then
+  else if Kind = value_string then
     StringValue := IntToStr(Int64(Value))
-  else if Kind = vkExternFun then
+  else if Kind = value_host_function then
     ExternFunValue := nil
-  else if Kind = vkLibraryFun then
+  else if Kind = value_library_function then
     LibraryFunData := nil
-  else if Kind = vkFunction then
+  else if Kind = value_script_function then
   begin
   end
-  else if Kind = vkClass then
+  else if Kind = value_class then
     ClassValue := nil
-  else if Kind = vkArray then
+  else if Kind = value_array then
     ArrayValue := nil
-  else if Kind = vkRef then
+  else if Kind = value_reference then
   begin
     if RefValue <> nil then RefValue.AsInteger := Integer(Value)
     else raise ExceptionExpressionEC.Create('Type error');
@@ -1380,31 +1380,31 @@ end;
 { @routine $4612F8 TVarEC_SetFloat }
 procedure TVarEC.SetFloat(Value: Double);
 begin
-  if Kind = vkEmpty then
+  if Kind = value_empty then
   begin
-    ResetKind(vkFloat);
+    ResetKind(value_float64);
     FloatValue := Value;
   end
-  else if Kind = vkInt then
+  else if Kind = value_int32 then
     IntValue := Trunc(Value)
-  else if Kind = vkDword then
+  else if Kind = value_uint32 then
     DwordValue := Dword(Trunc(Value))
-  else if Kind = vkFloat then
+  else if Kind = value_float64 then
     FloatValue := Value
-  else if Kind = vkString then
+  else if Kind = value_string then
     StringValue := ScriptFloatToString(Value)
-  else if Kind = vkExternFun then
+  else if Kind = value_host_function then
     ExternFunValue := nil
-  else if Kind = vkLibraryFun then
+  else if Kind = value_library_function then
     LibraryFunData := nil
-  else if Kind = vkFunction then
+  else if Kind = value_script_function then
   begin
   end
-  else if Kind = vkClass then
+  else if Kind = value_class then
     ClassValue := nil
-  else if Kind = vkArray then
+  else if Kind = value_array then
     ArrayValue := nil
-  else if Kind = vkRef then
+  else if Kind = value_reference then
   begin
     if RefValue <> nil then RefValue.AsFloat := Value
     else raise ExceptionExpressionEC.Create('Type error');
@@ -1415,31 +1415,31 @@ end;
 { @routine $46142C TVarEC_SetString }
 procedure TVarEC.SetString(const Value: WideString);
 begin
-  if Kind = vkEmpty then
+  if Kind = value_empty then
   begin
-    ResetKind(vkString);
+    ResetKind(value_string);
     StringValue := Value;
   end
-  else if Kind = vkInt then
+  else if Kind = value_int32 then
     IntValue := ScriptStringToInt(Value)
-  else if Kind = vkDword then
+  else if Kind = value_uint32 then
     DwordValue := Dword(ScriptStringToInt(Value))
-  else if Kind = vkFloat then
+  else if Kind = value_float64 then
     FloatValue := ScriptStringToFloat(Value)
-  else if Kind = vkString then
+  else if Kind = value_string then
     StringValue := Value
-  else if Kind = vkExternFun then
+  else if Kind = value_host_function then
     ExternFunValue := nil
-  else if Kind = vkLibraryFun then
+  else if Kind = value_library_function then
     StringValue := Value
-  else if Kind = vkFunction then
+  else if Kind = value_script_function then
   begin
   end
-  else if Kind = vkClass then
+  else if Kind = value_class then
     ClassValue := nil
-  else if Kind = vkArray then
+  else if Kind = value_array then
     ArrayValue := nil
-  else if Kind = vkRef then
+  else if Kind = value_reference then
   begin
     if RefValue <> nil then RefValue.AsString := Value
     else raise ExceptionExpressionEC.Create('Type error');
@@ -1450,31 +1450,31 @@ end;
 { @routine $461510 TVarEC_SetExternFun }
 procedure TVarEC.SetExternFun(Value: Pointer);
 begin
-  if Kind = vkEmpty then
+  if Kind = value_empty then
   begin
-    ResetKind(vkExternFun);
+    ResetKind(value_host_function);
     ExternFunValue := Value;
   end
-  else if Kind = vkInt then
+  else if Kind = value_int32 then
     IntValue := 0
-  else if Kind = vkDword then
+  else if Kind = value_uint32 then
     DwordValue := 0
-  else if Kind = vkFloat then
+  else if Kind = value_float64 then
     FloatValue := 0
-  else if Kind = vkString then
+  else if Kind = value_string then
     StringValue := ''
-  else if Kind = vkExternFun then
+  else if Kind = value_host_function then
     ExternFunValue := Value
-  else if Kind = vkLibraryFun then
+  else if Kind = value_library_function then
     LibraryFunData := nil
-  else if Kind = vkFunction then
+  else if Kind = value_script_function then
   begin
   end
-  else if Kind = vkClass then
+  else if Kind = value_class then
     ClassValue := nil
-  else if Kind = vkArray then
+  else if Kind = value_array then
     ArrayValue := nil
-  else if Kind = vkRef then
+  else if Kind = value_reference then
   begin
     if RefValue <> nil then RefValue.AsExternFun := Value
     else raise ExceptionExpressionEC.Create('Type error');
@@ -1485,29 +1485,29 @@ end;
 { @routine $4615DC TVarEC_SetFunction }
 procedure TVarEC.SetFunction(Value: TCodeEC);
 begin
-  if Kind = vkEmpty then
+  if Kind = value_empty then
   begin
   end
-  else if Kind = vkInt then
+  else if Kind = value_int32 then
     IntValue := 0
-  else if Kind = vkDword then
+  else if Kind = value_uint32 then
     DwordValue := 0
-  else if Kind = vkFloat then
+  else if Kind = value_float64 then
     FloatValue := 0
-  else if Kind = vkString then
+  else if Kind = value_string then
     StringValue := ''
-  else if Kind = vkExternFun then
+  else if Kind = value_host_function then
     ExternFunValue := nil
-  else if Kind = vkLibraryFun then
+  else if Kind = value_library_function then
     LibraryFunData := nil
-  else if Kind = vkFunction then
+  else if Kind = value_script_function then
   begin
   end
-  else if Kind = vkClass then
+  else if Kind = value_class then
     ClassValue := nil
-  else if Kind = vkArray then
+  else if Kind = value_array then
     ArrayValue := nil
-  else if Kind = vkRef then
+  else if Kind = value_reference then
   begin
     if RefValue <> nil then RefValue.AsFunction := Value
     else raise ExceptionExpressionEC.Create('Type error');
@@ -1518,31 +1518,31 @@ end;
 { @routine $461698 TVarEC_SetClass }
 procedure TVarEC.SetClass(Value: TCodeEC);
 begin
-  if Kind = vkEmpty then
+  if Kind = value_empty then
   begin
-    ResetKind(vkClass);
+    ResetKind(value_class);
     ClassValue := Value;
   end
-  else if Kind = vkInt then
+  else if Kind = value_int32 then
     IntValue := 0
-  else if Kind = vkDword then
+  else if Kind = value_uint32 then
     DwordValue := 0
-  else if Kind = vkFloat then
+  else if Kind = value_float64 then
     FloatValue := 0
-  else if Kind = vkString then
+  else if Kind = value_string then
     StringValue := ''
-  else if Kind = vkExternFun then
+  else if Kind = value_host_function then
     ExternFunValue := nil
-  else if Kind = vkLibraryFun then
+  else if Kind = value_library_function then
     LibraryFunData := nil
-  else if Kind = vkFunction then
+  else if Kind = value_script_function then
   begin
   end
-  else if Kind = vkClass then
+  else if Kind = value_class then
     ClassValue := Value
-  else if Kind = vkArray then
+  else if Kind = value_array then
     ArrayValue := nil
-  else if Kind = vkRef then
+  else if Kind = value_reference then
   begin
     if RefValue <> nil then RefValue.AsFunction := Value
     else raise ExceptionExpressionEC.Create('Type error');
@@ -1553,31 +1553,31 @@ end;
 { @routine $461764 TVarEC_SetArray }
 procedure TVarEC.SetArray(Value: TVarArrayEC);
 begin
-  if Kind = vkEmpty then
+  if Kind = value_empty then
   begin
-    ResetKind(vkArray);
+    ResetKind(value_array);
     ArrayValue := Value;
   end
-  else if Kind = vkInt then
+  else if Kind = value_int32 then
     IntValue := 0
-  else if Kind = vkDword then
+  else if Kind = value_uint32 then
     DwordValue := 0
-  else if Kind = vkFloat then
+  else if Kind = value_float64 then
     FloatValue := 0
-  else if Kind = vkString then
+  else if Kind = value_string then
     StringValue := ''
-  else if Kind = vkExternFun then
+  else if Kind = value_host_function then
     ExternFunValue := nil
-  else if Kind = vkLibraryFun then
+  else if Kind = value_library_function then
     LibraryFunData := nil
-  else if Kind = vkFunction then
+  else if Kind = value_script_function then
   begin
   end
-  else if Kind = vkClass then
+  else if Kind = value_class then
     ClassValue := nil
-  else if Kind = vkArray then
+  else if Kind = value_array then
     ArrayValue := Value
-  else if Kind = vkRef then
+  else if Kind = value_reference then
   begin
     if RefValue <> nil then RefValue.AsArray := Value
     else raise ExceptionExpressionEC.Create('Type error');
@@ -1588,31 +1588,31 @@ end;
 { @routine $461830 TVarEC_SetRef }
 procedure TVarEC.SetRef(Value: TVarEC);
 begin
-  if Kind = vkEmpty then
+  if Kind = value_empty then
   begin
-    ResetKind(vkRef);
+    ResetKind(value_reference);
     RefValue := Value;
   end
-  else if Kind = vkInt then
+  else if Kind = value_int32 then
     IntValue := 0
-  else if Kind = vkDword then
+  else if Kind = value_uint32 then
     DwordValue := 0
-  else if Kind = vkFloat then
+  else if Kind = value_float64 then
     FloatValue := 0
-  else if Kind = vkString then
+  else if Kind = value_string then
     StringValue := ''
-  else if Kind = vkExternFun then
+  else if Kind = value_host_function then
     ExternFunValue := nil
-  else if Kind = vkLibraryFun then
+  else if Kind = value_library_function then
     LibraryFunData := nil
-  else if Kind = vkFunction then
+  else if Kind = value_script_function then
   begin
   end
-  else if Kind = vkClass then
+  else if Kind = value_class then
     ClassValue := nil
-  else if Kind = vkArray then
+  else if Kind = value_array then
     ArrayValue := nil
-  else if Kind = vkRef then
+  else if Kind = value_reference then
     RefValue := Value
   else raise ExceptionExpressionEC.Create('Type error');
 end;
@@ -1622,7 +1622,7 @@ end;
 function TVarEC.Resolve: TVarEC;
 begin
   Result := Self;
-  while (Result <> nil) and (Result.Kind = vkRef) do Result := Result.RefValue;
+  while (Result <> nil) and (Result.Kind = value_reference) do Result := Result.RefValue;
 end;
 { @end $4618F0 }
 
@@ -1633,7 +1633,7 @@ var
   i, Count: Integer;
   Dest: PAnsiChar;
 begin
-  ConvertToKind(vkString);
+  ConvertToKind(value_string);
   Count := Length(StringValue);
   if Count > 0 then
   begin
@@ -1656,7 +1656,7 @@ var
   Text: AnsiString;
   Count: Integer;
 begin
-  if Kind <> vkString then ConvertToKind(vkString)
+  if Kind <> value_string then ConvertToKind(value_string)
   else
   begin
     Count := Length(StringValue);
@@ -1679,7 +1679,7 @@ begin
   for i := 0 to Count - 1 do
   begin
     Item := Values[i];
-    if (Item.Kind = vkArray) and (Item.AsArray <> nil) then
+    if (Item.Kind = value_array) and (Item.AsArray <> nil) then
     begin
       FreeScriptArrayTree(Item.AsArray);
       Item.AsArray := nil;
@@ -1698,13 +1698,13 @@ begin
   Count := Dimensions[DimensionIndex];
   if High(Dimensions) = DimensionIndex then
   begin
-    for i := Values.Count to Count - 1 do Values.Add('', vkEmpty);
+    for i := Values.Count to Count - 1 do Values.Add('', value_empty);
   end
   else
   begin
     for i := Values.Count to Count - 1 do
     begin
-      Item := Values.Add('', vkArray);
+      Item := Values.Add('', value_array);
       Item.AsArray := TVarArrayEC.Create;
       GrowScriptArray(Item.AsArray, Dimensions, DimensionIndex + 1);
     end;
@@ -1724,7 +1724,7 @@ var
   begin
     SetLength(Dimensions, High(Dimensions) + 1 + 1);
     Dimensions[High(Dimensions)] := Values.Count;
-    if (Values.Count > 0) and (Values[0].ValueKind = vkArray) then
+    if (Values.Count > 0) and (Values[0].ValueKind = value_array) then
       CollectScriptArrayDimensions(Values[0].AsArray);
   end;
 
@@ -1736,7 +1736,7 @@ begin
     for i := Count to OldCount - 1 do
     begin
       Item := Values[i];
-      if (Item.Kind = vkArray) and (Item.AsArray <> nil) then FreeScriptArrayTree(Item.AsArray);
+      if (Item.Kind = value_array) and (Item.AsArray <> nil) then FreeScriptArrayTree(Item.AsArray);
     end;
     for i := OldCount - 1 downto Count do Values.Delete(i);
   end
@@ -1753,7 +1753,7 @@ end;
 { @routine $461CB0 TVarEC_CreateArray }
 procedure TVarEC.CreateArray(Dimensions: array of Integer);
 begin
-  ResetKind(vkArray);
+  ResetKind(value_array);
   ArrayValue := TVarArrayEC.Create;
   GrowScriptArray(ArrayValue, Dimensions, 0);
 end;
@@ -1762,7 +1762,7 @@ end;
 { @routine $461D04 TVarEC_ResizeArray }
 procedure TVarEC.ResizeArray(Count, Dimension: Integer);
 begin
-  if RealVType = vkArray then
+  if RealVType = value_array then
   begin
     if Count <= 0 then FreeArray
     else if Dimension <= 0 then
@@ -1777,7 +1777,7 @@ end;
 { @routine $461D58 TVarEC_FreeArray }
 procedure TVarEC.FreeArray;
 begin
-  if (RealVType = vkArray) and (GetArray <> nil) then
+  if (RealVType = value_array) and (GetArray <> nil) then
   begin
     FreeScriptArrayTree(GetArray);
     SetArray(nil);
@@ -1788,18 +1788,18 @@ end;
 { @routine $461D88 TVarEC_OAdd }
 procedure TVarEC.OAdd(Left, Right: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Left.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Left.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Left.ValueKind of
-      vkInt: SetInt(Left.AsInteger + Right.AsInteger);
-      vkDword: SetDword(Left.AsDword + Right.AsDword);
-      vkFloat: SetFloat(Left.AsFloat + Right.AsFloat);
-      vkString: SetString(Left.AsString + Right.AsString);
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Left.AsInteger + Right.AsInteger);
+      value_uint32: SetDword(Left.AsDword + Right.AsDword);
+      value_float64: SetFloat(Left.AsFloat + Right.AsFloat);
+      value_string: SetString(Left.AsString + Right.AsString);
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('OAdd');
     end;
   end;
@@ -1809,18 +1809,18 @@ end;
 { @routine $461F24 TVarEC_OSub }
 procedure TVarEC.OSub(Left, Right: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Left.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Left.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Left.ValueKind of
-      vkInt: SetInt(Left.AsInteger - Right.AsInteger);
-      vkDword: SetDword(Left.AsDword - Right.AsDword);
-      vkFloat: SetFloat(Left.AsFloat - Right.AsFloat);
-      vkString: SetString(Left.AsString + Right.AsString);
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Left.AsInteger - Right.AsInteger);
+      value_uint32: SetDword(Left.AsDword - Right.AsDword);
+      value_float64: SetFloat(Left.AsFloat - Right.AsFloat);
+      value_string: SetString(Left.AsString + Right.AsString);
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('OSub');
     end;
   end;
@@ -1830,18 +1830,18 @@ end;
 { @routine $4620C0 TVarEC_OMul }
 procedure TVarEC.OMul(Left, Right: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Left.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Left.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Left.ValueKind of
-      vkInt: SetInt(Left.AsInteger * Right.AsInteger);
-      vkDword: SetDword(Left.AsDword * Right.AsDword);
-      vkFloat: SetFloat(Left.AsFloat * Right.AsFloat);
-      vkString: SetString(Left.AsString + Right.AsString);
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Left.AsInteger * Right.AsInteger);
+      value_uint32: SetDword(Left.AsDword * Right.AsDword);
+      value_float64: SetFloat(Left.AsFloat * Right.AsFloat);
+      value_string: SetString(Left.AsString + Right.AsString);
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('OMul');
     end;
   end;
@@ -1851,18 +1851,18 @@ end;
 { @routine $46225C TVarEC_ODiv }
 procedure TVarEC.ODiv(Left, Right: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Left.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Left.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Left.ValueKind of
-      vkInt: SetInt(Left.AsInteger div Right.AsInteger);
-      vkDword: SetDword(Left.AsDword div Right.AsDword);
-      vkFloat: SetFloat(Left.AsFloat / Right.AsFloat);
-      vkString: SetString(Left.AsString + Right.AsString);
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Left.AsInteger div Right.AsInteger);
+      value_uint32: SetDword(Left.AsDword div Right.AsDword);
+      value_float64: SetFloat(Left.AsFloat / Right.AsFloat);
+      value_string: SetString(Left.AsString + Right.AsString);
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('ODiv');
     end;
   end;
@@ -1872,18 +1872,18 @@ end;
 { @routine $462404 TVarEC_OMod }
 procedure TVarEC.OMod(Left, Right: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Left.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Left.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Left.ValueKind of
-      vkInt: SetInt(Left.AsInteger mod Right.AsInteger);
-      vkDword: SetDword(Left.AsDword mod Right.AsDword);
-      vkFloat: SetFloat(Trunc(Left.AsFloat) mod Trunc(Right.AsFloat));
-      vkString: SetString('');
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Left.AsInteger mod Right.AsInteger);
+      value_uint32: SetDword(Left.AsDword mod Right.AsDword);
+      value_float64: SetFloat(Trunc(Left.AsFloat) mod Trunc(Right.AsFloat));
+      value_string: SetString('');
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('OMod');
     end;
   end;
@@ -1893,18 +1893,18 @@ end;
 { @routine $462560 TVarEC_OBitAnd }
 procedure TVarEC.OBitAnd(Left, Right: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Left.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Left.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Left.ValueKind of
-      vkInt: SetInt(Left.AsInteger and Right.AsInteger);
-      vkDword: SetDword(Left.AsDword and Right.AsDword);
-      vkFloat: SetFloat(Trunc(Left.AsFloat) and Trunc(Right.AsFloat));
-      vkString: SetString('');
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Left.AsInteger and Right.AsInteger);
+      value_uint32: SetDword(Left.AsDword and Right.AsDword);
+      value_float64: SetFloat(Trunc(Left.AsFloat) and Trunc(Right.AsFloat));
+      value_string: SetString('');
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('OBitAnd');
     end;
   end;
@@ -1914,18 +1914,18 @@ end;
 { @routine $4626BC TVarEC_OBitOr }
 procedure TVarEC.OBitOr(Left, Right: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Left.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Left.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Left.ValueKind of
-      vkInt: SetInt(Left.AsInteger or Right.AsInteger);
-      vkDword: SetDword(Left.AsDword or Right.AsDword);
-      vkFloat: SetFloat(Trunc(Left.AsFloat) or Trunc(Right.AsFloat));
-      vkString: SetString('');
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Left.AsInteger or Right.AsInteger);
+      value_uint32: SetDword(Left.AsDword or Right.AsDword);
+      value_float64: SetFloat(Trunc(Left.AsFloat) or Trunc(Right.AsFloat));
+      value_string: SetString('');
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('OBitOr');
     end;
   end;
@@ -1935,18 +1935,18 @@ end;
 { @routine $462818 TVarEC_OBitXor }
 procedure TVarEC.OBitXor(Left, Right: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Left.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Left.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Left.ValueKind of
-      vkInt: SetInt(Left.AsInteger xor Right.AsInteger);
-      vkDword: SetDword(Left.AsDword xor Right.AsDword);
-      vkFloat: SetFloat(Trunc(Left.AsFloat) xor Trunc(Right.AsFloat));
-      vkString: SetString('');
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Left.AsInteger xor Right.AsInteger);
+      value_uint32: SetDword(Left.AsDword xor Right.AsDword);
+      value_float64: SetFloat(Trunc(Left.AsFloat) xor Trunc(Right.AsFloat));
+      value_string: SetString('');
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('OBitXor');
     end;
   end;
@@ -1956,18 +1956,18 @@ end;
 { @routine $462974 TVarEC_OAnd }
 procedure TVarEC.OAnd(Left, Right: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Left.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Left.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Left.ValueKind of
-      vkInt: SetInt(Ord((Left.AsInteger <> 0) and (Right.AsInteger <> 0)));
-      vkDword: SetDword(Ord((Left.AsDword <> 0) and (Right.AsDword <> 0)));
-      vkFloat: SetFloat(Integer((Left.AsFloat <> 0) and (Right.AsFloat <> 0)));
-      vkString: SetString('');
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Ord((Left.AsInteger <> 0) and (Right.AsInteger <> 0)));
+      value_uint32: SetDword(Ord((Left.AsDword <> 0) and (Right.AsDword <> 0)));
+      value_float64: SetFloat(Integer((Left.AsFloat <> 0) and (Right.AsFloat <> 0)));
+      value_string: SetString('');
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('OAnd');
     end;
   end;
@@ -1977,18 +1977,18 @@ end;
 { @routine $462AEC TVarEC_OOr }
 procedure TVarEC.OOr(Left, Right: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Left.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Left.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Left.ValueKind of
-      vkInt: SetInt(Ord((Left.AsInteger <> 0) or (Right.AsInteger <> 0)));
-      vkDword: SetDword(Ord((Left.AsDword <> 0) or (Right.AsDword <> 0)));
-      vkFloat: SetFloat(Integer((Left.AsFloat <> 0) or (Right.AsFloat <> 0)));
-      vkString: SetString('');
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Ord((Left.AsInteger <> 0) or (Right.AsInteger <> 0)));
+      value_uint32: SetDword(Ord((Left.AsDword <> 0) or (Right.AsDword <> 0)));
+      value_float64: SetFloat(Integer((Left.AsFloat <> 0) or (Right.AsFloat <> 0)));
+      value_string: SetString('');
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('OOr');
     end;
   end;
@@ -1998,18 +1998,18 @@ end;
 { @routine $462C60 TVarEC_OShl }
 procedure TVarEC.OShl(Left, Right: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Left.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Left.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Left.ValueKind of
-      vkInt: SetInt(Left.AsInteger shl Right.AsInteger);
-      vkDword: SetDword(Left.AsDword shl Right.AsDword);
-      vkFloat: SetFloat(Trunc(Left.AsFloat) shl Trunc(Right.AsFloat));
-      vkString: SetString('');
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Left.AsInteger shl Right.AsInteger);
+      value_uint32: SetDword(Left.AsDword shl Right.AsDword);
+      value_float64: SetFloat(Trunc(Left.AsFloat) shl Trunc(Right.AsFloat));
+      value_string: SetString('');
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('OShl');
     end;
   end;
@@ -2019,18 +2019,18 @@ end;
 { @routine $462DB8 TVarEC_OShr }
 procedure TVarEC.OShr(Left, Right: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Left.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Left.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Left.ValueKind of
-      vkInt: SetInt(Left.AsInteger shr Right.AsInteger);
-      vkDword: SetDword(Left.AsDword shr Right.AsDword);
-      vkFloat: SetFloat(Trunc(Left.AsFloat) shr Trunc(Right.AsFloat));
-      vkString: SetString('');
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Left.AsInteger shr Right.AsInteger);
+      value_uint32: SetDword(Left.AsDword shr Right.AsDword);
+      value_float64: SetFloat(Trunc(Left.AsFloat) shr Trunc(Right.AsFloat));
+      value_string: SetString('');
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('OShr');
     end;
   end;
@@ -2040,18 +2040,18 @@ end;
 { @routine $462F10 TVarEC_OEqual }
 procedure TVarEC.OEqual(Left, Right: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Left.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Left.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Left.ValueKind of
-      vkInt: SetInt(Ord(Left.AsInteger = Right.AsInteger));
-      vkDword: SetDword(Ord(Left.AsDword = Right.AsDword));
-      vkFloat: SetFloat(Integer(Left.AsFloat = Right.AsFloat));
-      vkString: SetString(IntToStr(Ord(Left.AsString = Right.AsString)));
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Ord(Left.AsInteger = Right.AsInteger));
+      value_uint32: SetDword(Ord(Left.AsDword = Right.AsDword));
+      value_float64: SetFloat(Integer(Left.AsFloat = Right.AsFloat));
+      value_string: SetString(IntToStr(Ord(Left.AsString = Right.AsString)));
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('OEqual');
     end;
   end;
@@ -2061,18 +2061,18 @@ end;
 { @routine $4630F8 TVarEC_ONotEqual }
 procedure TVarEC.ONotEqual(Left, Right: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Left.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Left.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Left.ValueKind of
-      vkInt: SetInt(Ord(Left.AsInteger <> Right.AsInteger));
-      vkDword: SetDword(Ord(Left.AsDword <> Right.AsDword));
-      vkFloat: SetFloat(Integer(Left.AsFloat <> Right.AsFloat));
-      vkString: SetString(IntToStr(Ord(Left.AsString <> Right.AsString)));
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Ord(Left.AsInteger <> Right.AsInteger));
+      value_uint32: SetDword(Ord(Left.AsDword <> Right.AsDword));
+      value_float64: SetFloat(Integer(Left.AsFloat <> Right.AsFloat));
+      value_string: SetString(IntToStr(Ord(Left.AsString <> Right.AsString)));
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('ONotEqual');
     end;
   end;
@@ -2082,18 +2082,18 @@ end;
 { @routine $4632E4 TVarEC_OLess }
 procedure TVarEC.OLess(Left, Right: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Left.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Left.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Left.ValueKind of
-      vkInt: SetInt(Ord(Left.AsInteger < Right.AsInteger));
-      vkDword: SetDword(Ord(Left.AsDword < Right.AsDword));
-      vkFloat: SetFloat(Integer(Left.AsFloat < Right.AsFloat));
-      vkString: SetString(IntToStr(Ord(Left.AsString < Right.AsString)));
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Ord(Left.AsInteger < Right.AsInteger));
+      value_uint32: SetDword(Ord(Left.AsDword < Right.AsDword));
+      value_float64: SetFloat(Integer(Left.AsFloat < Right.AsFloat));
+      value_string: SetString(IntToStr(Ord(Left.AsString < Right.AsString)));
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('OLess');
     end;
   end;
@@ -2103,18 +2103,18 @@ end;
 { @routine $4634CC TVarEC_OMore }
 procedure TVarEC.OMore(Left, Right: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Left.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Left.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Left.ValueKind of
-      vkInt: SetInt(Ord(Left.AsInteger > Right.AsInteger));
-      vkDword: SetDword(Ord(Left.AsDword > Right.AsDword));
-      vkFloat: SetFloat(Integer(Left.AsFloat > Right.AsFloat));
-      vkString: SetString(IntToStr(Ord(Left.AsString > Right.AsString)));
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Ord(Left.AsInteger > Right.AsInteger));
+      value_uint32: SetDword(Ord(Left.AsDword > Right.AsDword));
+      value_float64: SetFloat(Integer(Left.AsFloat > Right.AsFloat));
+      value_string: SetString(IntToStr(Ord(Left.AsString > Right.AsString)));
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('OMore');
     end;
   end;
@@ -2124,18 +2124,18 @@ end;
 { @routine $4636B4 TVarEC_OLessEqual }
 procedure TVarEC.OLessEqual(Left, Right: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Left.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Left.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Left.ValueKind of
-      vkInt: SetInt(Ord(Left.AsInteger <= Right.AsInteger));
-      vkDword: SetDword(Ord(Left.AsDword <= Right.AsDword));
-      vkFloat: SetFloat(Integer(Left.AsFloat <= Right.AsFloat));
-      vkString: SetString(IntToStr(Ord(Left.AsString <= Right.AsString)));
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Ord(Left.AsInteger <= Right.AsInteger));
+      value_uint32: SetDword(Ord(Left.AsDword <= Right.AsDword));
+      value_float64: SetFloat(Integer(Left.AsFloat <= Right.AsFloat));
+      value_string: SetString(IntToStr(Ord(Left.AsString <= Right.AsString)));
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('OLessEqual');
     end;
   end;
@@ -2145,18 +2145,18 @@ end;
 { @routine $4638A0 TVarEC_OMoreEqual }
 procedure TVarEC.OMoreEqual(Left, Right: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Left.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Left.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Left.ValueKind of
-      vkInt: SetInt(Ord(Left.AsInteger >= Right.AsInteger));
-      vkDword: SetDword(Ord(Left.AsDword >= Right.AsDword));
-      vkFloat: SetFloat(Integer(Left.AsFloat >= Right.AsFloat));
-      vkString: SetString(IntToStr(Ord(Left.AsString >= Right.AsString)));
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Ord(Left.AsInteger >= Right.AsInteger));
+      value_uint32: SetDword(Ord(Left.AsDword >= Right.AsDword));
+      value_float64: SetFloat(Integer(Left.AsFloat >= Right.AsFloat));
+      value_string: SetString(IntToStr(Ord(Left.AsString >= Right.AsString)));
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('OMoreEqual');
     end;
   end;
@@ -2166,18 +2166,18 @@ end;
 { @routine $463A8C TVarEC_OMinus }
 procedure TVarEC.OMinus(Value: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Value.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Value.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Value.ValueKind of
-      vkInt: SetInt(-Value.AsInteger);
-      vkDword: SetDword(Dword(-Int64(Value.AsDword)));
-      vkFloat: SetFloat(-Value.AsFloat);
-      vkString: SetString(Value.AsString);
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(-Value.AsInteger);
+      value_uint32: SetDword(Dword(-Int64(Value.AsDword)));
+      value_float64: SetFloat(-Value.AsFloat);
+      value_string: SetString(Value.AsString);
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('OMinus');
     end;
   end;
@@ -2187,18 +2187,18 @@ end;
 { @routine $463BE8 TVarEC_OBitNot }
 procedure TVarEC.OBitNot(Value: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Value.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Value.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Value.ValueKind of
-      vkInt: SetInt(not Value.AsInteger);
-      vkDword: SetDword(not Value.AsDword);
-      vkFloat: SetFloat(0);
-      vkString: SetString('');
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(not Value.AsInteger);
+      value_uint32: SetDword(not Value.AsDword);
+      value_float64: SetFloat(0);
+      value_string: SetString('');
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('OBitNot');
     end;
   end;
@@ -2208,18 +2208,18 @@ end;
 { @routine $463CF0 TVarEC_ONot }
 procedure TVarEC.ONot(Value: TVarEC);
 begin
-  if RealVType = vkEmpty then ResetKind(Value.ValueKind);
-  if RealVType <> vkEmpty then
+  if RealVType = value_empty then ResetKind(Value.ValueKind);
+  if RealVType <> value_empty then
   begin
     case Value.ValueKind of
-      vkInt: SetInt(Ord(Value.AsInteger = 0));
-      vkDword: SetDword(Ord(Value.AsInteger = 0));
-      vkFloat: SetFloat(Integer(Value.AsFloat = 0));
-      vkString: SetString('');
-      vkExternFun: SetExternFun(nil);
-      vkFunction: SetFunction(nil);
-      vkClass: SetClass(nil);
-      vkArray: SetArray(nil);
+      value_int32: SetInt(Ord(Value.AsInteger = 0));
+      value_uint32: SetDword(Ord(Value.AsInteger = 0));
+      value_float64: SetFloat(Integer(Value.AsFloat = 0));
+      value_string: SetString('');
+      value_host_function: SetExternFun(nil);
+      value_script_function: SetFunction(nil);
+      value_class: SetClass(nil);
+      value_array: SetArray(nil);
     else raise ExceptionExpressionEC.Create('ONot');
     end;
   end;
@@ -2233,23 +2233,23 @@ var
   i: Integer;
 begin
   Dest := Self;
-  if Kind = vkRef then
+  if Kind = value_reference then
   begin
     Dest := Resolve;
     if Dest = nil then Exit;
   end;
-  if (Dest.Kind = vkExternFun) and (Source.Kind <> vkExternFun) then
+  if (Dest.Kind = value_host_function) and (Source.Kind <> value_host_function) then
     raise Exception.Create('Error assigning to function ' + Dest.Name);
-  if Dest.Kind = vkEmpty then Dest.ResetKind(Source.ValueKind);
-  if Dest.Kind = vkEmpty then
+  if Dest.Kind = value_empty then Dest.ResetKind(Source.ValueKind);
+  if Dest.Kind = value_empty then
   begin
   end
-  else if Dest.Kind = vkInt then Dest.AsInteger := Source.AsInteger
-  else if Dest.Kind = vkDword then Dest.AsDword := Source.AsDword
-  else if Dest.Kind = vkFloat then Dest.AsFloat := Source.AsFloat
-  else if Dest.Kind = vkString then Dest.AsString := Source.AsString
-  else if Dest.Kind = vkExternFun then Dest.AsExternFun := Source.AsExternFun
-  else if Dest.Kind = vkLibraryFun then
+  else if Dest.Kind = value_int32 then Dest.AsInteger := Source.AsInteger
+  else if Dest.Kind = value_uint32 then Dest.AsDword := Source.AsDword
+  else if Dest.Kind = value_float64 then Dest.AsFloat := Source.AsFloat
+  else if Dest.Kind = value_string then Dest.AsString := Source.AsString
+  else if Dest.Kind = value_host_function then Dest.AsExternFun := Source.AsExternFun
+  else if Dest.Kind = value_library_function then
   begin
     Dest.LibraryFunData := nil;
     if Source.LibraryFunData <> nil then
@@ -2259,9 +2259,9 @@ begin
     end;
     Dest.AsString := Source.AsString;
   end
-  else if Dest.Kind = vkFunction then Dest.AsFunction := Source.AsFunction
-  else if Dest.Kind = vkClass then Dest.AsClass := Source.AsClass
-  else if Dest.Kind = vkArray then
+  else if Dest.Kind = value_script_function then Dest.AsFunction := Source.AsFunction
+  else if Dest.Kind = value_class then Dest.AsClass := Source.AsClass
+  else if Dest.Kind = value_array then
   begin
     if not CopyArrays then Dest.AsArray := Source.AsArray
     else
@@ -2279,15 +2279,15 @@ end;
 function TVarEC.EqualsValue(Other: TVarEC): Boolean;
 begin
   case RealVType of
-    vkEmpty: Result := IsEmpty = Other.IsEmpty;
-    vkInt: Result := GetInt = Other.AsInteger;
-    vkDword: Result := GetDword = Other.AsDword;
-    vkFloat: Result := GetFloat = Other.AsFloat;
-    vkString: Result := GetString = Other.AsString;
-    vkExternFun: Result := False;
-    vkFunction: Result := False;
-    vkClass: Result := GetClass = Other.AsClass;
-    vkArray: Result := False;
+    value_empty: Result := IsEmpty = Other.IsEmpty;
+    value_int32: Result := GetInt = Other.AsInteger;
+    value_uint32: Result := GetDword = Other.AsDword;
+    value_float64: Result := GetFloat = Other.AsFloat;
+    value_string: Result := GetString = Other.AsString;
+    value_host_function: Result := False;
+    value_script_function: Result := False;
+    value_class: Result := GetClass = Other.AsClass;
+    value_array: Result := False;
   else raise ExceptionExpressionEC.Create('Equal');
   end;
 end;
@@ -2297,15 +2297,15 @@ end;
 function TVarEC.LessThan(Other: TVarEC): Boolean;
 begin
   case RealVType of
-    vkEmpty: Result := IsEmpty < Other.IsEmpty;
-    vkInt: Result := GetInt < Other.AsInteger;
-    vkDword: Result := GetDword < Other.AsDword;
-    vkFloat: Result := GetFloat < Other.AsFloat;
-    vkString: Result := GetString < Other.AsString;
-    vkExternFun: Result := False;
-    vkFunction: Result := False;
-    vkClass: Result := False;
-    vkArray: Result := False;
+    value_empty: Result := IsEmpty < Other.IsEmpty;
+    value_int32: Result := GetInt < Other.AsInteger;
+    value_uint32: Result := GetDword < Other.AsDword;
+    value_float64: Result := GetFloat < Other.AsFloat;
+    value_string: Result := GetString < Other.AsString;
+    value_host_function: Result := False;
+    value_script_function: Result := False;
+    value_class: Result := False;
+    value_array: Result := False;
   else raise ExceptionExpressionEC.Create('Less');
   end;
 end;
@@ -2315,15 +2315,15 @@ end;
 function TVarEC.GreaterThan(Other: TVarEC): Boolean;
 begin
   case RealVType of
-    vkEmpty: Result := IsEmpty > Other.IsEmpty;
-    vkInt: Result := GetInt > Other.AsInteger;
-    vkDword: Result := GetDword > Other.AsDword;
-    vkFloat: Result := GetFloat > Other.AsFloat;
-    vkString: Result := GetString > Other.AsString;
-    vkExternFun: Result := False;
-    vkFunction: Result := False;
-    vkClass: Result := False;
-    vkArray: Result := False;
+    value_empty: Result := IsEmpty > Other.IsEmpty;
+    value_int32: Result := GetInt > Other.AsInteger;
+    value_uint32: Result := GetDword > Other.AsDword;
+    value_float64: Result := GetFloat > Other.AsFloat;
+    value_string: Result := GetString > Other.AsString;
+    value_host_function: Result := False;
+    value_script_function: Result := False;
+    value_class: Result := False;
+    value_array: Result := False;
   else raise ExceptionExpressionEC.Create('More');
   end;
 end;
@@ -2333,16 +2333,16 @@ end;
 function TVarEC.IsTrue: Boolean;
 begin
   case RealVType of
-    vkEmpty: Result := False;
-    vkInt: Result := GetInt <> 0;
-    vkDword: Result := GetDword <> 0;
-    vkFloat: Result := GetFloat <> 0;
-    vkString: Result := GetString <> '';
-    vkExternFun: Result := False;
-    vkLibraryFun: Result := Resolve.LibraryFunData <> nil;
-    vkFunction: Result := False;
-    vkClass: Result := GetClass <> nil;
-    vkArray: Result := False;
+    value_empty: Result := False;
+    value_int32: Result := GetInt <> 0;
+    value_uint32: Result := GetDword <> 0;
+    value_float64: Result := GetFloat <> 0;
+    value_string: Result := GetString <> '';
+    value_host_function: Result := False;
+    value_library_function: Result := Resolve.LibraryFunData <> nil;
+    value_script_function: Result := False;
+    value_class: Result := GetClass <> nil;
+    value_array: Result := False;
   else raise ExceptionExpressionEC.Create('IsTrue');
   end;
 end;
@@ -2353,42 +2353,42 @@ procedure TVarEC.SaveToBuffer(Buffer: TBufEC);
 begin
   Buffer.AddWideStringZ(Name);
   Buffer.AddAnsiChar(AnsiChar(Kind));
-  if Kind = vkEmpty then
+  if Kind = value_empty then
   begin
   end
-  else if Kind = vkInt then
+  else if Kind = value_int32 then
   begin
     Buffer.AddIntegerValue(IntValue);
   end
-  else if Kind = vkDword then
+  else if Kind = value_uint32 then
   begin
     Buffer.AddDWord(DwordValue);
   end
-  else if Kind = vkFloat then
+  else if Kind = value_float64 then
   begin
     Buffer.AddDouble(FloatValue);
   end
-  else if Kind = vkString then
+  else if Kind = value_string then
   begin
     Buffer.AddWideStringZ(StringValue);
   end
-  else if Kind = vkExternFun then
+  else if Kind = value_host_function then
   begin
   end
-  else if Kind = vkLibraryFun then
+  else if Kind = value_library_function then
   begin
   end
-  else if Kind = vkFunction then
+  else if Kind = value_script_function then
   begin
   end
-  else if Kind = vkClass then
+  else if Kind = value_class then
   begin
   end
-  else if Kind = vkArray then
+  else if Kind = value_array then
   begin
     ArrayValue.SaveToBuffer(Buffer);
   end
-  else if Kind = vkRef then
+  else if Kind = value_reference then
   begin
   end;
 end;
@@ -2398,44 +2398,44 @@ end;
 procedure TVarEC.LoadFromBuffer(Buffer: TBufEC);
 begin
   Name := Buffer.ReadWideString;
-  ResetKind(TVarKind(Buffer.GetByte));
-  if Kind = vkEmpty then
+  ResetKind(TScriptValueKind(Buffer.GetByte));
+  if Kind = value_empty then
   begin
   end
-  else if Kind = vkInt then
+  else if Kind = value_int32 then
   begin
     IntValue := Buffer.GetInt32;
   end
-  else if Kind = vkDword then
+  else if Kind = value_uint32 then
   begin
     DwordValue := Buffer.GetUInt32;
   end
-  else if Kind = vkFloat then
+  else if Kind = value_float64 then
   begin
     FloatValue := Buffer.GetDouble;
   end
-  else if Kind = vkString then
+  else if Kind = value_string then
   begin
     StringValue := Buffer.ReadWideString;
   end
-  else if Kind = vkExternFun then
+  else if Kind = value_host_function then
   begin
   end
-  else if Kind = vkLibraryFun then
+  else if Kind = value_library_function then
   begin
   end
-  else if Kind = vkFunction then
+  else if Kind = value_script_function then
   begin
   end
-  else if Kind = vkClass then
+  else if Kind = value_class then
   begin
   end
-  else if Kind = vkArray then
+  else if Kind = value_array then
   begin
     ArrayValue := TVarArrayEC.Create;
     ArrayValue.LoadFromBuffer(Buffer);
   end
-  else if Kind = vkRef then
+  else if Kind = value_reference then
   begin
   end;
 end;
@@ -2480,7 +2480,7 @@ var
 begin
   for i := 0 to Count - 1 do
   begin
-    if (GetItem(i).Kind = vkArray) and (GetItem(i).AsArray <> nil) then GetItem(i).AsArray.Clear;
+    if (GetItem(i).Kind = value_array) and (GetItem(i).AsArray <> nil) then GetItem(i).AsArray.Clear;
     GetItem(i).Free;
   end;
   ClearStorage;
@@ -2502,7 +2502,7 @@ begin
   for i := 0 to Count - 1 do
   begin
     SourceItem := Source[i];
-    Item := TVarEC.Create(vkEmpty);
+    Item := TVarEC.Create(value_empty);
     SetItem(i, Item);
     Item.Name := SourceItem.Name;
     Item.AssignFrom(SourceItem, CopyArrays);
@@ -2843,7 +2843,7 @@ end;
 { @end $464E98 }
 
 { @routine $464FA4 TVarArrayEC_Add }
-function TVarArrayEC.Add(const Name: WideString; Kind: TVarKind): TVarEC;
+function TVarArrayEC.Add(const Name: WideString; Kind: TScriptValueKind): TVarEC;
 var
   Item: TVarEC;
 begin
@@ -2879,7 +2879,7 @@ begin
   ItemCount := Buffer.GetInt32;
   for i := 0 to ItemCount - 1 do
   begin
-    Item := TVarEC.Create(vkEmpty);
+    Item := TVarEC.Create(value_empty);
     Item.LoadFromBuffer(Buffer);
     AddItem(Item);
   end;
@@ -2895,7 +2895,7 @@ begin
   ItemCount := Buffer.GetInt32;
   for i := 0 to ItemCount - 1 do
   begin
-    Item := TVarEC.Create(vkEmpty);
+    Item := TVarEC.Create(value_empty);
     Item.LoadFromBuffer(Buffer);
     AddItem(Item);
   end;
@@ -3047,7 +3047,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctOpenParen;
+        Token.TokenKind := token_open_paren;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3060,7 +3060,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctCloseParen;
+        Token.TokenKind := token_close_paren;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3073,7 +3073,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctOpenBrace;
+        Token.TokenKind := token_open_brace;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3086,7 +3086,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctCloseBrace;
+        Token.TokenKind := token_close_brace;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3099,7 +3099,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctOpenBracket;
+        Token.TokenKind := token_open_bracket;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3112,7 +3112,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctCloseBracket;
+        Token.TokenKind := token_close_bracket;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3125,7 +3125,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctBlockCommentStart;
+        Token.TokenKind := token_block_comment_start;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 2;
         Inc(Index);
@@ -3139,7 +3139,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctBlockCommentEnd;
+        Token.TokenKind := token_block_comment_end;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 2;
         Inc(Index);
@@ -3153,7 +3153,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctLineComment;
+        Token.TokenKind := token_line_comment;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 2;
         Inc(Index);
@@ -3168,7 +3168,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctDot;
+        Token.TokenKind := token_dot;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 2;
       end
@@ -3181,7 +3181,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctArrow;
+        Token.TokenKind := token_arrow;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 2;
         Inc(Index);
@@ -3195,7 +3195,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctAnd;
+        Token.TokenKind := token_logical_and;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 2;
         Inc(Index);
@@ -3209,7 +3209,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctOr;
+        Token.TokenKind := token_logical_or;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 2;
         Inc(Index);
@@ -3223,7 +3223,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctAdd;
+        Token.TokenKind := token_plus;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3236,7 +3236,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctSubtract;
+        Token.TokenKind := token_minus;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3249,7 +3249,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctMultiply;
+        Token.TokenKind := token_multiply;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3262,7 +3262,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctDivide;
+        Token.TokenKind := token_divide;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3275,7 +3275,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctModulo;
+        Token.TokenKind := token_modulo;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3288,7 +3288,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctBitAnd;
+        Token.TokenKind := token_bit_and;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3301,7 +3301,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctBitOr;
+        Token.TokenKind := token_bit_or;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3314,7 +3314,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctBitXor;
+        Token.TokenKind := token_bit_xor;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3327,7 +3327,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctBitNot;
+        Token.TokenKind := token_bit_not;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3340,7 +3340,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctNotEqual;
+        Token.TokenKind := token_not_equal;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 2;
         Inc(Index);
@@ -3354,7 +3354,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctNot;
+        Token.TokenKind := token_logical_not;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3367,7 +3367,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctShiftLeft;
+        Token.TokenKind := token_shift_left;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 2;
         Inc(Index);
@@ -3381,7 +3381,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctShiftRight;
+        Token.TokenKind := token_shift_right;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 2;
         Inc(Index);
@@ -3395,7 +3395,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctEqual;
+        Token.TokenKind := token_equal;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 2;
         Inc(Index);
@@ -3409,7 +3409,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctAssign;
+        Token.TokenKind := token_assign;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3422,7 +3422,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctLessEqual;
+        Token.TokenKind := token_less_equal;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 2;
         Inc(Index);
@@ -3436,7 +3436,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctGreaterEqual;
+        Token.TokenKind := token_greater_equal;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 2;
         Inc(Index);
@@ -3450,7 +3450,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctLess;
+        Token.TokenKind := token_less;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3463,7 +3463,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctGreater;
+        Token.TokenKind := token_greater;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3476,7 +3476,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctSemicolon;
+        Token.TokenKind := token_semicolon;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3489,7 +3489,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctColon;
+        Token.TokenKind := token_colon;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3502,7 +3502,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctComma;
+        Token.TokenKind := token_comma;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
       end
@@ -3514,10 +3514,10 @@ begin
           Inc(Last.SourceLength, RunLength);
         end;
         RunStart := -1;
-        if (Last = nil) or ((Last <> nil) and (Last.TokenKind <> ctWhitespace)) then
+        if (Last = nil) or ((Last <> nil) and (Last.TokenKind <> token_whitespace)) then
         begin
           Token := AddToken;
-          Token.TokenKind := ctWhitespace;
+          Token.TokenKind := token_whitespace;
           Token.SourceStart := Index + SourceOffset;
           Token.SourceLength := 1;
         end
@@ -3532,7 +3532,7 @@ begin
         end;
         RunStart := -1;
         Token := AddToken;
-        Token.TokenKind := ctNewline;
+        Token.TokenKind := token_newline;
         Token.SourceStart := Index + SourceOffset;
         Token.SourceLength := 1;
         Inc(SourceOffset, NewlineOffset);
@@ -3551,7 +3551,7 @@ begin
           Inc(Last.SourceLength, RunLength);
         end;
         Token := AddToken;
-        Token.TokenKind := ctStringLiteral;
+        Token.TokenKind := token_string_literal;
         QuoteStart := Index;
         Last.SourceStart := Index + SourceOffset;
         Last.SourceLength := 2;
@@ -3561,10 +3561,10 @@ begin
       end
       else if C > ' ' then
       begin
-        if (Last = nil) or (Last.TokenKind <> ctText) then
+        if (Last = nil) or (Last.TokenKind <> token_unquoted_text) then
         begin
           Token := AddToken;
-          Token.TokenKind := ctText;
+          Token.TokenKind := token_unquoted_text;
           Last.SourceStart := Index + SourceOffset;
           Last.SourceLength := 0;
           Last.Text := '';
@@ -3574,7 +3574,7 @@ begin
         else Inc(RunLength);
       end;
     end
-    else if Last.TokenKind = ctStringLiteral then
+    else if Last.TokenKind = token_string_literal then
     begin
       Inc(RunLength);
       if C = '\' then
@@ -3699,10 +3699,10 @@ begin
   Token := First;
   while Token <> nil do
   begin
-    if (Token.TokenKind = ctOpenParen) or (Token.TokenKind = ctOpenBrace) or
-      (Token.TokenKind = ctOpenBracket) or (Token.TokenKind = ctBlockCommentStart) then Inc(OpenCount);
-    if (Token.TokenKind = ctCloseParen) or (Token.TokenKind = ctCloseBrace) or
-      (Token.TokenKind = ctCloseBracket) or (Token.TokenKind = ctBlockCommentEnd) then Inc(CloseCount);
+    if (Token.TokenKind = token_open_paren) or (Token.TokenKind = token_open_brace) or
+      (Token.TokenKind = token_open_bracket) or (Token.TokenKind = token_block_comment_start) then Inc(OpenCount);
+    if (Token.TokenKind = token_close_paren) or (Token.TokenKind = token_close_brace) or
+      (Token.TokenKind = token_close_bracket) or (Token.TokenKind = token_block_comment_end) then Inc(CloseCount);
     Token := Token.Next;
   end;
   if OpenCount <> CloseCount then
@@ -3717,27 +3717,27 @@ begin
     Token := First;
     while Token <> nil do
     begin
-      if Token.TokenKind = ctOpenParen then
+      if Token.TokenKind = token_open_paren then
       begin
         Stack[Depth] := 1;
         Inc(Depth);
       end
-      else if Token.TokenKind = ctOpenBrace then
+      else if Token.TokenKind = token_open_brace then
       begin
         Stack[Depth] := 2;
         Inc(Depth);
       end
-      else if Token.TokenKind = ctOpenBracket then
+      else if Token.TokenKind = token_open_bracket then
       begin
         Stack[Depth] := 3;
         Inc(Depth);
       end
-      else if Token.TokenKind = ctBlockCommentStart then
+      else if Token.TokenKind = token_block_comment_start then
       begin
         Stack[Depth] := 4;
         Inc(Depth);
       end
-      else if Token.TokenKind = ctCloseParen then
+      else if Token.TokenKind = token_close_paren then
       begin
         // Native checks total openings here, not the current stack depth.
         if (OpenCount < 1) or (Stack[Depth - 1] <> 1) then
@@ -3748,7 +3748,7 @@ begin
         end;
         Dec(Depth);
       end
-      else if Token.TokenKind = ctCloseBrace then
+      else if Token.TokenKind = token_close_brace then
       begin
         if (OpenCount < 1) or (Stack[Depth - 1] <> 2) then
         begin
@@ -3758,7 +3758,7 @@ begin
         end;
         Dec(Depth);
       end
-      else if Token.TokenKind = ctCloseBracket then
+      else if Token.TokenKind = token_close_bracket then
       begin
         if (OpenCount < 1) or (Stack[Depth - 1] <> 3) then
         begin
@@ -3768,7 +3768,7 @@ begin
         end;
         Dec(Depth);
       end
-      else if Token.TokenKind = ctBlockCommentEnd then
+      else if Token.TokenKind = token_block_comment_end then
       begin
         if (OpenCount < 1) or (Stack[Depth - 1] <> 4) then
         begin
@@ -3804,7 +3804,7 @@ begin
   begin
     Previous := Token;
     Token := Token.Next;
-    if Previous.TokenKind = ctWhitespace then DeleteToken(Previous);
+    if Previous.TokenKind = token_whitespace then DeleteToken(Previous);
   end;
 end;
 { @end $466D34 }
@@ -3819,7 +3819,7 @@ begin
   begin
     Previous := Token;
     Token := Token.Next;
-    if Previous.TokenKind = ctNewline then DeleteToken(Previous);
+    if Previous.TokenKind = token_newline then DeleteToken(Previous);
   end;
 end;
 { @end $466D5C }
@@ -3840,12 +3840,12 @@ begin
     Token := Token.Next;
     if not LineComment and (CommentDepth = 0) then
     begin
-      if Previous.TokenKind = ctBlockCommentStart then
+      if Previous.TokenKind = token_block_comment_start then
       begin
         CommentDepth := 1;
         DeleteToken(Previous);
       end
-      else if Previous.TokenKind = ctLineComment then
+      else if Previous.TokenKind = token_line_comment then
       begin
         LineComment := True;
         DeleteToken(Previous);
@@ -3853,9 +3853,9 @@ begin
     end
     else
     begin
-      if (CommentDepth <> 0) and (Previous.TokenKind = ctBlockCommentStart) then Inc(CommentDepth)
-      else if LineComment and (Previous.TokenKind = ctNewline) then LineComment := False
-      else if (CommentDepth <> 0) and (Previous.TokenKind = ctBlockCommentEnd) then Dec(CommentDepth);
+      if (CommentDepth <> 0) and (Previous.TokenKind = token_block_comment_start) then Inc(CommentDepth)
+      else if LineComment and (Previous.TokenKind = token_newline) then LineComment := False
+      else if (CommentDepth <> 0) and (Previous.TokenKind = token_block_comment_end) then Dec(CommentDepth);
       DeleteToken(Previous);
     end;
   end;
@@ -3873,26 +3873,26 @@ end;
 { @routine $466E40 InitInstr }
 procedure InitInstr(Instruction: TExpressionInstrEC; Token: TCodeTokenKind);
 begin
-  if Token = ctAdd then Instruction.Opcode := eoAdd
-  else if Token = ctSubtract then Instruction.Opcode := eoSubtract
-  else if Token = ctMultiply then Instruction.Opcode := eoMultiply
-  else if Token = ctDivide then Instruction.Opcode := eoDivide
-  else if Token = ctModulo then Instruction.Opcode := eoModulo
-  else if Token = ctBitAnd then Instruction.Opcode := eoBitAnd
-  else if Token = ctBitOr then Instruction.Opcode := eoBitOr
-  else if Token = ctBitXor then Instruction.Opcode := eoBitXor
-  else if Token = ctBitNot then Instruction.Opcode := eoBitNot
-  else if Token = ctAnd then Instruction.Opcode := eoAnd
-  else if Token = ctOr then Instruction.Opcode := eoOr
-  else if Token = ctNot then Instruction.Opcode := eoNot
-  else if Token = ctShiftLeft then Instruction.Opcode := eoShiftLeft
-  else if Token = ctShiftRight then Instruction.Opcode := eoShiftRight
-  else if Token = ctEqual then Instruction.Opcode := eoEqual
-  else if Token = ctNotEqual then Instruction.Opcode := eoNotEqual
-  else if Token = ctLess then Instruction.Opcode := eoLess
-  else if Token = ctGreater then Instruction.Opcode := eoGreater
-  else if Token = ctLessEqual then Instruction.Opcode := eoLessEqual
-  else if Token = ctGreaterEqual then Instruction.Opcode := eoGreaterEqual
+  if Token = token_plus then Instruction.Opcode := expr_op_add
+  else if Token = token_minus then Instruction.Opcode := expr_op_subtract
+  else if Token = token_multiply then Instruction.Opcode := expr_op_multiply
+  else if Token = token_divide then Instruction.Opcode := expr_op_divide
+  else if Token = token_modulo then Instruction.Opcode := expr_op_modulo
+  else if Token = token_bit_and then Instruction.Opcode := expr_op_bit_and
+  else if Token = token_bit_or then Instruction.Opcode := expr_op_bit_or
+  else if Token = token_bit_xor then Instruction.Opcode := expr_op_bit_xor
+  else if Token = token_bit_not then Instruction.Opcode := expr_op_bit_not
+  else if Token = token_logical_and then Instruction.Opcode := expr_op_logical_and
+  else if Token = token_logical_or then Instruction.Opcode := expr_op_logical_or
+  else if Token = token_logical_not then Instruction.Opcode := expr_op_logical_not
+  else if Token = token_shift_left then Instruction.Opcode := expr_op_shift_left
+  else if Token = token_shift_right then Instruction.Opcode := expr_op_shift_right
+  else if Token = token_equal then Instruction.Opcode := expr_op_equal
+  else if Token = token_not_equal then Instruction.Opcode := expr_op_not_equal
+  else if Token = token_less then Instruction.Opcode := expr_op_less
+  else if Token = token_greater then Instruction.Opcode := expr_op_greater
+  else if Token = token_less_equal then Instruction.Opcode := expr_op_less_equal
+  else if Token = token_greater_equal then Instruction.Opcode := expr_op_greater_equal
   else raise ExceptionExpressionEC.Create('InitInstr');
 end;
 { @end $466E40 }
@@ -3916,7 +3916,7 @@ end;
 { @routine $466FC8 TExpressionVarEC_Destroy }
 destructor TExpressionVarEC.Destroy;
 begin
-  if Kind = evOwned then Value.Free;
+  if Kind = expr_var_owned_value then Value.Free;
   Value := nil;
   MemberPath := nil;
   inherited Destroy;
@@ -3931,10 +3931,10 @@ begin
   Name := Source.Name;
   Kind := Source.Kind;
   Value := nil;
-  if Kind = evNamed then Value := Source.Value
-  else if (Kind = evOwned) and (Source.Value <> nil) then
+  if Kind = expr_var_named_value then Value := Source.Value
+  else if (Kind = expr_var_owned_value) and (Source.Value <> nil) then
   begin
-    Value := TVarEC.Create(vkEmpty);
+    Value := TVarEC.Create(value_empty);
     Value.AssignFrom(Source.Value, False);
   end;
   if Source.MemberPath <> nil then
@@ -3997,7 +3997,7 @@ end;
 { @end $4671D8 }
 
 { @routine $46722C TExpressionVarEC_Resolve }
-function TExpressionVarEC.Resolve(InitialKind: TVarKind): TVarEC;
+function TExpressionVarEC.Resolve(InitialKind: TScriptValueKind): TVarEC;
 var
   i: Integer;
 begin
@@ -4010,8 +4010,8 @@ begin
       i := 0;
       while i <= High(MemberPath) do
       begin
-        if Result.ValueKind = vkClass then Result := Result.AsClass.FindVar(MemberPath[i])
-        else if Result.ValueKind = vkFunction then Result := Result.AsFunction.FindVar(MemberPath[i])
+        if Result.ValueKind = value_class then Result := Result.AsClass.FindVar(MemberPath[i])
+        else if Result.ValueKind = value_script_function then Result := Result.AsFunction.FindVar(MemberPath[i])
         else raise ExceptionExpressionEC.Create('Not link var :' + GetFullName);
         if Result = nil then raise ExceptionExpressionEC.Create('Not link var :' + GetFullName);
         Inc(i);
@@ -4020,7 +4020,7 @@ begin
   end
   else
   begin
-    if Kind = evOwned then Value := TVarEC.Create(InitialKind)
+    if Kind = expr_var_owned_value then Value := TVarEC.Create(InitialKind)
     else raise ExceptionExpressionEC.Create('Not link var :' + GetFullName);
     Result := Value;
   end;
@@ -4220,96 +4220,96 @@ begin
   Token := FirstToken;
   while Token <> EndToken do
   begin
-    if (Token.TokenKind <> ctBlockCommentStart) and (Token.TokenKind <> ctLineComment) then
+    if (Token.TokenKind <> token_block_comment_start) and (Token.TokenKind <> token_line_comment) then
     begin
-      if Token.TokenKind = ctStringLiteral then
+      if Token.TokenKind = token_string_literal then
       begin
         Item := Compiler.AddUnit;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := Token.SourceLength;
-        Item.Kind := cuStringLiteral;
+        Item.Kind := term_string_literal;
         Item.Text := Token.Text;
       end
-      else if Token.TokenKind = ctComma then
+      else if Token.TokenKind = token_comma then
       begin
         if Depth <= 0 then Break;
         Item := Compiler.AddUnit;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := Token.SourceLength;
-        Item.Kind := cuComma;
+        Item.Kind := term_comma;
       end
-      else if Token.TokenKind = ctAssign then
+      else if Token.TokenKind = token_assign then
       begin
         Item := Compiler.AddUnit;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := Token.SourceLength;
-        Item.Kind := cuAssignment;
+        Item.Kind := term_assignment;
       end
-      else if Token.TokenKind = ctOpenParen then
+      else if Token.TokenKind = token_open_paren then
       begin
         Item := Compiler.AddUnit;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := Token.SourceLength;
-        Item.Kind := cuOpenParen;
+        Item.Kind := term_open_paren;
         Inc(Depth);
       end
-      else if Token.TokenKind = ctCloseParen then
+      else if Token.TokenKind = token_close_paren then
       begin
         Dec(Depth);
         if Depth < 0 then Break;
         Item := Compiler.AddUnit;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := Token.SourceLength;
-        Item.Kind := cuCloseParen;
+        Item.Kind := term_close_paren;
       end
-      else if Token.TokenKind = ctOpenBracket then
+      else if Token.TokenKind = token_open_bracket then
       begin
         Item := Compiler.AddUnit;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := Token.SourceLength;
-        Item.Kind := cuOpenBracket;
+        Item.Kind := term_open_bracket;
         Inc(Depth);
       end
-      else if Token.TokenKind = ctCloseBracket then
+      else if Token.TokenKind = token_close_bracket then
       begin
         Dec(Depth);
         if Depth < 0 then Break;
         Item := Compiler.AddUnit;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := Token.SourceLength;
-        Item.Kind := cuCloseBracket;
+        Item.Kind := term_close_bracket;
       end
-      else if Token.TokenKind = ctAssign then
+      else if Token.TokenKind = token_assign then
       begin
         Item := Compiler.AddUnit;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := Token.SourceLength;
-        Item.Kind := cuAssignment;
+        Item.Kind := term_assignment;
       end
-      else if (Token.TokenKind = ctBitNot) or (Token.TokenKind = ctNot) then
+      else if (Token.TokenKind = token_bit_not) or (Token.TokenKind = token_logical_not) then
       begin
         Item := Compiler.AddUnit;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := Token.SourceLength;
-        Item.Kind := cuUnaryOperator;
+        Item.Kind := term_unary_operator;
         Item.OperatorToken := Token.TokenKind;
       end
-      // The original binary tests ctSubtract twice in this condition.
-      else if (Token.TokenKind = ctAdd) or (Token.TokenKind = ctSubtract) or (Token.TokenKind = ctMultiply)
-        or (Token.TokenKind = ctDivide) or (Token.TokenKind = ctModulo) or (Token.TokenKind = ctSubtract)
-        or (Token.TokenKind = ctBitAnd) or (Token.TokenKind = ctBitOr) or (Token.TokenKind = ctBitXor)
-        or (Token.TokenKind = ctAnd) or (Token.TokenKind = ctOr) or (Token.TokenKind = ctShiftLeft)
-        or (Token.TokenKind = ctShiftRight) or (Token.TokenKind = ctEqual) or (Token.TokenKind = ctNotEqual)
-        or (Token.TokenKind = ctLess) or (Token.TokenKind = ctGreater) or (Token.TokenKind = ctLessEqual)
-        or (Token.TokenKind = ctGreaterEqual) then
+      // The original binary tests token_minus twice in this condition.
+      else if (Token.TokenKind = token_plus) or (Token.TokenKind = token_minus) or (Token.TokenKind = token_multiply)
+        or (Token.TokenKind = token_divide) or (Token.TokenKind = token_modulo) or (Token.TokenKind = token_minus)
+        or (Token.TokenKind = token_bit_and) or (Token.TokenKind = token_bit_or) or (Token.TokenKind = token_bit_xor)
+        or (Token.TokenKind = token_logical_and) or (Token.TokenKind = token_logical_or) or (Token.TokenKind = token_shift_left)
+        or (Token.TokenKind = token_shift_right) or (Token.TokenKind = token_equal) or (Token.TokenKind = token_not_equal)
+        or (Token.TokenKind = token_less) or (Token.TokenKind = token_greater) or (Token.TokenKind = token_less_equal)
+        or (Token.TokenKind = token_greater_equal) then
       begin
         Item := Compiler.AddUnit;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := Token.SourceLength;
-        Item.Kind := cuBinaryOperator;
+        Item.Kind := term_binary_operator;
         Item.OperatorToken := Token.TokenKind;
       end
-      else if Token.TokenKind = ctText then
+      else if Token.TokenKind = token_unquoted_text then
       begin
         Next := Token;
         if TryReadFloatLiteral(Next, FloatValue) then
@@ -4318,7 +4318,7 @@ begin
           Item.SourceStart := Token.SourceStart;
           if Next = nil then Item.SourceLength := Analyzer.Last.SourceStart + Analyzer.Last.SourceLength - Token.SourceStart
           else Item.SourceLength := Next.Prev.SourceStart + Next.Prev.SourceLength - Token.SourceStart;
-          Item.Kind := cuFloatLiteral;
+          Item.Kind := term_float_literal;
           Item.FloatValue := FloatValue;
           Token := Next;
           Continue;
@@ -4329,7 +4329,7 @@ begin
           Item.SourceStart := Token.SourceStart;
           if Next = nil then Item.SourceLength := Analyzer.Last.SourceStart + Analyzer.Last.SourceLength - Token.SourceStart
           else Item.SourceLength := Next.Prev.SourceStart + Next.Prev.SourceLength - Token.SourceStart;
-          Item.Kind := cuDwordLiteral;
+          Item.Kind := term_uint_literal;
           Item.DwordValue := DwordValue;
           Token := Next;
           Continue;
@@ -4340,7 +4340,7 @@ begin
           Item.SourceStart := Token.SourceStart;
           if Next = nil then Item.SourceLength := Analyzer.Last.SourceStart + Analyzer.Last.SourceLength - Token.SourceStart
           else Item.SourceLength := Next.Prev.SourceStart + Next.Prev.SourceLength - Token.SourceStart;
-          Item.Kind := cuIntLiteral;
+          Item.Kind := term_int_literal;
           Item.IntValue := IntValue;
           Token := Next;
           Continue;
@@ -4351,7 +4351,7 @@ begin
           Item.SourceStart := Token.SourceStart;
           if Next = nil then Item.SourceLength := Analyzer.Last.SourceStart + Analyzer.Last.SourceLength - Token.SourceStart
           else Item.SourceLength := Next.Prev.SourceStart + Next.Prev.SourceLength - Token.SourceStart;
-          Item.Kind := cuStringLiteral;
+          Item.Kind := term_string_literal;
           Item.Text := Text;
           Token := Next;
           Continue;
@@ -4362,7 +4362,7 @@ begin
           Item.SourceStart := Token.SourceStart;
           if Next = nil then Item.SourceLength := Analyzer.Last.SourceStart + Analyzer.Last.SourceLength - Token.SourceStart
           else Item.SourceLength := Next.Prev.SourceStart + Next.Prev.SourceLength - Token.SourceStart;
-          Item.Kind := cuName;
+          Item.Kind := term_name_path;
           Item.Text := Text;
           Token := Next;
           Continue;
@@ -4376,8 +4376,8 @@ begin
       end
       else
       begin
-        if Token.TokenKind = ctSemicolon then Break;
-        if (Token.TokenKind <> ctNewline) and (Token.TokenKind <> ctWhitespace) then
+        if Token.TokenKind = token_semicolon then Break;
+        if (Token.TokenKind <> token_newline) and (Token.TokenKind <> token_whitespace) then
         begin
           Result := FormatScriptError(0, Token.SourceStart);
           Compiler.Free;
@@ -4392,18 +4392,18 @@ begin
   Item := Compiler.First;
   while Item <> nil do
   begin
-    if (Item.Kind = cuOpenParen) and (Item.Prev <> nil) and (Item.Prev.Kind = cuName) then
+    if (Item.Kind = term_open_paren) and (Item.Prev <> nil) and (Item.Prev.Kind = term_name_path) then
     begin
-      Item.Kind := cuCall;
+      Item.Kind := term_function_call;
       Item.Text := Item.Prev.Text;
       Compiler.DeleteUnit(Item.Prev);
       Inc(Depth);
     end
-    else if Item.Kind = cuOpenBracket then
+    else if Item.Kind = term_open_bracket then
     begin
-      if (Item.Prev <> nil) and (Item.Prev.Kind = cuName) then
+      if (Item.Prev <> nil) and (Item.Prev.Kind = term_name_path) then
       begin
-        Item.Kind := cuIndex;
+        Item.Kind := term_array_access;
         Item.Text := Item.Prev.Text;
         Compiler.DeleteUnit(Item.Prev);
         Inc(Depth);
@@ -4415,9 +4415,9 @@ begin
         Exit;
       end;
     end
-    else if Item.Kind = cuOpenParen then Inc(Depth)
-    else if Item.Kind = cuCloseParen then Dec(Depth)
-    else if Item.Kind = cuCloseBracket then Dec(Depth);
+    else if Item.Kind = term_open_paren then Inc(Depth)
+    else if Item.Kind = term_close_paren then Dec(Depth)
+    else if Item.Kind = term_close_bracket then Dec(Depth);
     Item := Item.Next;
   end;
   if Depth <> 0 then
@@ -4430,12 +4430,12 @@ begin
   Item := Compiler.First;
   while Item <> nil do
   begin
-    if (Item.Kind = cuBinaryOperator) and (Item.OperatorToken = ctSubtract) and
-      (Item.Next <> nil) and ((Item.Next.Kind = cuIntLiteral) or (Item.Next.Kind = cuFloatLiteral)) then
+    if (Item.Kind = term_binary_operator) and (Item.OperatorToken = token_minus) and
+      (Item.Next <> nil) and ((Item.Next.Kind = term_int_literal) or (Item.Next.Kind = term_float_literal)) then
     begin
-      if (Item.Prev = nil) or ((Item.Prev.Kind <> cuIntLiteral) and (Item.Prev.Kind <> cuDwordLiteral) and
-        (Item.Prev.Kind <> cuFloatLiteral) and (Item.Prev.Kind <> cuCloseParen) and
-        (Item.Prev.Kind <> cuCloseBracket) and (Item.Prev.Kind <> cuName)) then
+      if (Item.Prev = nil) or ((Item.Prev.Kind <> term_int_literal) and (Item.Prev.Kind <> term_uint_literal) and
+        (Item.Prev.Kind <> term_float_literal) and (Item.Prev.Kind <> term_close_paren) and
+        (Item.Prev.Kind <> term_close_bracket) and (Item.Prev.Kind <> term_name_path)) then
       begin
         Item := Item.Next;
         Compiler.DeleteUnit(Item.Prev);
@@ -4443,52 +4443,52 @@ begin
         Item.FloatValue := -Item.FloatValue;
       end;
     end
-    else if (Item.Kind = cuBinaryOperator) and (Item.OperatorToken = ctSubtract) and
-      (Item.Next <> nil) and ((Item.Next.Kind = cuIntLiteral) or (Item.Next.Kind = cuDwordLiteral) or
-      (Item.Next.Kind = cuFloatLiteral) or (Item.Next.Kind = cuOpenParen) or (Item.Next.Kind = cuCall) or
-      (Item.Next.Kind = cuIndex) or (Item.Next.Kind = cuName)) then
+    else if (Item.Kind = term_binary_operator) and (Item.OperatorToken = token_minus) and
+      (Item.Next <> nil) and ((Item.Next.Kind = term_int_literal) or (Item.Next.Kind = term_uint_literal) or
+      (Item.Next.Kind = term_float_literal) or (Item.Next.Kind = term_open_paren) or (Item.Next.Kind = term_function_call) or
+      (Item.Next.Kind = term_array_access) or (Item.Next.Kind = term_name_path)) then
     begin
-      if (Item.Prev = nil) or ((Item.Prev.Kind <> cuIntLiteral) and (Item.Prev.Kind <> cuDwordLiteral) and
-        (Item.Prev.Kind <> cuFloatLiteral) and (Item.Prev.Kind <> cuCloseParen) and
-        (Item.Prev.Kind <> cuCloseBracket) and (Item.Prev.Kind <> cuName)) then Item.Kind := cuUnaryOperator;
+      if (Item.Prev = nil) or ((Item.Prev.Kind <> term_int_literal) and (Item.Prev.Kind <> term_uint_literal) and
+        (Item.Prev.Kind <> term_float_literal) and (Item.Prev.Kind <> term_close_paren) and
+        (Item.Prev.Kind <> term_close_bracket) and (Item.Prev.Kind <> term_name_path)) then Item.Kind := term_unary_operator;
     end;
     Item := Item.Next;
   end;
   Item := Compiler.First;
   while Item <> nil do
   begin
-    if Item.Kind = cuBinaryOperator then
+    if Item.Kind = term_binary_operator then
     begin
       if (Item.Prev = nil) or (Item.Next = nil) or
-        not ((Item.Prev.Kind = cuName) or (Item.Prev.Kind = cuIntLiteral) or (Item.Prev.Kind = cuDwordLiteral)
-          or (Item.Prev.Kind = cuFloatLiteral) or (Item.Prev.Kind = cuStringLiteral)
-          or (Item.Prev.Kind = cuCloseParen) or (Item.Prev.Kind = cuCloseBracket)) or
-        not ((Item.Next.Kind = cuName) or (Item.Next.Kind = cuIntLiteral) or (Item.Next.Kind = cuDwordLiteral)
-          or (Item.Next.Kind = cuFloatLiteral) or (Item.Next.Kind = cuStringLiteral) or (Item.Next.Kind = cuOpenParen)
-          or (Item.Next.Kind = cuCall) or (Item.Next.Kind = cuIndex) or (Item.Next.Kind = cuUnaryOperator)) then
+        not ((Item.Prev.Kind = term_name_path) or (Item.Prev.Kind = term_int_literal) or (Item.Prev.Kind = term_uint_literal)
+          or (Item.Prev.Kind = term_float_literal) or (Item.Prev.Kind = term_string_literal)
+          or (Item.Prev.Kind = term_close_paren) or (Item.Prev.Kind = term_close_bracket)) or
+        not ((Item.Next.Kind = term_name_path) or (Item.Next.Kind = term_int_literal) or (Item.Next.Kind = term_uint_literal)
+          or (Item.Next.Kind = term_float_literal) or (Item.Next.Kind = term_string_literal) or (Item.Next.Kind = term_open_paren)
+          or (Item.Next.Kind = term_function_call) or (Item.Next.Kind = term_array_access) or (Item.Next.Kind = term_unary_operator)) then
       begin
         Result := FormatScriptError(0, Item.SourceStart);
         Compiler.Free;
         Exit;
       end;
     end
-    else if Item.Kind = cuAssignment then
+    else if Item.Kind = term_assignment then
     begin
       if (Item.Prev = nil) or (Item.Next = nil) or
-        not ((Item.Prev.Kind = cuName) or (Item.Prev.Kind = cuCloseBracket)) or
-        not ((Item.Next.Kind = cuName) or (Item.Next.Kind = cuIntLiteral) or (Item.Next.Kind = cuDwordLiteral)
-          or (Item.Next.Kind = cuFloatLiteral) or (Item.Next.Kind = cuStringLiteral) or (Item.Next.Kind = cuOpenParen)
-          or (Item.Next.Kind = cuCall) or (Item.Next.Kind = cuIndex) or (Item.Next.Kind = cuUnaryOperator)) then
+        not ((Item.Prev.Kind = term_name_path) or (Item.Prev.Kind = term_close_bracket)) or
+        not ((Item.Next.Kind = term_name_path) or (Item.Next.Kind = term_int_literal) or (Item.Next.Kind = term_uint_literal)
+          or (Item.Next.Kind = term_float_literal) or (Item.Next.Kind = term_string_literal) or (Item.Next.Kind = term_open_paren)
+          or (Item.Next.Kind = term_function_call) or (Item.Next.Kind = term_array_access) or (Item.Next.Kind = term_unary_operator)) then
       begin
         Result := FormatScriptError(0, Item.SourceStart);
         Compiler.Free;
         Exit;
       end;
     end
-    else if (Item.Kind = cuUnaryOperator) and ((Item.Next = nil) or
-      not ((Item.Next.Kind = cuName) or (Item.Next.Kind = cuIntLiteral) or (Item.Next.Kind = cuDwordLiteral)
-        or (Item.Next.Kind = cuFloatLiteral) or (Item.Next.Kind = cuStringLiteral) or (Item.Next.Kind = cuOpenParen)
-        or (Item.Next.Kind = cuCall) or (Item.Next.Kind = cuIndex) or (Item.Next.Kind = cuUnaryOperator))) then
+    else if (Item.Kind = term_unary_operator) and ((Item.Next = nil) or
+      not ((Item.Next.Kind = term_name_path) or (Item.Next.Kind = term_int_literal) or (Item.Next.Kind = term_uint_literal)
+        or (Item.Next.Kind = term_float_literal) or (Item.Next.Kind = term_string_literal) or (Item.Next.Kind = term_open_paren)
+        or (Item.Next.Kind = term_function_call) or (Item.Next.Kind = term_array_access) or (Item.Next.Kind = term_unary_operator))) then
     begin
       Result := FormatScriptError(0, Item.SourceStart);
       Compiler.Free;
@@ -4499,48 +4499,48 @@ begin
   Item := Compiler.First;
   while Item <> nil do
   begin
-    if Item.Kind = cuIntLiteral then
+    if Item.Kind = term_int_literal then
     begin
-      Item.Kind := cuVariable;
+      Item.Kind := term_value_slot;
       Item.VariableIndex := AddVariable;
       Slot := GetVariable(Item.VariableIndex);
-      Slot.Kind := evOwned;
-      Slot.Value := TVarEC.Create(vkInt);
+      Slot.Kind := expr_var_owned_value;
+      Slot.Value := TVarEC.Create(value_int32);
       Slot.Value.AsInteger := Item.IntValue;
     end
-    else if Item.Kind = cuDwordLiteral then
+    else if Item.Kind = term_uint_literal then
     begin
-      Item.Kind := cuVariable;
+      Item.Kind := term_value_slot;
       Item.VariableIndex := AddVariable;
       Slot := GetVariable(Item.VariableIndex);
-      Slot.Kind := evOwned;
-      Slot.Value := TVarEC.Create(vkDword);
+      Slot.Kind := expr_var_owned_value;
+      Slot.Value := TVarEC.Create(value_uint32);
       Slot.Value.AsDword := Item.DwordValue;
     end
-    else if Item.Kind = cuFloatLiteral then
+    else if Item.Kind = term_float_literal then
     begin
-      Item.Kind := cuVariable;
+      Item.Kind := term_value_slot;
       Item.VariableIndex := AddVariable;
       Slot := GetVariable(Item.VariableIndex);
-      Slot.Kind := evOwned;
-      Slot.Value := TVarEC.Create(vkFloat);
+      Slot.Kind := expr_var_owned_value;
+      Slot.Value := TVarEC.Create(value_float64);
       Slot.Value.AsFloat := Item.FloatValue;
     end
-    else if Item.Kind = cuStringLiteral then
+    else if Item.Kind = term_string_literal then
     begin
-      Item.Kind := cuVariable;
+      Item.Kind := term_value_slot;
       Item.VariableIndex := AddVariable;
       Slot := GetVariable(Item.VariableIndex);
-      Slot.Kind := evOwned;
-      Slot.Value := TVarEC.Create(vkString);
+      Slot.Kind := expr_var_owned_value;
+      Slot.Value := TVarEC.Create(value_string);
       Slot.Value.AsString := Item.Text;
     end
-    else if Item.Kind = cuName then
+    else if Item.Kind = term_name_path then
     begin
-      Item.Kind := cuVariable;
+      Item.Kind := term_value_slot;
       Item.VariableIndex := AddVariable;
       Slot := GetVariable(Item.VariableIndex);
-      Slot.Kind := evNamed;
+      Slot.Kind := expr_var_named_value;
       Slot.Name := Item.Text;
       if not Slot.SplitMemberPath then
       begin
@@ -4549,11 +4549,11 @@ begin
         Exit;
       end;
     end
-    else if Item.Kind = cuCall then
+    else if Item.Kind = term_function_call then
     begin
       Item.VariableIndex := AddVariable;
       Slot := GetVariable(Item.VariableIndex);
-      Slot.Kind := evNamed;
+      Slot.Kind := expr_var_named_value;
       Slot.Name := Item.Text;
       if not Slot.SplitMemberPath then
       begin
@@ -4562,11 +4562,11 @@ begin
         Exit;
       end;
     end
-    else if Item.Kind = cuIndex then
+    else if Item.Kind = term_array_access then
     begin
       Item.VariableIndex := AddVariable;
       Slot := GetVariable(Item.VariableIndex);
-      Slot.Kind := evNamed;
+      Slot.Kind := expr_var_named_value;
       Slot.Name := Item.Text;
       if not Slot.SplitMemberPath then
       begin
@@ -4598,17 +4598,17 @@ begin
       // Unreachable raise.
       raise ExceptionExpressionEC.Create('Unknown error');
     end;
-    if (Item.Kind = cuCall) or (Item.Kind = cuIndex) then
+    if (Item.Kind = term_function_call) or (Item.Kind = term_array_access) then
     begin
       ArgumentCount := 0;
       Closing := Item.Next;
       while Closing <> nil do
       begin
-        if Closing.Kind = cuVariable then Inc(ArgumentCount)
-        else if (Closing.Kind = cuCloseParen) or (Closing.Kind = cuCloseBracket) then Break;
+        if Closing.Kind = term_value_slot then Inc(ArgumentCount)
+        else if (Closing.Kind = term_close_paren) or (Closing.Kind = term_close_bracket) then Break;
         Closing := Closing.Next;
       end;
-      if (Item.Kind = cuIndex) and (ArgumentCount < 1) then
+      if (Item.Kind = term_array_access) and (ArgumentCount < 1) then
       begin
         Clear;
         Result := FormatScriptError(0, Item.SourceStart);
@@ -4618,11 +4618,11 @@ begin
         raise ExceptionExpressionEC.Create('Unknown error');
       end;
       ResultSlot := AddVariable;
-      if Item.Kind = cuCall then GetVariable(ResultSlot).Kind := evOwned
-      else GetVariable(ResultSlot).Kind := evIndexed;
+      if Item.Kind = term_function_call then GetVariable(ResultSlot).Kind := expr_var_owned_value
+      else GetVariable(ResultSlot).Kind := expr_var_array_element;
       Instruction := GetInstruction(AddInstruction);
-      if Item.Kind = cuCall then Instruction.Opcode := eoCall
-      else Instruction.Opcode := eoIndex;
+      if Item.Kind = term_function_call then Instruction.Opcode := expr_op_call_function
+      else Instruction.Opcode := expr_op_array_access;
       Instruction.OperandCount := ArgumentCount + 2;
       SetLength(Instruction.Operands, ArgumentCount + 2);
       Instruction.Operands[0] := ResultSlot;
@@ -4631,15 +4631,15 @@ begin
       Reduced := Item.Next;
       while Reduced <> nil do
       begin
-        if Reduced.Kind = cuVariable then
+        if Reduced.Kind = term_value_slot then
         begin
           Instruction.Operands[OperandIndex] := Reduced.VariableIndex;
           Inc(OperandIndex);
         end
-        else if (Reduced.Kind = cuCloseParen) or (Reduced.Kind = cuCloseBracket) then Break;
+        else if (Reduced.Kind = term_close_paren) or (Reduced.Kind = term_close_bracket) then Break;
         Reduced := Reduced.Next;
       end;
-      Item.Kind := cuVariable;
+      Item.Kind := term_value_slot;
       Item.Text := '';
       Item.VariableIndex := ResultSlot;
       Reduced := Item;
@@ -4650,12 +4650,12 @@ begin
         Compiler.DeleteUnit(Item);
       end;
     end
-    else if Item.Kind = cuUnaryOperator then
+    else if Item.Kind = term_unary_operator then
     begin
       ResultSlot := AddVariable;
-      GetVariable(ResultSlot).Kind := evOwned;
+      GetVariable(ResultSlot).Kind := expr_var_owned_value;
       Instruction := GetInstruction(AddInstruction);
-      if Item.OperatorToken = ctSubtract then Instruction.Opcode := eoNegate
+      if Item.OperatorToken = token_minus then Instruction.Opcode := expr_op_negate
       else InitInstr(Instruction, Item.OperatorToken);
       Instruction.OperandCount := 2;
       SetLength(Instruction.Operands, 2);
@@ -4665,10 +4665,10 @@ begin
       Reduced := Item.Next;
       Compiler.DeleteUnit(Item);
     end
-    else if Item.Kind = cuAssignment then
+    else if Item.Kind = term_assignment then
     begin
       Instruction := GetInstruction(AddInstruction);
-      Instruction.Opcode := eoAssign;
+      Instruction.Opcode := expr_op_assign;
       Instruction.OperandCount := 2;
       SetLength(Instruction.Operands, 2);
       Instruction.Operands[0] := Item.Prev.VariableIndex;
@@ -4680,7 +4680,7 @@ begin
     else
     begin
       ResultSlot := AddVariable;
-      GetVariable(ResultSlot).Kind := evOwned;
+      GetVariable(ResultSlot).Kind := expr_var_owned_value;
       Instruction := GetInstruction(AddInstruction);
       InitInstr(Instruction, Item.OperatorToken);
       Instruction.OperandCount := 3;
@@ -4693,8 +4693,8 @@ begin
       Compiler.DeleteUnit(Item.Next);
       Compiler.DeleteUnit(Item);
     end;
-    while (Reduced <> nil) and (Reduced.Prev <> nil) and (Reduced.Prev.Kind = cuOpenParen) and
-      (Reduced.Next <> nil) and (Reduced.Next.Kind = cuCloseParen) do
+    while (Reduced <> nil) and (Reduced.Prev <> nil) and (Reduced.Prev.Kind = term_open_paren) and
+      (Reduced.Next <> nil) and (Reduced.Next.Kind = term_close_paren) do
     begin
       Compiler.DeleteUnit(Reduced.Prev);
       Compiler.DeleteUnit(Reduced.Next);
@@ -4716,7 +4716,7 @@ begin
   begin
     Slot := GetVariable(i);
     if OnlyUnlinked and (Slot.Value <> nil) then Continue;
-    if Slot.Kind = evNamed then
+    if Slot.Kind = expr_var_named_value then
     begin
       Found := Scope.GetVarNE(Slot.Name);
       if Found <> nil then Slot.Value := Found;
@@ -4736,98 +4736,98 @@ var
   Value, IndexValue, Callee, Argument: TVarEC;
   Invocation: TCodeEC;
   LibraryArgumentCount: Integer;
-  ResultKind: TVarKind;
+  ResultKind: TScriptValueKind;
   SingleValue: Single;
 begin
   i := 0;
   while i < VariableCount do
   begin
     Dest := GetVariable(i);
-    if Dest.Kind = evIndexed then Dest.Value := nil;
+    if Dest.Kind = expr_var_array_element then Dest.Value := nil;
     Inc(i);
   end;
   i := 0;
   while i < InstructionCount do
   begin
     Instruction := GetInstruction(i);
-    if (Instruction.Opcode = eoNegate) or (Instruction.Opcode = eoBitNot) or
-      (Instruction.Opcode = eoNot) then
+    if (Instruction.Opcode = expr_op_negate) or (Instruction.Opcode = expr_op_bit_not) or
+      (Instruction.Opcode = expr_op_logical_not) then
     begin
       Dest := GetVariable(Instruction.Operands[0]);
       Left := GetVariable(Instruction.Operands[1]);
       case Instruction.Opcode of
-        eoNegate: Dest.Resolve(Left.Value.ValueKind).OMinus(Left.Resolve(vkEmpty));
-        eoBitNot: Dest.Resolve(Left.Value.ValueKind).OBitNot(Left.Resolve(vkEmpty));
-        eoNot: Dest.Resolve(Left.Value.ValueKind).ONot(Left.Resolve(vkEmpty));
+        expr_op_negate: Dest.Resolve(Left.Value.ValueKind).OMinus(Left.Resolve(value_empty));
+        expr_op_bit_not: Dest.Resolve(Left.Value.ValueKind).OBitNot(Left.Resolve(value_empty));
+        expr_op_logical_not: Dest.Resolve(Left.Value.ValueKind).ONot(Left.Resolve(value_empty));
       end;
     end
-    else if (Instruction.Opcode <> eoCall) and (Instruction.Opcode <> eoAssign) and
-      (Instruction.Opcode <> eoIndex) then
+    else if (Instruction.Opcode <> expr_op_call_function) and (Instruction.Opcode <> expr_op_assign) and
+      (Instruction.Opcode <> expr_op_array_access) then
     begin
       Dest := GetVariable(Instruction.Operands[0]);
       Left := GetVariable(Instruction.Operands[1]);
       Right := GetVariable(Instruction.Operands[2]);
-      ResultKind := vkEmpty;
-      if (Dest.Value = nil) and (Dest.Kind = evOwned) then
+      ResultKind := value_empty;
+      if (Dest.Value = nil) and (Dest.Kind = expr_var_owned_value) then
       begin
-        if (Instruction.Opcode = eoAdd) or (Instruction.Opcode = eoSubtract) or
-          (Instruction.Opcode = eoMultiply) or (Instruction.Opcode = eoDivide) then
-          ResultKind := Left.Resolve(vkEmpty).ValueKind
-        else ResultKind := vkInt;
+        if (Instruction.Opcode = expr_op_add) or (Instruction.Opcode = expr_op_subtract) or
+          (Instruction.Opcode = expr_op_multiply) or (Instruction.Opcode = expr_op_divide) then
+          ResultKind := Left.Resolve(value_empty).ValueKind
+        else ResultKind := value_int32;
       end;
       case Instruction.Opcode of
-        eoAdd: Dest.Resolve(ResultKind).OAdd(Left.Resolve(vkEmpty), Right.Resolve(vkEmpty));
-        eoSubtract: Dest.Resolve(ResultKind).OSub(Left.Resolve(vkEmpty), Right.Resolve(vkEmpty));
-        eoMultiply: Dest.Resolve(ResultKind).OMul(Left.Resolve(vkEmpty), Right.Resolve(vkEmpty));
-        eoDivide: Dest.Resolve(ResultKind).ODiv(Left.Resolve(vkEmpty), Right.Resolve(vkEmpty));
-        eoModulo: Dest.Resolve(ResultKind).OMod(Left.Resolve(vkEmpty), Right.Resolve(vkEmpty));
-        eoBitAnd: Dest.Resolve(ResultKind).OBitAnd(Left.Resolve(vkEmpty), Right.Resolve(vkEmpty));
-        eoBitOr: Dest.Resolve(ResultKind).OBitOr(Left.Resolve(vkEmpty), Right.Resolve(vkEmpty));
-        eoBitXor: Dest.Resolve(ResultKind).OBitXor(Left.Resolve(vkEmpty), Right.Resolve(vkEmpty));
-        eoAnd: Dest.Resolve(ResultKind).OAnd(Left.Resolve(vkEmpty), Right.Resolve(vkEmpty));
-        eoOr: Dest.Resolve(ResultKind).OOr(Left.Resolve(vkEmpty), Right.Resolve(vkEmpty));
-        eoShiftLeft: Dest.Resolve(ResultKind).OShl(Left.Resolve(vkEmpty), Right.Resolve(vkEmpty));
-        eoShiftRight: Dest.Resolve(ResultKind).OShr(Left.Resolve(vkEmpty), Right.Resolve(vkEmpty));
-        eoEqual: Dest.Resolve(ResultKind).OEqual(Left.Resolve(vkEmpty), Right.Resolve(vkEmpty));
-        eoNotEqual: Dest.Resolve(ResultKind).ONotEqual(Left.Resolve(vkEmpty), Right.Resolve(vkEmpty));
-        eoLess: Dest.Resolve(ResultKind).OLess(Left.Resolve(vkEmpty), Right.Resolve(vkEmpty));
-        eoGreater: Dest.Resolve(ResultKind).OMore(Left.Resolve(vkEmpty), Right.Resolve(vkEmpty));
-        eoLessEqual: Dest.Resolve(ResultKind).OLessEqual(Left.Resolve(vkEmpty), Right.Resolve(vkEmpty));
-        eoGreaterEqual: Dest.Resolve(ResultKind).OMoreEqual(Left.Resolve(vkEmpty), Right.Resolve(vkEmpty));
+        expr_op_add: Dest.Resolve(ResultKind).OAdd(Left.Resolve(value_empty), Right.Resolve(value_empty));
+        expr_op_subtract: Dest.Resolve(ResultKind).OSub(Left.Resolve(value_empty), Right.Resolve(value_empty));
+        expr_op_multiply: Dest.Resolve(ResultKind).OMul(Left.Resolve(value_empty), Right.Resolve(value_empty));
+        expr_op_divide: Dest.Resolve(ResultKind).ODiv(Left.Resolve(value_empty), Right.Resolve(value_empty));
+        expr_op_modulo: Dest.Resolve(ResultKind).OMod(Left.Resolve(value_empty), Right.Resolve(value_empty));
+        expr_op_bit_and: Dest.Resolve(ResultKind).OBitAnd(Left.Resolve(value_empty), Right.Resolve(value_empty));
+        expr_op_bit_or: Dest.Resolve(ResultKind).OBitOr(Left.Resolve(value_empty), Right.Resolve(value_empty));
+        expr_op_bit_xor: Dest.Resolve(ResultKind).OBitXor(Left.Resolve(value_empty), Right.Resolve(value_empty));
+        expr_op_logical_and: Dest.Resolve(ResultKind).OAnd(Left.Resolve(value_empty), Right.Resolve(value_empty));
+        expr_op_logical_or: Dest.Resolve(ResultKind).OOr(Left.Resolve(value_empty), Right.Resolve(value_empty));
+        expr_op_shift_left: Dest.Resolve(ResultKind).OShl(Left.Resolve(value_empty), Right.Resolve(value_empty));
+        expr_op_shift_right: Dest.Resolve(ResultKind).OShr(Left.Resolve(value_empty), Right.Resolve(value_empty));
+        expr_op_equal: Dest.Resolve(ResultKind).OEqual(Left.Resolve(value_empty), Right.Resolve(value_empty));
+        expr_op_not_equal: Dest.Resolve(ResultKind).ONotEqual(Left.Resolve(value_empty), Right.Resolve(value_empty));
+        expr_op_less: Dest.Resolve(ResultKind).OLess(Left.Resolve(value_empty), Right.Resolve(value_empty));
+        expr_op_greater: Dest.Resolve(ResultKind).OMore(Left.Resolve(value_empty), Right.Resolve(value_empty));
+        expr_op_less_equal: Dest.Resolve(ResultKind).OLessEqual(Left.Resolve(value_empty), Right.Resolve(value_empty));
+        expr_op_greater_equal: Dest.Resolve(ResultKind).OMoreEqual(Left.Resolve(value_empty), Right.Resolve(value_empty));
       end;
     end
-    else if Instruction.Opcode = eoAssign then
+    else if Instruction.Opcode = expr_op_assign then
     begin
       Dest := GetVariable(Instruction.Operands[0]);
       Left := GetVariable(Instruction.Operands[1]);
-      Dest.Resolve(vkEmpty).Assume(Left.Resolve(vkEmpty), False);
+      Dest.Resolve(value_empty).Assume(Left.Resolve(value_empty), False);
     end
-    else if Instruction.Opcode = eoIndex then
+    else if Instruction.Opcode = expr_op_array_access then
     begin
       Dest := GetVariable(Instruction.Operands[0]);
       Left := GetVariable(Instruction.Operands[1]);
-      Value := Left.Resolve(vkEmpty);
-      if Value.ValueKind <> vkArray then
+      Value := Left.Resolve(value_empty);
+      if Value.ValueKind <> value_array then
         raise ExceptionExpressionEC.Create('Not array:' + Left.Name);
       for j := 2 to Instruction.OperandCount - 1 do
       begin
         Right := GetVariable(Instruction.Operands[j]);
-        IndexValue := Right.Resolve(vkEmpty);
-        if IndexValue.ValueKind = vkString then
+        IndexValue := Right.Resolve(value_empty);
+        if IndexValue.ValueKind = value_string then
         begin
           Value := Value.AsArray.GetVarNE(IndexValue.AsString);
           if Value = nil then
-            raise ExceptionExpressionEC.Create('Error array. name=' + Left.Resolve(vkEmpty).Name +
+            raise ExceptionExpressionEC.Create('Error array. name=' + Left.Resolve(value_empty).Name +
               ' index=' + Right.Value.AsString + ' level=' + IntToStr(j - 1));
         end
         else
         begin
           Value := Value.AsArray.GetItemNE(IndexValue.AsInteger);
           if Value = nil then
-            raise ExceptionExpressionEC.Create('Error array. name=' + Left.Resolve(vkEmpty).Name +
+            raise ExceptionExpressionEC.Create('Error array. name=' + Left.Resolve(value_empty).Name +
               ' index=' + IntToStr(Right.Value.AsInteger) + ' level=' + IntToStr(j - 1));
         end;
-        if (j <> Instruction.OperandCount - 1) and (Value.ValueKind <> vkArray) then
+        if (j <> Instruction.OperandCount - 1) and (Value.ValueKind <> value_array) then
           raise ExceptionExpressionEC.Create('Error array:' + Left.Name);
       end;
       Dest.Value := Value;
@@ -4836,9 +4836,9 @@ begin
     begin
       Dest := GetVariable(Instruction.Operands[0]);
       Left := GetVariable(Instruction.Operands[1]);
-      Dest.Resolve(vkEmpty);
-      Callee := Left.Resolve(vkEmpty);
-      if Callee.ValueKind = vkLibraryFun then
+      Dest.Resolve(value_empty);
+      Callee := Left.Resolve(value_empty);
+      if Callee.ValueKind = value_library_function then
       begin
         Value := Callee.Resolve;
         if High(Value.LibraryFunData) + 1 - 2 <> Instruction.OperandCount - 2 then
@@ -4846,25 +4846,25 @@ begin
         LibraryArgumentCount := Instruction.OperandCount - 2;
         for j := LibraryArgumentCount - 1 downto 0 do
         begin
-          Argument := GetVariable(Instruction.Operands[j + 2]).Resolve(vkEmpty);
+          Argument := GetVariable(Instruction.Operands[j + 2]).Resolve(value_empty);
           case TLibraryValueKind(Value.LibraryFunData[2 + j]) of
-            lvInt: LibraryWord := Argument.AsInteger;
-            lvDword: LibraryWord := Argument.AsDword;
-            lvFloat:
+            library_int32: LibraryWord := Argument.AsInteger;
+            library_uint32: LibraryWord := Argument.AsDword;
+            library_float32:
               begin
                 SingleValue := Argument.AsFloat;
                 LibraryWord := PDword(@SingleValue)^;
               end;
-            lvString:
+            library_wide_cstring:
               begin
                 IndexValue := Argument.Resolve;
-                if IndexValue.Kind <> vkString then
+                if IndexValue.Kind <> value_string then
                   raise ExceptionExpressionEC.Create('Variable not string');
                 if Length(IndexValue.StringValue) <= 0 then LibraryWord := 0
                 else LibraryWord := Dword(PWideChar(IndexValue.StringValue));
               end;
-            lvRef: LibraryWord := Dword(Argument);
-            lvCode: LibraryWord := Dword(Code);
+            library_cell_pointer: LibraryWord := Dword(Argument);
+            library_code_context: LibraryWord := Dword(Code);
           else
             LibraryWord := 0;
           end;
@@ -4891,14 +4891,14 @@ begin
         else if Value.LibraryFunData[0] = 4 then
           Dest.Value.AsString := AnsiString('') + PWideChar(LibraryWord);
       end
-      else if Callee.ValueKind = vkExternFun then
+      else if Callee.ValueKind = value_host_function then
       begin
         SetLength(Arguments, Instruction.OperandCount - 1);
         Arguments[0] := Dest.Value;
-        Dest.Value.ResetKind(vkEmpty);
+        Dest.Value.ResetKind(value_empty);
         for j := 2 to Instruction.OperandCount - 1 do
         begin
-          Argument := GetVariable(Instruction.Operands[j]).Resolve(vkEmpty);
+          Argument := GetVariable(Instruction.Operands[j]).Resolve(value_empty);
           Arguments[j - 1] := Argument;
         end;
         if Code <> nil then
@@ -4911,7 +4911,7 @@ begin
         ScriptCallTracePosition := (ScriptCallTracePosition + 1) mod 20;
         TExpressionCallback(Callee.AsExternFun)(Arguments, Code);
       end
-      else if Callee.ValueKind = vkFunction then
+      else if Callee.ValueKind = value_script_function then
       begin
         if Callee.AsFunction.LocalVar.NamedItems['funBaseVarCount'].AsInteger < Instruction.OperandCount - 2 then
           raise ExceptionExpressionEC.Create('Count var error. fun:' + Left.Name);
@@ -4920,8 +4920,8 @@ begin
         Invocation.CopyFromFast(Callee.AsFunction);
         for j := 2 to Instruction.OperandCount - 1 do
         begin
-          Argument := GetVariable(Instruction.Operands[j]).Resolve(vkEmpty);
-          if Invocation.LocalVar[j - 2].Kind = vkRef then
+          Argument := GetVariable(Instruction.Operands[j]).Resolve(value_empty);
+          if Invocation.LocalVar[j - 2].Kind = value_reference then
             Invocation.LocalVar[j - 2].SetRef(Argument)
           else Invocation.LocalVar[j - 2].Assume(Argument, False);
         end;
@@ -5033,70 +5033,70 @@ begin
   Item := First;
   while Item <> nil do
   begin
-    if Item.Kind = cuUnaryOperator then
+    if Item.Kind = term_unary_operator then
     begin
-      if (Item.Next <> nil) and (Item.Next.Kind = cuVariable) and (Candidates[PrecedenceUnary] = nil) then Candidates[PrecedenceUnary] := Item;
+      if (Item.Next <> nil) and (Item.Next.Kind = term_value_slot) and (Candidates[PrecedenceUnary] = nil) then Candidates[PrecedenceUnary] := Item;
     end
-    else if Item.Kind = cuBinaryOperator then
+    else if Item.Kind = term_binary_operator then
     begin
-      if (Item.Prev.Kind = cuVariable) and (Item.Next.Kind = cuVariable) then
+      if (Item.Prev.Kind = term_value_slot) and (Item.Next.Kind = term_value_slot) then
       begin
         Following := Item.Next.Next;
         while Following <> nil do
         begin
-          if (Following.Kind = cuOpenParen) or (Following.Kind = cuOpenBracket) or
-            (Following.Kind = cuCall) then Break;
-          if (Following.Kind = cuCloseParen) or (Following.Kind = cuCloseBracket) then Break;
+          if (Following.Kind = term_open_paren) or (Following.Kind = term_open_bracket) or
+            (Following.Kind = term_function_call) then Break;
+          if (Following.Kind = term_close_paren) or (Following.Kind = term_close_bracket) then Break;
           Following := Following.Next;
         end;
-        if (Following = nil) or ((Following.Kind <> cuOpenParen) and
-          (Following.Kind <> cuOpenBracket) and (Following.Kind <> cuCall)) then
+        if (Following = nil) or ((Following.Kind <> term_open_paren) and
+          (Following.Kind <> term_open_bracket) and (Following.Kind <> term_function_call)) then
         begin
-          if (Item.OperatorToken = ctMultiply) or (Item.OperatorToken = ctDivide) or
-            (Item.OperatorToken = ctModulo) then
+          if (Item.OperatorToken = token_multiply) or (Item.OperatorToken = token_divide) or
+            (Item.OperatorToken = token_modulo) then
           begin
             if Candidates[PrecedenceMultiply] = nil then Candidates[PrecedenceMultiply] := Item;
           end
-          else if (Item.OperatorToken = ctAdd) or (Item.OperatorToken = ctSubtract) then
+          else if (Item.OperatorToken = token_plus) or (Item.OperatorToken = token_minus) then
           begin
             if Candidates[PrecedenceAdd] = nil then Candidates[PrecedenceAdd] := Item;
           end
-          else if (Item.OperatorToken = ctShiftLeft) or (Item.OperatorToken = ctShiftRight) then
+          else if (Item.OperatorToken = token_shift_left) or (Item.OperatorToken = token_shift_right) then
           begin
             if Candidates[PrecedenceShift] = nil then Candidates[PrecedenceShift] := Item;
           end
-          else if (Item.OperatorToken = ctEqual) or (Item.OperatorToken = ctNotEqual) or
-            (Item.OperatorToken = ctLess) or (Item.OperatorToken = ctGreater) or
-            (Item.OperatorToken = ctLessEqual) or (Item.OperatorToken = ctGreaterEqual) then
+          else if (Item.OperatorToken = token_equal) or (Item.OperatorToken = token_not_equal) or
+            (Item.OperatorToken = token_less) or (Item.OperatorToken = token_greater) or
+            (Item.OperatorToken = token_less_equal) or (Item.OperatorToken = token_greater_equal) then
           begin
             if Candidates[PrecedenceCompare] = nil then Candidates[PrecedenceCompare] := Item;
           end
-          else if Item.OperatorToken = ctBitAnd then
+          else if Item.OperatorToken = token_bit_and then
           begin
             if Candidates[PrecedenceBitAnd] = nil then Candidates[PrecedenceBitAnd] := Item;
           end
-          else if Item.OperatorToken = ctBitXor then
+          else if Item.OperatorToken = token_bit_xor then
           begin
             if Candidates[PrecedenceBitXor] = nil then Candidates[PrecedenceBitXor] := Item;
           end
-          else if Item.OperatorToken = ctBitOr then
+          else if Item.OperatorToken = token_bit_or then
           begin
             if Candidates[PrecedenceBitOr] = nil then Candidates[PrecedenceBitOr] := Item;
           end
-          else if Item.OperatorToken = ctAnd then
+          else if Item.OperatorToken = token_logical_and then
           begin
             if Candidates[PrecedenceAnd] = nil then Candidates[PrecedenceAnd] := Item;
           end
-          else if Item.OperatorToken = ctOr then
+          else if Item.OperatorToken = token_logical_or then
           begin
             if Candidates[PrecedenceOr] = nil then Candidates[PrecedenceOr] := Item;
           end;
         end;
       end;
     end
-    else if Item.Kind = cuAssignment then
+    else if Item.Kind = term_assignment then
     begin
-      if (Item.Prev.Kind = cuVariable) and (Item.Next.Kind = cuVariable) and
+      if (Item.Prev.Kind = term_value_slot) and (Item.Next.Kind = term_value_slot) and
         (Candidates[PrecedenceAssign] = nil) then Candidates[PrecedenceAssign] := Item;
     end;
     Item := Item.Next;
@@ -5119,17 +5119,17 @@ begin
   Item := First;
   while Item <> nil do
   begin
-    if Item.Kind = cuIndex then
+    if Item.Kind = term_array_access then
     begin
       Following := Item.Next;
       while Following <> nil do
       begin
-        if Following.Kind = cuCloseBracket then
+        if Following.Kind = term_close_bracket then
         begin
           Result := Item;
           Exit;
         end;
-        if (Following.Kind <> cuComma) and (Following.Kind <> cuVariable) then Break;
+        if (Following.Kind <> term_comma) and (Following.Kind <> term_value_slot) then Break;
         Following := Following.Next;
       end;
     end;
@@ -5147,17 +5147,17 @@ begin
   Item := First;
   while Item <> nil do
   begin
-    if Item.Kind = cuCall then
+    if Item.Kind = term_function_call then
     begin
       Following := Item.Next;
       while Following <> nil do
       begin
-        if Following.Kind = cuCloseParen then
+        if Following.Kind = term_close_paren then
         begin
           Result := Item;
           Exit;
         end;
-        if (Following.Kind <> cuComma) and (Following.Kind <> cuVariable) then Break;
+        if (Following.Kind <> term_comma) and (Following.Kind <> term_value_slot) then Break;
         Following := Following.Next;
       end;
     end;
@@ -5462,7 +5462,7 @@ begin
   else for i := 0 to LocalVar.Count - 1 do
   begin
     Item := LocalVar[i];
-    if (Item.Kind = vkFunction) and Item.FunctionValue.IsClassDefinition then
+    if (Item.Kind = value_script_function) and Item.FunctionValue.IsClassDefinition then
     begin
       Result := Item.FunctionValue.FindVar(Name);
       if Result <> nil then Exit;
@@ -5547,20 +5547,20 @@ var
   // @nested $46A718 AddScriptLocal
   procedure AddScriptLocal(TypeName, Name: WideString); // @addr $46A718
   begin
-    if TypeName = 'unknown' then LocalVar.Add(Name, vkEmpty)
-    else if TypeName = 'int' then LocalVar.Add(Name, vkInt)
-    else if TypeName = 'dword' then LocalVar.Add(Name, vkDword)
-    else if TypeName = 'float' then LocalVar.Add(Name, vkFloat)
-    else if TypeName = 'str' then LocalVar.Add(Name, vkString)
-    else if TypeName = 'ref' then LocalVar.Add(Name, vkRef)
-    else if TypeName = 'array' then LocalVar.Add(Name, vkArray);
+    if TypeName = 'unknown' then LocalVar.Add(Name, value_empty)
+    else if TypeName = 'int' then LocalVar.Add(Name, value_int32)
+    else if TypeName = 'dword' then LocalVar.Add(Name, value_uint32)
+    else if TypeName = 'float' then LocalVar.Add(Name, value_float64)
+    else if TypeName = 'str' then LocalVar.Add(Name, value_string)
+    else if TypeName = 'ref' then LocalVar.Add(Name, value_reference)
+    else if TypeName = 'array' then LocalVar.Add(Name, value_array);
   end;
 
   // @nested $46A8D4 IsScriptLocalDeclaration
   function IsScriptLocalDeclaration(Token: TCodeAnalyzerUnitEC): Boolean; // @addr $46A8D4
   begin
     Result := (Token <> nil) and (Token.Next <> nil) and
-      (Token.Next.TokenKind = ctText) and (Token.TokenKind = ctText) and
+      (Token.Next.TokenKind = token_unquoted_text) and (Token.TokenKind = token_unquoted_text) and
       ((Token.Text = 'unknown') or (Token.Text = 'int') or (Token.Text = 'dword') or
        (Token.Text = 'float') or (Token.Text = 'str') or (Token.Text = 'ref') or
        (Token.Text = 'array')) and IsNonIntegerScriptText(Token.Next.Text);
@@ -5576,7 +5576,7 @@ var
     Result := '';
     TypeName := Token.Text;
     Token := Token.Next;
-    while (Token.TokenKind = ctText) and IsNonIntegerScriptText(Token.Text) do
+    while (Token.TokenKind = token_unquoted_text) and IsNonIntegerScriptText(Token.Text) do
     begin
       if LocalVar.GetVarNE(Token.Text) <> nil then
       begin
@@ -5590,15 +5590,15 @@ var
         Exit;
       end;
       Token := Token.Next;
-      if Token.TokenKind = ctComma then
+      if Token.TokenKind = token_comma then
       begin
         Token := Token.Next;
         Continue;
       end;
-      if Token.TokenKind = ctAssign then
+      if Token.TokenKind = token_assign then
       begin
         Item := InsertCodeUnitBefore(BeforeUnit);
-        Item.Opcode := coExpression;
+        Item.Opcode := code_evaluate;
         Item.Expression := TExpressionEC.Create;
         Item.SourceStart := Token.Prev.SourceStart;
         Item.SourceLength := 0;
@@ -5607,7 +5607,7 @@ var
         if Result <> '' then Exit;
         Item.SourceLength := Next.Prev.SourceStart + Next.Prev.SourceLength - Item.SourceStart;
         Token := Next;
-        if Token.TokenKind = ctComma then Token := Token.Next;
+        if Token.TokenKind = token_comma then Token := Token.Next;
       end;
     end;
   end;
@@ -5617,14 +5617,14 @@ begin
   Depth := 0;
   while Token <> nil do
   begin
-    if Token.TokenKind = ctText then
+    if Token.TokenKind = token_unquoted_text then
     begin
       Keyword := LowerCase(AnsiString(Token.Text));
       if IsScriptLocalDeclaration(Token) then
       begin
         Result := CompileScriptLocals(Token);
         if Result <> '' then Exit;
-        if Token.TokenKind <> ctSemicolon then
+        if Token.TokenKind <> token_semicolon then
         begin
           Result := FormatScriptError(0, Token.SourceStart);
           Exit;
@@ -5640,7 +5640,7 @@ begin
       else if Keyword = 'if' then
       begin
         EndLabel := InsertCodeUnitBefore(BeforeUnit);
-        EndLabel.Opcode := coLabel;
+        EndLabel.Opcode := code_label;
         EndLabel.SourceStart := 0;
         EndLabel.SourceLength := 0;
         EndLabel.SourceContext := SourceContext;
@@ -5651,13 +5651,13 @@ begin
             Result := FormatScriptError(0, Token.SourceStart);
             Exit;
           end;
-          if (Token.Next.TokenKind <> ctOpenParen) or (Token.Next.Next = nil) then
+          if (Token.Next.TokenKind <> token_open_paren) or (Token.Next.Next = nil) then
           begin
             Result := FormatScriptError(0, Token.Next.SourceStart);
             Exit;
           end;
           Item := InsertCodeUnitBefore(EndLabel);
-          Item.Opcode := coBranchFalse;
+          Item.Opcode := code_jump_if_false;
           Item.SourceStart := Token.SourceStart;
           Item.SourceLength := 0;
           Item.SourceContext := SourceContext;
@@ -5670,7 +5670,7 @@ begin
             Result := FormatScriptError(0, Token.SourceStart);
             Exit;
           end;
-          if Next.TokenKind <> ctCloseParen then
+          if Next.TokenKind <> token_close_paren then
           begin
             Result := FormatScriptError(0, Next.SourceStart);
             Exit;
@@ -5680,13 +5680,13 @@ begin
           Branch := Item;
           if Token = nil then raise ExceptionExpressionEC.Create('Compiler error, code ends abruptly');
           Item := InsertCodeUnitBefore(EndLabel);
-          Item.Opcode := coJump;
+          Item.Opcode := code_jump;
           Item.SourceStart := Token.SourceStart;
           Item.SourceLength := 0;
           Item.SourceContext := SourceContext;
           Item.Target := EndLabel;
           LoopStart := Item;
-          if Token.TokenKind = ctSemicolon then Token := Token.Next
+          if Token.TokenKind = token_semicolon then Token := Token.Next
           else
           begin
             Result := CompileBlock(Analyzer, SourceContext, IncludeResolver, Token, LoopStart,
@@ -5694,16 +5694,16 @@ begin
             if Result <> '' then Exit;
           end;
           if Token = nil then Exit;
-          if Token.TokenKind <> ctText then Break;
+          if Token.TokenKind <> token_unquoted_text then Break;
           Keyword := LowerCase(AnsiString(Token.Text));
           if Keyword <> 'else' then Break;
           Item := InsertCodeUnitBefore(EndLabel);
-          Item.Opcode := coLabel;
+          Item.Opcode := code_label;
           Item.SourceStart := 0;
           Item.SourceLength := 0;
           Item.SourceContext := SourceContext;
           Branch.Target := Item;
-          if (Token.Next <> nil) and (Token.Next.TokenKind = ctText) and
+          if (Token.Next <> nil) and (Token.Next.TokenKind = token_unquoted_text) and
             (LowerCase(AnsiString(Token.Next.Text)) = 'if') then
           begin
             Token := Token.Next;
@@ -5714,7 +5714,7 @@ begin
             Result := FormatScriptError(0, Token.SourceStart);
             Exit;
           end;
-          if Token.Next.TokenKind = ctSemicolon then Continue;
+          if Token.Next.TokenKind = token_semicolon then Continue;
           Result := CompileBlock(Analyzer, SourceContext, IncludeResolver, Token.Next, EndLabel,
             NextToken, @Token, BreakTarget, ContinueTarget);
           if Result <> '' then Exit;
@@ -5730,7 +5730,7 @@ begin
       else if Keyword = 'while' then
       begin
         EndLabel := InsertCodeUnitBefore(BeforeUnit);
-        EndLabel.Opcode := coLabel;
+        EndLabel.Opcode := code_label;
         EndLabel.SourceStart := 0;
         EndLabel.SourceLength := 0;
         EndLabel.SourceContext := SourceContext;
@@ -5739,13 +5739,13 @@ begin
           Result := FormatScriptError(0, Token.SourceStart);
           Exit;
         end;
-        if (Token.Next.TokenKind <> ctOpenParen) or (Token.Next.Next = nil) then
+        if (Token.Next.TokenKind <> token_open_paren) or (Token.Next.Next = nil) then
         begin
           Result := FormatScriptError(0, Token.Next.SourceStart);
           Exit;
         end;
         Item := InsertCodeUnitBefore(EndLabel);
-        Item.Opcode := coBranchFalse;
+        Item.Opcode := code_jump_if_false;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := 0;
         Item.SourceContext := SourceContext;
@@ -5758,7 +5758,7 @@ begin
           Result := FormatScriptError(0, Token.SourceStart);
           Exit;
         end;
-        if Next.TokenKind <> ctCloseParen then
+        if Next.TokenKind <> token_close_paren then
         begin
           Result := FormatScriptError(0, Next.SourceStart);
           Exit;
@@ -5767,12 +5767,12 @@ begin
         Item.SourceLength := Next.SourceStart - Item.SourceStart + Next.SourceLength;
         LoopStart := Item;
         Item := InsertCodeUnitBefore(EndLabel);
-        Item.Opcode := coJump;
+        Item.Opcode := code_jump;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := 0;
         Item.SourceContext := SourceContext;
         Item.Target := LoopStart;
-        if Token.TokenKind = ctSemicolon then Token := Token.Next
+        if Token.TokenKind = token_semicolon then Token := Token.Next
         else
         begin
           Result := CompileBlock(Analyzer, SourceContext, IncludeResolver, Token, Item,
@@ -5793,7 +5793,7 @@ begin
           Result := FormatScriptError(0, Token.SourceStart);
           Exit;
         end;
-        if Token.Next.TokenKind <> ctOpenParen then
+        if Token.Next.TokenKind <> token_open_paren then
         begin
           Result := FormatScriptError(0, Token.Next.SourceStart);
           Exit;
@@ -5804,7 +5804,7 @@ begin
           Exit;
         end;
         Token := Token.Next.Next;
-        if Token.TokenKind <> ctSemicolon then
+        if Token.TokenKind <> token_semicolon then
         begin
           if IsScriptLocalDeclaration(Token) then
           begin
@@ -5816,7 +5816,7 @@ begin
             while True do
             begin
               Item := InsertCodeUnitBefore(BeforeUnit);
-              Item.Opcode := coExpression;
+              Item.Opcode := code_evaluate;
               Item.SourceStart := Token.SourceStart;
               Item.SourceLength := 0;
               Item.SourceContext := SourceContext;
@@ -5829,12 +5829,12 @@ begin
                 Exit;
               end;
               Item.SourceLength := Next.SourceStart - Item.SourceStart + Next.SourceLength;
-              if Next.TokenKind = ctSemicolon then
+              if Next.TokenKind = token_semicolon then
               begin
                 Token := Next;
                 Break;
               end
-              else if Next.TokenKind = ctComma then Token := Next.Next
+              else if Next.TokenKind = token_comma then Token := Next.Next
               else
               begin
                 Result := FormatScriptError(0, Next.SourceStart);
@@ -5843,7 +5843,7 @@ begin
             end;
           end;
         end;
-        if Token.TokenKind <> ctSemicolon then
+        if Token.TokenKind <> token_semicolon then
         begin
           Result := FormatScriptError(0, Token.SourceStart);
           Exit;
@@ -5855,14 +5855,14 @@ begin
         end;
         Token := Token.Next;
         EndLabel := InsertCodeUnitBefore(BeforeUnit);
-        EndLabel.Opcode := coLabel;
+        EndLabel.Opcode := code_label;
         EndLabel.SourceStart := 0;
         EndLabel.SourceLength := 0;
         EndLabel.SourceContext := SourceContext;
-        if Token.TokenKind = ctSemicolon then
+        if Token.TokenKind = token_semicolon then
         begin
           Item := InsertCodeUnitBefore(EndLabel);
-          Item.Opcode := coLabel;
+          Item.Opcode := code_label;
           Item.SourceStart := Token.SourceStart;
           Item.SourceLength := 0;
           Item.SourceContext := SourceContext;
@@ -5871,7 +5871,7 @@ begin
         else
         begin
           Item := InsertCodeUnitBefore(EndLabel);
-          Item.Opcode := coBranchFalse;
+          Item.Opcode := code_jump_if_false;
           Item.SourceStart := Token.SourceStart;
           Item.SourceLength := 0;
           Item.SourceContext := SourceContext;
@@ -5884,7 +5884,7 @@ begin
             Result := FormatScriptError(0, Token.SourceStart);
             Exit;
           end;
-          if Next.TokenKind <> ctSemicolon then
+          if Next.TokenKind <> token_semicolon then
           begin
             Result := FormatScriptError(0, Next.SourceStart);
             Exit;
@@ -5899,16 +5899,16 @@ begin
         end;
         LoopStart := Item;
         Item := InsertCodeUnitBefore(LoopStart);
-        Item.Opcode := coJump;
+        Item.Opcode := code_jump;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := 0;
         Item.SourceContext := SourceContext;
         Item.Target := LoopStart;
         StepStart := nil;
-        if Token.TokenKind = ctCloseParen then
+        if Token.TokenKind = token_close_paren then
         begin
           Item := InsertCodeUnitBefore(LoopStart);
-          Item.Opcode := coLabel;
+          Item.Opcode := code_label;
           Item.SourceStart := Token.SourceStart;
           Item.SourceLength := 0;
           Item.SourceContext := SourceContext;
@@ -5920,7 +5920,7 @@ begin
           while True do
           begin
             Item := InsertCodeUnitBefore(LoopStart);
-            Item.Opcode := coExpression;
+            Item.Opcode := code_evaluate;
             Item.SourceStart := Token.SourceStart;
             Item.SourceLength := 0;
             Item.SourceContext := SourceContext;
@@ -5934,12 +5934,12 @@ begin
             end;
             Item.SourceLength := Next.Prev.SourceStart - Item.SourceStart + Next.Prev.SourceLength;
             if StepStart = nil then StepStart := Item;
-            if Next.TokenKind = ctCloseParen then
+            if Next.TokenKind = token_close_paren then
             begin
               Token := Next.Next;
               Break;
             end
-            else if Next.TokenKind = ctComma then Token := Next.Next
+            else if Next.TokenKind = token_comma then Token := Next.Next
             else
             begin
               Result := FormatScriptError(0, Next.SourceStart);
@@ -5948,12 +5948,12 @@ begin
           end;
         end;
         Item := InsertCodeUnitBefore(EndLabel);
-        Item.Opcode := coJump;
+        Item.Opcode := code_jump;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := 0;
         Item.SourceContext := SourceContext;
         Item.Target := StepStart;
-        if Token.TokenKind = ctSemicolon then Token := Token.Next
+        if Token.TokenKind = token_semicolon then Token := Token.Next
         else
         begin
           Result := CompileBlock(Analyzer, SourceContext, IncludeResolver, Token, Item,
@@ -5974,13 +5974,13 @@ begin
           Result := FormatScriptError(0, Token.SourceStart);
           Exit;
         end;
-        if Token.Next.TokenKind <> ctSemicolon then
+        if Token.Next.TokenKind <> token_semicolon then
         begin
           Result := FormatScriptError(0, Token.Next.SourceStart);
           Exit;
         end;
         Item := InsertCodeUnitBefore(BeforeUnit);
-        Item.Opcode := coJump;
+        Item.Opcode := code_jump;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := Token.Next.SourceStart - Token.SourceStart + Token.Next.SourceLength;
         Item.SourceContext := SourceContext;
@@ -6000,13 +6000,13 @@ begin
           Result := FormatScriptError(0, Token.SourceStart);
           Exit;
         end;
-        if Token.Next.TokenKind <> ctSemicolon then
+        if Token.Next.TokenKind <> token_semicolon then
         begin
           Result := FormatScriptError(0, Token.Next.SourceStart);
           Exit;
         end;
         Item := InsertCodeUnitBefore(BeforeUnit);
-        Item.Opcode := coJump;
+        Item.Opcode := code_jump;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := Token.Next.SourceStart - Token.SourceStart + Token.Next.SourceLength;
         Item.SourceContext := SourceContext;
@@ -6026,13 +6026,13 @@ begin
           Result := FormatScriptError(0, Token.SourceStart + Token.SourceLength);
           Exit;
         end;
-        if Token.Next.TokenKind <> ctSemicolon then
+        if Token.Next.TokenKind <> token_semicolon then
         begin
           Result := FormatScriptError(0, Token.Next.SourceStart);
           Exit;
         end;
         Item := InsertCodeUnitBefore(BeforeUnit);
-        Item.Opcode := coExit;
+        Item.Opcode := code_return;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := Token.Next.SourceStart - Token.SourceStart + Token.Next.SourceLength;
         Item.SourceContext := SourceContext;
@@ -6051,7 +6051,7 @@ begin
           Result := FormatScriptError(0, Token.SourceStart + Token.SourceLength);
           Exit;
         end;
-        if Token.Next.TokenKind <> ctStringLiteral then
+        if Token.Next.TokenKind <> token_string_literal then
         begin
           Result := FormatScriptError(0, Token.Next.SourceStart);
           Exit;
@@ -6098,44 +6098,44 @@ begin
           Result := FormatScriptError(0, Token.SourceStart + Token.SourceLength);
           Exit;
         end;
-        if (Token.Next.TokenKind <> ctText) or not IsNonIntegerScriptText(Token.Next.Text) or
+        if (Token.Next.TokenKind <> token_unquoted_text) or not IsNonIntegerScriptText(Token.Next.Text) or
           (Token.Next.Next = nil) then
         begin
           Result := FormatScriptError(0, Token.Next.SourceStart);
           Exit;
         end;
-        if (Token.Next.Next.TokenKind <> ctOpenParen) or (Token.Next.Next.Next = nil) then
+        if (Token.Next.Next.TokenKind <> token_open_paren) or (Token.Next.Next.Next = nil) then
         begin
           Result := FormatScriptError(0, Token.Next.Next.SourceStart);
           Exit;
         end;
-        Value := LocalVar.Add(Token.Next.Text, vkFunction);
+        Value := LocalVar.Add(Token.Next.Text, value_script_function);
         Definition := Value.AsFunction;
         Definition.Parent := Self;
         Next := Token.Next.Next.Next;
-        while (Next <> nil) and (Next.TokenKind = ctText) and IsNonIntegerScriptText(Next.Text) do
+        while (Next <> nil) and (Next.TokenKind = token_unquoted_text) and IsNonIntegerScriptText(Next.Text) do
         begin
           Keyword := LowerCase(AnsiString(Next.Text));
           if (Keyword = 'unknown') or (Keyword = 'int') or (Keyword = 'dword') or
             (Keyword = 'float') or (Keyword = 'str') or (Keyword = 'ref') or (Keyword = 'array') then
             Next := Next.Next
           else Keyword := 'unknown';
-          if (Next = nil) or (Next.TokenKind <> ctText) or not IsNonIntegerScriptText(Next.Text) then Break;
+          if (Next = nil) or (Next.TokenKind <> token_unquoted_text) or not IsNonIntegerScriptText(Next.Text) then Break;
           Value := nil;
-          if Keyword = 'unknown' then Value := Definition.LocalVar.Add(Next.Text, vkEmpty)
-          else if Keyword = 'int' then Value := Definition.LocalVar.Add(Next.Text, vkInt)
-          else if Keyword = 'dword' then Value := Definition.LocalVar.Add(Next.Text, vkDword)
-          else if Keyword = 'float' then Value := Definition.LocalVar.Add(Next.Text, vkFloat)
-          else if Keyword = 'str' then Value := Definition.LocalVar.Add(Next.Text, vkString)
-          else if Keyword = 'ref' then Value := Definition.LocalVar.Add(Next.Text, vkRef)
-          else if Keyword = 'array' then Value := Definition.LocalVar.Add(Next.Text, vkArray);
+          if Keyword = 'unknown' then Value := Definition.LocalVar.Add(Next.Text, value_empty)
+          else if Keyword = 'int' then Value := Definition.LocalVar.Add(Next.Text, value_int32)
+          else if Keyword = 'dword' then Value := Definition.LocalVar.Add(Next.Text, value_uint32)
+          else if Keyword = 'float' then Value := Definition.LocalVar.Add(Next.Text, value_float64)
+          else if Keyword = 'str' then Value := Definition.LocalVar.Add(Next.Text, value_string)
+          else if Keyword = 'ref' then Value := Definition.LocalVar.Add(Next.Text, value_reference)
+          else if Keyword = 'array' then Value := Definition.LocalVar.Add(Next.Text, value_array);
           Next := Next.Next;
           if Next = nil then
           begin
             Result := FormatScriptError(0, Analyzer.Last.SourceStart + Analyzer.Last.SourceLength);
             Exit;
           end;
-          if (Keyword <> 'ref') and (Next.TokenKind = ctAssign) then
+          if (Keyword <> 'ref') and (Next.TokenKind = token_assign) then
           begin
             if Next.Next = nil then
             begin
@@ -6153,10 +6153,10 @@ begin
               Exit;
             end;
           end;
-          if (Next = nil) or (Next.TokenKind <> ctComma) then Break;
+          if (Next = nil) or (Next.TokenKind <> token_comma) then Break;
           Next := Next.Next;
         end;
-        if (Next = nil) or (Next.TokenKind <> ctCloseParen) then
+        if (Next = nil) or (Next.TokenKind <> token_close_paren) then
         begin
           Result := FormatScriptError(0, Token.Next.Next.Next.SourceStart);
           Exit;
@@ -6167,14 +6167,14 @@ begin
           Result := FormatScriptError(0, Next.SourceStart);
           Exit;
         end;
-        if (Token.TokenKind <> ctOpenBrace) or (Token.Next = nil) then
+        if (Token.TokenKind <> token_open_brace) or (Token.Next = nil) then
         begin
           Result := FormatScriptError(0, Token.SourceStart);
           Exit;
         end;
         ParameterCount := Definition.LocalVar.Count;
-        Definition.LocalVar.Add('funBaseVarCount', vkInt).AsInteger := ParameterCount;
-        Definition.LocalVar.Add('result', vkRef);
+        Definition.LocalVar.Add('funBaseVarCount', value_int32).AsInteger := ParameterCount;
+        Definition.LocalVar.Add('result', value_reference);
         Next := nil;
         Result := Definition.Compile(Analyzer, SourceContext, IncludeResolver, Token.Next, @Next);
         if Result <> '' then Exit;
@@ -6183,7 +6183,7 @@ begin
           Result := FormatScriptError(0, Analyzer.Last.SourceStart + Analyzer.Last.SourceLength);
           Exit;
         end;
-        if Next.TokenKind <> ctCloseBrace then
+        if Next.TokenKind <> token_close_brace then
         begin
           Result := FormatScriptError(0, Next.SourceStart);
           Exit;
@@ -6198,7 +6198,7 @@ begin
           Result := FormatScriptError(0, Token.SourceStart + Token.SourceLength);
           Exit;
         end;
-        if (Token.Next.TokenKind <> ctText) or not IsNonIntegerScriptText(Token.Next.Text) then
+        if (Token.Next.TokenKind <> token_unquoted_text) or not IsNonIntegerScriptText(Token.Next.Text) then
         begin
           Result := FormatScriptError(0, Token.Next.SourceStart);
           Exit;
@@ -6208,31 +6208,31 @@ begin
           Result := FormatScriptError(0, Token.Next.SourceStart + Token.Next.SourceLength);
           Exit;
         end;
-        Value := LocalVar.Add(Token.Next.Text, vkFunction);
+        Value := LocalVar.Add(Token.Next.Text, value_script_function);
         Definition := Value.AsFunction;
         Definition.Parent := Self;
         Definition.IsClassDefinition := True;
         Definition.Name := Token.Next.Text;
         Token := Token.Next.Next;
-        if Token.TokenKind = ctColon then
+        if Token.TokenKind = token_colon then
         begin
           Token := Token.Next;
           while True do
           begin
-            if Token.TokenKind <> ctText then Break;
+            if Token.TokenKind <> token_unquoted_text then Break;
             BaseValue := LocalVar.GetVarNE(Token.Text);
-            if (BaseValue = nil) or (BaseValue.ValueKind <> vkFunction) then
+            if (BaseValue = nil) or (BaseValue.ValueKind <> value_script_function) then
             begin
               Result := FormatScriptError(0, Token.SourceStart);
               Exit;
             end;
-            Definition.LocalVar.Add(Token.Text, vkFunction).AsFunction.CopyFrom(BaseValue.AsFunction);
+            Definition.LocalVar.Add(Token.Text, value_script_function).AsFunction.CopyFrom(BaseValue.AsFunction);
             Token := Token.Next;
-            if Token.TokenKind <> ctComma then Break;
+            if Token.TokenKind <> token_comma then Break;
             Token := Token.Next;
           end;
         end;
-        if Token.TokenKind <> ctOpenBrace then
+        if Token.TokenKind <> token_open_brace then
         begin
           Result := FormatScriptError(0, Token.SourceStart);
           Exit;
@@ -6245,7 +6245,7 @@ begin
           Result := FormatScriptError(0, Analyzer.Last.SourceStart + Analyzer.Last.SourceLength);
           Exit;
         end;
-        if Next.TokenKind <> ctCloseBrace then
+        if Next.TokenKind <> token_close_brace then
         begin
           Result := FormatScriptError(0, Next.SourceStart);
           Exit;
@@ -6260,13 +6260,13 @@ begin
           Result := FormatScriptError(0, Token.SourceStart + Token.SourceLength);
           Exit;
         end;
-        if Token.Next.TokenKind <> ctOpenBrace then
+        if Token.Next.TokenKind <> token_open_brace then
         begin
           Result := FormatScriptError(0, Token.Next.SourceStart);
           Exit;
         end;
         LoopStart := InsertCodeUnitBefore(BeforeUnit);
-        LoopStart.Opcode := coPushHandler;
+        LoopStart.Opcode := code_push_handler;
         LoopStart.SourceStart := Token.SourceStart;
         LoopStart.SourceLength := 0;
         LoopStart.SourceContext := SourceContext;
@@ -6274,7 +6274,7 @@ begin
           NextToken, @Token, nil, nil);
         if Result <> '' then Exit;
         Item := InsertCodeUnitBefore(BeforeUnit);
-        Item.Opcode := coPopHandler;
+        Item.Opcode := code_pop_handler;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := 0;
         Item.SourceContext := SourceContext;
@@ -6283,7 +6283,7 @@ begin
           Result := FormatScriptError(0, Token.SourceStart + Token.SourceLength);
           Exit;
         end;
-        if Token.TokenKind <> ctText then
+        if Token.TokenKind <> token_unquoted_text then
         begin
           Result := FormatScriptError(1001, Token.SourceStart);
           Exit;
@@ -6302,7 +6302,7 @@ begin
         else IntValue := 1;
         Token := Token.Next;
         Value := nil;
-        if Token.TokenKind = ctOpenParen then
+        if Token.TokenKind = token_open_paren then
         begin
           if Token.Next = nil then
           begin
@@ -6310,19 +6310,19 @@ begin
             Exit;
           end;
           Token := Token.Next;
-          if Token.TokenKind <> ctText then
+          if Token.TokenKind <> token_unquoted_text then
           begin
             Result := FormatScriptError(1001, Token.SourceStart);
             Exit;
           end;
-          Value := LocalVar.Add(Token.Text, vkEmpty);
+          Value := LocalVar.Add(Token.Text, value_empty);
           if Token.Next = nil then
           begin
             Result := FormatScriptError(1001, Token.SourceStart + Token.SourceLength);
             Exit;
           end;
           Token := Token.Next;
-          if Token.TokenKind <> ctCloseParen then
+          if Token.TokenKind <> token_close_paren then
           begin
             Result := FormatScriptError(1001, Token.SourceStart);
             Exit;
@@ -6334,27 +6334,27 @@ begin
           end;
           Token := Token.Next;
         end;
-        if Token.TokenKind <> ctOpenBrace then
+        if Token.TokenKind <> token_open_brace then
         begin
           Result := FormatScriptError(1001, Token.SourceStart);
           Exit;
         end;
         EndLabel := InsertCodeUnitBefore(BeforeUnit);
-        EndLabel.Opcode := coLabel;
+        EndLabel.Opcode := code_label;
         EndLabel.SourceStart := 0;
         EndLabel.SourceLength := 0;
         EndLabel.SourceContext := SourceContext;
         if IntValue = 0 then
         begin
           Item := InsertCodeUnitBefore(EndLabel);
-          Item.Opcode := coJump;
+          Item.Opcode := code_jump;
           Item.SourceStart := Token.SourceStart;
           Item.SourceLength := 0;
           Item.SourceContext := SourceContext;
           Item.Target := EndLabel;
         end;
         Item := InsertCodeUnitBefore(EndLabel);
-        Item.Opcode := coLabel;
+        Item.Opcode := code_label;
         Item.SourceStart := 0;
         Item.SourceLength := 0;
         Item.SourceContext := SourceContext;
@@ -6364,7 +6364,7 @@ begin
         if IntValue = 1 then
         begin
           Item := InsertCodeUnitBefore(Item);
-          Item.Opcode := coThrow;
+          Item.Opcode := code_throw;
           Item.SourceStart := Token.SourceStart;
           Item.SourceLength := 0;
           Item.SourceContext := SourceContext;
@@ -6386,10 +6386,10 @@ begin
           Result := FormatScriptError(0, Token.SourceStart + Token.SourceLength);
           Exit;
         end;
-        if Token.Next.TokenKind = ctSemicolon then
+        if Token.Next.TokenKind = token_semicolon then
         begin
           Item := InsertCodeUnitBefore(BeforeUnit);
-          Item.Opcode := coThrow;
+          Item.Opcode := code_throw;
           Item.SourceStart := Token.SourceStart;
           Item.SourceLength := Token.Next.SourceStart - Token.SourceStart + Token.Next.SourceLength;
           Item.SourceContext := SourceContext;
@@ -6398,7 +6398,7 @@ begin
         else
         begin
           Item := InsertCodeUnitBefore(BeforeUnit);
-          Item.Opcode := coThrow;
+          Item.Opcode := code_throw;
           Item.SourceStart := Token.SourceStart;
           Item.SourceLength := Token.Next.SourceStart - Token.SourceStart + Token.Next.SourceLength;
           Item.SourceContext := SourceContext;
@@ -6410,7 +6410,7 @@ begin
             Result := FormatScriptError(0, Token.SourceStart);
             Exit;
           end;
-          if Next.TokenKind <> ctSemicolon then
+          if Next.TokenKind <> token_semicolon then
           begin
             Result := FormatScriptError(0, Next.SourceStart);
             Exit;
@@ -6428,7 +6428,7 @@ begin
       else
       begin
         Item := InsertCodeUnitBefore(BeforeUnit);
-        Item.Opcode := coExpression;
+        Item.Opcode := code_evaluate;
         Item.Expression := TExpressionEC.Create;
         Item.SourceStart := Token.SourceStart;
         Item.SourceLength := 0;
@@ -6440,7 +6440,7 @@ begin
           Result := FormatScriptError(0, Analyzer.Last.SourceStart + Analyzer.Last.SourceLength);
           Exit;
         end;
-        if Next.TokenKind <> ctSemicolon then
+        if Next.TokenKind <> token_semicolon then
         begin
           Result := FormatScriptError(0, Next.SourceStart);
           Exit;
@@ -6455,8 +6455,8 @@ begin
         Continue;
       end;
     end
-    else if Token.TokenKind = ctOpenBrace then Inc(Depth)
-    else if Token.TokenKind = ctCloseBrace then
+    else if Token.TokenKind = token_open_brace then Inc(Depth)
+    else if Token.TokenKind = token_close_brace then
     begin
       Dec(Depth);
       if (StatementEnd <> nil) and (Depth = 0) then
@@ -6497,9 +6497,9 @@ begin
   begin
     with LocalVar[i] do
     begin
-      if (Kind = vkFunction) and (GetFunction <> nil) then
+      if (Kind = value_script_function) and (GetFunction <> nil) then
         GetFunction.LinkAll(Scope, OnlyUnlinked)
-      else if Kind = vkClass then
+      else if Kind = value_class then
       begin
         if GetClass <> nil then GetClass.LinkAll(Scope, OnlyUnlinked);
       end;
@@ -6517,7 +6517,7 @@ begin
   begin
     with LocalVar[i] do
     begin
-      if (Kind = vkFunction) and
+      if (Kind = value_script_function) and
         (FunctionValue <> nil) and
         FunctionValue.IsClassDefinition then
         FunctionValue.LinkLocalScopes;
@@ -6560,7 +6560,7 @@ begin
       Dec(Steps, ScriptStepInterval);
       if Assigned(ScriptStepCallback) then ScriptStepCallback(TotalSteps);
     end;
-    if Item.Opcode = coExpression then
+    if Item.Opcode = code_evaluate then
     begin
       try
         Item.Expression.Evaluate(Process, Self, nil);
@@ -6568,12 +6568,12 @@ begin
         raise;
       end;
     end
-    else if Item.Opcode = coJump then
+    else if Item.Opcode = code_jump then
     begin
       Item := Item.Target;
       Continue;
     end
-    else if Item.Opcode = coBranchFalse then
+    else if Item.Opcode = code_jump_if_false then
     begin
       try
         Item.Expression.Evaluate(Process, Self, nil);
@@ -6586,7 +6586,7 @@ begin
         Continue;
       end;
     end
-    else if Item.Opcode = coExit then
+    else if Item.Opcode = code_return then
     begin
       while True do
       begin
@@ -6596,9 +6596,9 @@ begin
       end;
       Break;
     end
-    else if Item.Opcode = coPushHandler then Process.PushHandler(Self, Item.Target)
-    else if Item.Opcode = coPopHandler then Process.PopHandler
-    else if Item.Opcode = coThrow then
+    else if Item.Opcode = code_push_handler then Process.PushHandler(Self, Item.Target)
+    else if Item.Opcode = code_pop_handler then Process.PopHandler
+    else if Item.Opcode = code_throw then
     begin
       if Item.Expression <> nil then
       begin
@@ -6668,7 +6668,7 @@ begin
       DebugContext.CurrentCode := Self;
       if DebugContext.StepMode = 1 then DebugContext.Paused := True;
     end;
-    if Item.Opcode = coExpression then
+    if Item.Opcode = code_evaluate then
     begin
       try
         Item.Expression.Evaluate(Process, Self, DebugContext);
@@ -6676,12 +6676,12 @@ begin
         raise;
       end;
     end
-    else if Item.Opcode = coJump then
+    else if Item.Opcode = code_jump then
     begin
       Item := Item.Target;
       Continue;
     end
-    else if Item.Opcode = coBranchFalse then
+    else if Item.Opcode = code_jump_if_false then
     begin
       try
         Item.Expression.Evaluate(Process, Self, DebugContext);
@@ -6694,7 +6694,7 @@ begin
         Continue;
       end;
     end
-    else if Item.Opcode = coExit then
+    else if Item.Opcode = code_return then
     begin
       while True do
       begin
@@ -6704,9 +6704,9 @@ begin
       end;
       Break;
     end
-    else if Item.Opcode = coPushHandler then Process.PushHandler(Self, Item.Target)
-    else if Item.Opcode = coPopHandler then Process.PopHandler
-    else if Item.Opcode = coThrow then
+    else if Item.Opcode = code_push_handler then Process.PushHandler(Self, Item.Target)
+    else if Item.Opcode = code_pop_handler then Process.PopHandler
+    else if Item.Opcode = code_throw then
     begin
       if Item.Expression <> nil then
       begin
@@ -6758,9 +6758,9 @@ begin
   av[0].Assume(av[1], False);
   for i := 2 to Count - 1 do
   begin
-    if (av[0].ValueKind = vkString) and (av[i].ValueKind in [vkInt, vkDword, vkFloat]) then
+    if (av[0].ValueKind = value_string) and (av[i].ValueKind in [value_int32, value_uint32, value_float64]) then
       av[0].ConvertToKind(av[i].ValueKind)
-    else if (av[i].ValueKind = vkFloat) and (av[0].ValueKind in [vkInt, vkDword]) then begin
+    else if (av[i].ValueKind = value_float64) and (av[0].ValueKind in [value_int32, value_uint32]) then begin
        av[0].ConvertToKind(av[i].ValueKind);
     end;
     if av[0].GreaterThan(av[i]) then av[0].Assume(av[i], False);
@@ -6778,9 +6778,9 @@ begin
   av[0].Assume(av[1], False);
   for i := 2 to Count - 1 do
   begin
-    if (av[0].ValueKind = vkString) and (av[i].ValueKind in [vkInt, vkDword, vkFloat]) then
+    if (av[0].ValueKind = value_string) and (av[i].ValueKind in [value_int32, value_uint32, value_float64]) then
       av[0].ConvertToKind(av[i].ValueKind)
-    else if (av[i].ValueKind = vkFloat) and (av[0].ValueKind in [vkInt, vkDword]) then begin
+    else if (av[i].ValueKind = value_float64) and (av[0].ValueKind in [value_int32, value_uint32]) then begin
        av[0].ConvertToKind(av[i].ValueKind);
     end;
     if av[0].LessThan(av[i]) then av[0].Assume(av[i], False);
@@ -6795,13 +6795,13 @@ var
   Dimensions: array of Integer;
 begin
   Count := High(av) + 1;
-  av[0].ResetKind(vkArray);
+  av[0].ResetKind(value_array);
   if Count < 2 then Exit;
   Dec(Count);
   SetLength(Dimensions, Count);
   for i := 0 to Count - 1 do
   begin
-    if (av[i + 1].ValueKind <> vkInt) or (av[i + 1].AsInteger < 1) then
+    if (av[i + 1].ValueKind <> value_int32) or (av[i + 1].AsInteger < 1) then
     begin
       Dimensions := nil;
       Exit;
@@ -6844,8 +6844,8 @@ var
 begin
   Count := High(av) + 1 - 1;
   if Count < 1 then Exit;
-  if av[1].ValueKind = vkArray then av[0].AsInteger := av[1].AsArray.Count;
-  if av[1].ValueKind = vkString then av[0].AsInteger := Length(av[1].AsString);
+  if av[1].ValueKind = value_array then av[0].AsInteger := av[1].AsArray.Count;
+  if av[1].ValueKind = value_string then av[0].AsInteger := Length(av[1].AsString);
 end;
 { @end $46D3EC }
 
@@ -6868,7 +6868,7 @@ var
 begin
   Count := High(av) + 1;
   if Count < 2 then Exit;
-  if av[1].ValueKind = vkInt then av[0].AsInteger := Abs(av[1].AsInteger)
+  if av[1].ValueKind = value_int32 then av[0].AsInteger := Abs(av[1].AsInteger)
   else av[0].AsFloat := Abs(av[1].AsFloat);
 end;
 { @end $46D4D8 }
@@ -6914,7 +6914,7 @@ begin
   Count := High(av) + 1;
   if Count < 2 then Exit;
   if Count >= 3 then Step := av[2].AsInteger else Step := 1;
-  if av[1].ValueKind = vkFloat then av[0].AsInteger := Integer(Round(av[1].AsFloat / Step)) * Step
+  if av[1].ValueKind = value_float64 then av[0].AsInteger := Integer(Round(av[1].AsFloat / Step)) * Step
   else av[0].AsInteger := Integer(Round(av[1].AsInteger / Step)) * Step;
 end;
 { @end $46D620 }
@@ -6948,7 +6948,7 @@ var
 begin
   Count := High(av) + 1;
   if Count < 2 then Exit;
-  if av[1].ValueKind = vkInt then av[0].AsInteger := av[1].AsInteger * av[1].AsInteger
+  if av[1].ValueKind = value_int32 then av[0].AsInteger := av[1].AsInteger * av[1].AsInteger
   else av[0].AsFloat := Sqr(av[1].AsFloat);
 end;
 { @end $46D754 }
@@ -7222,7 +7222,7 @@ begin
     av[0].AsInteger := 0;
     Exit;
   end;
-  av[0].ConvertToKind(vkLibraryFun);
+  av[0].ConvertToKind(value_library_function);
   SetLength(av[0].LibraryFunData, 2 + High(av) - 3);
   if av[2].AsString = 'int' then av[0].LibraryFunData[0] := 1
   else if av[2].AsString = 'dword' then av[0].LibraryFunData[0] := 2
@@ -7254,7 +7254,7 @@ begin
   if code = nil then Exit;
   while (code <> nil) and (code.Parent <> nil) do code := code.Parent;
   Found := code.LocalVar.NamedItems[av[1].AsString];
-  if Found.ValueKind = vkFunction then
+  if Found.ValueKind = value_script_function then
   begin
     Definition := Found.AsFunction;
     if not Definition.IsClassDefinition then Exit;
@@ -7270,10 +7270,10 @@ end;
 procedure EF_Delete(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) <> 1 then Exit;
-  if av[1].ValueKind = vkClass then
+  if av[1].ValueKind = value_class then
   begin
     av[1].AsClass.Free;
-    av[1].ResetKind(vkEmpty);
+    av[1].ResetKind(value_empty);
   end;
 end;
 { @end $46E464 }
@@ -7281,41 +7281,41 @@ end;
 { @routine $46E4AC RegisterExpressionBuiltins }
 procedure RegisterExpressionBuiltins(Scope: TVarArrayEC);
 begin
-  Scope.Add('pi', vkFloat).AsFloat := Pi;
-  Scope.Add('min', vkExternFun).AsExternFun := @EF_Min;
-  Scope.Add('max', vkExternFun).AsExternFun := @EF_Max;
-  Scope.Add('newarray', vkExternFun).AsExternFun := @EF_NewArray;
-  Scope.Add('arraychange', vkExternFun).AsExternFun := @EF_ArrayChange;
-  Scope.Add('free', vkExternFun).AsExternFun := @EF_Free;
-  Scope.Add('count', vkExternFun).AsExternFun := @EF_Count;
-  Scope.Add('copy', vkExternFun).AsExternFun := @EF_Copy;
-  Scope.Add('abs', vkExternFun).AsExternFun := @EF_Abs;
-  Scope.Add('arctan', vkExternFun).AsExternFun := @EF_ArcTan;
-  Scope.Add('exp', vkExternFun).AsExternFun := @EF_Exp;
-  Scope.Add('ln', vkExternFun).AsExternFun := @EF_Ln;
-  Scope.Add('round', vkExternFun).AsExternFun := @EF_Round;
-  Scope.Add('sin', vkExternFun).AsExternFun := @EF_Sin;
-  Scope.Add('cos', vkExternFun).AsExternFun := @EF_Cos;
-  Scope.Add('sqr', vkExternFun).AsExternFun := @EF_Sqr;
-  Scope.Add('sqrt', vkExternFun).AsExternFun := @EF_Sqrt;
-  Scope.Add('frac', vkExternFun).AsExternFun := @EF_Frac;
-  Scope.Add('int', vkExternFun).AsExternFun := @EF_Int;
-  Scope.Add('ord', vkExternFun).AsExternFun := @EF_Ord;
-  Scope.Add('rnd', vkExternFun).AsExternFun := @EF_Rnd;
-  Scope.Add('randomize', vkExternFun).AsExternFun := @EF_Randomize;
-  Scope.Add('randseed', vkExternFun).AsExternFun := @EF_RandSeed;
-  Scope.Add('substr', vkExternFun).AsExternFun := @EF_SubStr;
-  Scope.Add('findsubstr', vkExternFun).AsExternFun := @EF_FindSubStr;
-  Scope.Add('trim', vkExternFun).AsExternFun := @EF_Trim;
-  Scope.Add('toansi', vkExternFun).AsExternFun := @EF_ToAnsi;
-  Scope.Add('tounicode', vkExternFun).AsExternFun := @EF_ToUnicode;
-  Scope.Add('lowercase', vkExternFun).AsExternFun := @EF_LowerCase;
-  Scope.Add('uppercase', vkExternFun).AsExternFun := @EF_UpperCase;
-  Scope.Add('loadlibrary', vkExternFun).AsExternFun := @EF_LoadLibrary;
-  Scope.Add('freelibrary', vkExternFun).AsExternFun := @EF_FreeLibrary;
-  Scope.Add('libraryfunction', vkExternFun).AsExternFun := @EF_LibraryFunction;
-  Scope.Add('new', vkExternFun).AsExternFun := @EF_New;
-  Scope.Add('delete', vkExternFun).AsExternFun := @EF_Delete;
+  Scope.Add('pi', value_float64).AsFloat := Pi;
+  Scope.Add('min', value_host_function).AsExternFun := @EF_Min;
+  Scope.Add('max', value_host_function).AsExternFun := @EF_Max;
+  Scope.Add('newarray', value_host_function).AsExternFun := @EF_NewArray;
+  Scope.Add('arraychange', value_host_function).AsExternFun := @EF_ArrayChange;
+  Scope.Add('free', value_host_function).AsExternFun := @EF_Free;
+  Scope.Add('count', value_host_function).AsExternFun := @EF_Count;
+  Scope.Add('copy', value_host_function).AsExternFun := @EF_Copy;
+  Scope.Add('abs', value_host_function).AsExternFun := @EF_Abs;
+  Scope.Add('arctan', value_host_function).AsExternFun := @EF_ArcTan;
+  Scope.Add('exp', value_host_function).AsExternFun := @EF_Exp;
+  Scope.Add('ln', value_host_function).AsExternFun := @EF_Ln;
+  Scope.Add('round', value_host_function).AsExternFun := @EF_Round;
+  Scope.Add('sin', value_host_function).AsExternFun := @EF_Sin;
+  Scope.Add('cos', value_host_function).AsExternFun := @EF_Cos;
+  Scope.Add('sqr', value_host_function).AsExternFun := @EF_Sqr;
+  Scope.Add('sqrt', value_host_function).AsExternFun := @EF_Sqrt;
+  Scope.Add('frac', value_host_function).AsExternFun := @EF_Frac;
+  Scope.Add('int', value_host_function).AsExternFun := @EF_Int;
+  Scope.Add('ord', value_host_function).AsExternFun := @EF_Ord;
+  Scope.Add('rnd', value_host_function).AsExternFun := @EF_Rnd;
+  Scope.Add('randomize', value_host_function).AsExternFun := @EF_Randomize;
+  Scope.Add('randseed', value_host_function).AsExternFun := @EF_RandSeed;
+  Scope.Add('substr', value_host_function).AsExternFun := @EF_SubStr;
+  Scope.Add('findsubstr', value_host_function).AsExternFun := @EF_FindSubStr;
+  Scope.Add('trim', value_host_function).AsExternFun := @EF_Trim;
+  Scope.Add('toansi', value_host_function).AsExternFun := @EF_ToAnsi;
+  Scope.Add('tounicode', value_host_function).AsExternFun := @EF_ToUnicode;
+  Scope.Add('lowercase', value_host_function).AsExternFun := @EF_LowerCase;
+  Scope.Add('uppercase', value_host_function).AsExternFun := @EF_UpperCase;
+  Scope.Add('loadlibrary', value_host_function).AsExternFun := @EF_LoadLibrary;
+  Scope.Add('freelibrary', value_host_function).AsExternFun := @EF_FreeLibrary;
+  Scope.Add('libraryfunction', value_host_function).AsExternFun := @EF_LibraryFunction;
+  Scope.Add('new', value_host_function).AsExternFun := @EF_New;
+  Scope.Add('delete', value_host_function).AsExternFun := @EF_Delete;
 end;
 { @end $46E4AC }
 

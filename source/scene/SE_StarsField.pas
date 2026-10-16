@@ -30,8 +30,8 @@ begin
     StaticImage := TSimpleImageGI.Create(Space.MapPanel);
     StaticImage.SetDepthByName(DepthExpression);
     StaticImage.World := False;
-    StaticImage.KindX := ikxLeftFill;
-    StaticImage.KindY := ikyTopFill;
+    StaticImage.KindX := image_x_tile_left;
+    StaticImage.KindY := image_y_tile_top;
     StaticImage.Pos := Classes.Point(-Space.MapPanel.OriginPoint.X, -Space.MapPanel.OriginPoint.Y);
     StaticImage.ObjectSize := Classes.Point(Space.MapPanel.ClientSize.X, Space.MapPanel.ClientSize.Y);
     StaticImage.SetImagePath(ImagePath);

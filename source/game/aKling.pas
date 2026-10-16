@@ -7,7 +7,7 @@ uses aConst, EC_Buf, aItem, aGalaxy, aGalaxyStruct, aPlanet, aShip;
 type
   TKling = class(TShip) // @size 0x4DC
   public
-    KlingType: TKlingType; // @offset 0x4D0  Script.ShipSubType.
+    KlingType: TDominatorKind; // @offset 0x4D0  Script.ShipSubType.
     DominatorSeries: TDominatorSeries; // @offset 0x4D1
     ActiveProgramAppliedTurn: Integer; // @offset 0x4D4  Zero means inactive.
     ActiveProgramId: TProgramIndex; // @offset 0x4D8
@@ -52,12 +52,12 @@ type
     procedure InitBlazer(Star: TStar); // @addr $5B1428
     procedure InitKeller(Star: TStar); // @addr $5B1860
     procedure InitTerron(Star: TStar); // @addr $5B1C50
-    procedure InitializeDominator(Kind: TKlingType; Planet: TPlanet; Series: TDominatorSeries); // @addr $5B218C
-    procedure InitGenerated(Kind: TKlingType; Planet: TPlanet; Series: TDominatorSeries); // @addr 0x005B2684 @note "Initializes type/series and location through 0x005B218C, then builds the generated loadout. Series occupies one four-byte stack slot."
+    procedure InitializeDominator(Kind: TDominatorKind; Planet: TPlanet; Series: TDominatorSeries); // @addr $5B218C
+    procedure InitGenerated(Kind: TDominatorKind; Planet: TPlanet; Series: TDominatorSeries); // @addr 0x005B2684 @note "Initializes type/series and location through 0x005B218C, then builds the generated loadout. Series occupies one four-byte stack slot."
 
     function SelectBertorLeader: TShip; // @addr $5B4A04
     function RelocateBertorWithinConstellation: Boolean; // @addr $5B5AA0
-    function SpawnEscortShips(Kind: TKlingType; DesiredCount: Integer): Integer; // @addr $5B5CBC
+    function SpawnEscortShips(Kind: TDominatorKind; DesiredCount: Integer): Integer; // @addr $5B5CBC
     procedure CoordinateSeriesInvasions(Series: TDominatorSeries); // @addr $5B67BC
     function FindKellerAttackTarget: TStar; // @addr $5B4F54
     function FindKellerReinforcementTarget: TStar; // @addr $5B5258
@@ -72,12 +72,12 @@ type
     function GetGreetingShipCategory: TGreetingShipCategory; override; // @addr $5B6FD8 @slot $30
     function GetHomeStar: TStar; override; // @addr $5B6E00 @slot $34
     function GetStrengthScaledPirateStatus: TPercent; override; // @addr $5B6FE0 @slot $3C
-    function GetDominantCareer: TRangerCareer; override; // @addr 0x005B6FDC @slot 0x38 @note "Always rcWarrior."
+    function GetDominantCareer: TRangerCareer; override; // @addr 0x005B6FDC @slot 0x38 @note "Always career_warrior."
     function GetName: WideString; override; // @addr 0x005B6E04 @slot 0x24
     function GetFullName(const Separator: WideString): WideString; override; // @addr 0x005B6E18 @slot 0x28
 
     function IsProgramActive(ProgramId: TProgramIndex): Boolean; // @addr 0x005B6FE8 @note "Checks the stored active flag and ID; expiration is handled by the daily ship update."
-    function ShouldKamikaze: Boolean; // @addr 0x005B4BE8 @note "Requires a live enemy in the same star and KlingType=ktKlig. Existing kamikaze mode bypasses the proximity/strength test."
+    function ShouldKamikaze: Boolean; // @addr 0x005B4BE8 @note "Requires a live enemy in the same star and KlingType=dominator_klig. Existing kamikaze mode bypasses the proximity/strength test."
     procedure OpenKellerMissionHole; // @addr 0x005B5790 @note "Advances mission state 2 to 3, creates the type-4 hole and sends Keller through it with generated reinforcements."
     procedure DetectAttackingPlayer(Attacker: TShip); // @addr $5B77C8 Marks this series as aware of the player's camouflage and reports a matching active disguise.
     function HasNearbyBertorAura: Boolean; // @addr 0x005B7F2C
@@ -90,9 +90,9 @@ type
   end;
 
 var
-  DominatorEquipmentSizeIndices: array[TKlingType, 0..1] of Integer = ((1, 1), (1, 3), (2, 4), (3, 4), (3, 5), (4, 5), (1, 1), (4, 5)); // @addr $80EB14 Maximum-size index followed by minimum-size index.
+  DominatorEquipmentSizeIndices: array[TDominatorKind, 0..1] of Integer = ((1, 1), (1, 3), (2, 4), (3, 4), (3, 5), (4, 5), (1, 1), (4, 5)); // @addr $80EB14 Maximum-size index followed by minimum-size index.
   DominatorWeaponDistributionByTier: array[1..7] of Integer = (1, 1, 2, 2, 3, 3, 4); // @addr $80EB54
-  DominatorWeaponWeights: array[1..4, TKlingType, t_IndustrialLaser..t_TorpedoTube] of Integer = (
+  DominatorWeaponWeights: array[1..4, TDominatorKind, item_industrial_laser..item_torpedo_tube] of Integer = (
     ((0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 25, 50),
      (0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 5, 30, 5, 25, 5),
      (0, 0, 0, 30, 0, 0, 0, 0, 25, 5, 5, 0, 30, 0, 5),
@@ -163,7 +163,7 @@ const
 destructor TKling.Destroy;
 var I: Integer; Ranger: TRanger;
 begin
-  if KlingType = ktBoss then
+  if KlingType = dominator_boss then
     for I := 0 to Galaxy.Rangers.Count - 1 do begin
       Ranger := Galaxy.Rangers[I];
       if Ranger.LastDockedNonPlanetLocation = Self then Ranger.LastDockedNonPlanetLocation := nil;
@@ -175,10 +175,10 @@ end;
 { @routine $5B1428 TKling_InitBlazer }
 procedure TKling.InitBlazer(Star: TStar);
 begin
-  TypeId := stKling;
-  OwnerId := oiDominator;
-  KlingType := ktBoss;
-  DominatorSeries := dsBlazer;
+  TypeId := ship_dominator;
+  OwnerId := owner_dominator;
+  KlingType := dominator_boss;
+  DominatorSeries := series_blazer;
   SetMoney(MaxInt);
   NodeReserve := Round(NextRandomFloatRange(0.8, 1.2, RandomState) * DominatorShipDefinitions[KlingType].BaseNodeReserve * Galaxy.GetNodeDropModifier);
   Position.X := 0;
@@ -188,22 +188,22 @@ begin
   CurrentStar.DominatorSeries := DominatorSeries;
   HomePlanet := nil;
   CurrentPlanet := nil;
-  Inc(CurrentStar.ShipTypeCounts[stKling]);
+  Inc(CurrentStar.ShipTypeCounts[ship_dominator]);
   Name := DominatorShipDefinitions[KlingType].DisplayNames[DominatorSeries];
   RefreshCombatSkills;
   ActiveProgramAppliedTurn := 0;
   ChameleonActive := False;
   GraphDominator := Galaxy.GraphDominatorSurfacesEnabled;
-  CreateAndEquipHull(RoundAndTruncateToHundreds((HullCapacityScale * 6000) * Galaxy.GetDominatorBossHullScale * NextRandomFloatRange(0.9, 1.1, RandomState)), 8, oiDominator, -1, False);
-  CreateAndEquipFuelTanks(100, 8, oiDominator);
-  CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 8, oiDominator);
-  CreateAndEquipWeapon(t_TorpedoTube, Round(WeaponInfos[t_TorpedoTube].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  CreateAndEquipWeapon(t_TorpedoTube, Round(WeaponInfos[t_TorpedoTube].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  CreateAndEquipWeapon(t_IMHO9000, Round(WeaponInfos[t_IMHO9000].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  CreateAndEquipWeapon(t_Disintegrator, Round(WeaponInfos[t_Disintegrator].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipHull(RoundAndTruncateToHundreds((HullCapacityScale * 6000) * Galaxy.GetDominatorBossHullScale * NextRandomFloatRange(0.9, 1.1, RandomState)), 8, owner_dominator, -1, False);
+  CreateAndEquipFuelTanks(100, 8, owner_dominator);
+  CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 8, owner_dominator);
+  CreateAndEquipWeapon(item_torpedo_tube, Round(WeaponInfos[item_torpedo_tube].AverageSize * EquipmentSizeFactors[5]), 8, owner_dominator);
+  CreateAndEquipWeapon(item_torpedo_tube, Round(WeaponInfos[item_torpedo_tube].AverageSize * EquipmentSizeFactors[5]), 8, owner_dominator);
+  CreateAndEquipWeapon(item_imho9000, Round(WeaponInfos[item_imho9000].AverageSize * EquipmentSizeFactors[5]), 8, owner_dominator);
+  CreateAndEquipWeapon(item_disintegrator, Round(WeaponInfos[item_disintegrator].AverageSize * EquipmentSizeFactors[5]), 8, owner_dominator);
   if Galaxy.GetDifficultyTierIndex > 0 then
-    CreateAndEquipWeapon(t_Turbogravitron, Round(WeaponInfos[t_Turbogravitron].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]), 8, oiDominator);
+    CreateAndEquipWeapon(item_turbogravitron, Round(WeaponInfos[item_turbogravitron].AverageSize * EquipmentSizeFactors[5]), 8, owner_dominator);
+  CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]), 8, owner_dominator);
   CreateAndEquipRepairRobot(Round(RepairRobotBaseSize * EquipmentSizeFactors[5]), Round(RemapClamped(Galaxy.GetEffectiveDifficultyLevel, 0, 24, 4, 8)), OwnerId);
   SetInventoryDominatorOwner;
   if GetDefGenerator <> nil then begin
@@ -220,10 +220,10 @@ end;
 { @routine $5B1860 TKling_InitKeller }
 procedure TKling.InitKeller(Star: TStar);
 begin
-  TypeId := stKling;
-  OwnerId := oiDominator;
-  KlingType := ktBoss;
-  DominatorSeries := dsKeller;
+  TypeId := ship_dominator;
+  OwnerId := owner_dominator;
+  KlingType := dominator_boss;
+  DominatorSeries := series_keller;
   SetMoney(MaxInt);
   NodeReserve := Round(NextRandomFloatRange(0.8, 1.2, RandomState) * DominatorShipDefinitions[KlingType].BaseNodeReserve);
   Position.X := 0;
@@ -233,30 +233,30 @@ begin
   CurrentStar.DominatorSeries := DominatorSeries;
   HomePlanet := nil;
   CurrentPlanet := nil;
-  Inc(CurrentStar.ShipTypeCounts[stKling]);
+  Inc(CurrentStar.ShipTypeCounts[ship_dominator]);
   Name := DominatorShipDefinitions[KlingType].DisplayNames[DominatorSeries];
   RefreshCombatSkills;
   ActiveProgramAppliedTurn := 0;
   ChameleonActive := False;
   GraphDominator := Galaxy.GraphDominatorSurfacesEnabled;
-  CreateAndEquipHull(RoundAndTruncateToHundreds((HullCapacityScale * 4000) * Galaxy.GetDominatorBossHullScale * NextRandomFloatRange(0.9, 1.1, RandomState)), 8, oiDominator, -1, False);
-  CreateAndEquipFuelTanks(100, 8, oiDominator);
-  CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 8, oiDominator);
-  CreateAndEquipWeapon(t_TorpedoTube, Round(WeaponInfos[t_TorpedoTube].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  CreateAndEquipWeapon(t_Vertix, Round(WeaponInfos[t_Vertix].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  CreateAndEquipWeapon(t_IMHO9000, Round(WeaponInfos[t_IMHO9000].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  CreateAndEquipWeapon(t_Multiresonator, Round(WeaponInfos[t_Multiresonator].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipHull(RoundAndTruncateToHundreds((HullCapacityScale * 4000) * Galaxy.GetDominatorBossHullScale * NextRandomFloatRange(0.9, 1.1, RandomState)), 8, owner_dominator, -1, False);
+  CreateAndEquipFuelTanks(100, 8, owner_dominator);
+  CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 8, owner_dominator);
+  CreateAndEquipWeapon(item_torpedo_tube, Round(WeaponInfos[item_torpedo_tube].AverageSize * EquipmentSizeFactors[5]), 8, owner_dominator);
+  CreateAndEquipWeapon(item_vertix, Round(WeaponInfos[item_vertix].AverageSize * EquipmentSizeFactors[5]), 8, owner_dominator);
+  CreateAndEquipWeapon(item_imho9000, Round(WeaponInfos[item_imho9000].AverageSize * EquipmentSizeFactors[5]), 8, owner_dominator);
+  CreateAndEquipWeapon(item_multiresonator, Round(WeaponInfos[item_multiresonator].AverageSize * EquipmentSizeFactors[5]), 8, owner_dominator);
   if Galaxy.GetDifficultyTierIndex > 0 then
-    CreateAndEquipWeapon(t_AtomicVision, Round(WeaponInfos[t_AtomicVision].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]), 8, oiDominator);
+    CreateAndEquipWeapon(item_atomic_vision, Round(WeaponInfos[item_atomic_vision].AverageSize * EquipmentSizeFactors[5]), 8, owner_dominator);
+  CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]), 8, owner_dominator);
   Inc(CreateAndEquipRepairRobot(Round(RepairRobotBaseSize * EquipmentSizeFactors[5]), Round(RemapClamped(Galaxy.GetEffectiveDifficultyLevel, 0, 24, 4, 8)), OwnerId).RepairPoints, Galaxy.GetEffectiveDifficultyLevel);
   SetInventoryDominatorOwner;
   if (GetDefGenerator <> nil) and GetDefGenerator.HasStandardStats then
     case Galaxy.GetDifficultyTierIndex of
       0: ;
-      1: GetDefGenerator.Improve(ikMinor);
-      2: GetDefGenerator.Improve(ikMedium);
-      else GetDefGenerator.Improve(ikMajor);
+      1: GetDefGenerator.Improve(upgrade_minor);
+      2: GetDefGenerator.Improve(upgrade_medium);
+      else GetDefGenerator.Improve(upgrade_major);
     end;
   ImproveStandardEquipment;
   RefreshDerivedStats(True);
@@ -269,10 +269,10 @@ end;
 procedure TKling.InitTerron(Star: TStar);
 var I: Integer; Planet: TPlanet; Weapon: TWeapon;
 begin
-  TypeId := stKling;
-  OwnerId := oiDominator;
-  KlingType := ktBoss;
-  DominatorSeries := dsTerron;
+  TypeId := ship_dominator;
+  OwnerId := owner_dominator;
+  KlingType := dominator_boss;
+  DominatorSeries := series_terron;
   SetMoney(MaxInt);
   NodeReserve := Round(NextRandomFloatRange(0.8, 1.2, RandomState) * DominatorShipDefinitions[KlingType].BaseNodeReserve);
   Position.X := 1000;
@@ -281,43 +281,43 @@ begin
   CurrentStar.Name := LookupLocalizedTextByKey('Star.' + DominatorSeriesNames[DominatorSeries]);
   for I := 0 to Star.Planets.Count - 1 do begin
     Planet := Star.Planets[I];
-    if Planet.OwnerId in [oiMaloc..oiGaal, oiPirate] then begin
-      Planet.OwnerId := oiMaloc;
-      Planet.RaceId := oiMaloc;
+    if Planet.OwnerId in [owner_maloc..owner_gaal, owner_pirate] then begin
+      Planet.OwnerId := owner_maloc;
+      Planet.RaceId := owner_maloc;
     end;
   end;
   CurrentStar.Ships.Add(Self);
   CurrentStar.DominatorSeries := DominatorSeries;
   HomePlanet := nil;
   CurrentPlanet := nil;
-  Inc(CurrentStar.ShipTypeCounts[stKling]);
+  Inc(CurrentStar.ShipTypeCounts[ship_dominator]);
   Name := DominatorShipDefinitions[KlingType].DisplayNames[DominatorSeries];
   RefreshCombatSkills;
   ActiveProgramAppliedTurn := 0;
   ChameleonActive := False;
   GraphDominator := Galaxy.GraphDominatorSurfacesEnabled;
-  Inc(CreateAndEquipHull(RoundAndTruncateToHundreds((HullCapacityScale * 10000) * Galaxy.GetDominatorBossHullScale * NextRandomFloatRange(0.9, 1.1, RandomState)), 8, oiDominator, -1, False).Armor, Galaxy.GetEffectiveDifficultyLevel div 4);
-  CreateAndEquipFuelTanks(100, 8, oiDominator);
-  CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 8, oiDominator);
-  Weapon := CreateAndEquipWeapon(t_IMHO9000, Round(WeaponInfos[t_IMHO9000].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  Inc(CreateAndEquipHull(RoundAndTruncateToHundreds((HullCapacityScale * 10000) * Galaxy.GetDominatorBossHullScale * NextRandomFloatRange(0.9, 1.1, RandomState)), 8, owner_dominator, -1, False).Armor, Galaxy.GetEffectiveDifficultyLevel div 4);
+  CreateAndEquipFuelTanks(100, 8, owner_dominator);
+  CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 8, owner_dominator);
+  Weapon := CreateAndEquipWeapon(item_imho9000, Round(WeaponInfos[item_imho9000].AverageSize * EquipmentSizeFactors[5]), 8, owner_dominator);
   Inc(Weapon.Range, 5 * Galaxy.GetEffectiveDifficultyLevel);
   Inc(Weapon.MaxDamage, Galaxy.GetEffectiveDifficultyLevel div 2);
-  CreateAndEquipWeapon(t_MissileLauncher, Round(WeaponInfos[t_MissileLauncher].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  CreateAndEquipWeapon(t_MissileLauncher, Round(WeaponInfos[t_MissileLauncher].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  Weapon := CreateAndEquipWeapon(t_Multiresonator, Round(WeaponInfos[t_Multiresonator].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipWeapon(item_missile_launcher, Round(WeaponInfos[item_missile_launcher].AverageSize * EquipmentSizeFactors[5]), 8, owner_dominator);
+  CreateAndEquipWeapon(item_missile_launcher, Round(WeaponInfos[item_missile_launcher].AverageSize * EquipmentSizeFactors[5]), 8, owner_dominator);
+  Weapon := CreateAndEquipWeapon(item_multiresonator, Round(WeaponInfos[item_multiresonator].AverageSize * EquipmentSizeFactors[5]), 8, owner_dominator);
   Inc(Weapon.Range, 5 * Galaxy.GetEffectiveDifficultyLevel);
   Inc(Weapon.MaxDamage, Galaxy.GetEffectiveDifficultyLevel div 2);
   if Galaxy.GetDifficultyTierIndex > 1 then
-    CreateAndEquipWeapon(t_TorpedoTube, Round(WeaponInfos[t_TorpedoTube].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]), 8, oiDominator);
+    CreateAndEquipWeapon(item_torpedo_tube, Round(WeaponInfos[item_torpedo_tube].AverageSize * EquipmentSizeFactors[5]), 8, owner_dominator);
+  CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]), 8, owner_dominator);
   CreateAndEquipRepairRobot(Round(RepairRobotBaseSize * EquipmentSizeFactors[5]), Round(RemapClamped(Galaxy.GetEffectiveDifficultyLevel, 0, 24, 4, 8)), OwnerId);
   SetInventoryDominatorOwner;
   if (GetDefGenerator <> nil) and GetDefGenerator.HasStandardStats then
     case Galaxy.GetDifficultyTierIndex of
       0: ;
-      1: GetDefGenerator.Improve(ikMinor);
-      2: GetDefGenerator.Improve(ikMedium);
-      else GetDefGenerator.Improve(ikMajor);
+      1: GetDefGenerator.Improve(upgrade_minor);
+      2: GetDefGenerator.Improve(upgrade_medium);
+      else GetDefGenerator.Improve(upgrade_major);
     end;
   GetHull.Armor := Round(Galaxy.GetEffectiveDifficultyLevel / 8) + 11;
   ImproveStandardEquipment;
@@ -328,21 +328,21 @@ end;
 { @end $5B1C50 }
 
 { @routine $5B218C TKling_InitializeDominator }
-procedure TKling.InitializeDominator(Kind: TKlingType; Planet: TPlanet; Series: TDominatorSeries);
+procedure TKling.InitializeDominator(Kind: TDominatorKind; Planet: TPlanet; Series: TDominatorSeries);
 begin
-  TypeId := stKling;
-  OwnerId := oiDominator;
+  TypeId := ship_dominator;
+  OwnerId := owner_dominator;
   KlingType := Kind;
   DominatorSeries := Series;
   SetMoney(Round(Galaxy.MaxRangerWealth * DominatorShipDefinitions[Kind].InitialWealthScale));
   NodeReserve := Round((NextRandomUnitFloat(RandomState) + 0.5) * DominatorShipDefinitions[Kind].BaseNodeReserve);
-  if KlingType <> ktBoss then begin
+  if KlingType <> dominator_boss then begin
     CurrentStar := Planet.CurrentStar;
     CurrentStar.Ships.Add(Self);
     HomePlanet := nil;
     CurrentPlanet := Planet;
   end;
-  Inc(CurrentStar.ShipTypeCounts[stKling]);
+  Inc(CurrentStar.ShipTypeCounts[ship_dominator]);
   Name := '';
   if (ModShipNameConfig <> nil) and (ModShipNameConfig.CountBlocks('Dominator') > 0) then
     Name := ModShipNameConfig.GetBlock('Dominator').GetParamValue(
@@ -358,7 +358,7 @@ end;
 { @end $5B218C }
 
 { @routine $5B2684 TKling_InitGenerated }
-procedure TKling.InitGenerated(Kind: TKlingType; Planet: TPlanet; Series: TDominatorSeries);
+procedure TKling.InitGenerated(Kind: TDominatorKind; Planet: TPlanet; Series: TDominatorSeries);
 var
   ControlPercent, MinimumControl, MiddleControl, Tier, MaximumControl: Integer;
   MaximumSizeIndex, MinimumSizeIndex, Rating, WarRating, DistanceRating, Distribution: Integer;
@@ -403,12 +403,12 @@ var
 
 begin
   InitializeDominator(Kind, Planet, Series);
-  ControlPercent := Galaxy.GetFactionControlPercent(sfDominators);
+  ControlPercent := Galaxy.GetFactionControlPercent(faction_dominators);
   Rating := Round(125 * Galaxy.GetEffectiveDifficultyLevel + RemapClamped(Galaxy.CurrentTurn, GalaxyWarmupTurns, 22200, 0, 3000));
-  WarRating := -150 * Galaxy.WarDeltaWin[sfDominators];
+  WarRating := -150 * Galaxy.WarDeltaWin[faction_dominators];
   DistanceRating := 0;
   for I := 0 to Galaxy.Stars.Count - 1 do
-    if (TStar(CurrentStar.StarDistances[I].Star).ControlFaction <> sfDominators) or
+    if (TStar(CurrentStar.StarDistances[I].Star).ControlFaction <> faction_dominators) or
       (TStar(CurrentStar.StarDistances[I].Star).Status.CustomFaction <> '') then begin
       DistanceRating := 40 * I;
       Break;
@@ -419,8 +419,8 @@ begin
   Rating := Max(0, Rating);
   Tier := Rating div 1000 + 1;
   if NextRandomIntRange(0, 1000, RandomState) < Rating mod 1000 then Inc(Tier);
-  if Kind = ktBertor then Inc(Tier);
-  if Kind = ktKlig then Dec(Tier);
+  if Kind = dominator_bertor then Inc(Tier);
+  if Kind = dominator_klig then Dec(Tier);
   Tier := Max(1, Min(Tier, 7));
   if Galaxy.CurrentTurn >= 666 then
     if Galaxy.DominatorModLevel = 1 then Tier := Max(Tier, 5)
@@ -432,17 +432,17 @@ begin
   ChameleonActive := False;
   GraphDominator := Galaxy.GraphDominatorSurfacesEnabled;
   CreateAndEquipHull(Round(RandomInteger(DominatorShipDefinitions[KlingType].MinimumHullSize,
-    DominatorShipDefinitions[KlingType].MaximumHullSize) * HullCapacityScale), RandomTuning(2, 3), oiDominator, -1, False);
-  CreateAndEquipEngine(SizeForKind(EngineBaseSize), RandomTuning(10, 11), oiDominator);
+    DominatorShipDefinitions[KlingType].MaximumHullSize) * HullCapacityScale), RandomTuning(2, 3), owner_dominator, -1, False);
+  CreateAndEquipEngine(SizeForKind(EngineBaseSize), RandomTuning(10, 11), owner_dominator);
   if RandomInteger(1, 100) <= InterpolatedTuning(14, 15) then
-    CreateAndEquipRepairRobot(SizeForKind(RepairRobotBaseSize), RandomTuning(4, 5), oiDominator);
+    CreateAndEquipRepairRobot(SizeForKind(RepairRobotBaseSize), RandomTuning(4, 5), owner_dominator);
   if RandomInteger(1, 100) <= InterpolatedTuning(16, 17) then
-    CreateAndEquipDefGenerator(SizeForKind(DefGeneratorBaseSize), RandomTuning(6, 7), oiDominator);
+    CreateAndEquipDefGenerator(SizeForKind(DefGeneratorBaseSize), RandomTuning(6, 7), owner_dominator);
   TechLevel := Galaxy.TechLevel;
-  CreateAndEquipFuelTanks(SizeForKind(FuelTanksBaseSize), RandomInteger(1, TechLevel), oiDominator);
-  CreateAndEquipRadar(SizeForKind(RadarBaseSize), RandomInteger(1, TechLevel), oiDominator);
-  CreateAndEquipScanner(SizeForKind(ScannerBaseSize), RandomInteger(1, TechLevel), oiDominator);
-  CreateAndEquipCargoHook(SizeForKind(CargoHookBaseSize), RandomInteger(1, Min(TechLevel, 7)), oiDominator);
+  CreateAndEquipFuelTanks(SizeForKind(FuelTanksBaseSize), RandomInteger(1, TechLevel), owner_dominator);
+  CreateAndEquipRadar(SizeForKind(RadarBaseSize), RandomInteger(1, TechLevel), owner_dominator);
+  CreateAndEquipScanner(SizeForKind(ScannerBaseSize), RandomInteger(1, TechLevel), owner_dominator);
+  CreateAndEquipCargoHook(SizeForKind(CargoHookBaseSize), RandomInteger(1, Min(TechLevel, 7)), owner_dominator);
   Distribution := DominatorWeaponDistributionByTier[Tier];
   WeaponCount := RandomTuning(12, 13);
   for I := 1 to WeaponCount do begin
@@ -451,25 +451,25 @@ begin
     repeat
       Inc(Attempts);
       if Attempts > 1000 then Break;
-      WeaponType := t_IndustrialLaser;
+      WeaponType := item_industrial_laser;
       Roll := RandomInteger(1, 100);
       Chosen := False;
       WeightSum := 0;
-      while (WeaponType <= t_TorpedoTube) and not Chosen do begin
+      while (WeaponType <= item_torpedo_tube) and not Chosen do begin
         Inc(WeightSum, DominatorWeaponWeights[Distribution, KlingType, WeaponType]);
         if Roll <= WeightSum then begin
           MaximumSizeIndex := DominatorEquipmentSizeIndices[KlingType, 0];
           MinimumSizeIndex := DominatorEquipmentSizeIndices[KlingType, 1];
-          if WeaponInfos[WeaponType].ShotType = wstAreaDamage then begin
+          if WeaponInfos[WeaponType].ShotType = shot_area_damage then begin
             MaximumSizeIndex := 2;
             MinimumSizeIndex := 1;
           end;
           Accepted := not Galaxy.AreDominatorRacialWeaponsEnabled or
-            (((DominatorSeries <> dsBlazer) or not (WeaponType in [t_IMHO9000, t_Vertix])) and
-             ((DominatorSeries <> dsTerron) or not (WeaponType in [t_Vertix, t_TorpedoTube])) and
-             ((DominatorSeries <> dsKeller) or not (WeaponType in [t_IMHO9000, t_TorpedoTube])));
+            (((DominatorSeries <> series_blazer) or not (WeaponType in [item_imho9000, item_vertix])) and
+             ((DominatorSeries <> series_terron) or not (WeaponType in [item_vertix, item_torpedo_tube])) and
+             ((DominatorSeries <> series_keller) or not (WeaponType in [item_imho9000, item_torpedo_tube])));
           if Accepted then CreateAndEquipWeapon(WeaponType,
-            RandomEquipmentSize(WeaponInfos[WeaponType].AverageSize, MaximumSizeIndex, MinimumSizeIndex), RandomTuning(8, 9), oiDominator);
+            RandomEquipmentSize(WeaponInfos[WeaponType].AverageSize, MaximumSizeIndex, MinimumSizeIndex), RandomTuning(8, 9), owner_dominator);
           Chosen := True;
         end;
         Inc(WeaponType);
@@ -479,22 +479,22 @@ begin
   Roll := GetCargoFreeSpace;
   if Roll < 0 then begin
     Inc(GetHull.Weight, Abs(Roll));
-    if GetEngine <> nil then GetEngine.Improve(ikAny);
+    if GetEngine <> nil then GetEngine.Improve(upgrade_random);
   end;
   GetHull.HullPoints := GetHull.Weight;
   RefreshGraphicSize;
   RefreshDerivedStats(True);
-  if (GetScanner <> nil) and (RandomInteger(1, 100) > ControlPercent) then GetScanner.Improve(ikAny);
-  if (GetRadar <> nil) and (RandomInteger(1, 100) > ControlPercent) then GetRadar.Improve(ikAny);
-  if (GetCargoHook <> nil) and (RandomInteger(1, 100) > ControlPercent) then GetCargoHook.Improve(ikAny);
-  if (GetFuelTanks <> nil) and (RandomInteger(1, 100) > ControlPercent) then GetFuelTanks.Improve(ikAny);
+  if (GetScanner <> nil) and (RandomInteger(1, 100) > ControlPercent) then GetScanner.Improve(upgrade_random);
+  if (GetRadar <> nil) and (RandomInteger(1, 100) > ControlPercent) then GetRadar.Improve(upgrade_random);
+  if (GetCargoHook <> nil) and (RandomInteger(1, 100) > ControlPercent) then GetCargoHook.Improve(upgrade_random);
+  if (GetFuelTanks <> nil) and (RandomInteger(1, 100) > ControlPercent) then GetFuelTanks.Improve(upgrade_random);
   ImprovementChance := RandomTuning(18, 19);
   if ImprovementChance > 0 then
     case DominatorSeries of
-      dsBlazer: for I := 1 to 5 do
-        if (Weapons[I] <> nil) and (RandomInteger(1, 100) <= ImprovementChance) then Weapons[I].Improve(ikAny);
-      dsKeller: if (GetDefGenerator <> nil) and (RandomInteger(1, 100) <= ImprovementChance) then GetDefGenerator.Improve(ikAny);
-      dsTerron: if (GetRepairRobot <> nil) and (RandomInteger(1, 100) <= ImprovementChance) then GetRepairRobot.Improve(ikAny);
+      series_blazer: for I := 1 to 5 do
+        if (Weapons[I] <> nil) and (RandomInteger(1, 100) <= ImprovementChance) then Weapons[I].Improve(upgrade_random);
+      series_keller: if (GetDefGenerator <> nil) and (RandomInteger(1, 100) <= ImprovementChance) then GetDefGenerator.Improve(upgrade_random);
+      series_terron: if (GetRepairRobot <> nil) and (RandomInteger(1, 100) <= ImprovementChance) then GetRepairRobot.Improve(upgrade_random);
     end;
   for I := 1 to Inventory.Count - 1 do begin
     Equipment := Inventory[I];
@@ -521,7 +521,7 @@ end;
 procedure TKling.LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy);
 begin
   inherited;
-  KlingType := TKlingType(Buffer.GetByte);
+  KlingType := TDominatorKind(Buffer.GetByte);
   DominatorSeries := TDominatorSeries(Buffer.GetByte);
   ActiveProgramAppliedTurn := Buffer.GetInt32;
   ActiveProgramId := TProgramIndex(Buffer.GetByte);
@@ -543,14 +543,14 @@ begin
     inherited;
     if (ScriptShip <> nil) and HasScriptControl then begin
       ScriptNextDay;
-      if (ScriptShip <> nil) and (KlingType <> ktBoss) then Exit;
+      if (ScriptShip <> nil) and (KlingType <> dominator_boss) then Exit;
     end;
-    if KlingType = ktBoss then begin
+    if KlingType = dominator_boss then begin
       if Self = BlazerShip then BlazerNextDayLogic
       else if Self = KellerShip then KellerNextDayLogic
       else if Self = TerronShip then TerronNextDayLogic
       else NextDayLogic;
-    end else if KlingType = ktBertor then MiniBossNextDayLogic else NextDayLogic;
+    end else if KlingType = dominator_bertor then MiniBossNextDayLogic else NextDayLogic;
     if (ScriptShip <> nil) and not HasScriptControl then ScriptNextDay;
   except
     on E: Exception do begin
@@ -578,19 +578,19 @@ begin
     else if (TerronShip <> nil) and (DockedTo = TerronShip) then DestroyQueued := True
     else if InNormalSpace then begin
       Stage := 2;
-      if IsProgramActive(prgDisconnection) then Exit;
+      if IsProgramActive(program_disconnection) then Exit;
       AssignWeaponTargetsInStar;
-      if IsProgramActive(prgInsanity) then begin MoveToRandomPatrolPoint; Exit; end;
-      if (DominatorSeries = dsTerron) and (TerronShip <> nil) and not HasIndependentScriptFaction and (Galaxy.TerronToStarTurn >= TerronTransformationFlag) then begin
+      if IsProgramActive(program_insanity) then begin MoveToRandomPatrolPoint; Exit; end;
+      if (DominatorSeries = series_terron) and (TerronShip <> nil) and not HasIndependentScriptFaction and (Galaxy.TerronToStarTurn >= TerronTransformationFlag) then begin
         if CurrentStar <> TerronShip.CurrentStar then OrderJump(TerronShip.CurrentStar, False)
         else OrderLanding(TerronShip, False);
       end else begin
         Stage := 3;
-        if (Order = soFollowShip) and (OrderTarget <> nil) and (OrderTarget is TShip) and (OrderTarget <> EnemyShip) and
-          not (TShip(OrderTarget).Order in [soMove, soJump]) then OrderNone(False);
+        if (Order = order_follow_ship) and (OrderTarget <> nil) and (OrderTarget is TShip) and (OrderTarget <> EnemyShip) and
+          not (TShip(OrderTarget).Order in [order_move, order_jump]) then OrderNone(False);
         if (PartnerShip <> nil) and (PartnerShip.CurrentStar <> CurrentStar) then OrderJump(PartnerShip.CurrentStar, True)
-        else if (PartnerShip <> nil) and PartnerShip.InNormalSpace and (PartnerShip.Order = soJump) and (PartnerShip.EstimateOrderTravelTurns <= 3) then
-          OrderFollowShip(PartnerShip, fmFollowNear, True)
+        else if (PartnerShip <> nil) and PartnerShip.InNormalSpace and (PartnerShip.Order = order_jump) and (PartnerShip.EstimateOrderTravelTurns <= 3) then
+          OrderFollowShip(PartnerShip, follow_close, True)
         else if (not OrderAbsolute or not (OrderTarget is TShip)) and (not (OrderTarget is TStar) or (EstimateOrderTravelTurns >= 3)) then begin
           Stage := 4;
           SelectEnemyShipInStar;
@@ -599,25 +599,25 @@ begin
           Stage := 6;
           UpdateAfterburnerState;
           Stage := 7;
-          if (Order = soNone) and HasHullDamageOrBrokenEquippedItems then LandOnRandomFriendlyPlanet(False);
+          if (Order = order_none) and HasHullDamageOrBrokenEquippedItems then LandOnRandomFriendlyPlanet(False);
           Stage := 8;
-          if (Order = soNone) and (CurrentStar.Id = Galaxy.KellerResearchTargetStarId) and (KellerShip <> nil) and
+          if (Order = order_none) and (CurrentStar.Id = Galaxy.KellerResearchTargetStarId) and (KellerShip <> nil) and
             (NextRandomIntRange(0, 99, RandomState) < 20) and not HasIndependentScriptFaction then LandOnRandomFriendlyPlanet(False);
           Stage := 9;
-          if (Order = soNone) and (KellerShip <> nil) and (CurrentStar = KellerShip.CurrentStar) and KellerShip.InNormalSpace and
+          if (Order = order_none) and (KellerShip <> nil) and (CurrentStar = KellerShip.CurrentStar) and KellerShip.InNormalSpace and
             (NextRandomIntRange(0, 99, RandomState) < 20) then OrderMove(KellerShip.Position, False);
           Stage := 10;
-          if Order in [soNone..soMove] then begin
+          if Order in [order_none..order_move] then begin
             Stage := 11;
             Ship := SelectBertorLeader;
             if Ship <> nil then
               if Sqrt(Sqr(Ship.Position.X) + Sqr(Ship.Position.Y)) > Min(8 * Ship.Speed, 2 * Speed) then begin
                 Stage := 12;
-                OrderFollowShip(Ship, fmMinWeaponRange, False);
+                OrderFollowShip(Ship, follow_min_weapon_range, False);
               end;
           end;
           Stage := 13;
-          if Order = soNone then MoveToRandomPatrolPoint;
+          if Order = order_none then MoveToRandomPatrolPoint;
         end;
       end;
     end;
@@ -649,7 +649,7 @@ begin
       if not InNormalSpace then Exit;
       Stage := 2;
       AssignWeaponTargetsInStar;
-      if (DominatorSeries = dsTerron) and (TerronShip <> nil) and (Galaxy.TerronToStarTurn >= TerronTransformationFlag) then begin
+      if (DominatorSeries = series_terron) and (TerronShip <> nil) and (Galaxy.TerronToStarTurn >= TerronTransformationFlag) then begin
         if CurrentStar <> TerronShip.CurrentStar then OrderJump(TerronShip.CurrentStar, False)
         else OrderLanding(TerronShip, False);
         Exit;
@@ -659,18 +659,18 @@ begin
         Stage := 4;
         SelectEnemyShipInStar;
         EngageEnemyShip;
-        if (Order = soNone) and HasHullDamageOrBrokenEquippedItems then LandOnRandomFriendlyPlanet(False);
-        if (Order = soNone) and (CurrentStar.Id = Galaxy.KellerResearchTargetStarId) and (KellerShip <> nil) and
+        if (Order = order_none) and HasHullDamageOrBrokenEquippedItems then LandOnRandomFriendlyPlanet(False);
+        if (Order = order_none) and (CurrentStar.Id = Galaxy.KellerResearchTargetStarId) and (KellerShip <> nil) and
           (NextRandomIntRange(0, 99, RandomState) < 20) then LandOnRandomFriendlyPlanet(False);
-        if (Order = soNone) and (KellerShip <> nil) and (CurrentStar = KellerShip.CurrentStar) and KellerShip.InNormalSpace and
+        if (Order = order_none) and (KellerShip <> nil) and (CurrentStar = KellerShip.CurrentStar) and KellerShip.InNormalSpace and
           (NextRandomIntRange(0, 99, RandomState) < 20) then OrderMove(KellerShip.Position, False);
         Stage := 5;
-        if (Order in [soNone..soMove]) and ((CurrentStar.Id <> Galaxy.KellerResearchTargetStarId) or (KellerShip = nil)) then
+        if (Order in [order_none..order_move]) and ((CurrentStar.Id <> Galaxy.KellerResearchTargetStarId) or (KellerShip = nil)) then
           if (Galaxy.CurrentTurn + Integer(Seed)) mod (200 - 20 * Round(Galaxy.GetEffectiveDifficultyLevel / 8)) = 0 then RelocateBertorWithinConstellation;
-        if Order = soNone then MoveToRandomPatrolPoint;
+        if Order = order_none then MoveToRandomPatrolPoint;
         Stage := 6;
-        if Order <> soJump then
-          if SpawnEscortShips(ktKlig, 5) > 0 then OrderNone(False);
+        if Order <> order_jump then
+          if SpawnEscortShips(dominator_klig, 5) > 0 then OrderNone(False);
       end;
     end;
   except
@@ -688,7 +688,7 @@ var Stage: Integer;
 begin
   Stage := 0;
   try
-    if CurrentStar.ShipTypeCounts[stKling] = CurrentStar.Ships.Count then begin
+    if CurrentStar.ShipTypeCounts[ship_dominator] = CurrentStar.Ships.Count then begin
       Stage := 1;
       RepairBrokenEquipmentAtLocation;
       GetHull.HullPoints := GetHull.Weight;
@@ -707,13 +707,13 @@ begin
         OrderLanding(TPlanet(Galaxy.IdToPlanet(Galaxy.BlazerLandingPlanetId)), False);
       end else begin
         Stage := 5;
-        CoordinateSeriesInvasions(dsBlazer);
+        CoordinateSeriesInvasions(series_blazer);
         if not OrderAbsolute then begin
           Stage := 6;
           if DaysSincePlayerSeen > 3 then
             if ((Galaxy.CurrentTurn + Integer(Seed)) mod (10 - Round(Galaxy.GetEffectiveDifficultyLevel / 8)) = 0) and
-              (CurrentStar.ShipTypeCounts[stKling] >= 1) then RetreatToReinforcedStar;
-          if Order = soNone then MoveToRandomPatrolPoint;
+              (CurrentStar.ShipTypeCounts[ship_dominator] >= 1) then RetreatToReinforcedStar;
+          if Order = order_none then MoveToRandomPatrolPoint;
         end;
         Stage := 7;
         AssignWeaponTargetsInStar;
@@ -745,14 +745,14 @@ begin
     SelectKellerMission;
     SelectKellerReinforcementMission;
     if InNormalSpace then begin
-      CoordinateSeriesInvasions(dsKeller);
-      if (Galaxy.CountFactionStars(sfDominators) < 2) and (GetPlayer <> nil) and
+      CoordinateSeriesInvasions(series_keller);
+      if (Galaxy.CountFactionStars(faction_dominators) < 2) and (GetPlayer <> nil) and
         (GetPlayer.IsOutsideStarSpace or (GetPlayer.CurrentStar <> CurrentStar)) then IntervalBonus := 30
       else IntervalBonus := 1;
       if ((Galaxy.KellerResearchTargetStarId <> 0) and (Galaxy.KellerResearchTargetStarId <> CurrentStar.Id)) or
         (Galaxy.CurrentTurn mod Galaxy.ScaleIntByTechLevel(5, IntervalBonus + 30) = 0) or (GetHull.HullPoints < 1300) or
         ((GetPlayer <> nil) and ((GetPlayer.CurrentStar = CurrentStar) or (GetPlayer.OrderTarget = CurrentStar)) and
-        (Galaxy.TechLevel < 7) and (Galaxy.GetFactionControlPercent(sfCoalition) < 70)) then begin
+        (Galaxy.TechLevel < 7) and (Galaxy.GetFactionControlPercent(faction_coalition) < 70)) then begin
         Stage := 2;
         Hole := Galaxy.FindHoleInStarByKind(CurrentStar, 4);
         if Hole <> nil then
@@ -763,7 +763,7 @@ begin
           end;
       end;
       Stage := 3;
-      if Order = soNone then MoveNearKellerMissionHole;
+      if Order = order_none then MoveNearKellerMissionHole;
       AssignWeaponTargetsInStar;
     end;
   except
@@ -788,7 +788,7 @@ begin
       if Galaxy.TerronToStarTurn > 0 then OrderMove(MakePointF(-100, -100), False)
       else begin
         Stage := 1;
-        CoordinateSeriesInvasions(dsTerron);
+        CoordinateSeriesInvasions(series_terron);
         OrderMove(MakePointF(0, 0), False);
         Stage := 2;
         if Galaxy.TerronWeaponLockTurn = 0 then AssignWeaponTargetsInStar;
@@ -811,11 +811,11 @@ begin
   Result := nil;
   Count := 0;
   PlayerIsBertor := (GetPlayer.CurrentStar = CurrentStar) and GetPlayer.InNormalSpace and
-    IsPlayerCamouflageEffective(GetPlayer) and GetPlayer.ChameleonActive and (GetPlayer.ChameleonVisualType in [ktBertor]);
+    IsPlayerCamouflageEffective(GetPlayer) and GetPlayer.ChameleonActive and (GetPlayer.ChameleonVisualType in [dominator_bertor]);
   if PlayerIsBertor then begin Result := GetPlayer; Inc(Count); end;
   for I := 0 to CurrentStar.Ships.Count - 1 do begin
     Ship := CurrentStar.Ships[I];
-    if not (Ship.InNormalSpace and (Ship is TKling) and ((Ship as TKling).KlingType in [ktBertor]) and
+    if not (Ship.InNormalSpace and (Ship is TKling) and ((Ship as TKling).KlingType in [dominator_bertor]) and
       ((Ship as TKling).DominatorSeries = DominatorSeries)) then Continue;
     if Ship = PartnerShip then begin Result := Ship; Exit; end;
     if Count = 0 then Result := Ship else Result := nil;
@@ -829,7 +829,7 @@ begin
     end;
     for I := 0 to CurrentStar.Ships.Count - 1 do begin
       Ship := CurrentStar.Ships[I];
-      if not (Ship.InNormalSpace and (Ship is TKling) and ((Ship as TKling).KlingType in [ktBertor]) and
+      if not (Ship.InNormalSpace and (Ship is TKling) and ((Ship as TKling).KlingType in [dominator_bertor]) and
         ((Ship as TKling).DominatorSeries = DominatorSeries)) then Continue;
       if Count = 0 then begin Result := Ship; Exit; end;
       Dec(Count);
@@ -842,7 +842,7 @@ end;
 function TKling.ShouldKamikaze: Boolean;
 begin
   Result := False;
-  if KlingType <> ktKlig then Exit;
+  if KlingType <> dominator_klig then Exit;
   if EnemyShip = nil then Exit;
   if not EnemyShip.InNormalSpace then Exit;
   if EnemyShip.CurrentStar <> CurrentStar then Exit;
@@ -878,7 +878,7 @@ begin
     if (CurrentStar.Status.CustomFaction = '') then
     for I := 0 to CurrentStar.Planets.Count - 1 do begin
       Planet := CurrentStar.Planets[I];
-      if (Planet.OwnerId = oiDominator) or ((Planet.CurrentStar.Id = Galaxy.KellerResearchTargetStarId) and (Planet.OwnerId <> oiUninhabited) and (KellerShip <> nil)) then PlanetQueue.Add(Planet);
+      if (Planet.OwnerId = owner_dominator) or ((Planet.CurrentStar.Id = Galaxy.KellerResearchTargetStarId) and (Planet.OwnerId <> owner_uninhabited) and (KellerShip <> nil)) then PlanetQueue.Add(Planet);
     end;
 end;
 { @end $5B4CD8 }
@@ -886,13 +886,13 @@ end;
 { @routine $5B4D6C TKling_CanQueueReachablePlanet }
 function TKling.CanQueueReachablePlanet(Planet: TPlanet): Boolean;
 begin
-  Result := Planet.OwnerId = oiDominator;
+  Result := Planet.OwnerId = owner_dominator;
 end;
 { @end $5B4D6C }
 
 { @routine $5B4D74 TKling_RetreatToReinforcedStar }
 function TKling.RetreatToReinforcedStar: Boolean;
-const DominatorShipMask = [stKling];
+const DominatorShipMask = [ship_dominator];
 var I: Integer; Star: TStar; Stars: TList;
 begin
   Result := False;
@@ -900,11 +900,11 @@ begin
   for I := 0 to Galaxy.Stars.Count - 1 do begin
     Star := Galaxy.Stars[I];
     if (Star <> CurrentStar) and (Star.Constellation.Id <> 20) and not IsStarProtectedByScript(Star) and
-      ((Star.ShipTypeCounts[stKling] >= 10) or (Star.SumBestRangerRelativeStrength(DominatorShipMask) >= DominatorRetreatStrengthByTier[Star.Constellation.HomeDistanceTier])) and
-      (Star.ShipTypeCounts[stKling] >= 6) and
+      ((Star.ShipTypeCounts[ship_dominator] >= 10) or (Star.SumBestRangerRelativeStrength(DominatorShipMask) >= DominatorRetreatStrengthByTier[Star.Constellation.HomeDistanceTier])) and
+      (Star.ShipTypeCounts[ship_dominator] >= 6) and
       ((KellerShip = nil) or not KellerShip.InNormalSpace or (KellerShip.CurrentStar <> Star)) and
       ((TerronShip = nil) or not TerronShip.InNormalSpace or (TerronShip.CurrentStar <> Star)) and
-      (Star.ControlFaction = sfDominators) and (Star.DominatorSeries = DominatorSeries) and (Star.Status.CustomFaction = '') and (Star.Battle = 0) then Stars.Add(Star);
+      (Star.ControlFaction = faction_dominators) and (Star.DominatorSeries = DominatorSeries) and (Star.Status.CustomFaction = '') and (Star.Battle = 0) then Stars.Add(Star);
   end;
   if Stars.Count > 2 then begin
     I := Stars.IndexOf(TransitOriginStar);
@@ -924,14 +924,14 @@ begin
   Result := False;
   if GetHull.HullPoints <= GetHull.Weight div 3 then begin
     Result := True;
-    if (Order <> soJump) and not RetreatToReinforcedStar then Result := False;
+    if (Order <> order_jump) and not RetreatToReinforcedStar then Result := False;
   end;
 end;
 { @end $5B4F0C }
 
 { @routine $5B4F54 TKling_FindKellerAttackTarget }
 function TKling.FindKellerAttackTarget: TStar;
-const CoalitionShipMask = [stRanger..stTranclucator];
+const CoalitionShipMask = [ship_ranger..ship_tranclucator];
 var I, J, Score, BestScore, Index: Integer; BestStar, Star, Neighbor: TStar;
 begin
   BestScore := MaxInt;
@@ -941,16 +941,16 @@ begin
     IncrementWrapped(Index, 0, Galaxy.Stars.Count - 1);
     Star := GetPlayer.CurrentStar.StarDistances[Index].Star as TStar;
     if (Star.Constellation.Id = 20) or ((BlazerShip <> nil) and (BlazerShip.CurrentStar = Star)) or
-      ((TerronShip <> nil) and (TerronShip.CurrentStar = Star)) or ((Star.ControlFaction = sfDominators) and (Star.Battle = 0)) then Continue;
+      ((TerronShip <> nil) and (TerronShip.CurrentStar = Star)) or ((Star.ControlFaction = faction_dominators) and (Star.Battle = 0)) then Continue;
     if (Galaxy.CurrentTurn > GalaxyWarmupTurns) or (PointDistanceSquared(Star.Position, GetPlayer.CurrentStar.Position) >= Sqr((1 - Galaxy.CurrentTurn / GalaxyWarmupTurns) * 70 + 35)) then
-      if ((Star.Battle = 0) or (Star.DominatorSeries <> dsKeller) or (Star.ShipTypeCounts[stKling] <= 6)) and not IsStarProtectedByScript(Star) then begin
+      if ((Star.Battle = 0) or (Star.DominatorSeries <> series_keller) or (Star.ShipTypeCounts[ship_dominator] <= 6)) and not IsStarProtectedByScript(Star) then begin
         Score := 0;
         for J := 1 to Galaxy.Stars.Count - 1 do begin
           Neighbor := Star.StarDistances[J].Star as TStar;
-          if (Neighbor.ControlFaction = sfCoalition) and (Neighbor.Status.CustomFaction = '') then Inc(Score, Star.StarDistances[J].Distance)
+          if (Neighbor.ControlFaction = faction_coalition) and (Neighbor.Status.CustomFaction = '') then Inc(Score, Star.StarDistances[J].Distance)
           else if Neighbor.Battle <> 0 then Inc(Score, 2 * Star.StarDistances[J].Distance);
         end;
-        if (Star.Battle <> 0) and (Star.DominatorSeries <> dsKeller) then Score := Round(2 * Score);
+        if (Star.Battle <> 0) and (Star.DominatorSeries <> series_keller) then Score := Round(2 * Score);
         Score := Round(Score * RemapClamped(Star.CountShipsByTypeMask(CoalitionShipMask), 1, 10, 2, 10));
         Score := Round(Score * NextRandomFloatRange(1, 3, RandomState));
         if GetPlayer.HomePlanet.CurrentStar = Star then
@@ -973,13 +973,13 @@ begin
     IncrementWrapped(Index, 0, Galaxy.Stars.Count - 1);
     Star := Galaxy.Stars[Index];
     if (Star.Constellation.Id = 20) or ((BlazerShip <> nil) and (BlazerShip.CurrentStar = Star)) or
-      ((TerronShip <> nil) and (TerronShip.CurrentStar = Star)) or (Star.ControlFaction <> sfDominators) or
-      ((Star.DominatorSeries = dsKeller) and (Star.Status.CustomFaction = '')) or IsStarProtectedByScript(Star) then Continue;
+      ((TerronShip <> nil) and (TerronShip.CurrentStar = Star)) or (Star.ControlFaction <> faction_dominators) or
+      ((Star.DominatorSeries = series_keller) and (Star.Status.CustomFaction = '')) or IsStarProtectedByScript(Star) then Continue;
     Score := 0;
     for J := 0 to Star.Ships.Count - 1 do begin
       Ship := Star.Ships[J];
       if not Ship.InHyperspace and (Ship is TKling) then
-        if (Ship as TKling).DominatorSeries = dsKeller then Dec(Score) else Inc(Score);
+        if (Ship as TKling).DominatorSeries = series_keller then Dec(Score) else Inc(Score);
     end;
     if (Score >= 0) and (Score < BestScore) then begin BestScore := Score; BestStar := Star; end;
   end;
@@ -994,15 +994,15 @@ begin
   if (Galaxy.KellerMissionState <> 0) or (Galaxy.KellerLeaveTurn <> 0) then Exit;
   if not ((Galaxy.CurrentTurn mod (NextRandomIntRange(60, 80, RandomState) + Galaxy.ScaleIntByTechLevel(20, 0)) = 0) or
     (Galaxy.CurrentTurn mod 230 = 0) or
-    ((Galaxy.CurrentTurn mod NextRandomIntRange(5, 10, RandomState) = 0) and (Galaxy.CountFactionStars(sfDominators) < 2)) or
+    ((Galaxy.CurrentTurn mod NextRandomIntRange(5, 10, RandomState) = 0) and (Galaxy.CountFactionStars(faction_dominators) < 2)) or
     (Galaxy.KellerResearchTargetStarId <> 0)) then Exit;
   if Galaxy.KellerResearchTargetStarId = 0 then Galaxy.KellerTargetStar := FindKellerAttackTarget
   else Galaxy.KellerTargetStar := Galaxy.IdToStar(Galaxy.KellerResearchTargetStarId);
   if Galaxy.KellerTargetStar = nil then Exit;
   Galaxy.KellerMissionState := 1;
-  if (GetPlayer = nil) or (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) <= 0) then Exit;
+  if (GetPlayer = nil) or (GetPlayer.CountActiveArtefacts(artefact_analyzer) <= 0) then Exit;
   Text := FormatText1(LocalizedColorText('Artefacts.ArtAnalyzer.KellerHole'), TextHighlightColorTag, '<Star>', Galaxy.KellerTargetStar.Name);
-  if Text <> '' then AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
+  if Text <> '' then AddOrUpdatePlayerBubble(message_galaxy_news, Galaxy.CurrentTurn, Text, '');
 end;
 { @end $5B53D8 }
 
@@ -1011,7 +1011,7 @@ procedure TKling.SelectKellerReinforcementMission;
 begin
   if (((Galaxy.KellerMissionState = 0) and (Galaxy.KellerResearchTargetStarId = 0) and (Galaxy.KellerLeaveTurn = 0) and
     (NextRandomIntRange(0, 1000, RandomState) + 1000 <= Galaxy.CurrentTurn)) and (NextRandomIntRange(0, 10000, RandomState) <
-      Galaxy.GetFactionControlPercent(sfDominators) * (100 - Galaxy.GetFactionControlPercent(sfDominators)))) and (NextRandomIntRange(0, 1000, RandomState) > RemapClamped(Galaxy.GetDominatorSeriesControlShare(dsKeller), 0.7, 1.2, 0, 1000)) then begin
+      Galaxy.GetFactionControlPercent(faction_dominators) * (100 - Galaxy.GetFactionControlPercent(faction_dominators)))) and (NextRandomIntRange(0, 1000, RandomState) > RemapClamped(Galaxy.GetDominatorSeriesControlShare(series_keller), 0.7, 1.2, 0, 1000)) then begin
         Galaxy.KellerTargetStar := FindKellerReinforcementTarget;
         if Galaxy.KellerTargetStar <> nil then Galaxy.KellerMissionState := 1;
       end;
@@ -1025,9 +1025,9 @@ var Ship: TKling; Hole: THole; Angle, Radius: Single; I, Count, Threshold, Rando
   procedure SpawnReinforcement(OrderData: Integer); // @addr $5B5718
   begin
     Ship := TObject(DominatorSpawnPlanet.SpawnWeightedDominatorShip) as TKling;
-    Ship.Order := soJumpHole;
+    Ship.Order := order_black_hole;
     Ship.OrderTarget := Hole;
-    if OrderData = 0 then Ship.OrderStateData := DominatorSpawnPlanet.CurrentStar.ShipTypeCounts[stKling] or $10000
+    if OrderData = 0 then Ship.OrderStateData := DominatorSpawnPlanet.CurrentStar.ShipTypeCounts[ship_dominator] or $10000
     else Ship.OrderStateData := OrderData;
     Ship.InHyperspace := True;
     Ship.CurrentPlanet := nil;
@@ -1054,16 +1054,16 @@ begin
     Hole.Position2.Y := 100000;
     Galaxy.Holes.Add(Hole);
     KellerShip.OrderNone(False);
-    KellerShip.Order := soJumpHole;
+    KellerShip.Order := order_black_hole;
     KellerShip.OrderTarget := Hole;
     KellerShip.OrderStateData := $10003;
     KellerShip.InHyperspace := True;
     DominatorSpawnPlanet.CurrentStar := Hole.Star1;
     Series := Hole.Star1.DominatorSeries;
-    Hole.Star1.DominatorSeries := dsKeller;
+    Hole.Star1.DominatorSeries := series_keller;
     Threshold := Round(Galaxy.GetDominatorAggressionLevel * 1.25) + 60;
     RandomMaximum := Round(Galaxy.GetDominatorAggressionLevel * 0.125) + 1;
-    Count := NextRandomIntRange(1, RandomMaximum, RandomState) + Round(RemapClamped(Galaxy.GetFactionControlPercent(sfDominators), 0, Threshold, 12, 2));
+    Count := NextRandomIntRange(1, RandomMaximum, RandomState) + Round(RemapClamped(Galaxy.GetFactionControlPercent(faction_dominators), 0, Threshold, 12, 2));
     if Galaxy.CurrentTurn >= 666 then
       if Galaxy.DominatorModLevel = 1 then Count := 15
       else if Galaxy.DominatorModLevel = 2 then Count := 17
@@ -1091,7 +1091,7 @@ begin
       if not IsPlayerCamouflageEffective(Ship) then Exit;
     end else begin
       if TKling(Ship).DominatorSeries <> DominatorSeries then Exit;
-      if not (TKling(Ship).KlingType in [ktEquantor..ktShtip]) then Continue;
+      if not (TKling(Ship).KlingType in [dominator_equantor..dominator_shtip]) then Continue;
       if Ship = Self then Continue;
       Inc(EscortCount);
     end;
@@ -1100,11 +1100,11 @@ begin
   Stars := TList.Create;
   for I := 0 to Constellation.Stars.Count - 1 do begin
     Star := Constellation.Stars[I];
-    if (Star <> CurrentStar) and not IsStarProtectedByScript(Star) and (Star.ShipTypeCounts[stKling] >= 6) and
+    if (Star <> CurrentStar) and not IsStarProtectedByScript(Star) and (Star.ShipTypeCounts[ship_dominator] >= 6) and
       ((KellerShip = nil) or not KellerShip.InNormalSpace or (KellerShip.CurrentStar <> Star)) and
       ((TerronShip = nil) or not TerronShip.InNormalSpace or (TerronShip.CurrentStar <> Star)) and
       ((BlazerShip = nil) or not BlazerShip.InNormalSpace or (BlazerShip.CurrentStar <> Star)) and
-      (Star.ControlFaction in [sfDominators]) and (Star.DominatorSeries = DominatorSeries) and (Star.Battle = 0) and (Star.Status.CustomFaction = '') then Stars.Add(Star);
+      (Star.ControlFaction in [faction_dominators]) and (Star.DominatorSeries = DominatorSeries) and (Star.Battle = 0) and (Star.Status.CustomFaction = '') then Stars.Add(Star);
   end;
   if Stars.Count > 2 then begin
     I := Stars.IndexOf(TransitOriginStar);
@@ -1119,7 +1119,7 @@ end;
 { @end $5B5AA0 }
 
 { @routine $5B5CBC TKling_SpawnEscortShips }
-function TKling.SpawnEscortShips(Kind: TKlingType; DesiredCount: Integer): Integer;
+function TKling.SpawnEscortShips(Kind: TDominatorKind; DesiredCount: Integer): Integer;
 var Series: TDominatorSeries; I, EscortCount, SpawnTimer: Integer; Ship: TShip;
 begin
   Result := 0;
@@ -1185,7 +1185,7 @@ var TargetStar: TStar; TargetCount, NonDominatorCount, OtherSeriesCount, Action:
   begin
     Result := 1000;
     for I := 0 to Galaxy.Stars.Count - 1 do
-      if (TStar(Star.StarDistances[I].Star).ControlFaction <> sfDominators) and (TStar(Star.StarDistances[I].Star).Status.CustomFaction = '') then begin
+      if (TStar(Star.StarDistances[I].Star).ControlFaction <> faction_dominators) and (TStar(Star.StarDistances[I].Star).Status.CustomFaction = '') then begin
         Result := I;
         Exit;
       end;
@@ -1197,7 +1197,7 @@ var TargetStar: TStar; TargetCount, NonDominatorCount, OtherSeriesCount, Action:
     Result := 1000;
     for I := 0 to Galaxy.Stars.Count - 1 do begin
       OtherStar := TStar(Star.StarDistances[I].Star);
-      if (OtherStar.ControlFaction <> sfDominators) or (Series <> OtherStar.DominatorSeries) or (OtherStar.Status.CustomFaction <> '') then begin
+      if (OtherStar.ControlFaction <> faction_dominators) or (Series <> OtherStar.DominatorSeries) or (OtherStar.Status.CustomFaction <> '') then begin
         Result := I;
         Exit;
       end;
@@ -1213,9 +1213,9 @@ var TargetStar: TStar; TargetCount, NonDominatorCount, OtherSeriesCount, Action:
     end;
   begin
     // Actions 1/3 reinforce; 2/7 rebalance; 4/6 invade; 5 supports an existing foothold.
-    if (Series = dsTerron) and (TerronShip.CurrentStar = TargetStar) and
+    if (Series = series_terron) and (TerronShip.CurrentStar = TargetStar) and
       ((TargetCount < NonDominatorCount) or (TargetCount < OtherSeriesCount)) then Action := 1
-    else if TargetStar.ControlFaction = sfDominators then begin
+    else if TargetStar.ControlFaction = faction_dominators then begin
       if (TargetStar.DominatorSeries = Series) and (TargetStar.Status.CustomFaction = '') then begin
         if OtherSeriesDistanceIndex(Origin) > NearbyRange then
           if (OtherSeriesDistanceIndex(Origin) > OtherSeriesDistanceIndex(TargetStar)) and
@@ -1227,14 +1227,14 @@ var TargetStar: TStar; TargetCount, NonDominatorCount, OtherSeriesCount, Action:
           if NextRandomIntRange(0, 1000, RandomState) > Galaxy.GetDominatorSeriesControlShare(Series) * 1000 then Action := 3;
       end else begin
         if (TargetCount > 0) and ((TargetCount < OtherSeriesCount) or (TargetStrength < OtherSeriesStrength)) then Action := 5;
-        if (Series <> dsKeller) and TargetIsNotTerron and (TargetCount = 0) and
+        if (Series <> series_keller) and TargetIsNotTerron and (TargetCount = 0) and
           ((OriginCount > 3 * OtherSeriesCount) or ((NonDominatorDistanceIndex(Origin) > NearbyRange) and
           (OriginCount > OtherSeriesCount * 0.6))) and (NextRandomIntRange(0, 1000, RandomState) + 1000 < Galaxy.CurrentTurn) then
           if NextRandomIntRange(0, 1400, RandomState) > Galaxy.GetDominatorSeriesControlShare(Series) * 1000 then Action := 4;
       end;
     end else begin
       if (TargetCount > 0) and ((TargetCount < NonDominatorCount) or (TargetStrength < NonDominatorStrength)) then Action := 5;
-      if (Series <> dsKeller) and (TargetCount = 0) and (OtherSeriesCount = 0) and
+      if (Series <> series_keller) and (TargetCount = 0) and (OtherSeriesCount = 0) and
         ((NonDominatorCount < OriginCount) or (NonDominatorStrength < OriginStrength)) then Action := 6;
     end;
   end;
@@ -1258,44 +1258,44 @@ var TargetStar: TStar; TargetCount, NonDominatorCount, OtherSeriesCount, Action:
       if Ship = BlazerShip then Continue;
       if Ship = KellerShip then Continue;
       if Ship = TerronShip then Continue;
-      if not ((Ship as TKling).KlingType in [ktEquantor..ktShtip]) then Continue;
+      if not ((Ship as TKling).KlingType in [dominator_equantor..dominator_shtip]) then Continue;
       if (Ship as TKling).ActiveProgramAppliedTurn > 0 then Continue;
       Ship.OrderJump(TargetStar, True);
       Inc(Sent);
     end;
-    if (Action = 6) and (Sent > 0) and (TargetStar.ControlFaction <> sfDominators) and (TargetStar.Status.CustomFaction = '') then
-      if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) then begin
+    if (Action = 6) and (Sent > 0) and (TargetStar.ControlFaction <> faction_dominators) and (TargetStar.Status.CustomFaction = '') then
+      if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(artefact_analyzer) > 0) then begin
         Text := FormatText1(LocalizedText('Artefacts.ArtAnalyzer.AttackDomik'), TextHighlightColorTag, '<Star>', TargetStar.Name);
-        if Text <> '' then AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
+        if Text <> '' then AddOrUpdatePlayerBubble(message_galaxy_news, Galaxy.CurrentTurn, Text, '');
       end;
   end;
 begin
   if GetPlayer = nil then Exit;
-  ControlPercent := Galaxy.GetFactionControlPercent(sfDominators);
+  ControlPercent := Galaxy.GetFactionControlPercent(faction_dominators);
   BaseChance := Round(Galaxy.ScaleDifficultyExponentially(Galaxy.GetDominatorAggressionLevel, 10, 2));
   ControlThreshold := Round(5 * Galaxy.GetDominatorAggressionLevel / 8) + 80;
   Chance := Round(RemapClamped(ControlPercent, 1, ControlThreshold, BaseChance, 0));
-  Chance := Round(Chance * RemapClamped(Galaxy.WarDeltaWin[sfDominators], 0, 10, 1, 0.3));
+  Chance := Round(Chance * RemapClamped(Galaxy.WarDeltaWin[faction_dominators], 0, 10, 1, 0.3));
   if Galaxy.CurrentTurn >= 666 then
     if Galaxy.DominatorModLevel = 1 then Chance := 400
     else if Galaxy.DominatorModLevel = 2 then Chance := 600
     else if Galaxy.DominatorModLevel = 3 then Chance := 800;
   if Chance = 0 then Exit;
   case Series of
-    dsKeller: NearbyRange := 9;
-    dsBlazer: NearbyRange := 8;
-    dsTerron: NearbyRange := 7;
+    series_keller: NearbyRange := 9;
+    series_blazer: NearbyRange := 8;
+    series_terron: NearbyRange := 7;
   end;
   case Series of
-    dsKeller: MinimumPopulation := 11;
-    dsBlazer: MinimumPopulation := 9;
-    dsTerron: MinimumPopulation := 7;
+    series_keller: MinimumPopulation := 11;
+    series_blazer: MinimumPopulation := 9;
+    series_terron: MinimumPopulation := 7;
   end;
   I := 0;
   while I <= Galaxy.Stars.Count - 1 do begin
     Origin := Galaxy.Stars[I];
     Inc(I);
-    if Origin.ControlFaction <> sfDominators then Continue;
+    if Origin.ControlFaction <> faction_dominators then Continue;
     if Origin.Battle <> 0 then Continue;
     if Origin.DominatorSeries <> Series then Continue;
     if Origin.Status.CustomFaction <> '' then Continue;
@@ -1396,7 +1396,7 @@ begin
     else Text := LocalizedText('ShipType.TypeName.' + TypeNameOverrideKey);
     if Text <> '' then Result := Text + Separator + Name else Result := Name;
   end
-  else if KlingType = ktBoss then Result := DominatorShipDefinitions[KlingType].DisplayNames[DominatorSeries]
+  else if KlingType = dominator_boss then Result := DominatorShipDefinitions[KlingType].DisplayNames[DominatorSeries]
   else Result := DominatorShipDefinitions[KlingType].DisplayNames[DominatorSeries] + Separator + Name;
 end;
 { @end $5B6E18 }
@@ -1404,14 +1404,14 @@ end;
 { @routine $5B6FD8 TKling_GetGreetingShipCategory }
 function TKling.GetGreetingShipCategory: TGreetingShipCategory;
 begin
-  Result := gscKling;
+  Result := greeting_ship_dominator;
 end;
 { @end $5B6FD8 }
 
 { @routine $5B6FDC TKling_GetDominantCareer }
 function TKling.GetDominantCareer: TRangerCareer;
 begin
-  Result := rcWarrior;
+  Result := career_warrior;
 end;
 { @end $5B6FDC }
 
@@ -1449,7 +1449,7 @@ var I: Integer; Equipment: TEquipment;
 begin
   for I := 0 to Inventory.Count - 1 do begin
     Equipment := Inventory[I];
-    Equipment.OwnerId := oiDominator;
+    Equipment.OwnerId := owner_dominator;
     Equipment.DominatorSeries := DominatorSeries;
   end;
 end;
@@ -1463,11 +1463,11 @@ begin
     Equipment := Inventory[I];
     if Equipment.HasStandardStats and (NextRandomUnitFloat(RandomState) < 0.25) then
       case Galaxy.GetDifficultyTierIndex of
-        0: if NextRandomUnitFloat(RandomState) < 0.8 then Equipment.Improve(ikMinor) else Equipment.Improve(ikAny);
-        1: if NextRandomUnitFloat(RandomState) < 0.6 then Equipment.Improve(ikMinor) else Equipment.Improve(ikAny);
-        2: if NextRandomUnitFloat(RandomState) < 0.6 then Equipment.Improve(ikMedium) else Equipment.Improve(ikAny);
-        3: if NextRandomUnitFloat(RandomState) < 0.6 then Equipment.Improve(ikMajor) else Equipment.Improve(ikAny);
-      else Equipment.Improve(ikMajor);
+        0: if NextRandomUnitFloat(RandomState) < 0.8 then Equipment.Improve(upgrade_minor) else Equipment.Improve(upgrade_random);
+        1: if NextRandomUnitFloat(RandomState) < 0.6 then Equipment.Improve(upgrade_minor) else Equipment.Improve(upgrade_random);
+        2: if NextRandomUnitFloat(RandomState) < 0.6 then Equipment.Improve(upgrade_medium) else Equipment.Improve(upgrade_random);
+        3: if NextRandomUnitFloat(RandomState) < 0.6 then Equipment.Improve(upgrade_major) else Equipment.Improve(upgrade_random);
+      else Equipment.Improve(upgrade_major);
       end;
   end;
 end;
@@ -1479,7 +1479,7 @@ begin
   if Ship is TKling then
     if (Ship as TKling).DominatorSeries = DominatorSeries then Result := 100 else Result := 40
   else Result := 0;
-  if CurrentStanding = ssNeutral then Result := 100;
+  if CurrentStanding = standing_neutral then Result := 100;
 end;
 { @end $5B71D0 }
 
@@ -1487,7 +1487,7 @@ end;
 function TKling.RelationToRanger(Ranger: Pointer): Byte;
 begin
   Result := 0;
-  if CurrentStanding = ssNeutral then Result := 100;
+  if CurrentStanding = standing_neutral then Result := 100;
 end;
 { @end $5B721C }
 
@@ -1499,7 +1499,7 @@ begin end;
 { @routine $5B7230 TKling_ReactToAttack }
 procedure TKling.ReactToAttack(Attacker: TShip);
 begin
-  if Attacker.OwnerId <> oiDominator then EnemyShip := Attacker
+  if Attacker.OwnerId <> owner_dominator then EnemyShip := Attacker
   else if (Attacker as TKling).DominatorSeries <> DominatorSeries then EnemyShip := Attacker;
 end;
 { @end $5B7230 }
@@ -1537,20 +1537,20 @@ begin
         if PointDistanceSquared(Position, EnemyShip.Position) <= Sqr(GetWeaponRange(Weapon)) then begin
           Weapon.Target := EnemyShip;
           Inc(Assigned);
-          if (Assigned = WeaponCount) and not (KlingType in [ktBoss..ktUrgant, ktBertor]) then Exit;
+          if (Assigned = WeaponCount) and not (KlingType in [dominator_boss..dominator_urgant, dominator_bertor]) then Exit;
         end;
     end;
   for I := 0 to CurrentStar.Ships.Count - 1 do begin
     Ship := CurrentStar.Ships[I];
-    if Ship.InNormalSpace and (Ship <> Self) and ((RelationToShip(Ship) <= 50) or IsProgramActive(prgInsanity)) and not IsPlayerCamouflageEffective(Ship) then
+    if Ship.InNormalSpace and (Ship <> Self) and ((RelationToShip(Ship) <= 50) or IsProgramActive(program_insanity)) and not IsPlayerCamouflageEffective(Ship) then
       for J := 1 to WeaponCount do begin
         Weapon := Weapons[J];
-        if ((Weapon.Target = nil) or (Weapon.GetWeaponInfo.ShotType = wstAreaDamage)) and IsEquipmentUsable(Weapon) then
+        if ((Weapon.Target = nil) or (Weapon.GetWeaponInfo.ShotType = shot_area_damage)) and IsEquipmentUsable(Weapon) then
           if PointDistanceSquared(Position, Ship.Position) <= Sqr(GetWeaponRange(Weapon)) then begin
             if Weapon.Target = nil then begin
               Weapon.Target := Ship;
               Inc(Assigned);
-              if (Assigned = WeaponCount) and not (KlingType in [ktBoss..ktUrgant, ktBertor]) then Exit;
+              if (Assigned = WeaponCount) and not (KlingType in [dominator_boss..dominator_urgant, dominator_bertor]) then Exit;
             end else if TShip(Weapon.Target).GetHull.HullPoints < Ship.GetHull.HullPoints then Weapon.Target := Ship;
           end;
       end;
@@ -1561,7 +1561,7 @@ begin
     if (Missile.Target = Self) and (Missile.OwnerShip <> Self) then
       for J := 1 to WeaponCount do begin
         Weapon := Weapons[J];
-        if not (Weapon.GetWeaponInfo^.ShotType in [wstTorpedo..wstRocket]) and (Weapon.Target = nil) and IsEquipmentUsable(Weapon) then
+        if not (Weapon.GetWeaponInfo^.ShotType in [shot_torpedo..shot_rocket]) and (Weapon.Target = nil) and IsEquipmentUsable(Weapon) then
           if PointDistanceSquared(Position, Missile.Position) <= Sqr(GetWeaponRange(Weapon)) then begin
             Weapon.Target := Missile;
             Inc(Assigned);
@@ -1575,7 +1575,7 @@ begin
     if ((Item.ScriptItem = nil) or (TScriptItem(Item.ScriptItem).Name = '')) and CanSafelyDetonateItem(Item) then
       for J := 1 to WeaponCount do begin
         Weapon := Weapons[J];
-        if not (Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) and (Weapon.Target = nil) and IsEquipmentUsable(Weapon) then
+        if not (Weapon.GetWeaponInfo.ShotType in [shot_torpedo..shot_rocket]) and (Weapon.Target = nil) and IsEquipmentUsable(Weapon) then
           if PointDistanceSquared(Position, Item.Position) <= Sqr(GetWeaponRange(Weapon)) then begin
             Weapon.Target := Item;
             Inc(Assigned);
@@ -1592,7 +1592,7 @@ begin
         for J := 1 to WeaponCount do begin
           Weapon := Weapons[J];
           // Native asteroid targeting can overwrite an existing assignment.
-          if not (Weapon.GetWeaponInfo^.ShotType in [wstAreaDamage..wstRocket]) and IsEquipmentUsable(Weapon) then
+          if not (Weapon.GetWeaponInfo^.ShotType in [shot_area_damage..shot_rocket]) and IsEquipmentUsable(Weapon) then
             if Sqr(GetWeaponRange(Weapon)) >= Distance then begin
               Weapon.Target := Asteroid;
               Inc(Assigned);
@@ -1613,7 +1613,7 @@ begin
   begin
     Attacker.ChameleonDetected[DominatorSeries] := True;
     if Attacker.ChameleonActive and (Attacker.ChameleonSeries = DominatorSeries) then
-      AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn,
+      AddOrUpdatePlayerBubble(message_galaxy_news, Galaxy.CurrentTurn,
         LocalizedText('ShipInfo.AddInfo.Chameleon.Detect'), '');
   end;
 end;
@@ -1647,8 +1647,8 @@ begin
         if Ship.InNormalSpace then begin
           if HasIndependentScriptFaction then begin
             if Ship.HasIndependentScriptFaction and (TScriptShip(ScriptShip).StateText = TScriptShip(Ship.ScriptShip).StateText) then Continue;
-          end else if ((Ship.OwnerId = oiDominator) and ((Ship as TKling).DominatorSeries = DominatorSeries) and (Ship.CurrentStanding <> ssCustom)) or IsPlayerCamouflageEffective(Ship) then Continue;
-          if (EnemyShip = nil) or not (Ship.TypeId in [rstRangerCenter..rstCustomStation]) or (EnemyShip.TypeId in [rstRangerCenter..rstCustomStation]) then begin
+          end else if ((Ship.OwnerId = owner_dominator) and ((Ship as TKling).DominatorSeries = DominatorSeries) and (Ship.CurrentStanding <> standing_custom)) or IsPlayerCamouflageEffective(Ship) then Continue;
+          if (EnemyShip = nil) or not (Ship.TypeId in [station_ranger_center..station_custom]) or (EnemyShip.TypeId in [station_ranger_center..station_custom]) then begin
             Distance := PointDistance(Position, Ship.Position);
             if NextRandomFloatRange(0.3, 3, RandomState) * BestDistance > Distance then begin
               EnemyShip := Ship;
@@ -1664,10 +1664,10 @@ end;
 { @routine $5B7B38 TKling_EngageEnemyShip }
 procedure TKling.EngageEnemyShip;
 begin
-  if Order = soFollowShip then OrderNone(False);
+  if Order = order_follow_ship then OrderNone(False);
   if (EnemyShip <> nil) and (EnemyShip.CurrentStar = CurrentStar) then
     if EnemyShip.InNormalSpace then
-      if ShouldKamikaze then OrderFollowShip(EnemyShip, fmKamikaze, False) else OrderFollowShip(EnemyShip, fmMinWeaponRange, False)
+      if ShouldKamikaze then OrderFollowShip(EnemyShip, follow_kamikaze, False) else OrderFollowShip(EnemyShip, follow_min_weapon_range, False)
     else if EnemyShip.CurrentPlanet <> nil then OrderMove(EnemyShip.CurrentPlanet.GetPosition, False);
 end;
 { @end $5B7B38 }
@@ -1675,7 +1675,7 @@ end;
 { @routine $5B7BC8 TKling_UpdateAfterburnerState }
 procedure TKling.UpdateAfterburnerState;
 begin
-  AfterburnerActive := ShouldKamikaze and (GetSlotCount(sskAfterburner) > 0) and (GetEngine <> nil) and (GetEngine.ConditionPercent > 10);
+  AfterburnerActive := ShouldKamikaze and (GetSlotCount(slot_afterburner) > 0) and (GetEngine <> nil) and (GetEngine.ConditionPercent > 10);
   RefreshDerivedStats(True);
 end;
 { @end $5B7BC8 }
@@ -1738,10 +1738,10 @@ end;
 procedure TKling.RefreshCombatSkills;
 var Percent: Byte; Lower, Upper, Maximum, Minimum, Threshold, StartPercent, MidPercent: Integer;
 begin
-  if KlingType = ktBoss then begin
-    BaseSkills[psAccuracy] := 6;
-    BaseSkills[psManeuverability] := 6;
-    BaseSkills[psLeadership] := 6;
+  if KlingType = dominator_boss then begin
+    BaseSkills[skill_accuracy] := 6;
+    BaseSkills[skill_maneuverability] := 6;
+    BaseSkills[skill_leadership] := 6;
   end else begin
     FreeExperience := Galaxy.CurrentTurn;
     Minimum := 0;
@@ -1754,13 +1754,13 @@ begin
       else if Galaxy.DominatorModLevel = 3 then begin Maximum := 6; Minimum := 5; Threshold := 100; end;
     StartPercent := 1;
     MidPercent := Threshold div 2;
-    Percent := Galaxy.GetFactionControlPercent(sfDominators);
+    Percent := Galaxy.GetFactionControlPercent(faction_dominators);
     Lower := Round(RemapClamped(Percent, StartPercent, MidPercent, Maximum, Minimum));
     Upper := Round(RemapClamped(Percent, MidPercent, Threshold, Maximum, Minimum));
     Lower := Min(Lower, Upper);
-    BaseSkills[psAccuracy] := NextRandomIntRange(Lower, Upper, RandomState);
-    BaseSkills[psManeuverability] := NextRandomIntRange(Lower, Upper, RandomState);
-    BaseSkills[psTechnical] := 6;
+    BaseSkills[skill_accuracy] := NextRandomIntRange(Lower, Upper, RandomState);
+    BaseSkills[skill_maneuverability] := NextRandomIntRange(Lower, Upper, RandomState);
+    BaseSkills[skill_technical] := 6;
   end;
   TechKnowledge := 8;
 end;
@@ -1772,7 +1772,7 @@ var
   Speed: Integer;
 begin
   Speed := inherited CalculateSpeed;
-  if KlingType = ktBoss then Speed := Max(350, Speed);
+  if KlingType = dominator_boss then Speed := Max(350, Speed);
   Result := Speed;
 end;
 { @end $5B7F08 }
@@ -1784,13 +1784,13 @@ var
   Ship: TShip;
 begin
   Result := False;
-  if KlingType = ktBoss then Exit;
-  if KlingType = ktBertor then Exit;
+  if KlingType = dominator_boss then Exit;
+  if KlingType = dominator_bertor then Exit;
   if HasIndependentScriptFaction then Exit;
   for I := 0 to CurrentStar.Ships.Count - 1 do
   begin
     Ship := CurrentStar.Ships[I];
-    if (Ship is TKling) and ((Ship as TKling).KlingType = ktBertor) and
+    if (Ship is TKling) and ((Ship as TKling).KlingType = dominator_bertor) and
       ((Ship as TKling).DominatorSeries = DominatorSeries) and (Ship <> Self) and
       Ship.InNormalSpace and not Ship.IsHullDestroyed and
       (PointDistance(Position, Ship.Position) <= 500) then
@@ -1804,13 +1804,13 @@ end;
 
 { @routine $5B8014 TKling_RefreshCurrentStanding }
 procedure TKling.RefreshCurrentStanding;
-var StandingMode: TScriptStandingOverrideMode;
+var StandingMode: TStandingOverride;
 begin
   StandingMode := GetScriptStandingOverrideMode;
-  if StandingMode = ssmCustomFaction then CurrentStanding := ssCustom
-  else if StandingMode <> ssmFixed then
-    if (Self = BlazerShip) and (Galaxy.BlazerLandingPlanetId <> 0) then CurrentStanding := ssNeutral
-    else CurrentStanding := ssDominator;
+  if StandingMode = override_custom_faction then CurrentStanding := standing_custom
+  else if StandingMode <> override_fixed then
+    if (Self = BlazerShip) and (Galaxy.BlazerLandingPlanetId <> 0) then CurrentStanding := standing_neutral
+    else CurrentStanding := standing_dominator;
 end;
 { @end $5B8014 }
 

@@ -121,9 +121,9 @@ begin
     end;
     LoadPanel.SetProgress(1);
     LoadPanel.Hide;
-    if GetPlayer.DockedTo.TypeId = rstMilitaryBase then
+    if GetPlayer.DockedTo.TypeId = station_military_base then
       MovieConfig := LanguageDataConfig.GetParamByPathOrMarker('FormRuins.WB.HyperJumpVideo')
-    else if GetPlayer.DockedTo.TypeId = rstDominion then
+    else if GetPlayer.DockedTo.TypeId = station_dominion then
       MovieConfig := LanguageDataConfig.GetParamByPathOrMarker('FormRuins.CB.HyperJumpVideo')
     else
     begin
@@ -188,22 +188,22 @@ begin
   begin
     if GetPlayer <> nil then Galaxy.ScoreScreenDismissed := 1;
     while GetPlayer <> nil do SysUtils.Sleep(1);
-    RequestedScreenId := screenGameEnd;
+    RequestedScreenId := screen_game_end;
     RequestClose(1);
     Exit;
   end;
   Progress := Progress + 0.008;
   if Progress > 0.49 then Progress := 0.5;
   LoadPanel.SetProgress(Progress);
-  if IsTurnCalculationRunningUI or (TurnCalculationPhase in [tcpGalaxyRunning, tcpPlayerStarRunning]) then Exit;
-  if TurnCalculationPhase = tcpGalaxyFinished then
+  if IsTurnCalculationRunningUI or (TurnCalculationPhase in [turn_galaxy_running, turn_player_star_running]) then Exit;
+  if TurnCalculationPhase = turn_galaxy_finished then
   begin
     QueuePlayerStarTurnCalculation;
     Exit;
   end;
   if GetPlayer.IsDockedToShip then
   begin
-    if (GetPlayer.DockedTo.Order <> soTeleport) and
+    if (GetPlayer.DockedTo.Order <> order_teleport) and
       (((GetPlayer.DockedTo as TRuins).FlyToStar = GetPlayer.DockedTo.CurrentStar) or ((GetPlayer.DockedTo as TRuins).FlyToStar = nil)) then
     begin
       QueueGalaxyTurnCalculation;
@@ -226,12 +226,12 @@ begin
   end
   else
   begin
-    if not (GetPlayer.Order in [soJump, soJumpHole, soTeleport]) or
-      ((GetPlayer.Order = soJumpHole) and (GetPlayer.OrderStateData = HoleExitOrderState)) then
+    if not (GetPlayer.Order in [order_jump, order_black_hole, order_teleport]) or
+      ((GetPlayer.Order = order_black_hole) and (GetPlayer.OrderStateData = HoleExitOrderState)) then
     begin
       QueueGalaxyTurnCalculation;
       StarMapScreen.SetMapCenterManually(TruncatePointF(GetPlayer.Position));
-      StarMapScreen.ResumeMode := smrTurnFilm;
+      StarMapScreen.ResumeMode := map_resume_playback;
       AdvanceLoading(0, 0);
       Exit;
     end;
@@ -295,14 +295,14 @@ begin
       if GetPlayer.IsDockedToShip then
       begin
         RuinsTalkScreen.ShowArrivalVideo := True;
-        RequestedScreenId := screenRuinsTalk;
+        RequestedScreenId := screen_ruins_talk;
       end
       else
       begin
-        RequestedScreenId := screenStarMap;
+        RequestedScreenId := screen_star_map;
         if RestoreOrdersOnArrival then
         begin
-          StarMapScreen.ResumeMode := smrOrders;
+          StarMapScreen.ResumeMode := map_resume_orders;
           SpaceViewPosition := GetPlayer.Position;
           RestoreOrdersOnArrival := False;
         end;

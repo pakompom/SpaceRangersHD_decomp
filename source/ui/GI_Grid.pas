@@ -5,7 +5,7 @@ interface
 uses EC_BlockPar, GI_Frame, GI_Image, GI_Label, GI_MessageLoop, GI_PanelScrollBar, Types;
 
 type
-  TGridTypeGI = (gtHide = 0, gtCell = 1, gtRow = 2, gtCol = 3); // @size 1
+  TGridLineModeGI = (grid_no_lines = 0, grid_cell_lines = 1, grid_row_lines = 2, grid_column_lines = 3); // @size 1
 
   TGridRowGI = record // @size 0x0C
     Height: Integer; // @offset 0x00
@@ -24,7 +24,7 @@ type
     Rows: array of TGridRowGI; // @offset 0x17C
     FontName: WideString; // @offset 0x180
     TextColor: Cardinal; // @offset 0x184
-    GridType: TGridTypeGI; // @offset 0x188
+    GridType: TGridLineModeGI; // @offset 0x188
     GridColor: Cardinal; // @offset 0x18C
     BackgroundImage: TImageGI; // @offset 0x190
     ActiveCellImage: TImageGI; // @offset 0x194
@@ -49,7 +49,7 @@ type
     procedure UpdateActiveCellVisibility; // @addr 0x004A5E2C
     procedure SetColumnCount(Value: Integer); // @addr 0x004A5EF8 @note "New columns default to 100 pixels."
     procedure SetRowCount(Value: Integer); // @addr 0x004A6008 @note "New rows default to 15 pixels."
-    procedure SetGridType(Value: TGridTypeGI); // @addr 0x004A6130
+    procedure SetGridType(Value: TGridLineModeGI); // @addr 0x004A6130
     function GetColumnWidth(ColumnIndex: Integer): Integer; // @addr 0x004A615C
     procedure SetColumnWidth(ColumnIndex, Width: Integer); // @addr 0x004A6278
     function GetRowHeight(RowIndex: Integer): Integer; // @addr 0x004A62CC
@@ -89,11 +89,11 @@ constructor TGridGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
   TextColor := CurrentPixelFormat.PackRgbBytes(255, 255, 255);
-  GridType := gtCell;
+  GridType := grid_cell_lines;
   GridColor := CurrentPixelFormat.PackRgbBytes(255, 255, 255);
   ActiveCellFrame := TFrameGI.Create(Self);
   ActiveCellFrame.World := True;
-  ActiveCellFrame.SetKind(fkRect);
+  ActiveCellFrame.SetKind(frame_rect_border);
   ActiveCellFrame.SetDepth(-3);
   ActiveCellFrame.SetColor(CurrentPixelFormat.PackRgbBytes(255, 0, 0));
   ActiveCellFrame.UserValue := GridDecorationTag;
@@ -120,7 +120,7 @@ begin
   if ColumnWidths <> nil then FreeEC(ColumnWidths);
   ColumnWidths := nil;
   TextColor := CurrentPixelFormat.PackRgbBytes(255, 255, 255);
-  GridType := gtCell;
+  GridType := grid_cell_lines;
   GridColor := CurrentPixelFormat.PackRgbBytes(255, 255, 255);
   BackgroundImage := nil;
   ActiveCellImage := nil;
@@ -147,8 +147,8 @@ begin
     with Child as TLabelGI do
     begin
       SetFontName(Self.FontName);
-      SetTextAlignX(taxLeft);
-      SetTextAlignY(tayTop);
+      SetTextAlignX(text_x_left);
+      SetTextAlignY(text_y_top);
       LeftButtonDownCallback := CellClick;
       SetTextColor(Self.TextColor);
     end;
@@ -197,12 +197,12 @@ begin
     Child := Child.NextSibling;
     if Current is TLineGI then FreeOwnedChild(Current);
   end;
-  if (GridType = gtHide) or (ColumnCount < 1) or (RowCount < 1) then Exit;
+  if (GridType = grid_no_lines) or (ColumnCount < 1) or (RowCount < 1) then Exit;
   X := 0;
   Y := 0;
   for I := 0 to ColumnCount - 1 do Inc(X, GetColumnWidth(I));
   for I := 0 to RowCount - 1 do Inc(Y, GetRowHeight(I));
-  if ((GridType = gtCell) or (GridType = gtRow)) and (RowCount >= 2) then
+  if ((GridType = grid_cell_lines) or (GridType = grid_row_lines)) and (RowCount >= 2) then
   begin
     Position := GetRowHeight(0);
     for I := 1 to RowCount - 1 do
@@ -217,7 +217,7 @@ begin
       Inc(Position, GetRowHeight(I));
     end;
   end;
-  if ((GridType = gtCell) or (GridType = gtCol)) and (ColumnCount >= 2) then
+  if ((GridType = grid_cell_lines) or (GridType = grid_column_lines)) and (ColumnCount >= 2) then
   begin
     Position := GetColumnWidth(0);
     for I := 1 to ColumnCount - 1 do
@@ -380,7 +380,7 @@ end;
 { @end $4A6008 }
 
 { @routine $4A6130 TGridGI_SetGridType }
-procedure TGridGI.SetGridType(Value: TGridTypeGI);
+procedure TGridGI.SetGridType(Value: TGridLineModeGI);
 begin
   if Value = GridType then Exit;
   GridType := Value;
@@ -495,8 +495,8 @@ begin
   Image.UserValue := GridDecorationTag;
   Image.SetDepth(2);
   Image.ImageSourcePath := Path;
-  Image.KindX := ikxLeftFill;
-  Image.KindY := ikyTopFill;
+  Image.KindX := image_x_tile_left;
+  Image.KindY := image_y_tile_top;
   Image.World := True;
   BackgroundImage := Image;
   UpdateGridExtent;
@@ -517,8 +517,8 @@ begin
   begin
     if ActiveCellImage = nil then ActiveCellImage := TImageGI.Create(Self);
     ActiveCellImage.ImageSourcePath := Path;
-    ActiveCellImage.KindX := ikxLeftFill;
-    ActiveCellImage.KindY := ikyTopFill;
+    ActiveCellImage.KindX := image_x_tile_left;
+    ActiveCellImage.KindY := image_y_tile_top;
     ActiveCellImage.UserValue := GridDecorationTag;
     ActiveCellImage.SetDepth(1);
     ActiveCellImage.World := True;
@@ -691,10 +691,10 @@ begin
   if Block.CountParams('GridType') > 0 then
   begin
     Text := TrimWideString(Block.GetParam('GridType'));
-    if Text = 'Hide' then SetGridType(gtHide)
-    else if Text = 'Cell' then SetGridType(gtCell)
-    else if Text = 'Row' then SetGridType(gtRow)
-    else if Text = 'Col' then SetGridType(gtCol);
+    if Text = 'Hide' then SetGridType(grid_no_lines)
+    else if Text = 'Cell' then SetGridType(grid_cell_lines)
+    else if Text = 'Row' then SetGridType(grid_row_lines)
+    else if Text = 'Col' then SetGridType(grid_column_lines);
   end;
   if Block.CountParams('GridColor') > 0 then
   begin

@@ -153,7 +153,7 @@ end;
 { @routine $501784 TEObjInfo_LoadFromStar }
 procedure TEObjInfo.LoadFromStar(Star: TStar);
 const
-  WearableItemTypes = [Low(TItemType)..High(TItemType)] - [t_Food..t_Narcotics, t_Artefact2, t_ArtefactTransmitter..t_ArtefactTranclucator, t_ArtBlackHole..t_ArtArtefactor, t_Hull, t_Protoplasm..t_Cistern, t_TreasureMap..t_UselessCountableItem];
+  WearableItemTypes = [Low(TItemType)..High(TItemType)] - [item_food..item_narcotics, item_custom_artefact_no_wear, artefact_transmitter..artefact_tranclucator, artefact_black_hole..artefact_artefactor, item_hull, item_nodes..item_fuel_container, item_treasure_map..item_stackable_misc];
 var
   Index, StatusCount: Integer;
   Planet: TPlanet;
@@ -205,7 +205,7 @@ begin
           if (GetPlayer = Ship.PartnerShip) then
             Ships[Index].FullName := Ships[Index].FullName + #13#10 + WrapTextInColor(LookupLocalizedTextByKey('FormInfo.Partner'), TextHighlightColorTag);
         if (Ship is TKling) then
-          if ((Ship as TKling).ActiveProgramAppliedTurn > 0) and ((Ship as TKling).ActiveProgramId in [prgShipwreck..prgDisconnection]) then
+          if ((Ship as TKling).ActiveProgramAppliedTurn > 0) and ((Ship as TKling).ActiveProgramId in [program_shipwreck..program_disconnection]) then
             Ships[Index].FullName := Ships[Index].FullName + #13#10 + WrapTextInColor(
               LocalizedText('Programms.' + ProgramNames[(Ship as TKling).ActiveProgramId] + '.AddToShipInfo'), RedColorTag);
       end
@@ -216,7 +216,7 @@ begin
       end;
       Stage := 23;
       Ships[Index].OwnerId := Ship.OwnerId;
-      if Ships[Index].OwnerId = oiDominator then Ships[Index].DominatorSeries := (Ship as TKling).DominatorSeries;
+      if Ships[Index].OwnerId = owner_dominator then Ships[Index].DominatorSeries := (Ship as TKling).DominatorSeries;
       if Ship is TRanger then Ships[Index].TypeName := (Ship as TRanger).GetCharacterName
       else Ships[Index].TypeName := Ship.GetLocalizedTypeName;
       Ships[Index].Speed := Ship.CalculateSpeed;
@@ -230,7 +230,7 @@ begin
       Ships[Index].DamageText := WrapTextInColor('???', '');
       Ships[Index].DefenseText := IntToStr(Ship.GetDefensePercent) + '%';
       if GetPlayer.CanResolveObjectWithScanner(Ship) or (GetPlayer = Ship) or
-        (GetPlayer = Ship.PartnerShip) or (Ship.TypeId = stTranclucator) then
+        (GetPlayer = Ship.PartnerShip) or (Ship.TypeId = ship_tranclucator) then
       begin
         Stage := 25;
         Ships[Index].DefenseText := Ships[Index].DefenseText + ' + ' + WrapTextInColor(IntToStr(Ship.GetArmor), '');
@@ -246,14 +246,14 @@ begin
       Stage := 26;
       Relation := Ship.GetRelationLevelToShip(GetPlayer);
       Ships[Index].Relation := Relation;
-      if (Relation <> rlHostile) and (Ship is TRuins) and
+      if (Relation <> relation_level_hostile) and (Ship is TRuins) and
         (Ship.RangerRelations <> nil) and (Ship.RangerRelations.Count > 0) then
       begin
         Relation := RelationValueToLevel(Byte(Ship.RangerRelations[Galaxy.Rangers.IndexOf(GetPlayer)]));
-        if Relation <> rlHostile then Ships[Index].Relation := Relation;
+        if Relation <> relation_level_hostile then Ships[Index].Relation := Relation;
       end;
       Stage := 27;
-      if (GetPlayer <> Ship) and not (Ship is TRuins) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and
+      if (GetPlayer <> Ship) and not (Ship is TRuins) and (GetPlayer.CountActiveArtefacts(artefact_analyzer) > 0) and
         GetPlayer.CanResolveObjectWithScanner(Ship) then
         Ships[Index].WinChance := GetPlayer.GetWinChancePercent(Ship)
       else Ships[Index].WinChance := -1;
@@ -292,7 +292,7 @@ begin
         Items[Index].ImagePath := 'GI,' + GetItemTypeBitmapPath(Item.ItemType);
         Items[Index].Name := WrapTextInColor(GoodsMarket[Ord(Item.ItemType)].DisplayName, InfoNameColorTag);
         Items[Index].InfoText := LocalizedText('Items.Goods.Text.' + IntToStr(Ord(Item.ItemType) + 1));
-        Items[Index].OwnerId := oiUninhabited;
+        Items[Index].OwnerId := owner_uninhabited;
       end
       else
       begin

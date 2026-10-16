@@ -654,7 +654,7 @@ begin
     if (Result = 0) and not Failed then
     begin
       ExitScreenLoop := True;
-      RequestedScreenId := screenNone;
+      RequestedScreenId := screen_none;
       TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
       Result := 0;
       Exit;

@@ -5,8 +5,10 @@ interface
 uses EC_BlockPar, GI_Image, GI_Label, GI_Main, GI_MessageLoop, Types;
 
 type
-  TGraphButtonKindGI = (gbkNormal = 0, gbkFix = 1, gbkDisable = 2, gbkFixDisable = 3); // @size 1
-  TGraphButtonHitKindGI = (gbhRect = 0, gbhGraph = 1, gbhImageHit = 2); // @size 1
+  // The can_disable modes enforce Disabled for clicks and disabled visuals.
+  // All modes still consult Disabled for hovering and hover sounds.
+  TGraphButtonKindGI = (button_push = 0, button_toggle = 1, button_push_can_disable = 2, button_toggle_can_disable = 3); // @size 1
+  TGraphButtonHitKindGI = (button_hit_bounds = 0, button_hit_images = 1, button_hit_mask = 2); // @size 1
 
   TGraphButtonGI = class(TObjectGI) // @size 0x1F4
   public
@@ -96,8 +98,8 @@ uses Classes, EC_Str, EC_Struct, GR_Main, GR_Sound, Math, Windows;
 constructor TGraphButtonGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
-  Kind := gbkNormal;
-  HitKind := gbhRect;
+  Kind := button_push;
+  HitKind := button_hit_bounds;
   UpOnlyDown := False;
   CaptionColors[0] := CurrentPixelFormat.PackRgbBytes(255, 255, 255);
   CaptionColors[1] := CaptionColors[0];
@@ -105,8 +107,8 @@ begin
   CaptionColors[3] := CaptionColors[0];
   CaptionColors[4] := CaptionColors[0];
   CaptionColors[5] := CaptionColors[0];
-  CaptionAlignX := taxCenter;
-  CaptionAlignY := tayCenterEx;
+  CaptionAlignX := text_x_center;
+  CaptionAlignY := text_y_font_center;
   OnPressCode := nil;
 end;
 { @end $4AC898 }
@@ -121,7 +123,7 @@ end;
 { @routine $4AC97C TGraphButtonGI_Clear }
 procedure TGraphButtonGI.Clear;
 begin
-  Kind := gbkNormal;
+  Kind := button_push;
   if ImageNormal <> nil then
   begin
     ImageNormal.Free;
@@ -331,8 +333,8 @@ end;
 function TGraphButtonGI.HitTest(Point: TPoint): Boolean;
 begin
   Result := False;
-  if HitKind = gbhRect then Result := ContainsPoint(Point)
-  else if HitKind = gbhGraph then
+  if HitKind = button_hit_bounds then Result := ContainsPoint(Point)
+  else if HitKind = button_hit_images then
   begin
     if ImageNormal <> nil then Result := ImageNormal.HitTestPixel(Point);
     if Result then Exit;
@@ -347,7 +349,7 @@ begin
     if ImageDisabledActive <> nil then Result := ImageDisabledActive.HitTestPixel(Point);
     if Result then Exit;
   end
-  else if HitKind = gbhImageHit then
+  else if HitKind = button_hit_mask then
   begin
     if ImageHit <> nil then Result := ImageHit.HitTestPixel(Point);
   end;
@@ -428,7 +430,7 @@ begin
   if ImageDisabled <> nil then ImageDisabled.IsActive := False;
   if ImageDisabledActive <> nil then ImageDisabledActive.IsActive := False;
   if ImageHit <> nil then ImageHit.IsActive := False;
-  if Disabled and ((Kind = gbkDisable) or (Kind = gbkFixDisable)) then
+  if Disabled and ((Kind = button_push_can_disable) or (Kind = button_toggle_can_disable)) then
   begin
     if MessageLoop.HoveredControl = Self then
     begin
@@ -462,7 +464,7 @@ begin
   begin
     if not Down then CaptionLabel.Pos := CaptionOffsets.TopLeft
     else CaptionLabel.Pos := CaptionOffsets.BottomRight;
-    if Disabled and ((Kind = gbkDisable) or (Kind = gbkFixDisable)) then
+    if Disabled and ((Kind = button_push_can_disable) or (Kind = button_toggle_can_disable)) then
     begin
       if MessageLoop.HoveredControl = Self then
       begin
@@ -561,7 +563,7 @@ procedure TGraphButtonGI.OnActivate;
 begin
   inherited OnActivate;
   if HitTestCursor then MessageLoop.HoveredControl := Self;
-  if (Kind = gbkNormal) or (Kind = gbkDisable) then Down := False;
+  if (Kind = button_push) or (Kind = button_push_can_disable) then Down := False;
   UpdateStateVisuals;
 end;
 { @end $4AD740 }
@@ -571,7 +573,7 @@ procedure TGraphButtonGI.OnDeactivate;
 begin
   inherited OnDeactivate;
   if MessageLoop.HoveredControl = Self then MessageLoop.HoveredControl := nil;
-  if (Kind = gbkNormal) or (Kind = gbkDisable) then Down := False;
+  if (Kind = button_push) or (Kind = button_push_can_disable) then Down := False;
   UpdateStateVisuals;
 end;
 { @end $4AD77C }
@@ -615,7 +617,7 @@ end;
 { @routine $4AD888 TGraphButtonGI_OnHoverLost }
 procedure TGraphButtonGI.OnHoverLost;
 begin
-  if (Kind = gbkNormal) or (Kind = gbkDisable) then
+  if (Kind = button_push) or (Kind = button_push_can_disable) then
   begin
     if Down then
     begin
@@ -648,8 +650,8 @@ begin
   if IsOccludedAtPoint(Point) then Exit;
   if not HitTest(Point) then Exit;
   if MessageLoop.HoveredControl <> Self then Exit;
-  if ((Kind = gbkDisable) or (Kind = gbkFixDisable)) and (Disabled = True) then Exit;
-  if (Kind = gbkNormal) or (Kind = gbkDisable) then
+  if ((Kind = button_push_can_disable) or (Kind = button_toggle_can_disable)) and (Disabled = True) then Exit;
+  if (Kind = button_push) or (Kind = button_push_can_disable) then
   begin
     Down := True;
     if ClickSound <> '' then SoundManager.PlaySound(ClickSound);
@@ -695,8 +697,8 @@ begin
   if IsOccludedAtPoint(Point) then Exit;
   if not HitTest(Point) then Exit;
   if MessageLoop.HoveredControl <> Self then Exit;
-  if ((Kind = gbkDisable) or (Kind = gbkFixDisable)) and (Disabled = True) then Exit;
-  if (Kind = gbkNormal) or (Kind = gbkDisable) then
+  if ((Kind = button_push_can_disable) or (Kind = button_toggle_can_disable)) and (Disabled = True) then Exit;
+  if (Kind = button_push) or (Kind = button_push_can_disable) then
   begin
     WasDown := Down;
     Down := False;
@@ -773,18 +775,18 @@ begin
   if Block.CountParams('Kind') > 0 then
   begin
     Text := Block.GetParam('Kind');
-    if Text = 'Normal' then SetKind(gbkNormal)
-    else if Text = 'Fix' then SetKind(gbkFix)
-    else if Text = 'Disable' then SetKind(gbkDisable)
-    else if Text = 'FixDisable' then SetKind(gbkFixDisable);
+    if Text = 'Normal' then SetKind(button_push)
+    else if Text = 'Fix' then SetKind(button_toggle)
+    else if Text = 'Disable' then SetKind(button_push_can_disable)
+    else if Text = 'FixDisable' then SetKind(button_toggle_can_disable);
   end;
   if Block.CountParams('Auto') > 0 then ImageAutoUpdateFlags := ParseAutoGeometryFlagsGI(Block.GetParam('Auto'));
   if Block.CountParams('KindHit') > 0 then
   begin
     Text := Block.GetParam('KindHit');
-    if Text = 'Rect' then HitKind := gbhRect
-    else if Text = 'Graph' then HitKind := gbhGraph
-    else if Text = 'ImageHit' then HitKind := gbhImageHit;
+    if Text = 'Rect' then HitKind := button_hit_bounds
+    else if Text = 'Graph' then HitKind := button_hit_images
+    else if Text = 'ImageHit' then HitKind := button_hit_mask;
   end;
   if Block.CountParams('ImageNormal') > 0 then SetImageNormalPath(Block.GetParam('ImageNormal'));
   if Block.CountParams('ImageNormalA') > 0 then SetImageNormalActivePath(Block.GetParam('ImageNormalA'));
@@ -884,8 +886,8 @@ begin
       if Bounds.Right - Bounds.Left < 1 then Bounds := ImageBounds
       else Windows.UnionRect(Bounds, Bounds, ImageBounds);
     end;
-    if (ImageAutoUpdateFlags and agfPosition) = agfPosition then Pos := Parent.ToLocalPoint(Bounds.TopLeft);
-    if (ImageAutoUpdateFlags and agfSize) = agfSize then ObjectSize := SubtractPoints(Bounds.BottomRight, Bounds.TopLeft);
+    if (ImageAutoUpdateFlags and auto_position) = auto_position then Pos := Parent.ToLocalPoint(Bounds.TopLeft);
+    if (ImageAutoUpdateFlags and auto_size) = auto_size then ObjectSize := SubtractPoints(Bounds.BottomRight, Bounds.TopLeft);
   end;
   inherited UpdateAutoGeometry;
 end;

@@ -134,7 +134,7 @@ begin
   inherited OnOpen;
   LoadPanel.OnOpen;
   KeyHistory := '';
-  if PreviousScreenId <> screenPlanetQuest then
+  if PreviousScreenId <> screen_text_quest then
     if AuxRenderBuffer.GetPixels = nil then CaptureScreenBackground(True, 0);
   (GetByName('BGBuf') as TGraphBufGI).BindExternalGraphBuf(AuxRenderBuffer);
   with GetByName('ButGroup0') as TGraphButtonGI do SetDown(Category = 0);
@@ -149,7 +149,7 @@ end;
 procedure TfLoadQuest.OnClose;
 begin
   Entries := nil;
-  if RequestedScreenId <> screenPlanetQuest then AuxRenderBuffer.Clear;
+  if RequestedScreenId <> screen_text_quest then AuxRenderBuffer.Clear;
   LoadPanel.OnClose;
   inherited OnClose;
 end;
@@ -158,7 +158,7 @@ end;
 { @routine $5E0C34 TfLoadQuest_ReturnToMenu }
 procedure TfLoadQuest.ReturnToMenu(Sender: TObjectGI);
 begin
-  RequestedScreenId := screenMainMenu;
+  RequestedScreenId := screen_main_menu;
   RequestClose(1);
 end;
 { @end $5E0C34 }
@@ -468,8 +468,8 @@ begin
   end;
   TitleLabel.SetDepth(7);
   TitleLabel.SetFontName(NormalFontName);
-  TitleLabel.SetTextAlignX(taxLeft);
-  TitleLabel.SetTextAlignY(tayCenterEx);
+  TitleLabel.SetTextAlignX(text_x_left);
+  TitleLabel.SetTextAlignY(text_y_font_center);
   TitleLabel.Text := Entries[Index].Title;
   if Entries[Index].RequiredAccess <= AccessLevel then TitleLabel.SetTextColor(QuestNameColor)
   else TitleLabel.SetTextColor(CurrentPixelFormat.PackRgbBytes(112, 112, 112));
@@ -486,8 +486,8 @@ begin
   end;
   GenreLabel.SetDepth(7);
   GenreLabel.SetFontName(SmallFontName);
-  GenreLabel.SetTextAlignX(taxLeft);
-  GenreLabel.SetTextAlignY(tayCenter);
+  GenreLabel.SetTextAlignX(text_x_left);
+  GenreLabel.SetTextAlignY(text_y_center);
   GenreLabel.SetWordWrapEnabled(True);
   GenreLabel.Text := TrimWideString(Entries[Index].Genre);
   if Entries[Index].RequiredAccess <= AccessLevel then GenreLabel.SetTextColor(QuestNameColor)
@@ -608,7 +608,7 @@ begin
   PendingQuestName := Entries[SelectedIndex].Name;
   StandaloneQuestMode := True;
   QuestReturnScreenId := FormToId(Self);
-  RequestedScreenId := screenPlanetQuest;
+  RequestedScreenId := screen_text_quest;
   RequestClose(1);
   BreakUiMessage;
 end;

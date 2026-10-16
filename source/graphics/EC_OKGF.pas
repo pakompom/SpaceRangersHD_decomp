@@ -6,13 +6,13 @@ uses Types;
 
 
 type
-  TOkgfImageKind = (oikUnknown = 0, oikBmp = 1, oikIndexedBmp = 2,
-    oikJpeg = 3, oikPng = 4, oikIndexedPsd = 5, oikGrayscalePsd = 6,
-    oikRgbPsd = 7, oikCmykPsd = 8); // @size 0x04
+  TOkgfImageFormat = (image_format_unknown = 0, image_format_bmp = 1, image_format_bmp_indexed = 2,
+    image_format_jpeg = 3, image_format_png = 4, image_format_psd_indexed = 5, image_format_psd_grayscale = 6,
+    image_format_psd_rgb = 7, image_format_psd_cmyk = 8); // @size 0x04
 
   TOkgfReadContext = packed record // @size 0x20
     CodecContext: Pointer; // @offset 0x00
-    ImageKind: TOkgfImageKind; // @offset 0x04
+    ImageKind: TOkgfImageFormat; // @offset 0x04
     Width: Integer; // @offset 0x08
     Height: Integer; // @offset 0x0C
     PaletteCount: Integer; // @offset 0x10

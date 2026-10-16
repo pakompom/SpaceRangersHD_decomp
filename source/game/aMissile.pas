@@ -7,11 +7,11 @@ uses EC_Buf, EC_Struct, SE_Space, aEFilm, aGalaxy, aGalaxyStruct, aItem, aShip, 
 type
   // Saved target tags; unknown byte values leave references unresolved.
   TMissileTargetKind = (
-    mtkNone = 0,
-    mtkShip = 1,
-    mtkItem = 2,
-    mtkAsteroid = 3,
-    mtkMissile = 4
+    missile_target_none = 0,
+    missile_target_ship = 1,
+    missile_target_item = 2,
+    missile_target_asteroid = 3,
+    missile_target_missile = 4
   ); // @size $01
 
 type
@@ -131,14 +131,14 @@ begin
   MicroModuleIndex := Weapon.MicroModuleIndex;
   SpecialModuleIndex := Weapon.SpecialModuleIndex;
   MaxDamage := OwnerShip.GetWeaponMaxDamage(Weapon);
-  SpeedBonus := Self.OwnerShip.GetTotalStatBonus(bonMissileSpeed);
+  SpeedBonus := Self.OwnerShip.GetTotalStatBonus(bonus_missile_speed);
   SpecialBonus := 0;
-  if SpecialModuleIndex > 0 then SpecialBonus := MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[bonMissileSpeed];
+  if SpecialModuleIndex > 0 then SpecialBonus := MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[bonus_missile_speed];
   if MicroModuleIndex > 0 then
   begin
-    Inc(SpeedBonus, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonMissileSpeed]);
-    if SpecialBonus < 0 then Inc(SpecialBonus, Round(SpecialBonus * MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonExtraAkrinPenalty] * 0.0001))
-    else Inc(SpecialBonus, Round(SpecialBonus * MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonExtraAkrinEff] * 0.0001));
+    Inc(SpeedBonus, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonus_missile_speed]);
+    if SpecialBonus < 0 then Inc(SpecialBonus, Round(SpecialBonus * MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonus_acryn_penalty] * 0.0001))
+    else Inc(SpecialBonus, Round(SpecialBonus * MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonus_acryn_effect] * 0.0001));
   end;
   Inc(SpeedBonus, SpecialBonus);
   TechLevel := Weapon.TechLevel;
@@ -213,55 +213,55 @@ begin
   Buffer.AddSingle(TurnDirection);
   if CurrentStar = nil then Buffer.AddDWord(0) else Buffer.AddDWord(CurrentStar.Id);
   if OwnerShip = nil then Buffer.AddDWord(0) else Buffer.AddDWord(OwnerShip.Id);
-  if Target = nil then Buffer.AddAnsiChar(AnsiChar(mtkNone))
+  if Target = nil then Buffer.AddAnsiChar(AnsiChar(missile_target_none))
   else if Target is TShip then
     begin
-      Buffer.AddAnsiChar(AnsiChar(mtkShip));
+      Buffer.AddAnsiChar(AnsiChar(missile_target_ship));
       Buffer.AddDWord((Target as TShip).Id);
     end
     else if Target is TItem then
     begin
-      Buffer.AddAnsiChar(AnsiChar(mtkItem));
+      Buffer.AddAnsiChar(AnsiChar(missile_target_item));
       Buffer.AddDWord((Target as TItem).Id);
     end
     else if Target is TAsteroid then
     begin
-      Buffer.AddAnsiChar(AnsiChar(mtkAsteroid));
+      Buffer.AddAnsiChar(AnsiChar(missile_target_asteroid));
       Buffer.AddDWord((Target as TAsteroid).Id);
     end
     else if Target is TMissile then
     begin
-      Buffer.AddAnsiChar(AnsiChar(mtkMissile));
+      Buffer.AddAnsiChar(AnsiChar(missile_target_missile));
       Buffer.AddDWord((Target as TMissile).Id);
     end
-    else Buffer.AddAnsiChar(AnsiChar(mtkNone));
+    else Buffer.AddAnsiChar(AnsiChar(missile_target_none));
   Buffer.AddAnsiChar(AnsiChar(ShotIndex));
   Buffer.AddIntegerValue(FlightTicks);
   Buffer.AddSingle(SourceHeading);
   Buffer.AddSingle(Speed);
   Buffer.AddSingle(MaximumSpeed);
-  if PreviousTarget = nil then Buffer.AddAnsiChar(AnsiChar(mtkNone))
+  if PreviousTarget = nil then Buffer.AddAnsiChar(AnsiChar(missile_target_none))
   else if PreviousTarget is TShip then
     begin
-      Buffer.AddAnsiChar(AnsiChar(mtkShip));
+      Buffer.AddAnsiChar(AnsiChar(missile_target_ship));
       Buffer.AddDWord((PreviousTarget as TShip).Id);
     end
     else if PreviousTarget is TItem then
     begin
-      Buffer.AddAnsiChar(AnsiChar(mtkItem));
+      Buffer.AddAnsiChar(AnsiChar(missile_target_item));
       Buffer.AddDWord((PreviousTarget as TItem).Id);
     end
     else if PreviousTarget is TAsteroid then
     begin
-      Buffer.AddAnsiChar(AnsiChar(mtkAsteroid));
+      Buffer.AddAnsiChar(AnsiChar(missile_target_asteroid));
       Buffer.AddDWord((PreviousTarget as TAsteroid).Id);
     end
     else if PreviousTarget is TMissile then
     begin
-      Buffer.AddAnsiChar(AnsiChar(mtkMissile));
+      Buffer.AddAnsiChar(AnsiChar(missile_target_missile));
       Buffer.AddDWord((PreviousTarget as TMissile).Id);
     end
-    else Buffer.AddAnsiChar(AnsiChar(mtkNone));
+    else Buffer.AddAnsiChar(AnsiChar(missile_target_none));
   Buffer.AddSingle(LastTargetPosition.X);
   Buffer.AddSingle(LastTargetPosition.Y);
   Buffer.AddSingle(LastTargetDistance);
@@ -359,7 +359,7 @@ begin
   CurrentStar := TStar(Buffer.GetUInt32);
   OwnerShip := TShip(Buffer.GetUInt32);
   SavedTargetKind := TMissileTargetKind(Buffer.GetByte);
-  if SavedTargetKind = mtkNone then Target := nil else Target := TObject(Buffer.GetUInt32);
+  if SavedTargetKind = missile_target_none then Target := nil else Target := TObject(Buffer.GetUInt32);
   ShotIndex := Buffer.GetByte;
   FlightTicks := Buffer.GetInt32;
   SourceHeading := Buffer.GetSingle;
@@ -367,7 +367,7 @@ begin
   if LoadedSaveVersion >= 95 then MaximumSpeed := Buffer.GetSingle
   else MaximumSpeed := RemapClamped(TechLevel, 1, 8, GetWeaponInfo.MissileMinSpeed, GetWeaponInfo.MissileMaxSpeed);
   SavedPreviousTargetKind := TMissileTargetKind(Buffer.GetByte);
-  if SavedPreviousTargetKind = mtkNone then PreviousTarget := nil else PreviousTarget := TObject(Buffer.GetUInt32);
+  if SavedPreviousTargetKind = missile_target_none then PreviousTarget := nil else PreviousTarget := TObject(Buffer.GetUInt32);
   LastTargetPosition.X := Buffer.GetSingle;
   LastTargetPosition.Y := Buffer.GetSingle;
   LastTargetDistance := Buffer.GetSingle;
@@ -387,14 +387,14 @@ procedure TMissile.ResolveLoadedReferences(World: TGalaxy);
 begin
   CurrentStar := TObject(World.IdToStar(Cardinal(CurrentStar))) as TStar;
   OwnerShip := World.IdToShip(Cardinal(OwnerShip), True) as TShip;
-  if SavedTargetKind = mtkShip then Target := World.IdToShip(Cardinal(Target), True) as TShip
-  else if SavedTargetKind = mtkItem then Target := TObject(World.IdToItem(Cardinal(Target), True)) as TItem
-  else if SavedTargetKind = mtkAsteroid then Target := TObject(World.IdToAsteroid(Cardinal(Target))) as TAsteroid
-  else if SavedTargetKind = mtkMissile then Target := TObject(World.IdToMissile(Cardinal(Target))) as TMissile;
-  if SavedPreviousTargetKind = mtkShip then PreviousTarget := World.IdToShip(Cardinal(PreviousTarget), True) as TShip
-  else if SavedPreviousTargetKind = mtkItem then PreviousTarget := TObject(World.IdToItem(Cardinal(PreviousTarget), True)) as TItem
-  else if SavedPreviousTargetKind = mtkAsteroid then PreviousTarget := TObject(World.IdToAsteroid(Cardinal(PreviousTarget))) as TAsteroid
-  else if SavedPreviousTargetKind = mtkMissile then PreviousTarget := TObject(World.IdToMissile(Cardinal(PreviousTarget))) as TMissile;
+  if SavedTargetKind = missile_target_ship then Target := World.IdToShip(Cardinal(Target), True) as TShip
+  else if SavedTargetKind = missile_target_item then Target := TObject(World.IdToItem(Cardinal(Target), True)) as TItem
+  else if SavedTargetKind = missile_target_asteroid then Target := TObject(World.IdToAsteroid(Cardinal(Target))) as TAsteroid
+  else if SavedTargetKind = missile_target_missile then Target := TObject(World.IdToMissile(Cardinal(Target))) as TMissile;
+  if SavedPreviousTargetKind = missile_target_ship then PreviousTarget := World.IdToShip(Cardinal(PreviousTarget), True) as TShip
+  else if SavedPreviousTargetKind = missile_target_item then PreviousTarget := TObject(World.IdToItem(Cardinal(PreviousTarget), True)) as TItem
+  else if SavedPreviousTargetKind = missile_target_asteroid then PreviousTarget := TObject(World.IdToAsteroid(Cardinal(PreviousTarget))) as TAsteroid
+  else if SavedPreviousTargetKind = missile_target_missile then PreviousTarget := TObject(World.IdToMissile(Cardinal(PreviousTarget))) as TMissile;
 end;
 { @end $5CE300 }
 
@@ -427,13 +427,13 @@ begin
     if PlayShotSound then
     begin
       if Self is TCustomMissile then Config := GameDataConfig.GetBlockByPath('SE.' + GetWeaponInfo.PrimarySE)
-      else Config := GameDataConfig.GetBlockByPath('SE.Weapon.' + IntToStr(Ord(ItemType) - Ord(t_IndustrialLaser)));
+      else Config := GameDataConfig.GetBlockByPath('SE.Weapon.' + IntToStr(Ord(ItemType) - Ord(item_industrial_laser)));
       Palette := Config.FindBlock('Palettes');
       if Palette <> nil then Palette := Palette.FindBlock(IntToStr(GetShotVisual));
       if (Palette <> nil) and (Palette.CountParams('SoundShot') > 0) then PrimaryFilm.PlayObjectSound(StepIndex, FilmObject, Palette.GetParam('SoundShot'))
       else if Config.CountParams('SoundShot') > 0 then PrimaryFilm.PlayObjectSound(StepIndex, FilmObject, Config.GetParam('SoundShot'))
       else if Self is TCustomMissile then PrimaryFilm.PlayObjectSound(StepIndex, FilmObject, 'Sound.shot' + GetWeaponInfo.ConfigName)
-      else PrimaryFilm.PlayObjectSound(StepIndex, FilmObject, 'Sound.shot' + IntToStr(Ord(ItemType) - Ord(t_IndustrialLaser)));
+      else PrimaryFilm.PlayObjectSound(StepIndex, FilmObject, 'Sound.shot' + IntToStr(Ord(ItemType) - Ord(item_industrial_laser)));
     end;
   end;
   if FlightTicks = 0 then
@@ -630,7 +630,7 @@ begin
         Stage := 21;
         Item := CurrentStar.Items[I];
         Stage := 22;
-        if not (((GetWeaponInfo.ShotType <> wstTorpedo) or (Target = Item)) and
+        if not (((GetWeaponInfo.ShotType <> shot_torpedo) or (Target = Item)) and
           SegmentIntersectsCircle(PreviousPosition, Position, Item.Position, 10)) then Continue;
         Stage := 23;
         J := CurrentStar.MovingDropItems.Count - 1;
@@ -656,7 +656,7 @@ begin
         if not Ship.IsHullDestroyed and Ship.InNormalSpace then
         begin
           if TryReturnToOwner(StepIndex, RecordFilm, PreviousPosition, Ship) then Exit;
-          if (OwnerShip <> Ship) and ((Target = Ship) or (OwnerShip = nil) or (OwnerShip.GetRelationLevelToShip(Ship) = rlHostile)) then
+          if (OwnerShip <> Ship) and ((Target = Ship) or (OwnerShip = nil) or (OwnerShip.GetRelationLevelToShip(Ship) = relation_level_hostile)) then
           begin
             Stage := 26;
             if SegmentIntersectsCircle(PreviousPosition, Position, Ship.Position, 20) then
@@ -731,7 +731,7 @@ var
   EffectFilm: TEFilmObj;
 begin
   Result := False;
-  if GetWeaponInfo.ShotType = wstTorpedo then
+  if GetWeaponInfo.ShotType = shot_torpedo then
     if (OwnerShip <> nil) and (OwnerShip = Ship) and (OwnerShip = Target) then
       if SegmentIntersectsCircle(PreviousPosition, Position, Ship.Position, 20) then
   begin
@@ -779,7 +779,7 @@ var
   I: Integer;
   Ship, BestShip: TShip;
 begin
-  if (GetWeaponInfo.ShotType = wstTorpedo) then
+  if (GetWeaponInfo.ShotType = shot_torpedo) then
     if (OwnerShip <> nil) then
     if ((Target = nil) or (Target = OwnerShip)) then
   begin
@@ -790,7 +790,7 @@ begin
       Ship := CurrentStar.Ships[I];
       if not Ship.IsOutsideStarSpace then
         if (Ship <> PreviousTarget) then
-        if (Ship.GetRelationLevelToShip(OwnerShip) <= rlHostile) then
+        if (Ship.GetRelationLevelToShip(OwnerShip) <= relation_level_hostile) then
         if (not (OwnerShip is TKling) or not (OwnerShip as TKling).IsPlayerCamouflageEffective(Ship)) then
         if (not (Ship is TKling) or not (Ship as TKling).IsPlayerCamouflageEffective(OwnerShip)) then
       begin
@@ -847,10 +847,10 @@ begin
     if GetPlayer.HasScannerArtefact(OwnerShip) then
     begin
       if GetPlayer.CanResolveObjectWithScanner(OwnerShip) or (GetPlayer = OwnerShip) or
-        (GetPlayer = OwnerShip.PartnerShip) or (OwnerShip.TypeId = stTranclucator) then
+        (GetPlayer = OwnerShip.PartnerShip) or (OwnerShip.TypeId = ship_tranclucator) then
       begin
         SpeedText := IntToStr(Round(Speed));
-        if (OwnerShip.TypeId = stKling) and ((OwnerShip as TKling).KlingType = ktBoss) then
+        if (OwnerShip.TypeId = ship_dominator) and ((OwnerShip as TKling).KlingType = dominator_boss) then
           DamageFactor := Galaxy.InterpolateDifficulty(-1, 0.7, 1, 1.2, 1.5) * 2
         else DamageFactor := 1;
         DamageText := IntToStr(Round(MinDamage * DamageFactor)) + '-' + IntToStr(Round(MaxDamage * DamageFactor));
@@ -876,7 +876,7 @@ begin
   if Attacker = nil then Roll := NextRandomIntRange(1, 100, Galaxy.RandomState)
   else
   begin
-    if (Attacker is TKling) and ((Attacker as TKling).KlingType = ktBoss) then
+    if (Attacker is TKling) and ((Attacker as TKling).KlingType = dominator_boss) then
     begin
       Result := True;
       Exit;
@@ -910,7 +910,7 @@ function TMissile.GetGraphSuffix: WideString;
 begin
   Result := '';
   if SpecialModuleIndex <> 0 then Result := MicroModuleTemplates[SpecialModuleIndex - 1].MissileGraph;
-  if Result = '' then Result := IntToStr(Ord(ItemType) - Ord(t_IndustrialLaser) + 1);
+  if Result = '' then Result := IntToStr(Ord(ItemType) - Ord(item_industrial_laser) + 1);
 end;
 { @end $5D01D4 }
 

@@ -5,12 +5,12 @@ interface
 uses EC_BlockPar, GI_MessageLoop, GR_GraphBuf, Types;
 
 type
-  TShrLightKindGI = (slkAll=0, slkBuffer=1); // @size $01
+  TShrLightKindGI = (light_uniform=0, light_masked=1); // @size $01
   TShrLightGI = class(TObjectGI) // @size $138
   public
     Kind: TShrLightKindGI; // @offset $120
     LightShift: Integer; // @offset $124
-    LightBuffer: TGraphBufGR; // @offset $128 Owned grayscale mask when Kind=slkBuffer.
+    LightBuffer: TGraphBufGR; // @offset $128 Owned grayscale mask when Kind=light_masked.
     constructor Create(Owner: TObjectGI); // @addr $49156C
     destructor Destroy; override; // @addr $4915B4
     procedure Clear; override; // @addr $4915F0
@@ -31,7 +31,7 @@ uses EC_Mem, GR_DX, GR_Main, SysUtils;
 constructor TShrLightGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
-  Kind := slkAll;
+  Kind := light_uniform;
   LightShift := 1;
 end;
 { @end $49156C }
@@ -56,7 +56,7 @@ begin
     LightBuffer.Free;
     LightBuffer := nil;
   end;
-  Kind := slkAll;
+  Kind := light_uniform;
   LightShift := 1;
   inherited Clear;
 end;
@@ -67,7 +67,7 @@ procedure TShrLightGI.SetKind(Value: TShrLightKindGI);
 begin
   if Kind = Value then Exit;
   Kind := Value;
-  if Kind = slkBuffer then
+  if Kind = light_masked then
   begin
     LightBuffer := TGraphBufGR.Create(False);
     LightBuffer.AllocateGrayscale(ClientSize.X, ClientSize.Y);
@@ -95,7 +95,7 @@ end;
 procedure TShrLightGI.SetSize(Size: TPoint);
 begin
   inherited SetSize(Size);
-  if Kind <> slkBuffer then Exit;
+  if Kind <> light_masked then Exit;
   LightBuffer.AllocateGrayscale(Size.X, Size.Y);
   LightBuffer.FillPixels(0);
 end;
@@ -126,8 +126,8 @@ begin
   if Block.CountParams('Kind') > 0 then
   begin
     Text := Block.GetParam('Kind');
-    if Text = 'All' then SetKind(slkAll)
-    else if Text = 'Buf' then SetKind(slkBuffer);
+    if Text = 'All' then SetKind(light_uniform)
+    else if Text = 'Buf' then SetKind(light_masked);
   end;
 end;
 { @end $491744 }
@@ -143,18 +143,18 @@ begin
     else if LightShift = 0 then Exit
     else if LightShift = -2 then Alpha := 64
     else AppendLogLineThreadSafe('FShrLight=' + IntToStr(LightShift));
-    if Kind = slkBuffer then
+    if Kind = light_masked then
       DrawColoredRect(0, 0, GameScreenWidth, GameScreenHeight, 0, Alpha, True, @ClipRect)
-    else if Kind = slkAll then
+    else if Kind = light_uniform then
       DrawColoredRect(0, 0, GameScreenWidth, GameScreenHeight, 0, Alpha, True, @ClipRect);
   end
-  else if Kind = slkBuffer then
+  else if Kind = light_masked then
     Ex_OKGR_ShrLightMask_16(AddPointerOffset(ScreenRenderBuffer.GetPixels,
       ScreenRenderBuffer.PitchBytes * ClipRect.Top + ClipRect.Left * 2), ScreenRenderBuffer.PitchBytes,
       AddPointerOffset(LightBuffer.GetPixels,
         (ClipRect.Top - HitTestBounds.Top) * LightBuffer.PitchBytes + (ClipRect.Left - HitTestBounds.Left)),
       LightBuffer.PitchBytes, ClipRect.Right - ClipRect.Left, ClipRect.Bottom - ClipRect.Top)
-  else if Kind = slkAll then ScreenRenderBuffer.ShiftLight16(LightShift, ClipRect);
+  else if Kind = light_uniform then ScreenRenderBuffer.ShiftLight16(LightShift, ClipRect);
 end;
 { @end $491860 }
 

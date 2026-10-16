@@ -38,14 +38,14 @@ begin
   CenterImage := TImageGI.Create(Self);
   RightImage := TImageGI.Create(Self);
   LeftImage.SetDepth(1);
-  LeftImage.KindX := ikxLeft;
-  LeftImage.KindY := ikyCenter;
+  LeftImage.KindX := image_x_left;
+  LeftImage.KindY := image_y_center;
   CenterImage.SetDepth(1);
-  CenterImage.KindX := ikxLeftFill;
-  CenterImage.KindY := ikyCenter;
+  CenterImage.KindX := image_x_tile_left;
+  CenterImage.KindY := image_y_center;
   RightImage.SetDepth(1);
-  RightImage.KindX := ikxLeft;
-  RightImage.KindY := ikyCenter;
+  RightImage.KindX := image_x_left;
+  RightImage.KindY := image_y_center;
   Minimum := 0;
   Maximum := 100;
 end;
@@ -136,7 +136,7 @@ begin
     LeftImage.Pos := Classes.Point(0, 0);
     CenterImage.Pos := Classes.Point(LeftImage.ClientSize.X, 0);
     RightImage.Pos := Classes.Point(LeftImage.ClientSize.X + CenterImage.ClientSize.X, 0);
-    CenterImage.KindX := ikxLeftFill;
+    CenterImage.KindX := image_x_tile_left;
   end;
 end;
 { @end $4AC264 }

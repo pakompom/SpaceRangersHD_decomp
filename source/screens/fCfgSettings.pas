@@ -486,12 +486,12 @@ begin
   ValueLabel := AddOptionLabel('ScreenShotQuality', LocalizedText('FormCfgSettings.ScreenShotQuality'), False);
   AddOptionSlider(ValueLabel, 0, 100, ScreenshotJpegQuality, 1, FormatInteger);
   AddOptionLabel('FontGalaxy', LocalizedText('FormCfgSettings.FontGalaxy'), True);
-  AddOptionChoice(6, LocalizedText('FormCfgSettings.FontGalaxyNormalBold'), GalaxyMapFontChoice = gmfNormalBold, False);
-  AddOptionChoice(5, LocalizedText('FormCfgSettings.FontGalaxyNormal'), GalaxyMapFontChoice = gmfNormal, False);
-  AddOptionChoice(4, LocalizedText('FormCfgSettings.FontGalaxySmallBold'), GalaxyMapFontChoice = gmfSmallBold, False);
-  AddOptionChoice(3, LocalizedText('FormCfgSettings.FontGalaxySmall'), GalaxyMapFontChoice = gmfSmall, False);
-  AddOptionChoice(2, LocalizedText('FormCfgSettings.FontGalaxyMini'), GalaxyMapFontChoice = gmfMini, False);
-  AddOptionChoice(1, LocalizedText('FormCfgSettings.FontGalaxyRanger'), GalaxyMapFontChoice = gmfRanger, False);
+  AddOptionChoice(6, LocalizedText('FormCfgSettings.FontGalaxyNormalBold'), GalaxyMapFontChoice = map_font_normal_bold, False);
+  AddOptionChoice(5, LocalizedText('FormCfgSettings.FontGalaxyNormal'), GalaxyMapFontChoice = map_font_normal, False);
+  AddOptionChoice(4, LocalizedText('FormCfgSettings.FontGalaxySmallBold'), GalaxyMapFontChoice = map_font_small_bold, False);
+  AddOptionChoice(3, LocalizedText('FormCfgSettings.FontGalaxySmall'), GalaxyMapFontChoice = map_font_small, False);
+  AddOptionChoice(2, LocalizedText('FormCfgSettings.FontGalaxyMini'), GalaxyMapFontChoice = map_font_mini, False);
+  AddOptionChoice(1, LocalizedText('FormCfgSettings.FontGalaxyRanger'), GalaxyMapFontChoice = map_font_ranger, False);
   BuildGroupIndex := 2;
   AddOptionLabel('Sound', LocalizedText('FormCfgSettings.Sound'), True);
   AddOptionChoice(1, LocalizedText('FormCfgSettings.Yes'), SoundEnabled, not IsInstallFeatureEnabled('Sound'));
@@ -715,12 +715,12 @@ begin
   Result.SetPositionModeW(False);
   Result.SetPosition(Classes.Point(0, GroupNextY[BuildGroupIndex]));
   Result.SetSize(Classes.Point(GroupPanels[BuildGroupIndex].ClientSize.X, 1));
-  Result.SetTextAlignX(taxLeft);
-  Result.SetTextAlignY(tayAuto);
+  Result.SetTextAlignX(text_x_left);
+  Result.SetTextAlignY(text_y_fit_height);
   Result.SetTextColor(CurrentPixelFormat.PackRgbBytes(205, 205, 205));
   Result.SetText(Caption + '.');
   Result.HelpText := Caption;
-  Result.SetTextAlignY(tayTop);
+  Result.SetTextAlignY(text_y_top);
   Result.SetSize(Classes.Point(Result.ClientSize.X, Result.ClientSize.Y + 1));
   Inc(GroupNextY[BuildGroupIndex], 2);
 end;
@@ -736,8 +736,8 @@ begin
   ValueLabel.SetPositionModeW(False);
   ValueLabel.SetPosition(Classes.Point(0, GroupNextY[BuildGroupIndex]));
   ValueLabel.SetSize(Classes.Point(GroupPanels[BuildGroupIndex].ClientSize.X - RightMargin, 1));
-  ValueLabel.SetTextAlignX(taxRight);
-  ValueLabel.SetTextAlignY(tayAuto);
+  ValueLabel.SetTextAlignX(text_x_right);
+  ValueLabel.SetTextAlignY(text_y_fit_height);
   if Selected then ValueLabel.SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 234, 118))
   else ValueLabel.SetTextColor(CurrentPixelFormat.PackRgbBytes(205, 205, 205));
   ValueLabel.SetText(Caption);
@@ -747,14 +747,14 @@ begin
     ValueLabel.MouseEnterCallback := OptionChoiceMouseEnter;
     ValueLabel.MouseLeaveCallback := OptionChoiceMouseLeave;
   end;
-  ValueLabel.SetTextAlignY(tayCenterEx);
+  ValueLabel.SetTextAlignY(text_y_font_center);
   Image := TImageGI.Create(GroupPanels[BuildGroupIndex]);
   if Selected then Image.SetImagePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchD')
   else if Disabled then Image.SetImagePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchH')
   else Image.SetImagePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchN');
   Image.SetPosition(Classes.Point(GroupPanels[BuildGroupIndex].ClientSize.X - Image.GetContentSize.X - RightMargin, GroupNextY[BuildGroupIndex]));
   Image.SetSize(Image.GetContentSize);
-  Image.SetImageKindY(ikyCenter);
+  Image.SetImageKindY(image_y_center);
   if not Disabled then
   begin
     Image.LeftButtonDownCallback := OptionChoiceMouseDown;
@@ -818,7 +818,7 @@ begin
   if GiResourceVariant = 2 then Slider.SetSize(Classes.Point(199, 20))
   else Slider.SetSize(Classes.Point(156, 20));
   Slider.Pos := Classes.Point(GroupPanels[BuildGroupIndex].ClientSize.X - Slider.ClientSize.X, GroupNextY[BuildGroupIndex]);
-  Slider.DecreaseButton.SetKind(gbkDisable);
+  Slider.DecreaseButton.SetKind(button_push_can_disable);
   Slider.DecreaseButton.SetImageNormalPath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'TrackLeftN');
   Slider.DecreaseButton.SetImageNormalActivePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'TrackLeftA');
   Slider.DecreaseButton.SetImageDownPath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'TrackLeftD');
@@ -826,7 +826,7 @@ begin
   Slider.DecreaseButton.EnterSound := 'Sound.ButtonEnter';
   Slider.DecreaseButton.LeaveSound := 'Sound.ButtonLeave';
   Slider.DecreaseButton.ClickSound := 'Sound.ButtonClick';
-  Slider.IncreaseButton.SetKind(gbkDisable);
+  Slider.IncreaseButton.SetKind(button_push_can_disable);
   Slider.IncreaseButton.SetImageNormalPath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'TrackRightN');
   Slider.IncreaseButton.SetImageNormalActivePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'TrackRightA');
   Slider.IncreaseButton.SetImageDownPath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'TrackRightD');
@@ -1917,7 +1917,7 @@ begin
     RequestedScreenId := SettingsReturnScreenId
   else
   begin
-    RequestedScreenId := screenNone;
+    RequestedScreenId := screen_none;
     PostLoadScreenId := SettingsReturnScreenId;
   end;
   if not HardwareRenderingEnabled then ReleaseAllTextureSurfaces;
@@ -1933,8 +1933,8 @@ begin
   with Result as TImageGI do
   begin
     ImageSourcePath := 'GI,Bm.FormOptions2.' + GiResourceSuffix + 'Warning';
-    KindX := ikxLeft;
-    KindY := ikyTop;
+    KindX := image_x_left;
+    KindY := image_y_top;
   end;
 end;
 { @end $542D00 }
@@ -1947,7 +1947,7 @@ begin
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
     else
-    if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
+    if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
     begin
       if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
         MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
@@ -1959,7 +1959,7 @@ begin
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
     else
-    if GetPlayer.DockedTo.TypeId in [rstPirateBase, rstDominion] then
+    if GetPlayer.DockedTo.TypeId in [station_pirate_base, station_dominion] then
       MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
   end

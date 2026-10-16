@@ -138,7 +138,7 @@ begin
   end;
   JournalSelected := not JournalSelected;
   ToggleJournalNews(nil);
-  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnEnteringForm, nil, nil, 0);
+  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(event_enter_form, nil, nil, 0);
   Galaxy.PrimeIntegrityChecksum(201);
 end;
 { @end $5D9D60 }
@@ -147,7 +147,7 @@ end;
 procedure TfJournal.OnClose;
 begin
   Galaxy.CheckIntegrityChecksum(202);
-  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnLeavingForm, nil, nil, 0);
+  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(event_leave_form, nil, nil, 0);
   InfoPanel.FreeOwnedChildren;
   MainPanel.OnClose;
 end;
@@ -241,8 +241,8 @@ begin
   if Compact = 0 then Image.SetPosition(Types.Point(InfoPanel.ClientSize.X div 2 - Image.ClientSize.X div 2, ContentHeight))
   else Image.SetPosition(Types.Point(InfoPanel.ClientSize.X - Image.ClientSize.X, ContentHeight));
   Image.SetDepth(1);
-  Image.SetImageKindX(ikxLeftFill);
-  Image.SetImageKindY(ikyCenter);
+  Image.SetImageKindX(image_x_tile_left);
+  Image.SetImageKindY(image_y_center);
   Inc(ContentHeight, Image.ClientSize.Y);
   Image.SetPositionModeW(True);
   with TLabelGI.Create(InfoPanel) do
@@ -257,8 +257,8 @@ begin
     SetPosition(Types.Point(Image.LocalPosition.X + Image.ClientSize.X - ClientSize.X, Image.LocalPosition.Y));
     SetWordWrapEnabled(False);
     SetPositionModeW(True);
-    SetTextAlignX(taxCenter);
-    SetTextAlignY(tayCenterEx);
+    SetTextAlignX(text_x_center);
+    SetTextAlignY(text_y_font_center);
     Text := CaptionText;
     SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
   end;
@@ -273,7 +273,7 @@ begin
       PinWidth := ClientSize.X;
       if Compact = 0 then SetPosition(Types.Point(Image.LocalPosition.X + Image.ClientSize.X - ClientSize.X - GiScalePixels(10), Image.LocalPosition.Y))
       else SetPosition(Types.Point(Image.LocalPosition.X + Image.ClientSize.X - ClientSize.X - GiScalePixels(10), Image.LocalPosition.Y - GiScalePixels(5)));
-      SetKind(gbkDisable);
+      SetKind(button_push_can_disable);
       SetPositionModeW(True);
       HelpText := MessageText;
       UpCallback := PinEntryClicked;
@@ -293,7 +293,7 @@ begin
           SetImageDisabledPath('GI,Bm.FormCount2.' + GiResourceSuffix + 'SubH');
           SetSize(GetMaxStateImageSize);
           SetPosition(Types.Point(Image.LocalPosition.X + Image.ClientSize.X - ClientSize.X - GiScalePixels(15) - PinWidth, Image.LocalPosition.Y - GiScalePixels(3)));
-          SetKind(gbkDisable);
+          SetKind(button_push_can_disable);
           SetPositionModeW(True);
           UpCallback := DeleteEntryClicked;
           Name := 'JrnDel' + IntToStr(RecordIndex);
@@ -327,7 +327,7 @@ begin
     SetPositionModeW(True);
     if JournalSelected then SetAutoHeightPadding(8);
     SetTextAlignX(Align);
-    SetTextAlignY(tayAuto);
+    SetTextAlignY(text_y_fit_height);
     Text := CaptionText;
     SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
     Inc(ContentHeight, ClientSize.Y);
@@ -406,7 +406,7 @@ end;
 { @routine $5DB580 TfJournal_HasTelevisionReception }
 function TfJournal.HasTelevisionReception: Boolean;
 begin
-  Result := (GetPlayer <> nil) and (GetPlayer.IsDockedToShip or (GetPlayer.IsOnPlanet and (GetPlayer.CurrentPlanet.OwnerId in [oiMaloc..oiGaal, oiPirate])));
+  Result := (GetPlayer <> nil) and (GetPlayer.IsDockedToShip or (GetPlayer.IsOnPlanet and (GetPlayer.CurrentPlanet.OwnerId in [owner_maloc..owner_gaal, owner_pirate])));
 end;
 { @end $5DB580 }
 
@@ -414,7 +414,7 @@ end;
 procedure TfJournal.PinEntryClicked(Sender: TObjectGI);
 begin
   SoundManager.PlaySound('Sound.UserMsgAdd');
-  AddOrUpdatePlayerBubble(pmUserNote, Galaxy.CurrentTurn, Sender.HelpText, '');
+  AddOrUpdatePlayerBubble(message_user_note, Galaxy.CurrentTurn, Sender.HelpText, '');
   MainPanel.RebuildMessageButtons(False);
   (Sender as TGraphButtonGI).SetDisabled(True);
   BreakUiMessage;
@@ -509,7 +509,7 @@ begin
       if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
       else if GetPlayer.IsOnPlanet then
       begin
-        if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
+        if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
         begin
           if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
             MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
@@ -520,7 +520,7 @@ begin
       else if GetPlayer.IsDockedToShip then
       begin
         if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
-        else if GetPlayer.DockedTo.TypeId in [rstPirateBase, rstDominion] then
+        else if GetPlayer.DockedTo.TypeId in [station_pirate_base, station_dominion] then
           MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
         else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
       end;
@@ -559,9 +559,9 @@ begin
     if Count > MaxPlayerNews then Break;
     Entry := GetPlayer.NewsEntries[I];
     AddEntryHeading(WrapTextInColor(Galaxy.FormatTurnDate(Entry.Turn) + HeadingSuffix, TextHighlightColorTag), WrapTextInColor(Galaxy.FormatTurnDate(Entry.Turn), TextHighlightColorTag) + #13#10 + ' ' + #13#10 + Entry.Text, 1, 0);
-    AddEntryText(' .', taxCenter, '');
-    AddEntryText(Entry.Text, taxAuto, '');
-    AddEntryText(' .', taxCenter, '');
+    AddEntryText(' .', text_x_center, '');
+    AddEntryText(Entry.Text, text_x_fit_or_justify, '');
+    AddEntryText(' .', text_x_center, '');
     AddEntrySpacing(10);
   end;
   FinishEntries;
@@ -576,7 +576,7 @@ var
 begin
   ClearEntries;
   AddEntrySpacing(10);
-  AddEntryText(LocalizedColorText('FormInfo.RecordTitle'), taxCenter, NormalBoldFontName);
+  AddEntryText(LocalizedColorText('FormInfo.RecordTitle'), text_x_center, NormalBoldFontName);
   AddEntrySpacing(10);
   Displayed := 0;
   Count := GetPlayer.JournalRecords.Count;
@@ -584,14 +584,14 @@ begin
   begin
     Entry := GetPlayer.JournalRecords[I];
     AddEntryHeading(WrapTextInColor(Galaxy.FormatTurnDate(Entry.DateTurn), TextHighlightColorTag), WrapTextInColor(Galaxy.FormatTurnDate(Entry.DateTurn), TextHighlightColorTag) + #13#10 + ' ' + #13#10 + Entry.Text, 1, I);
-    AddEntryText(' .', taxCenter, '');
-    AddEntryText(Entry.Text, taxAuto, '');
-    AddEntryText(' .', taxCenter, '');
+    AddEntryText(' .', text_x_center, '');
+    AddEntryText(Entry.Text, text_x_fit_or_justify, '');
+    AddEntryText(' .', text_x_center, '');
     AddEntrySpacing(10);
     Inc(Displayed);
   end;
-  if Displayed > 0 then AddEntryText(FormatText1(LocalizedColorText('FormInfo.RecordCount'), DialogHighlightColorTag, '<Count>', IntToStr(Displayed)), taxCenter, SmallFontName);
-  for I := 1 to 12 do AddEntryText(' .', taxCenter, '');
+  if Displayed > 0 then AddEntryText(FormatText1(LocalizedColorText('FormInfo.RecordCount'), DialogHighlightColorTag, '<Count>', IntToStr(Displayed)), text_x_center, SmallFontName);
+  for I := 1 to 12 do AddEntryText(' .', text_x_center, '');
   FinishEntries;
 end;
 { @end $5DC030 }
@@ -667,7 +667,7 @@ end;
 { @routine $5DC618 TfJournal_ExecuteUiCode }
 procedure TfJournal.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
-  if not ExitScreenLoop and (TurnCalculationPhase in [tcpIdle, tcpGalaxyFinished, tcpPlayerStarFinished, tcpPlayerStarPrepared]) then
+  if not ExitScreenLoop and (TurnCalculationPhase in [turn_idle, turn_galaxy_finished, turn_player_star_finished, turn_player_star_prepared]) then
   begin
     Galaxy.CheckIntegrityChecksum(10001);
     ExecuteGameplayUiCode(Block, Key);

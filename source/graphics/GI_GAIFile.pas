@@ -123,8 +123,8 @@ begin
   LoaderThread := TGAIFileThreadGI.Create;
   LoaderThread.Owner := Self;
   LoaderThread.SetPriority(ThreadPriorityLowest);
-  ImageKindX := ikxCenter;
-  ImageKindY := ikyCenter;
+  ImageKindX := image_x_center;
+  ImageKindY := image_y_center;
   Stopped := False;
   PreloadCount := 10;
   TransparentColor := 0;
@@ -462,8 +462,8 @@ end;
 { @routine $4B67AC TGAIFileGI_UpdateAutoGeometry }
 procedure TGAIFileGI.UpdateAutoGeometry;
 begin
-  if AutoUpdateFlags and agfPosition = agfPosition then SetPosition(Parent.ToLocalPoint(GetContentOrigin));
-  if AutoUpdateFlags and agfSize = agfSize then SetSize(GetContentSize);
+  if AutoUpdateFlags and auto_position = auto_position then SetPosition(Parent.ToLocalPoint(GetContentOrigin));
+  if AutoUpdateFlags and auto_size = auto_size then SetSize(GetContentSize);
 end;
 { @end $4B67AC }
 
@@ -497,55 +497,55 @@ begin
   if ImageFile.OpenDepth < 1 then OpenImage;
   Width := GetContentSize.X;
   Height := GetContentSize.Y;
-  if ImageKindX = ikxLeftFill then
+  if ImageKindX = image_x_tile_left then
   begin
         StartX := HitTestBounds.Left;
         EndX := HitTestBounds.Right;
   end
-  else if ImageKindX = ikxRightFill then
+  else if ImageKindX = image_x_tile_right then
   begin
         EndX := HitTestBounds.Right;
         StartX := EndX;
         while StartX > ClipRect.Left do StartX := StartX - Width;
   end
-  else if ImageKindX = ikxLeft then
+  else if ImageKindX = image_x_left then
   begin
         StartX := HitTestBounds.Left;
         EndX := StartX + Width;
   end
-  else if ImageKindX = ikxRight then
+  else if ImageKindX = image_x_right then
   begin
         EndX := HitTestBounds.Right;
         StartX := EndX - Width;
   end
-  else if ImageKindX = ikxCenter then
+  else if ImageKindX = image_x_center then
   begin
         StartX := (HitTestBounds.Right - HitTestBounds.Left) div 2 + HitTestBounds.Left - Width div 2;
         EndX := StartX + Width;
   end
   else Exit;
-  if ImageKindY = ikyTopFill then
+  if ImageKindY = image_y_tile_top then
   begin
         StartY := HitTestBounds.Top;
         EndY := HitTestBounds.Bottom;
   end
-  else if ImageKindY = ikyBottomFill then
+  else if ImageKindY = image_y_tile_bottom then
   begin
         EndY := HitTestBounds.Bottom;
         StartY := EndY;
         while StartY > ClipRect.Top do StartY := StartY - Height;
   end
-  else if ImageKindY = ikyTop then
+  else if ImageKindY = image_y_top then
   begin
         StartY := HitTestBounds.Top;
         EndY := StartY + Height;
   end
-  else if ImageKindY = ikyBottom then
+  else if ImageKindY = image_y_bottom then
   begin
         EndY := HitTestBounds.Bottom;
         StartY := EndY - Height;
   end
-  else if ImageKindY = ikyCenter then
+  else if ImageKindY = image_y_center then
   begin
         StartY := (HitTestBounds.Bottom - HitTestBounds.Top) div 2 + HitTestBounds.Top - Height div 2;
         EndY := StartY + Height;

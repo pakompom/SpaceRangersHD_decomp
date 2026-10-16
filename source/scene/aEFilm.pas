@@ -6,38 +6,38 @@ uses Classes, EC_Buf, EC_Str, EC_Struct, SE_Process, SE_Space, Types, aEObjInfo;
 
 const
   // Native serialized tags. Kind remains Byte so unknown values stay representable.
-  efcSetObjectPosition = 0;
-  efcSetObjectOrbitCenter = 1;
-  efcSetObjectAlpha = 2;
-  efcSetObjectAngle = 3;
-  efcAdvanceObject = 4; // No known writer; playback calls TObjectSE.Advance.
-  efcAdvanceObjects = 5;
-  efcSetPlanetState = 6;
-  efcSetShipSizeAndTailMode = 7;
-  efcSetWeaponHit = 8;
-  efcSetWeaponEndpoints = 9;
-  efcSetDestructionEffect = 10;
-  efcAttachObject = 11;
-  efcDetachObject = 12;
-  efcReleaseObject = 13;
-  efcReleaseWeaponEffects = 14;
-  efcSetViewCenter = 15;
-  efcSetRadarCenter = 16;
-  efcSetCameraAnchor = 17;
-  efcOpenGate = 18;
-  efcCloseGate = 19;
-  efcSetGateState = 20;
-  efcSetHoleState = 21;
-  efcSetObjectText = 22;
-  efcSetObjectStateBuffer = 23;
-  efcBeginTrailingEffects = 24; // Playback barrier; ExecuteCommand has no action for this tag.
-  efcPlayPickupSound = 25;
-  efcSetRuinsState = 26;
-  efcSetGateSize = 27;
-  efcPlayObjectSound = 28;
-  efcSetGateEffectSize = 29;
-  efcSetEffectImagePosition = 30;
-  efcSetEffectDurationScale = 31;
+  replay_set_object_position = 0;
+  replay_set_object_orbit_center = 1;
+  replay_set_object_alpha = 2;
+  replay_set_object_angle = 3;
+  replay_advance_object = 4; // No known writer; playback calls TObjectSE.Advance.
+  replay_advance_objects = 5;
+  replay_set_planet_state = 6;
+  replay_set_ship_size_and_tail_mode = 7;
+  replay_set_weapon_hit = 8;
+  replay_set_weapon_endpoints = 9;
+  replay_set_destruction_effect = 10;
+  replay_attach_object = 11;
+  replay_detach_object = 12;
+  replay_release_object = 13;
+  replay_release_weapon_effects = 14;
+  replay_set_view_center = 15;
+  replay_set_radar_center = 16;
+  replay_set_camera_anchor = 17;
+  replay_open_gate = 18;
+  replay_close_gate = 19;
+  replay_set_gate_state = 20;
+  replay_set_hole_state = 21;
+  replay_set_object_text = 22;
+  replay_set_object_state_buffer = 23;
+  replay_trailing_effects_marker = 24; // Playback barrier; ExecuteCommand has no action for this tag.
+  replay_play_pickup_sound = 25;
+  replay_set_ruins_state = 26;
+  replay_set_gate_size = 27;
+  replay_play_object_sound = 28;
+  replay_set_gate_effect_size = 29;
+  replay_set_effect_image_position = 30;
+  replay_set_effect_duration_scale = 31;
 
   FilmNullObjectIndex = 65535; // Serialized nil; -1 separately means an unlisted object.
 
@@ -632,7 +632,7 @@ var Command: PEFilmCommand;
 begin
   if Obj = nil then raise Exception.Create('obj=nil');
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetObjectPosition;
+  Command.Kind := replay_set_object_position;
   Command.Obj := Obj;
   PEFilmVectorCommand(Command).Position := Position;
 end;
@@ -643,7 +643,7 @@ procedure TEFilm.SetObjectOrbitCenter(StepIndex: Integer; Obj: TEFilmObj; Positi
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetObjectOrbitCenter;
+  Command.Kind := replay_set_object_orbit_center;
   Command.Obj := Obj;
   PEFilmVectorCommand(Command).Position := Position;
 end;
@@ -655,7 +655,7 @@ var Command: PEFilmCommand;
 begin
   if Obj = nil then raise Exception.Create('obj=nil');
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetObjectAlpha;
+  Command.Kind := replay_set_object_alpha;
   Command.Obj := Obj;
   PEFilmByteCommand(Command).Value := Alpha;
 end;
@@ -667,7 +667,7 @@ var Command: PEFilmCommand;
 begin
   if Obj = nil then raise Exception.Create('obj=nil');
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetObjectAngle;
+  Command.Kind := replay_set_object_angle;
   Command.Obj := Obj;
   PEFilmByteCommand(Command).Value := Angle;
 end;
@@ -678,7 +678,7 @@ procedure TEFilm.AdvanceObjects(StepIndex: Integer);
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcAdvanceObjects;
+  Command.Kind := replay_advance_objects;
 end;
 { @end $783A28 }
 
@@ -688,7 +688,7 @@ var Command: PEFilmCommand;
 begin
   if Obj = nil then raise Exception.Create('obj=nil');
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetPlanetState;
+  Command.Kind := replay_set_planet_state;
   Command.Obj := Obj;
   with PEFilmObjectCommand(Command)^ do
   begin
@@ -705,7 +705,7 @@ var Command: PEFilmCommand;
 begin
   if Obj = nil then raise Exception.Create('obj=nil');
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetShipSizeAndTailMode;
+  Command.Kind := replay_set_ship_size_and_tail_mode;
   Command.Obj := Obj;
   with PEFilmSizeCommand(Command)^ do
   begin
@@ -721,7 +721,7 @@ var Command: PEFilmCommand;
 begin
   if Obj = nil then raise Exception.Create('obj=nil');
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetRuinsState;
+  Command.Kind := replay_set_ruins_state;
   Command.Obj := Obj;
   PEFilmObjectCommand(Command).Value := State;
 end;
@@ -733,7 +733,7 @@ var Command: PEFilmCommand;
 begin
   if Obj = nil then raise Exception.Create('obj=nil');
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetWeaponHit;
+  Command.Kind := replay_set_weapon_hit;
   Command.Obj := Obj;
   with PEFilmHitCommand(Command)^ do
   begin
@@ -751,7 +751,7 @@ var Command: PEFilmCommand;
 begin
   if Obj = nil then raise Exception.Create('obj=nil');
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetWeaponEndpoints;
+  Command.Kind := replay_set_weapon_endpoints;
   Command.Obj := Obj;
   with PEFilmEndpointsCommand(Command)^ do
   begin
@@ -766,7 +766,7 @@ procedure TEFilm.SetDestructionEffect(StepIndex: Integer; Obj: TEFilmObj; Value:
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetDestructionEffect;
+  Command.Kind := replay_set_destruction_effect;
   Command.Obj := Obj;
   PEFilmObjectCommand(Command).Value := Value;
 end;
@@ -777,7 +777,7 @@ procedure TEFilm.SetEffectImagePosition(StepIndex: Integer; Obj: TEFilmObj; Posi
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetEffectImagePosition;
+  Command.Kind := replay_set_effect_image_position;
   Command.Obj := Obj;
   PEFilmSizeCommand(Command).Size := Position;
 end;
@@ -788,7 +788,7 @@ procedure TEFilm.SetEffectDurationScale(StepIndex: Integer; Obj: TEFilmObj; Scal
 var Command: PEFilmCommand; ScaleBits: Integer absolute Scale;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetEffectDurationScale;
+  Command.Kind := replay_set_effect_duration_scale;
   Command.Obj := Obj;
   // Copy the Single payload without floating-point conversion or rounding.
   PEFilmObjectCommand(Command).Value := ScaleBits;
@@ -801,7 +801,7 @@ var Command: PEFilmCommand;
 begin
   if Obj = nil then raise Exception.Create('obj=nil');
   Command := AddCommand(StepIndex);
-  Command.Kind := efcAttachObject;
+  Command.Kind := replay_attach_object;
   Command.Obj := Obj;
 end;
 { @end $783C68 }
@@ -812,7 +812,7 @@ var Command: PEFilmCommand;
 begin
   if Obj = nil then raise Exception.Create('obj=nil');
   Command := AddCommand(StepIndex);
-  Command.Kind := efcDetachObject;
+  Command.Kind := replay_detach_object;
   Command.Obj := Obj;
 end;
 { @end $783CA4 }
@@ -822,7 +822,7 @@ procedure TEFilm.ReleaseObject(StepIndex: Integer; Obj: TEFilmObj);
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcReleaseObject;
+  Command.Kind := replay_release_object;
   Command.Obj := Obj;
 end;
 { @end $783CE0 }
@@ -832,7 +832,7 @@ procedure TEFilm.ReleaseWeaponEffects(StepIndex: Integer);
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcReleaseWeaponEffects;
+  Command.Kind := replay_release_weapon_effects;
 end;
 { @end $783CF4 }
 
@@ -841,7 +841,7 @@ procedure TEFilm.SetViewCenter(StepIndex: Integer; Position: TPointF);
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetViewCenter;
+  Command.Kind := replay_set_view_center;
   PEFilmVectorCommand(Command).Position := Position;
 end;
 { @end $783D00 }
@@ -851,7 +851,7 @@ procedure TEFilm.SetRadarCenter(StepIndex: Integer; Position: TPointF);
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetRadarCenter;
+  Command.Kind := replay_set_radar_center;
   PEFilmVectorCommand(Command).Position := Position;
 end;
 { @end $783D28 }
@@ -861,7 +861,7 @@ procedure TEFilm.SetCameraAnchor(StepIndex: Integer; APosition: TPointF; AForceM
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetCameraAnchor;
+  Command.Kind := replay_set_camera_anchor;
   with PEFilmVectorCommand(Command)^ do
   begin
     Position := APosition;
@@ -875,7 +875,7 @@ procedure TEFilm.OpenGate(StepIndex: Integer; Obj: TEFilmObj);
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcOpenGate;
+  Command.Kind := replay_open_gate;
   Command.Obj := Obj;
 end;
 { @end $783D84 }
@@ -885,7 +885,7 @@ procedure TEFilm.CloseGate(StepIndex: Integer; Obj: TEFilmObj);
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcCloseGate;
+  Command.Kind := replay_close_gate;
   Command.Obj := Obj;
 end;
 { @end $783D98 }
@@ -895,7 +895,7 @@ procedure TEFilm.SetGateState(StepIndex: Integer; Obj: TEFilmObj; State: Integer
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetGateState;
+  Command.Kind := replay_set_gate_state;
   Command.Obj := Obj;
   PEFilmObjectCommand(Command).Value := State;
 end;
@@ -906,7 +906,7 @@ procedure TEFilm.SetGateSize(StepIndex: Integer; Obj: TEFilmObj; Size: Integer);
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetGateSize;
+  Command.Kind := replay_set_gate_size;
   Command.Obj := Obj;
   PEFilmObjectCommand(Command).Value := Size;
 end;
@@ -917,7 +917,7 @@ procedure TEFilm.SetGateEffectSize(StepIndex: Integer; Obj: TEFilmObj; Size: Int
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetGateEffectSize;
+  Command.Kind := replay_set_gate_effect_size;
   Command.Obj := Obj;
   PEFilmObjectCommand(Command).Value := Size;
 end;
@@ -928,7 +928,7 @@ procedure TEFilm.SetHoleState(StepIndex: Integer; Obj: TEFilmObj; State: Integer
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetHoleState;
+  Command.Kind := replay_set_hole_state;
   Command.Obj := Obj;
   PEFilmObjectCommand(Command).Value := State;
 end;
@@ -939,7 +939,7 @@ procedure TEFilm.SetObjectText(StepIndex: Integer; Obj: TEFilmObj; const Text: W
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetObjectText;
+  Command.Kind := replay_set_object_text;
   Command.Obj := Obj;
   StringTable.Add(Text);
   PEFilmObjectCommand(Command).Value := StringTable.Count - 1;
@@ -951,7 +951,7 @@ procedure TEFilm.PlayObjectSound(StepIndex: Integer; Obj: TEFilmObj; const Text:
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcPlayObjectSound;
+  Command.Kind := replay_play_object_sound;
   Command.Obj := Obj;
   StringTable.Add(Text);
   PEFilmObjectCommand(Command).Value := StringTable.Count - 1;
@@ -963,7 +963,7 @@ procedure TEFilm.SetObjectStateBuffer(StepIndex: Integer; Obj: TEFilmObj; Buffer
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcSetObjectStateBuffer;
+  Command.Kind := replay_set_object_state_buffer;
   Command.Obj := Obj;
   DataBuffers.Add(Buffer);
   PEFilmObjectCommand(Command).Value := DataBuffers.Count - 1;
@@ -975,7 +975,7 @@ procedure TEFilm.BeginTrailingEffects(StepIndex: Integer);
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcBeginTrailingEffects;
+  Command.Kind := replay_trailing_effects_marker;
 end;
 { @end $783ED4 }
 
@@ -984,7 +984,7 @@ procedure TEFilm.PlayPickupSound(StepIndex: Integer; Obj: TEFilmObj);
 var Command: PEFilmCommand;
 begin
   Command := AddCommand(StepIndex);
-  Command.Kind := efcPlayPickupSound;
+  Command.Kind := replay_play_pickup_sound;
   Command.Obj := Obj;
 end;
 { @end $783EE0 }
@@ -1002,22 +1002,22 @@ begin
   ErrorStep := 0;
   try
     case Command.Kind of
-      efcSetObjectPosition:
+      replay_set_object_position:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) then
           Command.Obj.SceneObject.Pos := TEFilmVectorCommand(Command^).Position;
-      efcSetObjectOrbitCenter:
+      replay_set_object_orbit_center:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) then
           Command.Obj.SceneObject.OrbitCenter := TEFilmVectorCommand(Command^).Position;
-      efcSetObjectAlpha:
+      replay_set_object_alpha:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) then
           Command.Obj.SceneObject.Alpha := TEFilmByteCommand(Command^).Value;
-      efcSetObjectAngle:
+      replay_set_object_angle:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) then
           Command.Obj.SceneObject.Angle := TEFilmByteCommand(Command^).Value;
-      efcAdvanceObject:
+      replay_advance_object:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) then
           Command.Obj.SceneObject.Advance;
-      efcAdvanceObjects:
+      replay_advance_objects:
         begin
           Obj := Self.FirstObject;
           while Obj <> nil do
@@ -1026,7 +1026,7 @@ begin
             Obj := Obj.Next;
           end;
         end;
-      efcSetPlanetState:
+      replay_set_planet_state:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) and (Command.Obj.SceneObject is TPlanetSE) then
         begin
           (Command.Obj.SceneObject as TPlanetSE).SetRotationTimerInterval(TEFilmObjectCommand(Command^).Value and $FFFFFF);
@@ -1036,7 +1036,7 @@ begin
           (Command.Obj.SceneObject as TPlanetSE).SetMinimapOwner(TEFilmObjectCommand(Command^).Flags shr 24);
           (Command.Obj.SceneObject as TPlanetSE).Civilized := (Command.Obj.SceneObject as TPlanetSE).MinimapOwner <> 6;
         end;
-      efcSetShipSizeAndTailMode:
+      replay_set_ship_size_and_tail_mode:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) and (Command.Obj.SceneObject is TShip2SE) then
         begin
           Ship := Command.Obj.SceneObject as TShip2SE;
@@ -1045,16 +1045,16 @@ begin
             Ship.SetTailMode(TEFilmSizeCommand(Command^).TailMode)
           else Ship.SetTailMode(0);
         end;
-      efcSetRuinsState:
+      replay_set_ruins_state:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) and (Command.Obj.SceneObject is TRuinsSE) then
         begin
           Ruins := Command.Obj.SceneObject as TRuinsSE;
           Ruins.SetState(TEFilmObjectCommand(Command^).Value);
         end;
-      efcSetWeaponHit:
+      replay_set_weapon_hit:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) and (Command.Obj.SceneObject is TWeaponSE) then
           (Command.Obj.SceneObject as TWeaponSE).SetHit(TEFilmHitCommand(Command^).Color, TEFilmHitCommand(Command^).Damage, TEFilmHitCommand(Command^).Destroyed, TEFilmHitCommand(Command^).PlaySound);
-      efcSetWeaponEndpoints:
+      replay_set_weapon_endpoints:
         begin
           { Both endpoint scene-object tests are repeated in the native code. }
           Source := nil;
@@ -1070,16 +1070,16 @@ begin
           if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) and (Command.Obj.SceneObject is TWeaponSE) then
             (Command.Obj.SceneObject as TWeaponSE).SetEndpoints(Source, Target);
         end;
-      efcSetDestructionEffect:
+      replay_set_destruction_effect:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) and (Command.Obj.SceneObject is TWeaponSE) then
           (Command.Obj.SceneObject as TWeaponSE).DestructionEffect := TEFilmObjectCommand(Command^).Value;
-      efcSetEffectImagePosition:
+      replay_set_effect_image_position:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) and (Command.Obj.SceneObject is TGAIEffectSE) then
           (Command.Obj.SceneObject as TGAIEffectSE).SetImagePosition(TEFilmSizeCommand(Command^).Size);
-      efcSetEffectDurationScale:
+      replay_set_effect_duration_scale:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) and (Command.Obj.SceneObject is TGAIEffectSE) then
           (Command.Obj.SceneObject as TGAIEffectSE).SetDurationScale(TEFilmVectorCommand(Command^).Position.X);
-      efcAttachObject:
+      replay_attach_object:
         begin
           ErrorStep := 1;
           if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) then
@@ -1099,16 +1099,16 @@ begin
             Command.Obj.SceneObject.AttachToSpace(SpaceProcess.Space);
           end;
         end;
-      efcDetachObject:
+      replay_detach_object:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) then
           Command.Obj.SceneObject.DetachFromSpace;
-      efcReleaseObject:
+      replay_release_object:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) then
         begin
           Command.Obj.SceneObject.DetachFromSpace;
           ReleaseSpaceObject(Command.Obj.SceneObject);
         end;
-      efcReleaseWeaponEffects:
+      replay_release_weapon_effects:
         begin
           Obj := Self.FirstObject;
           while Obj <> nil do
@@ -1121,50 +1121,50 @@ begin
             Obj := Obj.Next;
           end;
         end;
-      efcSetViewCenter:
+      replay_set_view_center:
         if ReplayMode then FilmScreen.FollowViewOffset(TruncatePointF(TEFilmVectorCommand(Command^).Position))
         else StarMapScreen.SetMapCenter(TruncatePointF(TEFilmVectorCommand(Command^).Position));
-      efcSetRadarCenter:
+      replay_set_radar_center:
         begin
           if ReplayMode then FilmScreen.CameraTarget := TEFilmVectorCommand(Command^).Position;
           SpaceProcess.RadarCenter := TEFilmVectorCommand(Command^).Position;
         end;
-      efcSetCameraAnchor:
+      replay_set_camera_anchor:
         begin
           CameraAnchor := TEFilmVectorCommand(Command^).Position;
           ForceCameraMovement := TEFilmVectorCommand(Command^).ForceMovement;
         end;
-      efcOpenGate:
+      replay_open_gate:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) and (Command.Obj.SceneObject is TGateSE) then
           (Command.Obj.SceneObject as TGateSE).Open;
-      efcCloseGate:
+      replay_close_gate:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) and (Command.Obj.SceneObject is TGateSE) then
           (Command.Obj.SceneObject as TGateSE).Close;
-      efcSetGateState:
+      replay_set_gate_state:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) and (Command.Obj.SceneObject is TGateSE) then
           (Command.Obj.SceneObject as TGateSE).SetState(TGateState(TEFilmObjectCommand(Command^).Value));
-      efcSetGateSize:
+      replay_set_gate_size:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) and (Command.Obj.SceneObject is TGateSE) then
           (Command.Obj.SceneObject as TGateSE).SetSize(Classes.Point(TEFilmObjectCommand(Command^).Value, TEFilmObjectCommand(Command^).Value));
-      efcSetGateEffectSize:
+      replay_set_gate_effect_size:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) and (Command.Obj.SceneObject is TGateEffectSE) then
           (Command.Obj.SceneObject as TGateEffectSE).SetSize(Classes.Point(TEFilmObjectCommand(Command^).Value, TEFilmObjectCommand(Command^).Value));
-      efcSetHoleState:
+      replay_set_hole_state:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) and (Command.Obj.SceneObject is THoleSE) then
           (Command.Obj.SceneObject as THoleSE).SetState(TEFilmObjectCommand(Command^).Value);
-      efcSetObjectText:
+      replay_set_object_text:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) then
           Command.Obj.SceneObject.Text := StringTable.Strings[TEFilmObjectCommand(Command^).Value];
-      efcPlayObjectSound:
+      replay_play_object_sound:
         if FilmSoundEffectsEnabled and SoundInSpaceEnabled then
           if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) then
             if (Command.Obj.SceneObject.Space <> nil) and
               Command.Obj.SceneObject.Space.ContainsMapPoint(Command.Obj.SceneObject.Position) then
               SoundManager.PlaySound(StringTable.Strings[TEFilmObjectCommand(Command^).Value]);
-      efcSetObjectStateBuffer:
+      replay_set_object_state_buffer:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) then
           Command.Obj.SceneObject.LoadStateBuffer(TBufEC(DataBuffers[TEFilmObjectCommand(Command^).Value]));
-      efcPlayPickupSound:
+      replay_play_pickup_sound:
         if (Command.Obj <> nil) and (Command.Obj.SceneObject <> nil) and
           SoundInSpaceEnabled and SpaceProcess.Space.ContainsMapPoint(Command.Obj.SceneObject.Position) then
           SoundManager.PlaySound('Sound.Take');
@@ -1272,55 +1272,55 @@ begin
   begin
     Buffer.AddAnsiChar(AnsiChar(Command.Kind));
     Buffer.AddWideChar(WideChar(Command.StepIndex));
-    if Command.Kind = efcSetObjectPosition then
+    if Command.Kind = replay_set_object_position then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
       Buffer.AddSingle(PEFilmVectorCommand(Command).Position.X);
       Buffer.AddSingle(PEFilmVectorCommand(Command).Position.Y);
     end
-    else if Command.Kind = efcSetObjectOrbitCenter then
+    else if Command.Kind = replay_set_object_orbit_center then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
       Buffer.AddSingle(PEFilmVectorCommand(Command).Position.X);
       Buffer.AddSingle(PEFilmVectorCommand(Command).Position.Y);
     end
-    else if Command.Kind = efcSetObjectAlpha then
+    else if Command.Kind = replay_set_object_alpha then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
       Buffer.AddAnsiChar(AnsiChar(PEFilmByteCommand(Command).Value));
     end
-    else if Command.Kind = efcSetObjectAngle then
+    else if Command.Kind = replay_set_object_angle then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
       Buffer.AddAnsiChar(AnsiChar(PEFilmByteCommand(Command).Value));
     end
-    else if Command.Kind = efcAdvanceObject then
+    else if Command.Kind = replay_advance_object then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
     end
-    else if Command.Kind = efcAdvanceObjects then
+    else if Command.Kind = replay_advance_objects then
     begin
     end
-    else if Command.Kind = efcSetPlanetState then
+    else if Command.Kind = replay_set_planet_state then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
       Buffer.AddIntegerValue(PEFilmObjectCommand(Command).Value);
       Buffer.AddIntegerValue(PEFilmObjectCommand(Command).ExtraValue);
       Buffer.AddIntegerValue(PEFilmObjectCommand(Command).Flags);
     end
-    else if Command.Kind = efcSetShipSizeAndTailMode then
+    else if Command.Kind = replay_set_ship_size_and_tail_mode then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
       Buffer.AddWideChar(WideChar(PEFilmSizeCommand(Command).Size.X));
       Buffer.AddWideChar(WideChar(PEFilmSizeCommand(Command).Size.Y));
       Buffer.AddAnsiChar(AnsiChar(PEFilmSizeCommand(Command).TailMode));
     end
-    else if Command.Kind = efcSetRuinsState then
+    else if Command.Kind = replay_set_ruins_state then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
       Buffer.AddAnsiChar(AnsiChar(PEFilmObjectCommand(Command).Value));
     end
-    else if Command.Kind = efcSetWeaponHit then
+    else if Command.Kind = replay_set_weapon_hit then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
       Buffer.AddAnsiChar(AnsiChar(CurrentPixelFormat.UnpackRed(PEFilmHitCommand(Command).Color)));
@@ -1330,7 +1330,7 @@ begin
       Buffer.AddBoolean(PEFilmHitCommand(Command).Destroyed);
       Buffer.AddBoolean(PEFilmHitCommand(Command).PlaySound);
     end
-    else if Command.Kind = efcSetWeaponEndpoints then
+    else if Command.Kind = replay_set_weapon_endpoints then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
       ObjectIndex := FindObjectIndex(PEFilmEndpointsCommand(Command).Source);
@@ -1348,100 +1348,100 @@ begin
       end;
       Buffer.AddWideChar(WideChar(ObjectIndex));
     end
-    else if Command.Kind = efcSetDestructionEffect then
+    else if Command.Kind = replay_set_destruction_effect then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
       Buffer.AddAnsiChar(AnsiChar(PEFilmObjectCommand(Command).Value));
     end
-    else if Command.Kind = efcSetEffectImagePosition then
+    else if Command.Kind = replay_set_effect_image_position then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
       Buffer.AddIntegerValue(PEFilmSizeCommand(Command).Size.X);
       Buffer.AddIntegerValue(PEFilmSizeCommand(Command).Size.Y);
     end
-    else if Command.Kind = efcSetEffectDurationScale then
+    else if Command.Kind = replay_set_effect_duration_scale then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
       Buffer.AddSingle(PEFilmVectorCommand(Command).Position.X);
     end
-    else if Command.Kind = efcAttachObject then
+    else if Command.Kind = replay_attach_object then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
     end
-    else if Command.Kind = efcDetachObject then
+    else if Command.Kind = replay_detach_object then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
     end
-    else if Command.Kind = efcReleaseObject then
+    else if Command.Kind = replay_release_object then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
     end
-    else if Command.Kind = efcReleaseWeaponEffects then
+    else if Command.Kind = replay_release_weapon_effects then
     begin
     end
-    else if Command.Kind = efcSetViewCenter then
-    begin
-      Buffer.AddSingle(PEFilmVectorCommand(Command).Position.X);
-      Buffer.AddSingle(PEFilmVectorCommand(Command).Position.Y);
-    end
-    else if Command.Kind = efcSetRadarCenter then
+    else if Command.Kind = replay_set_view_center then
     begin
       Buffer.AddSingle(PEFilmVectorCommand(Command).Position.X);
       Buffer.AddSingle(PEFilmVectorCommand(Command).Position.Y);
     end
-    else if Command.Kind = efcSetCameraAnchor then
+    else if Command.Kind = replay_set_radar_center then
+    begin
+      Buffer.AddSingle(PEFilmVectorCommand(Command).Position.X);
+      Buffer.AddSingle(PEFilmVectorCommand(Command).Position.Y);
+    end
+    else if Command.Kind = replay_set_camera_anchor then
     begin
       Buffer.AddSingle(PEFilmVectorCommand(Command).Position.X);
       Buffer.AddSingle(PEFilmVectorCommand(Command).Position.Y);
       Buffer.AddBoolean(PEFilmVectorCommand(Command).ForceMovement);
     end
-    else if Command.Kind = efcOpenGate then
+    else if Command.Kind = replay_open_gate then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
     end
-    else if Command.Kind = efcCloseGate then
+    else if Command.Kind = replay_close_gate then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
     end
-    else if Command.Kind = efcSetGateState then
-    begin
-      Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
-      Buffer.AddIntegerValue(PEFilmObjectCommand(Command).Value);
-    end
-    else if Command.Kind = efcSetGateSize then
+    else if Command.Kind = replay_set_gate_state then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
       Buffer.AddIntegerValue(PEFilmObjectCommand(Command).Value);
     end
-    else if Command.Kind = efcSetGateEffectSize then
+    else if Command.Kind = replay_set_gate_size then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
       Buffer.AddIntegerValue(PEFilmObjectCommand(Command).Value);
     end
-    else if Command.Kind = efcSetHoleState then
+    else if Command.Kind = replay_set_gate_effect_size then
+    begin
+      Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
+      Buffer.AddIntegerValue(PEFilmObjectCommand(Command).Value);
+    end
+    else if Command.Kind = replay_set_hole_state then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
       Buffer.AddBoolean(Boolean(PEFilmObjectCommand(Command).Value));
     end
-    else if Command.Kind = efcSetObjectText then
+    else if Command.Kind = replay_set_object_text then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
       Buffer.AddIntegerValue(PEFilmObjectCommand(Command).Value);
     end
-    else if Command.Kind = efcPlayObjectSound then
+    else if Command.Kind = replay_play_object_sound then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
       Buffer.AddIntegerValue(PEFilmObjectCommand(Command).Value);
     end
-    else if Command.Kind = efcSetObjectStateBuffer then
+    else if Command.Kind = replay_set_object_state_buffer then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
       Buffer.AddIntegerValue(PEFilmObjectCommand(Command).Value);
     end
-    else if Command.Kind = efcBeginTrailingEffects then
+    else if Command.Kind = replay_trailing_effects_marker then
     begin
     end
-    else if Command.Kind = efcPlayPickupSound then
+    else if Command.Kind = replay_play_pickup_sound then
     begin
       Buffer.AddWideChar(WideChar(ObjToNom(Command.Obj)));
     end;
@@ -1516,55 +1516,55 @@ begin
     AppendCommand(Command);
     Command.Kind := Buffer.GetByte;
     Command.StepIndex := Buffer.GetWord;
-    if Command.Kind = efcSetObjectPosition then
+    if Command.Kind = replay_set_object_position then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
       PEFilmVectorCommand(Command).Position.X := Buffer.GetSingle;
       PEFilmVectorCommand(Command).Position.Y := Buffer.GetSingle;
     end
-    else if Command.Kind = efcSetObjectOrbitCenter then
+    else if Command.Kind = replay_set_object_orbit_center then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
       PEFilmVectorCommand(Command).Position.X := Buffer.GetSingle;
       PEFilmVectorCommand(Command).Position.Y := Buffer.GetSingle;
     end
-    else if Command.Kind = efcSetObjectAlpha then
+    else if Command.Kind = replay_set_object_alpha then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
       PEFilmByteCommand(Command).Value := Buffer.GetByte;
     end
-    else if Command.Kind = efcSetObjectAngle then
+    else if Command.Kind = replay_set_object_angle then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
       PEFilmByteCommand(Command).Value := Buffer.GetByte;
     end
-    else if Command.Kind = efcAdvanceObject then
+    else if Command.Kind = replay_advance_object then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
     end
-    else if Command.Kind = efcAdvanceObjects then
+    else if Command.Kind = replay_advance_objects then
     begin
     end
-    else if Command.Kind = efcSetPlanetState then
+    else if Command.Kind = replay_set_planet_state then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
       PEFilmObjectCommand(Command).Value := Buffer.GetInt32;
       PEFilmObjectCommand(Command).ExtraValue := Buffer.GetInt32;
       PEFilmObjectCommand(Command).Flags := Buffer.GetInt32;
     end
-    else if Command.Kind = efcSetShipSizeAndTailMode then
+    else if Command.Kind = replay_set_ship_size_and_tail_mode then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
       PEFilmSizeCommand(Command).Size.X := Buffer.GetWord;
       PEFilmSizeCommand(Command).Size.Y := Buffer.GetWord;
       PEFilmSizeCommand(Command).TailMode := Buffer.GetByte;
     end
-    else if Command.Kind = efcSetRuinsState then
+    else if Command.Kind = replay_set_ruins_state then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
       PEFilmObjectCommand(Command).Value := Buffer.GetByte;
     end
-    else if Command.Kind = efcSetWeaponHit then
+    else if Command.Kind = replay_set_weapon_hit then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
       Red := Buffer.GetByte;
@@ -1575,106 +1575,106 @@ begin
       PEFilmHitCommand(Command).Destroyed := Buffer.GetBoolean;
       PEFilmHitCommand(Command).PlaySound := Buffer.GetBoolean;
     end
-    else if Command.Kind = efcSetWeaponEndpoints then
+    else if Command.Kind = replay_set_weapon_endpoints then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
       PEFilmEndpointsCommand(Command).Source := NomToObj(Buffer.GetWord);
       PEFilmEndpointsCommand(Command).Target := NomToObj(Buffer.GetWord);
     end
-    else if Command.Kind = efcSetDestructionEffect then
+    else if Command.Kind = replay_set_destruction_effect then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
       PEFilmObjectCommand(Command).Value := Buffer.GetByte;
     end
-    else if Command.Kind = efcSetEffectImagePosition then
+    else if Command.Kind = replay_set_effect_image_position then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
       PEFilmSizeCommand(Command).Size.X := Buffer.GetInt32;
       PEFilmSizeCommand(Command).Size.Y := Buffer.GetInt32;
     end
-    else if Command.Kind = efcSetEffectDurationScale then
+    else if Command.Kind = replay_set_effect_duration_scale then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
       PEFilmVectorCommand(Command).Position.X := Buffer.GetSingle;
     end
-    else if Command.Kind = efcAttachObject then
+    else if Command.Kind = replay_attach_object then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
     end
-    else if Command.Kind = efcDetachObject then
+    else if Command.Kind = replay_detach_object then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
     end
-    else if Command.Kind = efcReleaseObject then
+    else if Command.Kind = replay_release_object then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
     end
-    else if Command.Kind = efcReleaseWeaponEffects then
+    else if Command.Kind = replay_release_weapon_effects then
     begin
     end
-    else if Command.Kind = efcSetViewCenter then
-    begin
-      PEFilmVectorCommand(Command).Position.X := Buffer.GetSingle;
-      PEFilmVectorCommand(Command).Position.Y := Buffer.GetSingle;
-    end
-    else if Command.Kind = efcSetRadarCenter then
+    else if Command.Kind = replay_set_view_center then
     begin
       PEFilmVectorCommand(Command).Position.X := Buffer.GetSingle;
       PEFilmVectorCommand(Command).Position.Y := Buffer.GetSingle;
     end
-    else if Command.Kind = efcSetCameraAnchor then
+    else if Command.Kind = replay_set_radar_center then
+    begin
+      PEFilmVectorCommand(Command).Position.X := Buffer.GetSingle;
+      PEFilmVectorCommand(Command).Position.Y := Buffer.GetSingle;
+    end
+    else if Command.Kind = replay_set_camera_anchor then
     begin
       PEFilmVectorCommand(Command).Position.X := Buffer.GetSingle;
       PEFilmVectorCommand(Command).Position.Y := Buffer.GetSingle;
       PEFilmVectorCommand(Command).ForceMovement := Buffer.GetBoolean;
     end
-    else if Command.Kind = efcOpenGate then
+    else if Command.Kind = replay_open_gate then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
     end
-    else if Command.Kind = efcCloseGate then
+    else if Command.Kind = replay_close_gate then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
     end
-    else if Command.Kind = efcSetGateState then
-    begin
-      Command.Obj := NomToObj(Buffer.GetWord);
-      PEFilmObjectCommand(Command).Value := Buffer.GetInt32;
-    end
-    else if Command.Kind = efcSetGateSize then
+    else if Command.Kind = replay_set_gate_state then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
       PEFilmObjectCommand(Command).Value := Buffer.GetInt32;
     end
-    else if Command.Kind = efcSetGateEffectSize then
+    else if Command.Kind = replay_set_gate_size then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
       PEFilmObjectCommand(Command).Value := Buffer.GetInt32;
     end
-    else if Command.Kind = efcSetHoleState then
+    else if Command.Kind = replay_set_gate_effect_size then
+    begin
+      Command.Obj := NomToObj(Buffer.GetWord);
+      PEFilmObjectCommand(Command).Value := Buffer.GetInt32;
+    end
+    else if Command.Kind = replay_set_hole_state then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
       PEFilmObjectCommand(Command).Value := Ord(Buffer.GetBoolean);
     end
-    else if Command.Kind = efcSetObjectText then
+    else if Command.Kind = replay_set_object_text then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
       PEFilmObjectCommand(Command).Value := Buffer.GetInt32;
     end
-    else if Command.Kind = efcPlayObjectSound then
+    else if Command.Kind = replay_play_object_sound then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
       PEFilmObjectCommand(Command).Value := Buffer.GetInt32;
     end
-    else if Command.Kind = efcSetObjectStateBuffer then
+    else if Command.Kind = replay_set_object_state_buffer then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
       PEFilmObjectCommand(Command).Value := Buffer.GetInt32;
     end
-    else if Command.Kind = efcBeginTrailingEffects then
+    else if Command.Kind = replay_trailing_effects_marker then
     begin
     end
-    else if Command.Kind = efcPlayPickupSound then
+    else if Command.Kind = replay_play_pickup_sound then
     begin
       Command.Obj := NomToObj(Buffer.GetWord);
     end;

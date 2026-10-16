@@ -89,8 +89,8 @@ begin
   else if Galaxy.SpecialSimulationMode = 0 then
   begin
     SaveManagerReturnScreenId := GameMenuReturnScreenId;
-    SaveManagerMode := smmSave;
-    RequestedScreenId := screenSaveManager;
+    SaveManagerMode := save_dialog_save;
+    RequestedScreenId := screen_save_manager;
     RequestClose(1);
   end;
 end;
@@ -100,8 +100,8 @@ end;
 procedure TfGameMenu.LoadClicked(Sender: TObjectGI);
 begin
   SaveManagerReturnScreenId := GameMenuReturnScreenId;
-  SaveManagerMode := smmLoad;
-  RequestedScreenId := screenSaveManager;
+  SaveManagerMode := save_dialog_load;
+  RequestedScreenId := screen_save_manager;
   RequestClose(1);
 end;
 { @end $533074 }
@@ -110,7 +110,7 @@ end;
 procedure TfGameMenu.SettingsClicked(Sender: TObjectGI);
 begin
   SettingsReturnScreenId := GameMenuReturnScreenId;
-  RequestedScreenId := screenSettings;
+  RequestedScreenId := screen_settings;
   RequestClose(1);
 end;
 { @end $5330A4 }
@@ -136,8 +136,8 @@ begin
   EvictStarAndBackgroundCaches;
   ReleaseAllTextureSurfaces;
   ScreenLoadMode := 4;
-  PostLoadScreenId := screenMainMenu;
-  RequestedScreenId := screenLoad;
+  PostLoadScreenId := screen_main_menu;
+  RequestedScreenId := screen_asset_loading;
   RequestClose(1);
 end;
 { @end $533190 }
@@ -146,7 +146,7 @@ end;
 procedure TfGameMenu.AchievementsClicked(Sender: TObjectGI);
 begin
   AchievementsReturnScreenId := GameMenuReturnScreenId;
-  RequestedScreenId := screenAchievements;
+  RequestedScreenId := screen_achievements;
   RequestClose(1);
 end;
 { @end $5332B0 }
@@ -202,7 +202,7 @@ begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
     else
     begin
-      if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
+      if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
       begin
         if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
         else MusicManager.PlayCategory('Nation.PiratePlanetMain');
@@ -215,7 +215,7 @@ begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
     else
     begin
-      if GetPlayer.DockedTo.TypeId in [rstPirateBase,rstDominion] then
+      if GetPlayer.DockedTo.TypeId in [station_pirate_base,station_dominion] then
         MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
       else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
     end;

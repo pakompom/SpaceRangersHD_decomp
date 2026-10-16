@@ -5,12 +5,12 @@ interface
 uses GI_Tail, ab_Global, ab_Object, ab_Ship, ab_Zone, ab_Item, aItem;
 
 const
-  amUnselected = -1;
-  amApproach = 0;
-  amCloseEvasion = 1;
-  amFlank = 2;
-  amReverseTurn = 3;
-  amFollowReverse = 4;
+  maneuver_unselected = -1;
+  maneuver_approach = 0;
+  maneuver_evade_close = 1;
+  maneuver_flank = 2;
+  maneuver_reverse_turn = 3;
+  maneuver_match_reverse = 4;
 
 type
   TabShipAI = class(TabShip) // @size $388
@@ -83,7 +83,7 @@ uses Math, aMyFunction, ab_StopLine, GlobalsV, Globals, aGalaxy, aGalaxyEvent, a
 constructor TabShipAI.Create;
 begin
   inherited Create;
-  CombatManeuver := amUnselected;
+  CombatManeuver := maneuver_unselected;
   AIEnabled := True;
 end;
 { @end $657B90 }
@@ -125,7 +125,7 @@ begin
     begin
       UsedSubportal := False;
       RepeatPenalty := 0;
-      if (GetPlayer.Order = soJumpHole) and (GetPlayer.OrderTarget <> nil) and (GetPlayer.OrderTarget is THole) then
+      if (GetPlayer.Order = order_black_hole) and (GetPlayer.OrderTarget <> nil) and (GetPlayer.OrderTarget is THole) then
       begin
         Hole := GetPlayer.OrderTarget as THole;
         for Index := Galaxy.GalaxyEvents.Count - 1 downto 0 do
@@ -164,14 +164,14 @@ begin
         Galaxy.CustomRules.ChaoticRandom := False;
         SavedNextItemId := Galaxy.NextItemId;
       end;
-      if (ArcadeKellerDefeats = 0) and not KellerPresent and (GetPlayer.Order = soJumpHole) and
+      if (ArcadeKellerDefeats = 0) and not KellerPresent and (GetPlayer.Order = order_black_hole) and
         ((LivingEnemies = 0) or Preview) and
         ((LivingEnemies + GetPlayer.BlackHoleKillCount < 20) or (RandomRange(0, 100) > RepeatPenalty + 30)) then
       begin
         while Reward = nil do
         begin
           Inc(Index);
-          Reward := CreateRandomLootItem(ilpArcadeBattle, oiUninhabited, AdvanceRandomSeed(RandomState));
+          Reward := CreateRandomLootItem(loot_arcade_battle, owner_uninhabited, AdvanceRandomSeed(RandomState));
           if GetPlayer.HasMatchingArtefactOrCustomItem(Reward) and (Index < 5) then
           begin
             Reward.Free;
@@ -252,7 +252,7 @@ begin
     for Index := 0 to PlayerArcadeShip.Enemies.Count - 1 do
       if (TObject(PlayerArcadeShip.Enemies[Index]) is TabShip) and (TabShip(PlayerArcadeShip.Enemies[Index]).Health > 0) then Inc(LivingEnemies);
     RandomState := InitialRandomSeed;
-    if GetPlayer.Order = soJumpHole then
+    if GetPlayer.Order = order_black_hole then
     begin
       Inc(GetPlayer.BlackHoleKillCount);
       TryAddAchievementProgress('HOLEMAN', 1);
@@ -261,7 +261,7 @@ begin
     begin
       Inc(GetPlayer.HyperspaceKillCount);
       TryAddAchievementProgress('HOLEMAN', 1);
-      if GetPlayer.InHyperspace and (GetPlayer.OwnerId <> oiPirate) then GetPlayer.AddRankPoints(2);
+      if GetPlayer.InHyperspace and (GetPlayer.OwnerId <> owner_pirate) then GetPlayer.AddRankPoints(2);
     end;
     if (Galaxy <> nil) and (ScriptLabel <> '') then
     begin
@@ -273,13 +273,13 @@ begin
     begin
       if KellerArcadeShip = Self then
       begin
-        GetPlayer.ScriptItemsAct(satOnABItemDrop, Reward, nil, 0);
+        GetPlayer.ScriptItemsAct(event_arcade_item_drop, Reward, nil, 0);
         ArcadeKellerReward := Reward;
       end
       else
       begin
         ClearPlayerHoldEntries;
-        GetPlayer.ScriptItemsAct(satOnABItemDrop, Reward, nil, 0);
+        GetPlayer.ScriptItemsAct(event_arcade_item_drop, Reward, nil, 0);
         if Reward is TArtefact then GetPlayer.Artefacts.Insert(0, Reward)
         else GetPlayer.Inventory.Add(Reward);
       end;
@@ -288,7 +288,7 @@ begin
     else if RewardObject <> nil then
     begin
       ClearPlayerHoldEntries;
-      GetPlayer.ScriptItemsAct(satOnABItemDrop, RewardObject, nil, 0);
+      GetPlayer.ScriptItemsAct(event_arcade_item_drop, RewardObject, nil, 0);
       if RewardObject is TArtefact then GetPlayer.Artefacts.Insert(0, RewardObject)
       else GetPlayer.Inventory.Add(RewardObject);
       AddArcadeRewardToList(RewardObject);
@@ -302,7 +302,7 @@ begin
       Attempts := 0;
       RewardScale := Galaxy.GetArcadeDropValueModifier * RemapClamped(LivingEnemies, 0, 5, 1.56, 0.26) *
         GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].ArcadeRewardScale;
-      if GetPlayer.Order = soJumpHole then
+      if GetPlayer.Order = order_black_hole then
       begin
         if LivingEnemies = 0 then RewardScale := RewardScale * 3
         else RewardScale := 1.2 * RewardScale;
@@ -318,25 +318,25 @@ begin
         if RandomRange(1, 110) > 70 then
         begin
           WeaponTech := RandomRange(Max(1, Galaxy.TechLevel - 1), Min(8, Galaxy.TechLevel + 1));
-          Info := Galaxy.SelectWeaponInfo(RandomRange(1, 100000), [waFree],
+          Info := Galaxy.SelectWeaponInfo(RandomRange(1, 100000), [availability_unrestricted],
             Min(WeaponTech + 1, 8), Max(1, WeaponTech - 1));
           Weight := RandomRange(Round(Info.AverageSize * MinSize), Round(Info.AverageSize * MaxSize));
           Level := RandomRange(MinLevel, MaxLevel);
-          Item := CreateGeneratedWeapon(Info, Weight, Level, oiUninhabited);
+          Item := CreateGeneratedWeapon(Info, Weight, Level, owner_uninhabited);
         end
         else
         begin
-          ItemType := TItemType(PickRandomItemType([t_FuelTanks..t_DefGenerator]));
+          ItemType := TItemType(PickRandomItemType([item_fuel_tanks..item_defense_generator]));
           Weight := RandomRange(Round(GetAverageItemSize(ItemType) * MinSize), Round(GetAverageItemSize(ItemType) * MaxSize));
           Level := RandomRange(MinLevel, MaxLevel);
-          Item := CreateGeneratedEquipment(ItemType, Weight, Level, oiUninhabited);
+          Item := CreateGeneratedEquipment(ItemType, Weight, Level, owner_uninhabited);
         end;
         Item.ConditionPercent := SeededRandomFloatRange(Item.Id * (Attempts + 11) * 123, 10, 100);
         Inc(Attempts);
         if Attempts > 10000 then
         begin
           ClearPlayerHoldEntries;
-          GetPlayer.ScriptItemsAct(satOnABItemDrop, Item, nil, 0);
+          GetPlayer.ScriptItemsAct(event_arcade_item_drop, Item, nil, 0);
           GetPlayer.Inventory.Insert(1, Item);
           GetPlayer.RefreshDerivedStats(True);
           AddArcadeRewardToList(Item);
@@ -353,7 +353,7 @@ begin
           ((Item.GetConditionAdjustedCost > GetPlayer.Wealth * 0.008 * RewardScale) or (Attempts > 500))) <> False then
         begin
           ClearPlayerHoldEntries;
-          GetPlayer.ScriptItemsAct(satOnABItemDrop, Item, nil, 0);
+          GetPlayer.ScriptItemsAct(event_arcade_item_drop, Item, nil, 0);
           GetPlayer.Inventory.Insert(1, Item);
           GetPlayer.RefreshDerivedStats(True);
           AddArcadeRewardToList(Item);
@@ -414,7 +414,7 @@ begin
     end;
   if (TargetShip <> nil) and (Enemies.IndexOf(TargetShip) < 0) then TargetShip := nil;
   if (TargetShip <> nil) and (TargetShip.Health <= 0) then TargetShip := nil;
-  if (TargetShip <> nil) and (TargetShip.BonusTicks[abkInvisibility] > 0) and (TargetShip.RevealTicks <= 0) then TargetShip := nil;
+  if (TargetShip <> nil) and (TargetShip.BonusTicks[arcade_effect_invisibility] > 0) and (TargetShip.RevealTicks <= 0) then TargetShip := nil;
   if TargetShip = nil then TargetShip := FindNearestEnemy(Self);
   if TargetShip <> nil then
   begin
@@ -500,12 +500,12 @@ begin
   FollowDirectDestination;
   if TargetPathClear then
   begin
-    if ArcadeTickCount > ManeuverUntilTick then CombatManeuver := amUnselected;
-    if (CombatManeuver = amApproach) and (ScoreApproach < 0) then CombatManeuver := amUnselected;
-    if (CombatManeuver = amCloseEvasion) and (ScoreCloseEvasion < 0) then CombatManeuver := amUnselected;
-    if (CombatManeuver = amFlank) and (ScoreFlanking < 0) then CombatManeuver := amUnselected;
-    if (CombatManeuver = amReverseTurn) and (ScoreReverseTurn < 0) then CombatManeuver := amUnselected;
-    if (CombatManeuver = amFollowReverse) and (ScoreReverseFollowing < 0) then CombatManeuver := amUnselected;
+    if ArcadeTickCount > ManeuverUntilTick then CombatManeuver := maneuver_unselected;
+    if (CombatManeuver = maneuver_approach) and (ScoreApproach < 0) then CombatManeuver := maneuver_unselected;
+    if (CombatManeuver = maneuver_evade_close) and (ScoreCloseEvasion < 0) then CombatManeuver := maneuver_unselected;
+    if (CombatManeuver = maneuver_flank) and (ScoreFlanking < 0) then CombatManeuver := maneuver_unselected;
+    if (CombatManeuver = maneuver_reverse_turn) and (ScoreReverseTurn < 0) then CombatManeuver := maneuver_unselected;
+    if (CombatManeuver = maneuver_match_reverse) and (ScoreReverseFollowing < 0) then CombatManeuver := maneuver_unselected;
     if CombatManeuver < 0 then
     begin
       BestScore := 0;
@@ -513,52 +513,52 @@ begin
       if Score > BestScore then
       begin
         BestScore := Score;
-        CombatManeuver := amApproach;
+        CombatManeuver := maneuver_approach;
         ManeuverUntilTick := ArcadeTickCount + 100;
       end;
       Score := ScoreCloseEvasion;
       if Score > BestScore then
       begin
         BestScore := Score;
-        CombatManeuver := amCloseEvasion;
+        CombatManeuver := maneuver_evade_close;
         ManeuverUntilTick := ArcadeTickCount + 100;
       end;
       Score := ScoreFlanking;
       if Score > BestScore then
       begin
         BestScore := Score;
-        CombatManeuver := amFlank;
+        CombatManeuver := maneuver_flank;
         ManeuverUntilTick := ArcadeTickCount + 100;
       end;
       Score := ScoreReverseTurn;
       if Score > BestScore then
       begin
         BestScore := Score;
-        CombatManeuver := amReverseTurn;
+        CombatManeuver := maneuver_reverse_turn;
         ManeuverUntilTick := ArcadeTickCount + 100;
       end;
       Score := ScoreReverseFollowing;
       if Score > BestScore then
       begin
-        CombatManeuver := amFollowReverse;
+        CombatManeuver := maneuver_match_reverse;
         ManeuverUntilTick := ArcadeTickCount + 500;
       end;
     end;
-    if CombatManeuver = amApproach then ApproachTarget
-    else if CombatManeuver = amCloseEvasion then EvadeCloseTarget
-    else if CombatManeuver = amFlank then FlankTarget
-    else if CombatManeuver = amReverseTurn then ReverseTowardTarget
-    else if CombatManeuver = amFollowReverse then MatchReversingTarget;
+    if CombatManeuver = maneuver_approach then ApproachTarget
+    else if CombatManeuver = maneuver_evade_close then EvadeCloseTarget
+    else if CombatManeuver = maneuver_flank then FlankTarget
+    else if CombatManeuver = maneuver_reverse_turn then ReverseTowardTarget
+    else if CombatManeuver = maneuver_match_reverse then MatchReversingTarget;
   end
   else
   begin
-    CombatManeuver := amUnselected;
+    CombatManeuver := maneuver_unselected;
     ManeuverUntilTick := 0;
     FollowRoute;
   end;
   if (AvoidanceZone = nil) and (ArcadeTickCount - LastDamageTick < 100) and
     ((RandomIntRange(0, 120) = 0) or
-     ((BonusTicks[abkWeaponLock] > 0) and (RandomIntRange(0, 20) = 0)) or
+     ((BonusTicks[arcade_effect_weapons_disabled] > 0) and (RandomIntRange(0, 20) = 0)) or
      ((TargetShip = nil) and (RandomIntRange(0, 20) = 0)) or
      ((PlayerArcadeShip = Self) and (Health < MaxHealth * 0.3) and (RandomIntRange(0, 20) = 0))) then
     AvoidanceZone := ab_Zone_RandomRoute(CurrentZone, 2);
@@ -577,7 +577,7 @@ begin
   end;
   if (TargetBonus = nil) and not RetreatRequested and
     (((TargetShip = nil) and (RandomIntRange(0, 20) = 0)) or
-     ((BonusTicks[abkWeaponLock] > 0) and (RandomIntRange(0, 20) = 0)) or
+     ((BonusTicks[arcade_effect_weapons_disabled] > 0) and (RandomIntRange(0, 20) = 0)) or
      ((PlayerArcadeShip <> Self) and (RandomIntRange(0, 500) = 0)) or
      ((Health < MaxHealth * 0.4) and (RandomIntRange(0, 80) = 0))) then
   begin
@@ -760,7 +760,7 @@ end;
 { @routine $659DA8 TabShipAI_ApproachTarget }
 procedure TabShipAI.ApproachTarget;
 begin
-  CombatManeuver := amApproach;
+  CombatManeuver := maneuver_approach;
   SetTurnInput(TargetBearing.BearingDeltaDegrees);
   if MinimumWeaponRange * 0.8 < TargetBearing.Distance then
   begin
@@ -783,7 +783,7 @@ end;
 { @routine $659E7C TabShipAI_EvadeCloseTarget }
 procedure TabShipAI.EvadeCloseTarget;
 begin
-  CombatManeuver := amCloseEvasion;
+  CombatManeuver := maneuver_evade_close;
   if Abs(ReverseTargetBearing.BearingDeltaDegrees) < 20 then SetTurnInput(-TargetBearing.BearingDeltaDegrees)
   else SetTurnInput(TargetBearing.BearingDeltaDegrees);
   StartReverseThrust;
@@ -806,7 +806,7 @@ end;
 { @routine $659F30 TabShipAI_FlankTarget }
 procedure TabShipAI.FlankTarget;
 begin
-  CombatManeuver := amFlank;
+  CombatManeuver := maneuver_flank;
   if TargetBearing.BearingDeltaDegrees > 0 then SetTurnInput(TargetBearing.BearingDeltaDegrees - 65)
   else SetTurnInput(TargetBearing.BearingDeltaDegrees + 65);
   StartThrust;
@@ -834,7 +834,7 @@ end;
 { @routine $65A0DC TabShipAI_ReverseTowardTarget }
 procedure TabShipAI.ReverseTowardTarget;
 begin
-  CombatManeuver := amReverseTurn;
+  CombatManeuver := maneuver_reverse_turn;
   SetTurnInput(TargetBearing.BearingDeltaDegrees);
   StartReverseThrust;
 end;

@@ -305,10 +305,10 @@ end;
 procedure TfIntroduction.ContinueClicked(Sender: TObjectGI);
 begin
   ReleaseAllTextureSurfaces;
-  if GetPlayer.DockedTo <> nil then RequestedScreenId := screenRuinsTalk
+  if GetPlayer.DockedTo <> nil then RequestedScreenId := screen_ruins_talk
   else if GetPlayer.CurrentPlanet = nil then RaiseWideMessage('No player location')
-  else if GetPlayer.CurrentPlanet.OwnerId = oiUninhabited then RequestedScreenId := screenPlanetNO
-  else RequestedScreenId := screenPlanet;
+  else if GetPlayer.CurrentPlanet.OwnerId = owner_uninhabited then RequestedScreenId := screen_uninhabited_planet
+  else RequestedScreenId := screen_planet;
   RequestClose(1);
 end;
 { @end $5BCE68 }

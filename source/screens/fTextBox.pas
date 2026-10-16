@@ -79,7 +79,7 @@ begin
    SetImageDownPath('GI,Bm.FormMessageBox.' + GiResourceSuffix + 'OkD');
     SetSize(Self.AcceptButton.GetMaxStateImageSize);
     SetPosition(Classes.Point(Size.X div 2 - Self.AcceptButton.ClientSize.X - GiScalePixels(5),Size.Y - Insets.Bottom - Self.AcceptButton.ClientSize.Y));
-    HitKind := gbhRect;
+    HitKind := button_hit_bounds;
     UpdateStateImagePlacement;
     UpdateStateVisuals;
     UpCallback := AcceptClicked;
@@ -95,7 +95,7 @@ begin
   CancelButton.SetImageDownPath('GI,Bm.FormMessageBox.' + GiResourceSuffix + 'CancelD');
   CancelButton.SetSize(CancelButton.GetMaxStateImageSize);
   CancelButton.SetPosition(Classes.Point(Size.X div 2 + GiScalePixels(5),Size.Y - Insets.Bottom - CancelButton.ClientSize.Y));
-  CancelButton.HitKind := gbhRect;
+  CancelButton.HitKind := button_hit_bounds;
   CancelButton.UpdateStateImagePlacement;
   CancelButton.UpdateStateVisuals;
   CancelButton.UpCallback := CancelClicked;
@@ -110,8 +110,8 @@ begin
     CaptionLabel.SetPosition(Classes.Point(25,50));
     CaptionLabel.SetSize(Classes.Point(500,21));
   end;
-  CaptionLabel.SetTextAlignX(taxLeft);
-  CaptionLabel.SetTextAlignY(tayCenter);
+  CaptionLabel.SetTextAlignX(text_x_left);
+  CaptionLabel.SetTextAlignY(text_y_center);
   CaptionLabel.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
   CaptionLabel.SetFontName(NormalBoldFontName);
   CaptionLabel.SetText(ReplaceAllWideString(ReplaceAllWideString(Caption,TextHighlightColorTag,DialogHighlightColorTag),GreenColorTag,YellowColorTag));

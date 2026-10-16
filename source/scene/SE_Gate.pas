@@ -5,7 +5,7 @@ interface
 uses SE_Space, Types, Classes, EC_BlockPar, GI_MessageLoop, GI_RotateImageGAI, GI_Label;
 
 type
-  TGateState = (gsClosed, gsOpening, gsOpen, gsClosing); // @size $04
+  TGateState = (gate_closed, gate_opening, gate_open, gate_closing); // @size $04
 
   TGateSE = class(TObjectSE) // @size $74 @methodorder source
   public
@@ -68,7 +68,7 @@ uses Math, GR_Main, GR_GraphBuf, GlobalsV;
 constructor TGateSE.Create(GraphKey: WideString; UnusedPosition: TPoint);
 begin
   inherited Create(GraphKey, UnusedPosition);
-  State := gsClosed;
+  State := gate_closed;
   TextRed := 1;
   TextGreen := 1;
   TextBlue := 1;
@@ -109,8 +109,8 @@ begin
   TextLabel.Pos := Classes.Point(Round(Position.X - TextLabel.ClientSize.X / 2), Round(Position.Y + 50 + ImageSize div 2 - 40));
   TextLabel.Text := LabelText;
   TextLabel.SetWordWrapEnabled(False);
-  TextLabel.SetTextAlignX(taxCenter);
-  TextLabel.SetTextAlignY(tayAuto);
+  TextLabel.SetTextAlignX(text_x_center);
+  TextLabel.SetTextAlignY(text_y_fit_height);
   RebuildStateGraphics;
 end;
 { @end $4D8628 }
@@ -175,9 +175,9 @@ end;
 { @routine $4D8930 TGateSE_Open }
 procedure TGateSE.Open;
 begin
-  if State = gsClosed then
+  if State = gate_closed then
   begin
-    State := gsOpening;
+    State := gate_opening;
     StateStep := 0;
     if IsAttachedToSpace then RebuildStateGraphics;
   end;
@@ -187,9 +187,9 @@ end;
 { @routine $4D895C TGateSE_Close }
 procedure TGateSE.Close;
 begin
-  if State = gsOpen then
+  if State = gate_open then
   begin
-    State := gsClosing;
+    State := gate_closing;
     StateStep := 0;
     if IsAttachedToSpace then RebuildStateGraphics;
   end;
@@ -208,13 +208,13 @@ end;
 { @routine $4D89A8 TGateSE_RebuildStateGraphics }
 procedure TGateSE.RebuildStateGraphics;
 begin
-  if State = gsClosed then
+  if State = gate_closed then
   begin
     Image.IsActive := False;
     if TextLabel <> nil then
       with TextLabel do IsActive := False;
   end
-  else if State = gsOpening then
+  else if State = gate_opening then
   begin
     Image.AnimationIndex := 0;
     Image.UpdateAutoGeometry;
@@ -232,7 +232,7 @@ begin
         with TextLabel do IsActive := False;
     end;
   end
-  else if State = gsOpen then
+  else if State = gate_open then
   begin
     Image.AnimationIndex := 1;
     Image.UpdateAutoGeometry;
@@ -253,7 +253,7 @@ begin
         with TextLabel do IsActive := False;
     end;
   end
-  else if State = gsClosing then
+  else if State = gate_closing then
   begin
     Image.AnimationIndex := 2;
     Image.UpdateAutoGeometry;
@@ -278,18 +278,18 @@ end;
 procedure TGateSE.AdvanceAnimation(UnusedTimer: Pointer; UnusedData: Integer);
 begin
   Inc(StateStep);
-  if State = gsClosed then Exit
-  else if State = gsOpening then
+  if State = gate_closed then Exit
+  else if State = gate_opening then
   begin
     if Image.FrameCount <= StateStep then
     begin
-      State := gsOpen;
+      State := gate_open;
       StateStep := 0;
       RebuildStateGraphics;
     end
     else Image.SetFrame(StateStep);
   end
-  else if State = gsOpen then
+  else if State = gate_open then
   begin
     if Image.FrameCount <= StateStep then
     begin
@@ -298,11 +298,11 @@ begin
     end
     else Image.SetFrame(StateStep);
   end
-  else if State = gsClosing then
+  else if State = gate_closing then
   begin
     if Image.FrameCount <= StateStep then
     begin
-      State := gsClosed;
+      State := gate_closed;
       StateStep := 0;
       RebuildStateGraphics;
     end

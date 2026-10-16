@@ -166,19 +166,19 @@ var
 begin
   Stage := 0;
   try
-    SetLength(ArtefactZones, DefaultHullSlotCounts[sskArtefact]);
-    for I := 0 to DefaultHullSlotCounts[sskArtefact] - 1 do ArtefactZones[I] := GetByName('Art' + IntToStr(I) + 'z') as TZoneGI;
+    SetLength(ArtefactZones, DefaultHullSlotCounts[slot_artefact]);
+    for I := 0 to DefaultHullSlotCounts[slot_artefact] - 1 do ArtefactZones[I] := GetByName('Art' + IntToStr(I) + 'z') as TZoneGI;
     Stage := 1;
     if AuxRenderBuffer.GetPixels = nil then CaptureScreenBackground(True, 0);
     BackgroundBuffer.BindExternalGraphBuf(AuxRenderBuffer);
     Stage := 2;
     ShipToInspect := ScannerTarget as TShip;
     Stage := 3;
-    if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnScan, ShipToInspect, nil, 0);
+    if GetPlayer <> nil then GetPlayer.ScriptItemsAct(event_scan, ShipToInspect, nil, 0);
     Stage := 4;
-    ShipToInspect.ScriptItemsAct(satOnEnteringForm, nil, nil, 0);
+    ShipToInspect.ScriptItemsAct(event_enter_form, nil, nil, 0);
     Stage := 5;
-    CompactHullInfo := ShipToInspect.TypeId in [rstRangerCenter..rstCustomStation];
+    CompactHullInfo := ShipToInspect.TypeId in [station_ranger_center..station_custom];
     Stage := 6;
     CountCargoEntries;
     VisibleCargoCount := 6;
@@ -235,7 +235,7 @@ begin
     GetByName('PII').SetActive(False);
     GetByName('InfoHull').SetActive(False);
     Stage := 11;
-    if ShipToInspect.TypeId = stRanger then
+    if ShipToInspect.TypeId = ship_ranger then
     begin
       Ranger := ShipToInspect as TRanger;
       (GetByName('ShipName') as TLabelGI).Text := Ranger.GetFullName(#13#10);
@@ -250,8 +250,8 @@ begin
     with GetByName('Ship3D') as TImageGI do
     begin
       ImageSourcePath := ShipToInspect.GetShipPortraitImagePath;
-      KindX := ikxCenter;
-      KindY := ikyCenter;
+      KindX := image_x_center;
+      KindY := image_y_center;
       SetPosition(SubtractPoints(ShipImageCenter, GetVisualCenter));
     end;
     Stage := 13;
@@ -275,13 +275,13 @@ begin
         ImageSourcePath := 'GI,Bm.FormRating2.' + GiResourceSuffix + 'Rank' + IntToStr(DominatorShipDefinitions[(ShipToInspect as TKling).KlingType].RankImageIndex)
       else if ShipToInspect is TRuins then ImageSourcePath := 'GI,Bm.FormRating2.' + GiResourceSuffix + 'Rank7'
       else if ShipToInspect is TTranclucator then ImageSourcePath := 'GI,Bm.FormRating2.' + GiResourceSuffix + 'Rank4'
-      else if (ShipToInspect is TNormalShip) and (ShipToInspect.OwnerId <> oiPirate) then
+      else if (ShipToInspect is TNormalShip) and (ShipToInspect.OwnerId <> owner_pirate) then
         ImageSourcePath := 'GI,Bm.FormRating2.2Rank' + IntToStr((ShipToInspect as TNormalShip).Rank + 1)
       else SetActive(False);
     end;
     Stage := 16;
     with GetByName('RankI2') as TImageGI do
-      if (ShipToInspect is TNormalShip) and (ShipToInspect.OwnerId = oiPirate) then
+      if (ShipToInspect is TNormalShip) and (ShipToInspect.OwnerId = owner_pirate) then
       begin
         SetActive(True);
         MouseEnterCallback := ShowPropertyInfo;
@@ -300,8 +300,8 @@ begin
     with GetByName('CaptainI') as TImageGI do
     begin
       ImageSourcePath := 'GI,' + ShipToInspect.GetCaptainPortraitResourceBase + 'i';
-      KindX := ikxCenter;
-      KindY := ikyCenter;
+      KindX := image_x_center;
+      KindY := image_y_center;
       SetActive(True);
     end;
     Stage := 19;
@@ -311,8 +311,8 @@ begin
       SetImagePath(ShipToInspect.GetCaptainPortraitResourceBase + 'a');
       SequenceIndex := 0;
       UpdateAutoGeometry;
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      SetImageKindX(image_x_center);
+      SetImageKindY(image_y_center);
       SetActive(True);
       RestartPlayback;
     end;
@@ -364,7 +364,7 @@ begin
       end;
     end;
     Stage := 27;
-    GetByName('Forsage').SetActive(ShipToInspect.GetSlotCount(sskAfterburner) > 0);
+    GetByName('Forsage').SetActive(ShipToInspect.GetSlotCount(slot_afterburner) > 0);
     GetByName('ForsageLight').SetActive(ShipToInspect.AfterburnerActive and ShipToInspect.IsEquipmentUsable(ShipToInspect.GetEngine));
     Stage := 28;
     with GetByName('ForsageBut') as TGraphButtonGI do
@@ -386,7 +386,7 @@ end;
 { @routine $515A40 TfScaner_OnClose }
 procedure TfScaner.OnClose;
 begin
-  ShipToInspect.ScriptItemsAct(satOnLeavingForm, nil, nil, 0);
+  ShipToInspect.ScriptItemsAct(event_leave_form, nil, nil, 0);
   if ItemHoverTimer <> 0 then
   begin
     CancelCallbackTimer(ItemHoverTimer);
@@ -443,8 +443,8 @@ begin
   with RewardsBuffer do
   begin
     SetActive(True);
-    SetImageKindX(ikxLeft);
-    SetImageKindY(ikyBottom);
+    SetImageKindX(image_x_left);
+    SetImageKindY(image_y_bottom);
     GraphBuf.AllocateRgbaTight(Max(ClientSize.X, Round(VisibleCount * Spacing + Size - Spacing)) + 2, Size + 2);
     MouseMoveCallback := RewardsMouseMove;
     MouseLeaveCallback := RewardMouseLeave;
@@ -543,8 +543,8 @@ begin
     if GraphBuf.Width >= GraphBuf.Height then
       GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
     else GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
-    SetImageKindX(ikxCenter);
-    SetImageKindY(ikyCenter);
+    SetImageKindX(image_x_center);
+    SetImageKindY(image_y_center);
   end;
   with GetByName('RewardName') as TLabelGI do Text := Ship.GetAwardInfo(AwardId).Name;
   with GetByName('RewardText') as TLabelGI do Text := Ship.GetAwardInfo(AwardId).Text;
@@ -633,7 +633,7 @@ begin
     if Sender.UserData <> 0 then
     begin
       Info := PCustomShipInfo(Sender.UserData);
-      RunCustomShipInfoActionCode(Info, satOnShowingItemInfo, ShipToInspect, nil, nil, 0);
+      RunCustomShipInfoActionCode(Info, event_show_item_info, ShipToInspect, nil, nil, 0);
       Description := Info.Description;
       if Description = '' then Description := LocalizedColorText('ShipInfo.AddInfo.CustomInfos.' + Info.TypeName + '.Description');
       ReplaceTextToken(Description, '<Data1>', IntToStr(Info.Data[1]), TextHighlightColorTag);
@@ -655,8 +655,8 @@ begin
     begin
       SourceHasPerPixelAlpha := True;
       LoadGiByPathIntoGraphBuf('Bm.FormShip2.' + GiResourceSuffix + 'AI_' + IntToStr(Cardinal(Sender.UserIndex)) + 'L', GraphBuf);
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      SetImageKindX(image_x_center);
+      SetImageKindY(image_y_center);
     end;
     Title := ExtractDelimitedPartW(Sender.HelpText, 0, '~');
     Text := ExtractDelimitedRangeW(Sender.HelpText, 1, CountDelimitedPartsW(Sender.HelpText, '~') - 1, '~');
@@ -668,8 +668,8 @@ begin
     begin
       SourceHasPerPixelAlpha := True;
       LoadGiByPathIntoGraphBuf('Bm.FormShip2.' + GiResourceSuffix + 'ForsageIcon', GraphBuf);
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      SetImageKindX(image_x_center);
+      SetImageKindY(image_y_center);
     end;
     Title := LocalizedColorText('ShipInfo.Forsage.Name');
     Text := LocalizedColorText('ShipInfo.Forsage.Text');
@@ -698,8 +698,8 @@ begin
         if ImagePath <> '' then
         begin
           LoadGiByPathIntoGraphBuf(ImagePath, GraphBuf);
-          SetImageKindX(ikxCenter);
-          SetImageKindY(ikyCenter);
+          SetImageKindX(image_x_center);
+          SetImageKindY(image_y_center);
         end;
       end;
       if ShipToInspect is TNormalShip then
@@ -724,8 +724,8 @@ begin
         begin
           SourceHasPerPixelAlpha := True;
           LoadGiByPathIntoGraphBuf(ImagePath, GraphBuf);
-          SetImageKindX(ikxCenter);
-          SetImageKindY(ikyCenter);
+          SetImageKindX(image_x_center);
+          SetImageKindY(image_y_center);
         end;
         Title := WrapTextInColor(Ship.GetPirateRankLongName, InfoNameColorTag);
         Text := Ship.GetPirateRankDescription;
@@ -738,16 +738,16 @@ begin
     begin
       SourceHasPerPixelAlpha := True;
       LoadGiByPathIntoGraphBuf('Bm.FormShip2.' + GiResourceSuffix + 'Skill' + IntToStr(ExtractDigitsToIntW(Sender.ControlName) + 1), GraphBuf);
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      SetImageKindX(image_x_center);
+      SetImageKindY(image_y_center);
     end;
     Skill := TPilotSkill(ExtractDigitsToIntW(Sender.ControlName));
     Title := WrapTextInColor(LocalizedText('Skills.' + SkillConfigNames[Skill] + '.Name'), InfoNameColorTag);
     Text := FormatText1(LocalizedText('Skills.' + SkillConfigNames[Skill] + '.Text'), TextHighlightColorTag, '<SkillValue>', IntToStr(PilotSkillEffects[ShipToInspect.GetEffectiveSkillLevel(Skill), Skill]));
     ReplaceTextToken(Text, '<SkillLevel>', IntToStr(ShipToInspect.GetEffectiveSkillLevel(Skill)), TextHighlightColorTag);
-    if Skill = psTechnical then ReplaceTextToken(Text, '<N>', IntToStr(ShipToInspect.GetSatelliteLimit), TextHighlightColorTag);
-    if Skill = psTrading then ReplaceTextToken(Text, '<SkillValue2>', IntToStr(TradingSkillSalePercent[ShipToInspect.GetEffectiveSkillLevel(Skill)]), TextHighlightColorTag);
-    if Skill = psLeadership then ReplaceTextToken(Text, '<SkillValue2>', IntToStr(LeadershipExperiencePercent[ShipToInspect.GetEffectiveSkillLevel(Skill)]), TextHighlightColorTag);
+    if Skill = skill_technical then ReplaceTextToken(Text, '<N>', IntToStr(ShipToInspect.GetSatelliteLimit), TextHighlightColorTag);
+    if Skill = skill_trading then ReplaceTextToken(Text, '<SkillValue2>', IntToStr(TradingSkillSalePercent[ShipToInspect.GetEffectiveSkillLevel(Skill)]), TextHighlightColorTag);
+    if Skill = skill_leadership then ReplaceTextToken(Text, '<SkillValue2>', IntToStr(LeadershipExperiencePercent[ShipToInspect.GetEffectiveSkillLevel(Skill)]), TextHighlightColorTag);
     if ShipToInspect.GetBaseSkillLevel(Skill) < 6 then Text := Text + #13#10 + #13#10 + FormatText1(LocalizedText('Skills.PointForNextLevel'), TextHighlightColorTag, '<PointForNextLevel>', IntToStr(SkillTrainingCosts[ShipToInspect.BaseSkills[Skill] + 1, Skill]));
   end;
   (GetByName('RankName') as TLabelGI).Text := Title;
@@ -807,7 +807,7 @@ var
   Kind: TItemType;
   Equipment: TEquipment;
 begin
-  for Kind := t_Food to t_Narcotics do
+  for Kind := item_food to item_narcotics do
     if ShipToInspect.CargoGoods[Ord(Kind)].Count > 0 then
     begin
       Dec(Index);
@@ -846,7 +846,7 @@ begin
     end;
   end;
   Item := nil;
-  ItemType := t_Food;
+  ItemType := item_food;
   Result := False;
 end;
 { @end $517C88 }
@@ -914,8 +914,8 @@ begin
         begin
           Image.SetActive(True);
           Image.SetImagePath('GI,' + GetShopItemIconName(Item) + 'i');
-          Image.SetImageKindX(ikxCenter);
-          Image.SetImageKindY(ikyCenter);
+          Image.SetImageKindX(image_x_center);
+          Image.SetImageKindY(image_y_center);
           with GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(SlotIndex) + 'Set') as TImageGI do
           begin
             SetActive(TEquipment(Item).HasMicroModule);
@@ -971,11 +971,11 @@ begin
       end;
     end;
     Stage := 20;
-    SlotCount := ShipToInspect.GetSlotCountForItemType(t_Artefact);
+    SlotCount := ShipToInspect.GetSlotCountForItemType(item_custom_artefact);
     for SlotIndex := 0 to SlotCount - 1 do
     begin
       Stage := 21;
-      Artefact := ShipToInspect.FindEquippedItemInSlot(t_Artefact, SlotIndex) as TArtefact;
+      Artefact := ShipToInspect.FindEquippedItemInSlot(item_custom_artefact, SlotIndex) as TArtefact;
       CanBoost := (Artefact <> nil) and (Artefact.BrokenFlag = 0) and ShipToInspect.CanBoostArtefact(Artefact.ItemType, nil, False);
       Stage := 22;
       GetByName('Art' + IntToStr(SlotIndex) + 'n').SetActive((Artefact <> nil) and (Artefact.BrokenFlag = 0) and not CanBoost);
@@ -992,15 +992,15 @@ begin
         else
         begin
           ImageSourcePath := 'GI,' + GetShopItemIconName(Artefact) + 's';
-          KindX := ikxCenter;
-          KindY := ikyCenter;
+          KindX := image_x_center;
+          KindY := image_y_center;
         end;
       end;
       Stage := 25;
       with GetByName('Art' + IntToStr(SlotIndex) + 'z') as TZoneGI do SetActive(Artefact <> nil);
     end;
     Stage := 26;
-    for SlotIndex := SlotCount to DefaultHullSlotCounts[sskArtefact] - 1 do
+    for SlotIndex := SlotCount to DefaultHullSlotCounts[slot_artefact] - 1 do
     begin
       GetByName('Art' + IntToStr(SlotIndex) + 'n').SetActive(False);
       GetByName('Art' + IntToStr(SlotIndex) + 'b').SetActive(False);
@@ -1014,17 +1014,17 @@ begin
     for I := 0 to VisibleCargoCount - 1 do
       with GetByName('S_' + IntToStr(I) + 'i') as TImageGI do
         if not GetCargoEntry(CargoOffset + I, CargoKind, Item) then SetImagePath('')
-        else if CargoKind in [t_Food..t_Narcotics] then
+        else if CargoKind in [item_food..item_narcotics] then
         begin
           SetImagePath('GI,' + GetItemTypeBitmapPath(CargoKind));
-          SetImageKindX(ikxCenter);
-          SetImageKindY(ikyCenter);
+          SetImageKindX(image_x_center);
+          SetImageKindY(image_y_center);
         end
         else
         begin
           SetImagePath('GI,' + GetShopItemIconName(Item) + 's');
-          SetImageKindX(ikxCenter);
-          SetImageKindY(ikyCenter);
+          SetImageKindX(image_x_center);
+          SetImageKindY(image_y_center);
         end;
     Stage := 28;
     BuildAdditionalInfo;
@@ -1134,10 +1134,10 @@ begin
   CenterY := False;
   if not Found then
   begin
-    SlotCount := ShipToInspect.GetSlotCountForItemType(t_Artefact);
+    SlotCount := ShipToInspect.GetSlotCountForItemType(item_custom_artefact);
     for SlotIndex := 0 to SlotCount - 1 do
     begin
-      Item := ShipToInspect.FindEquippedItemInSlot(t_Artefact, SlotIndex);
+      Item := ShipToInspect.FindEquippedItemInSlot(item_custom_artefact, SlotIndex);
       if Item <> nil then
         with ArtefactZones[SlotIndex] do
           if HitTest(GetCursorPoint) then
@@ -1188,7 +1188,7 @@ begin
           Position := Classes.Point(HitTestBounds.Left + ClientSize.X div 2, HitTestBounds.Top + ClientSize.Y);
           if GetCargoEntry(CargoOffset + I, CargoKind, Item) then
           begin
-            if CargoKind in [t_Food..t_Narcotics] then ShowGoodsInfo(CargoKind) else ShowItemInfo(Item);
+            if CargoKind in [item_food..item_narcotics] then ShowGoodsInfo(CargoKind) else ShowItemInfo(Item);
             Found := True;
             Break;
           end;
@@ -1257,7 +1257,7 @@ end;
 { @routine $519FA0 TfScaner_ShowItemInfo }
 procedure TfScaner.ShowItemInfo(Item: TObject);
 const
-  DurableTypes = [Low(TItemType)..High(TItemType)] - [t_Food..t_Narcotics, t_Artefact2, t_ArtefactTransmitter..t_ArtefactTranclucator, t_ArtBlackHole..t_ArtArtefactor, t_Hull, t_Protoplasm..t_Cistern, t_TreasureMap..t_UselessCountableItem];
+  DurableTypes = [Low(TItemType)..High(TItemType)] - [item_food..item_narcotics, item_custom_artefact_no_wear, artefact_transmitter..artefact_tranclucator, artefact_black_hole..artefact_artefactor, item_hull, item_nodes..item_fuel_container, item_treasure_map..item_stackable_misc];
 var
   Equipment: TEquipment;
   Portrait: WideString;
@@ -1284,10 +1284,10 @@ begin
     end;
     if (Galaxy <> nil) and not Galaxy.Destroying and (GetPlayer <> nil) then
     begin
-      if TItem(Item).ScriptItem <> nil then TScriptItem(TItem(Item).ScriptItem).RunActionCode(satOnShowingItemInfo, ShipToInspect, nil, nil, 0);
-      if Item is TEquipmentWithActCode then RunItemConfigActionCode(TItem(Item), satOnShowingItemInfo, ShipToInspect, nil, nil, 0);
+      if TItem(Item).ScriptItem <> nil then TScriptItem(TItem(Item).ScriptItem).RunActionCode(event_show_item_info, ShipToInspect, nil, nil, 0);
+      if Item is TEquipmentWithActCode then RunItemConfigActionCode(TItem(Item), event_show_item_info, ShipToInspect, nil, nil, 0);
     end;
-    if (TItem(Item).ItemType = t_Hull) and (ShipToInspect.TypeId <> stTranclucator) and (ShipToInspect.TypeId <> stKling) then
+    if (TItem(Item).ItemType = item_hull) and (ShipToInspect.TypeId <> ship_tranclucator) and (ShipToInspect.TypeId <> ship_dominator) then
       if not CompactHullInfo then
       begin
         EquipmentShopScreen.RefreshHullInfo(Self, Item as THull, Equipment.GetInfoText(TextHighlightColorTag, ShipToInspect), True);
@@ -1306,8 +1306,8 @@ begin
                 GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
               else GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
             end;
-            SetImageKindX(ikxCenter);
-            SetImageKindY(ikyCenter);
+            SetImageKindX(image_x_center);
+            SetImageKindY(image_y_center);
             SetPosition(SubtractPoints(ShipScreen.ItemImageCenter, GetVisualCenter));
           end;
         Exit;
@@ -1316,18 +1316,18 @@ begin
     GetByName('InfoHull').SetActive(False);
     with GetByName('InfoImage') as TImageGI do
     begin
-      SetActive(Equipment.ItemType <> t_Hull);
+      SetActive(Equipment.ItemType <> item_hull);
       if Active then
       begin
         ImageSourcePath := 'GI,' + GetShopItemIconName(Equipment) + 's';
-        KindX := ikxCenter;
-        KindY := ikyCenter;
+        KindX := image_x_center;
+        KindY := image_y_center;
         SetPosition(SubtractPoints(ShipScreen.ItemImageCenter, GetVisualCenter));
       end;
     end;
     with GetByName('InfoImage2') as TGraphBufGI do
     begin
-      SetActive(Equipment.ItemType = t_Hull);
+      SetActive(Equipment.ItemType = item_hull);
       if Active then
       begin
         Portrait := ShipToInspect.GetShipPortraitImagePath;
@@ -1339,8 +1339,8 @@ begin
           if GraphBuf.Width >= GraphBuf.Height then
             GraphBuf.RescaleRgba(ClientSize.X - 5, Round((ClientSize.X - 5) / GraphBuf.Width * GraphBuf.Height), 5)
           else GraphBuf.RescaleRgba(Round((ClientSize.Y - 5) / GraphBuf.Height * GraphBuf.Width), ClientSize.Y - 5, 5);
-          SetImageKindX(ikxCenter);
-          SetImageKindY(ikyCenter);
+          SetImageKindX(image_x_center);
+          SetImageKindY(image_y_center);
           SetPosition(SubtractPoints(ShipScreen.ItemImageCenter, GetVisualCenter));
         end;
       end;
@@ -1353,10 +1353,10 @@ begin
     with GetByName('EmRace') as TImageGI do
     begin
       ImageSourcePath := GetFactionEmblemPath(Equipment.GetOwnerConfigName);
-      KindX := ikxCenter;
-      KindY := ikyCenter;
+      KindX := image_x_center;
+      KindY := image_y_center;
     end;
-    if not (Equipment.ItemType in DurableTypes) and (Equipment.ItemType <> t_Hull) then
+    if not (Equipment.ItemType in DurableTypes) and (Equipment.ItemType <> item_hull) then
     begin
       with GetByName('InfoDurable') as TImageGI do Parent.Parent.SetActive(False);
       MinimumWidth := 0;
@@ -1376,7 +1376,7 @@ begin
         Parent.Parent.SetActive(True);
         Parent.Parent.SetSize(Classes.Point(2 * CapWidth + BarWidth, Parent.Parent.ClientSize.Y));
         Parent.SetSize(Classes.Point(BarWidth + 2, Parent.Parent.ClientSize.Y));
-        if Equipment.ItemType = t_Hull then
+        if Equipment.ItemType = item_hull then
           SetPosition(Classes.Point(Round((Equipment as THull).HullPoints / (Equipment as THull).Weight * BarWidth) - (GetContentSize.X - 5), LocalPosition.Y))
         else SetPosition(Classes.Point(Round(BarWidth * (Equipment.ConditionPercent / 100)) - (GetContentSize.X - 5), LocalPosition.Y));
       end;
@@ -1416,8 +1416,8 @@ begin
   begin
     SetActive(True);
     ImageSourcePath := 'GI,' + GetItemTypeBitmapPath(ItemType);
-    KindX := ikxCenter;
-    KindY := ikyCenter;
+    KindX := image_x_center;
+    KindY := image_y_center;
     SetPosition(SubtractPoints(ShipScreen.ItemImageCenter, GetVisualCenter));
   end;
   (GetByName('InfoName') as TLabelGI).Text := WrapTextInColor(GoodsMarket[Ord(ItemType)].DisplayName, InfoNameColorTag);
@@ -1429,8 +1429,8 @@ begin
   with GetByName('EmRace') as TImageGI do
   begin
     ImageSourcePath := GetFactionEmblemPath(ShipToInspect.GetFactionNameKey);
-    KindX := ikxCenter;
-    KindY := ikyCenter;
+    KindX := image_x_center;
+    KindY := image_y_center;
   end;
   GetByName('InfoDurable').Parent.Parent.SetActive(False);
   ShipScreen.LayoutItemInfo(ItemInfoWindow, ItemNameLabel, ItemDescriptionLabel, True, True, 0);
@@ -1457,7 +1457,7 @@ var
       SetActive(Min(BaseLevel, EffectiveLevel) > 0);
       SetSize(Classes.Point(ClientSize.X, Step * Min(BaseLevel, EffectiveLevel)));
       SetPosition(Classes.Point(LocalPosition.X, SkillImageRestTop[Index] + Bottom - ClientSize.Y));
-      SetImageKindY(ikyBottom);
+      SetImageKindY(image_y_bottom);
     end;
     if BaseLevel < EffectiveLevel then
     begin
@@ -1490,12 +1490,12 @@ var
   end;
 begin
   with FreeSkillPointsLabel do SetText(IntToStr(ShipToInspect.FreeExperience));
-  UpdateOne(0, ShipToInspect.GetBaseSkillLevel(psAccuracy), ShipToInspect.GetEffectiveSkillLevel(psAccuracy));
-  UpdateOne(1, ShipToInspect.GetBaseSkillLevel(psManeuverability), ShipToInspect.GetEffectiveSkillLevel(psManeuverability));
-  UpdateOne(2, ShipToInspect.GetBaseSkillLevel(psTechnical), ShipToInspect.GetEffectiveSkillLevel(psTechnical));
-  UpdateOne(3, ShipToInspect.GetBaseSkillLevel(psTrading), ShipToInspect.GetEffectiveSkillLevel(psTrading));
-  UpdateOne(4, ShipToInspect.GetBaseSkillLevel(psCharisma), ShipToInspect.GetEffectiveSkillLevel(psCharisma));
-  UpdateOne(5, ShipToInspect.GetBaseSkillLevel(psLeadership), ShipToInspect.GetEffectiveSkillLevel(psLeadership));
+  UpdateOne(0, ShipToInspect.GetBaseSkillLevel(skill_accuracy), ShipToInspect.GetEffectiveSkillLevel(skill_accuracy));
+  UpdateOne(1, ShipToInspect.GetBaseSkillLevel(skill_maneuverability), ShipToInspect.GetEffectiveSkillLevel(skill_maneuverability));
+  UpdateOne(2, ShipToInspect.GetBaseSkillLevel(skill_technical), ShipToInspect.GetEffectiveSkillLevel(skill_technical));
+  UpdateOne(3, ShipToInspect.GetBaseSkillLevel(skill_trading), ShipToInspect.GetEffectiveSkillLevel(skill_trading));
+  UpdateOne(4, ShipToInspect.GetBaseSkillLevel(skill_charisma), ShipToInspect.GetEffectiveSkillLevel(skill_charisma));
+  UpdateOne(5, ShipToInspect.GetBaseSkillLevel(skill_leadership), ShipToInspect.GetEffectiveSkillLevel(skill_leadership));
   for I := 0 to 5 do SkillButtons[I].SetActive(False);
 end;
 { @end $51B474 }
@@ -1507,7 +1507,7 @@ begin
   with Result as TImageGI do
   begin
     ImageSourcePath := 'GI,Bm.FormShip2.' + GiResourceSuffix + 'AI_' + IntToStr(Cardinal(Item.ObjectId));
-    KindX := ikxLeft;
+    KindX := image_x_left;
   end;
 end;
 { @end $51B640 }
@@ -1528,15 +1528,15 @@ var
       SetFontName(SmallFontName);
       SetPosition(Classes.Point(0, OffsetY));
       SetSize(Classes.Point(Panel.ClientSize.X, 1));
-      SetTextAlignX(taxLeft);
-      SetTextAlignY(tayAuto);
+      SetTextAlignX(text_x_left);
+      SetTextAlignY(text_y_fit_height);
       SetWordWrapEnabled(True);
       if GiResourceVariant = 1 then
         Text := '<Object=' + IntToStr(IconId) + ',' + IntToStr(21) + ',' + IntToStr(17) + ',0>' + ReplaceAllWideString(Caption, '<br>', #13#10)
       else
         Text := '<Object=' + IntToStr(IconId) + ',' + IntToStr(25) + ',' + IntToStr(20) + ',0>' + ReplaceAllWideString(Caption, '<br>', #13#10);
       SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
-      SetTextAlignY(tayCenterEx);
+      SetTextAlignY(text_y_font_center);
       SetPositionModeW(True);
       CreateEmbeddedControl := CreateAdditionalInfoIcon;
       MouseEnterCallback := ShowPropertyInfo;
@@ -1599,7 +1599,7 @@ end;
 { @routine $51C094 TfScaner_ExecuteUiCode }
 procedure TfScaner.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
-  if not ExitScreenLoop and (TurnCalculationPhase in [tcpIdle, tcpGalaxyFinished, tcpPlayerStarFinished, tcpPlayerStarPrepared]) then
+  if not ExitScreenLoop and (TurnCalculationPhase in [turn_idle, turn_galaxy_finished, turn_player_star_finished, turn_player_star_prepared]) then
   begin
     Galaxy.CheckIntegrityChecksum(10004);
     ExecuteGameplayUiCode(Block, Key);

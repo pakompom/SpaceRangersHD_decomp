@@ -186,7 +186,7 @@ begin
   inherited AttachToSpace(ASpace);
   if IsRuins then
   begin
-    if AnimShipFull or (CurrentScreenId = screenArcadeBattle) then
+    if AnimShipFull or (CurrentScreenId = screen_arcade_battle) then
     begin
       RuinsAnimationControl := TgaiGI.Create(Space.MapPanel);
       RuinsAnimationControl.SetImagePath(RuinsAnimationPath);
@@ -1212,7 +1212,7 @@ var
 begin
   if IsRuins then
   begin
-    if AnimShipFull or (CurrentScreenId = screenArcadeBattle) then
+    if AnimShipFull or (CurrentScreenId = screen_arcade_battle) then
     begin
       Gai := TgaiGI.Create(Owner);
       Gai.SetImagePath(RuinsAnimationPath);

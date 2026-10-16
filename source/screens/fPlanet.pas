@@ -108,24 +108,24 @@ begin
   RefreshPlanetInfo;
   RefreshTextQuestPrompt;
   if (GetPlayer = nil) or ((GetPlayer.CurrentPlanet <> nil) and
-    (GetPlayer.CurrentStar.ControlFaction = sfDominators)) then
+    (GetPlayer.CurrentStar.ControlFaction = faction_dominators)) then
   begin
     Event := AddGalaxyEvent('PlayerDeath');
     Event.AddTextData('PlanetCaptured');
-    GameEndReason := gerPlayerDeath;
-    RequestedScreenId := screenGameEnd;
+    GameEndReason := game_end_player_death;
+    RequestedScreenId := screen_game_end;
     RequestClose(1);
     Exit;
   end;
   if GetPlayer.PendingLiberationCeremonyPlanet = GetPlayer.CurrentPlanet then
   begin
-    RequestedScreenId := screenGovernment;
+    RequestedScreenId := screen_government;
     RequestClose(1);
     Exit;
   end;
-  if GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = rlHostile then
+  if GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = relation_level_hostile then
   begin
-    RequestedScreenId := screenGovernment;
+    RequestedScreenId := screen_government;
     RequestClose(1);
     Exit;
   end;
@@ -137,14 +137,14 @@ begin
   if (GetPlayer.CurrentPlanet <> nil) and ((GetPlayer.PendingDockDialogue > 0) or
     GetPlayer.CurrentPlanet.IsMainPiratePlanet) then
   begin
-    RequestedScreenId := screenGovernment;
+    RequestedScreenId := screen_government;
     RequestClose(1);
     Exit;
   end;
   if GR_Main.CCInterface.GetResourceChecksumFailed and not GR_Main.CCInterface.GetTamperDetected then
     GR_Main.CCInterface.SetTamperDetected(True);
   MainPanel.RebuildMessageButtons(False);
-  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnEnteringForm, nil, nil, 0);
+  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(event_enter_form, nil, nil, 0);
   Galaxy.PrimeIntegrityChecksum(94);
 end;
 { @end $5046C0 }
@@ -153,7 +153,7 @@ end;
 procedure TfPlanet.OnClose;
 begin
   Galaxy.CheckIntegrityChecksum(95);
-  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnLeavingForm, nil, nil, 0);
+  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(event_leave_form, nil, nil, 0);
   MainPanel.OnClose;
   PlanetPanel.OnClose;
   LoadPanel.OnClose;
@@ -191,20 +191,20 @@ begin
       GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
     else
       GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
-    SetImageKindX(ikxCenter);
-    SetImageKindY(ikyCenter);
+    SetImageKindX(image_x_center);
+    SetImageKindY(image_y_center);
   end;
   ShipScreen.LayoutItemInfo(Window, GetByName('PanelInfo_Name') as TLabelGI,
     GetByName('PanelInfo_Text') as TLabelGI, True, False, 0);
   with GetByName('PanelInfo_Race') as TImageGI do
   begin
     ImageSourcePath := GetFactionEmblemPath(GetPlayer.CurrentPlanet.GetFactionResourceName);
-    KindX := ikxCenter;
-    KindY := ikyCenter;
+    KindX := image_x_center;
+    KindY := image_y_center;
     SetPosition(Classes.Point(Window.ClientSize.X + ShipScreen.ItemRaceImagePosition.X,
       Window.ClientSize.Y + ShipScreen.ItemRaceImagePosition.Y));
   end;
-  with GetByName('PanelInfo_Text') as TLabelGI do SetTextAlignX(taxLeft);
+  with GetByName('PanelInfo_Text') as TLabelGI do SetTextAlignX(text_x_left);
 end;
 { @end $504A4C }
 
@@ -222,7 +222,7 @@ begin
   SaveGameToFile(SaveManagerScreen.GetAutoSavePath, 'as');
   StandaloneQuestMode := False;
   QuestReturnScreenId := FormToId(Self);
-  RequestedScreenId := screenPlanetQuest;
+  RequestedScreenId := screen_text_quest;
   RequestClose(1);
 end;
 { @end $504EC4 }
@@ -243,7 +243,7 @@ begin
     for I := 0 to GetPlayer.Quests.Count - 1 do
     begin
       Quest := GetPlayer.Quests[I];
-      if (Quest.QuestType = qtPlanetQuest) and (Quest.ObjectiveTarget is TPlanet) and
+      if (Quest.QuestType = quest_kind_text_adventure) and (Quest.ObjectiveTarget is TPlanet) and
         (GetPlayer.CurrentPlanet = (Quest.ObjectiveTarget as TPlanet)) and
         (LanguageDataConfig.GetBlockByPath('PlanetQuest.PlanetQuest').CountParams(IntToStr(Quest.QuestNumber)) > 0) then
       begin
@@ -343,7 +343,7 @@ procedure TfPlanet.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
   if MainPanel.NavigationLocked then Exit;
   if ExitScreenLoop then Exit;
-  if TurnCalculationPhase in [tcpIdle, tcpGalaxyFinished, tcpPlayerStarFinished, tcpPlayerStarPrepared] then
+  if TurnCalculationPhase in [turn_idle, turn_galaxy_finished, turn_player_star_finished, turn_player_star_prepared] then
   begin
     Galaxy.CheckIntegrityChecksum(10002);
     ExecuteGameplayUiCode(Block, Key);
@@ -361,7 +361,7 @@ begin
     MusicManager.RequestFadeOut;
     Exit;
   end;
-  if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
+  if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
   begin
     if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
       MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')

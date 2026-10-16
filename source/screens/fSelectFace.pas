@@ -9,11 +9,11 @@ type
   public
     PlayerRace: TOwnerId; // @offset $D0
     CaptainPortraitIndex: Integer; // @offset $D4
-    LastPortraitByRace: array[oiMaloc..oiGaal] of Integer; // @offset $D8
+    LastPortraitByRace: array[owner_maloc..owner_gaal] of Integer; // @offset $D8
     PlayerName: WideString; // @offset $EC Bound to the player-name edit control in OnOpen.
 
     PlayerNameEdited: Boolean; // @offset $F0
-    NationalityCosts: array[oiMaloc..oiGaal] of Integer; // @offset $F4
+    NationalityCosts: array[owner_maloc..owner_gaal] of Integer; // @offset $F4
     AvailableMoney: Integer; // @offset $108
     AcceptedCost: Integer; // @offset $10C
 
@@ -49,7 +49,7 @@ procedure TfSelectFace.InitializeLayout;
 var I: Integer; Face: WideString; Race: TOwnerId; Control: TObjectGI;
 begin
   inherited;
-  for Race := oiMaloc to oiGaal do
+  for Race := owner_maloc to owner_gaal do
   begin
     I := -1;
     repeat
@@ -133,8 +133,8 @@ begin
     if LastPortraitByRace[PlayerRace] >= 0 then
     begin
       SetImagePath('GI,Bm.Captain.' + GiResourceSuffix + OwnerInfo[RaceToOwner(PlayerRace)].InternalName + IntToStr(CaptainPortraitIndex) + 'i');
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      SetImageKindX(image_x_center);
+      SetImageKindY(image_y_center);
       SetActive(True);
     end
     else SetActive(False);
@@ -146,8 +146,8 @@ begin
       SetImagePath('Bm.Captain.' + GiResourceSuffix + OwnerInfo[RaceToOwner(PlayerRace)].InternalName + IntToStr(CaptainPortraitIndex) + 'a');
       SequenceIndex := 0;
       UpdateAutoGeometry;
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      SetImageKindX(image_x_center);
+      SetImageKindY(image_y_center);
       SetActive(True);
       RestartPlayback;
     end
@@ -176,11 +176,11 @@ end;
 procedure TfSelectFace.SelectRace(Sender: TObjectGI);
 begin
   PlayerRace := TOwnerId(Sender.UserValue);
-  (GetByName('RaceMaloc') as TGraphButtonGI).SetDown(PlayerRace = oiMaloc);
-  (GetByName('RacePeleng') as TGraphButtonGI).SetDown(PlayerRace = oiPeleng);
-  (GetByName('RacePeople') as TGraphButtonGI).SetDown(PlayerRace = oiHuman);
-  (GetByName('RaceFei') as TGraphButtonGI).SetDown(PlayerRace = oiFeyan);
-  (GetByName('RaceGaal') as TGraphButtonGI).SetDown(PlayerRace = oiGaal);
+  (GetByName('RaceMaloc') as TGraphButtonGI).SetDown(PlayerRace = owner_maloc);
+  (GetByName('RacePeleng') as TGraphButtonGI).SetDown(PlayerRace = owner_peleng);
+  (GetByName('RacePeople') as TGraphButtonGI).SetDown(PlayerRace = owner_human);
+  (GetByName('RaceFei') as TGraphButtonGI).SetDown(PlayerRace = owner_feyan);
+  (GetByName('RaceGaal') as TGraphButtonGI).SetDown(PlayerRace = owner_gaal);
 
 end;
 { @end $5D9184 }
@@ -203,11 +203,11 @@ var Cost: Integer; Text: WideString;
 begin
   Cost := 0;
   case PlayerRace of
-    oiMaloc: Cost := NationalityCosts[oiMaloc];
-    oiPeleng: Cost := NationalityCosts[oiPeleng];
-    oiHuman: Cost := NationalityCosts[oiHuman];
-    oiFeyan: Cost := NationalityCosts[oiFeyan];
-    oiGaal: Cost := NationalityCosts[oiGaal];
+    owner_maloc: Cost := NationalityCosts[owner_maloc];
+    owner_peleng: Cost := NationalityCosts[owner_peleng];
+    owner_human: Cost := NationalityCosts[owner_human];
+    owner_feyan: Cost := NationalityCosts[owner_feyan];
+    owner_gaal: Cost := NationalityCosts[owner_gaal];
   end;
   if Cost <= AvailableMoney then
   begin

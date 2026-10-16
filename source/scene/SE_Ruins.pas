@@ -5,11 +5,11 @@ interface
 uses Classes, EC_BlockPar, EC_Struct, GI_GAI, GI_Image, GI_MessageLoop, SE_Space, Types;
 
 const
-  rsInitial = 0;
-  rsIdle = 1;
-  rsDisappearing = 2;
-  rsAppearing = 3;
-  rsPlayingDisappearance = 4;
+  ruins_initial = 0;
+  ruins_idle = 1;
+  ruins_disappearing = 2;
+  ruins_appearing = 3;
+  ruins_disappearing_animation = 4;
 
 type
   TRuinsSE = class(TObjectSE) // @size $D8 @methodorder source
@@ -70,7 +70,7 @@ begin
     AlphaLimit := 255;
   end;
   HasTransitionImages := CacheDataRoot.FileExistsByPath(ImagePath + 'To') and CacheDataRoot.FileExistsByPath(ImagePath + 'From');
-  State := rsInitial;
+  State := ruins_initial;
   Alpha := 255;
 end;
 { @end $69928C }
@@ -82,20 +82,20 @@ begin
   ConfigureLoopSound('Ruins.' + ExtractDelimitedPartW(ImagePath, CountDelimitedPartsW(ImagePath, '.') - 1, '.'));
   ConfigureRandomSound('Ruins.' + ExtractDelimitedPartW(ImagePath, CountDelimitedPartsW(ImagePath, '.') - 1, '.'));
   inherited AttachToSpace(ASpace);
-  if AnimShipFull or (CurrentScreenId = screenArcadeBattle) then
+  if AnimShipFull or (CurrentScreenId = screen_arcade_battle) then
   begin
     Animation := TgaiGI.Create(Space.MapPanel);
-    if State = rsAppearing then
+    if State = ruins_appearing then
     begin
       Animation.SetImagePath(ImagePath + 'From');
       Animation.CycleCompleteCallback := AnimationCycleComplete;
       FrameIndex := 0;
     end
-    else if State = rsDisappearing then
+    else if State = ruins_disappearing then
     begin
       Animation.SetImagePath(ImagePath + 'To');
       Animation.CycleCompleteCallback := AnimationCycleComplete;
-      State := rsPlayingDisappearance;
+      State := ruins_disappearing_animation;
       FrameIndex := 0;
     end
     else Animation.SetImagePath(ImagePath);
@@ -106,7 +106,7 @@ begin
     Animation.World := True;
     Animation.SequenceIndex := 0;
     Animation.UpdateAutoGeometry;
-    if not (State in [rsDisappearing, rsAppearing]) then FrameIndex := Random(Animation.SequenceFrameCount - 1);
+    if not (State in [ruins_disappearing, ruins_appearing]) then FrameIndex := Random(Animation.SequenceFrameCount - 1);
     Animation.SetSequenceFrame(FrameIndex);
     Animation.RestartPlayback;
     Animation.SetAlpha(Math.Min(Alpha, AlphaLimit) shr Space.AlphaShift);
@@ -122,12 +122,12 @@ begin
     StaticImage.Pos := TruncatePointF(Position);
     StaticImage.World := True;
     StaticImage.SetAlpha(Math.Min(Alpha, AlphaLimit) shr Space.AlphaShift);
-    if State = rsAppearing then
+    if State = ruins_appearing then
     begin
       FadeTimer := Space.Screen.ScheduleCallbackTimer(20, 20, AdvanceFade);
       SetAlpha(0);
     end
-    else if State = rsDisappearing then
+    else if State = ruins_disappearing then
     begin
       FadeTimer := Space.Screen.ScheduleCallbackTimer(20, 20, AdvanceFade);
       SetAlpha(255);
@@ -187,11 +187,11 @@ begin
     State := Value;
     if Animation <> nil then
     begin
-      if not (State in [rsInitial, rsIdle]) then Animation.CycleCompleteCallback := AnimationCycleComplete;
+      if not (State in [ruins_initial, ruins_idle]) then Animation.CycleCompleteCallback := AnimationCycleComplete;
     end
     else if StaticImage <> nil then
     begin
-      if State in [rsDisappearing, rsAppearing] then FadeTimer := Space.Screen.ScheduleCallbackTimer(20, 20, AdvanceFade)
+      if State in [ruins_disappearing, ruins_appearing] then FadeTimer := Space.Screen.ScheduleCallbackTimer(20, 20, AdvanceFade)
       else if FadeTimer <> 0 then
       begin
         Space.Screen.CancelCallbackTimer(FadeTimer);
@@ -205,16 +205,16 @@ end;
 { @routine $699998 TRuinsSE_AnimationCycleComplete }
 procedure TRuinsSE.AnimationCycleComplete(Sender: TObjectGI);
 begin
-  if State = rsDisappearing then
+  if State = ruins_disappearing then
   begin
     Animation.SetImagePath(ImagePath + 'To');
     Animation.SequenceIndex := 0;
     Animation.UpdateAutoGeometry;
     Animation.SetSequenceFrame(0);
     Animation.RestartPlayback;
-    State := rsPlayingDisappearance;
+    State := ruins_disappearing_animation;
   end
-  else if (State = rsAppearing) or (State = rsIdle) then
+  else if (State = ruins_appearing) or (State = ruins_idle) then
   begin
     Animation.SetImagePath(ImagePath);
     Animation.SequenceIndex := 0;
@@ -222,7 +222,7 @@ begin
     Animation.SetSequenceFrame(0);
     Animation.RestartPlayback;
     Animation.CycleCompleteCallback := nil;
-    State := rsIdle;
+    State := ruins_idle;
   end
   else
   begin
@@ -235,12 +235,12 @@ end;
 { @routine $699AA4 TRuinsSE_AdvanceFade }
 procedure TRuinsSE.AdvanceFade(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
-  if State = rsDisappearing then
+  if State = ruins_disappearing then
   begin
     SetAlpha(Math.Max(0, GetAlpha - 5));
     if GetAlpha = 0 then
     begin
-      State := rsIdle;
+      State := ruins_idle;
       DetachFromSpace;
     end;
   end
@@ -249,7 +249,7 @@ begin
     SetAlpha(Math.Min(255, GetAlpha + 5));
     if GetAlpha = 255 then
     begin
-      State := rsIdle;
+      State := ruins_idle;
       if FadeTimer <> 0 then
       begin
         Space.Screen.CancelCallbackTimer(FadeTimer);
@@ -399,7 +399,7 @@ var
   Anim: TgaiGI;
   Image, MapImage: TImageGI;
 begin
-  if AnimShipFull or (CurrentScreenId = screenArcadeBattle) then
+  if AnimShipFull or (CurrentScreenId = screen_arcade_battle) then
   begin
     Anim := TgaiGI.Create(Owner);
     Anim.SetImagePath(ImagePath);

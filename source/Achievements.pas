@@ -152,9 +152,9 @@ function GetCurrentAchievementProgress(Key: WideString; StoredValue: Integer): I
 
 type
   TAchievementBackend = (
-    achSteam = 1, // API reports achievement definitions.
-    achSteamWithoutAchievements = 2, // Initialized without achievement definitions; recording disabled.
-    achLocal = 3 // Local achievement storage.
+    achievement_steam = 1, // API reports achievement definitions.
+    achievement_steam_empty = 2, // Initialized without achievement definitions; recording disabled.
+    achievement_local = 3 // Local achievement storage.
   ); // @size $01
 
 function GetAchievementBackend: TAchievementBackend; // @addr $79DAB8
@@ -198,7 +198,7 @@ begin
   else if Key = 'HACKER' then Result := Stats.SuccessfulDominatorHacks
   else if Key = 'PRISONBAIL' then Result := Stats.PrisonersBailedOut
   else if Key = 'DRAIN' then Result := Stats.DrainedHullPoints
-  else if Key = 'BERTORSLAYER' then Result := GetPlayer.DominatorKillsByType[ktBertor]
+  else if Key = 'BERTORSLAYER' then Result := GetPlayer.DominatorKillsByType[dominator_bertor]
   else if Key = 'SIDECHANGER' then Result := GetPlayer.SideChangeCount;
   if Result = StoredValue then Result := 0;
 end;
@@ -419,7 +419,7 @@ begin
   for Index := 0 to Galaxy.Stars.Count - 1 do
   begin
     Star := Galaxy.Stars[Index];
-    if Star.ControlFaction <> sfPirates then
+    if Star.ControlFaction <> faction_pirates then
     begin
       AllPirateSystems := False;
       Break;
@@ -513,13 +513,13 @@ begin
   for I := 0 to Galaxy.Stars.Count - 1 do
   begin
     Star := Galaxy.Stars[I];
-    if Star.ControlFaction = sfCoalition then
+    if Star.ControlFaction = faction_coalition then
       for J := 0 to Star.Planets.Count - 1 do
       begin
         Planet := Star.Planets[J];
-        if Planet.OwnerId = oiUninhabited then Continue;
+        if Planet.OwnerId = owner_uninhabited then Continue;
         Inc(Count);
-        if Planet.GetRelationLevelToShip(GetPlayer) > rlHostile then Exit;
+        if Planet.GetRelationLevelToShip(GetPlayer) > relation_level_hostile then Exit;
       end;
   end;
   if Count > 0 then TryUnlockAchievement('HATER');
@@ -671,10 +671,10 @@ function GetAchievementBackend: TAchievementBackend;
 begin
   if SteamInitialized then
   begin
-    if SteamAchievementsCount > 0 then Result := achSteam
-    else Result := achSteamWithoutAchievements;
+    if SteamAchievementsCount > 0 then Result := achievement_steam
+    else Result := achievement_steam_empty;
   end
-  else Result := achLocal;
+  else Result := achievement_local;
 end;
 { @end $79DAB8 }
 
@@ -682,9 +682,9 @@ end;
 function GetAvailableAchievementCount: Integer;
 begin
   case GetAchievementBackend of
-    achSteam: Result := Min(High(AchievementDefinitionTable), SteamAchievementsCount);
-    achLocal: Result := High(AchievementDefinitionTable);
-    achSteamWithoutAchievements: Result := 0;
+    achievement_steam: Result := Min(High(AchievementDefinitionTable), SteamAchievementsCount);
+    achievement_local: Result := High(AchievementDefinitionTable);
+    achievement_steam_empty: Result := 0;
   else Result := 0;
   end;
 end;
@@ -702,9 +702,9 @@ begin
   Block := AchievementDefinitions.FindBlock(Key);
   if Block = nil then Exit;
   case GetAchievementBackend of
-    achSteam: Result := SteamUnlockAchievement(StrToInt(AnsiString(Block.Params['Num'])));
-    achLocal: Result := UnlockLocalAchievement(Block);
-    achSteamWithoutAchievements: Result := False;
+    achievement_steam: Result := SteamUnlockAchievement(StrToInt(AnsiString(Block.Params['Num'])));
+    achievement_local: Result := UnlockLocalAchievement(Block);
+    achievement_steam_empty: Result := False;
   else Result := False;
   end;
   if Result and (GetPlayer <> nil) then GetPlayer.AwardedAchievementKeys.AddChildBlock(Key);
@@ -726,9 +726,9 @@ begin
   if Amount + Data.Value <= Data.MaxValue then Increment := Amount
   else Increment := Data.MaxValue - Data.Value;
   case GetAchievementBackend of
-    achSteam: Result := SteamIncreaseStat(StrToInt(AnsiString(Block.Params['Num'])), Increment);
-    achLocal: Result := IncreaseLocalAchievementProgress(Block, Increment);
-    achSteamWithoutAchievements: Result := False;
+    achievement_steam: Result := SteamIncreaseStat(StrToInt(AnsiString(Block.Params['Num'])), Increment);
+    achievement_local: Result := IncreaseLocalAchievementProgress(Block, Increment);
+    achievement_steam_empty: Result := False;
   else Result := False;
   end;
   FreeAchievementData(Data);
@@ -758,9 +758,9 @@ begin
     Exit;
   end;
   case GetAchievementBackend of
-    achSteam: Result := SteamIncreaseStat(StrToInt(AnsiString(Block.Params['Num'])), Increment);
-    achLocal: Result := IncreaseLocalAchievementProgress(Block, Increment);
-    achSteamWithoutAchievements: Result := False;
+    achievement_steam: Result := SteamIncreaseStat(StrToInt(AnsiString(Block.Params['Num'])), Increment);
+    achievement_local: Result := IncreaseLocalAchievementProgress(Block, Increment);
+    achievement_steam_empty: Result := False;
   else Result := False;
   end;
   FreeAchievementData(Data);
@@ -779,8 +779,8 @@ begin
   if Block = nil then Exit;
   Result := CreateAchievementData;
   case GetAchievementBackend of
-    achSteam: SteamAchievementData(StrToInt(AnsiString(Block.Params['Num'])), Result);
-    achLocal: GetLocalAchievementData(Key, Result);
+    achievement_steam: SteamAchievementData(StrToInt(AnsiString(Block.Params['Num'])), Result);
+    achievement_local: GetLocalAchievementData(Key, Result);
   end;
   TruncateStartupWideString(Result.Name);
   TruncateStartupWideString(Result.Description);

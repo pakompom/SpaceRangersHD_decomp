@@ -101,7 +101,7 @@ begin
   ViewStrings[1].MinValue := MinValue;
   ViewStrings[1].MaxValue := MaxValue;
   Value := 0;
-  CriticalOutcome := qoNone;
+  CriticalOutcome := quest_outcome_none;
   NameText.Text := QuestMessages.GetTextOrKey('ParameterDefaultName') + ' ' + IntToWideString(Index);
   ValueText.Text := QuestMessages.GetTextOrKey('ParameterDefaultName') + ' ' + IntToWideString(Index) + ': <>';
   ViewStrings[1].Text.Text := ValueText.Text;
@@ -144,7 +144,7 @@ end;
 function TParameter.GetNonCriticalMinimum: Integer;
 begin
   Result := MinValue;
-  if (CriticalOutcome <> qoNone) and (CriticalOutcome <> qoSuccess) and CriticalAtMinimum then Inc(Result);
+  if (CriticalOutcome <> quest_outcome_none) and (CriticalOutcome <> quest_outcome_success) and CriticalAtMinimum then Inc(Result);
 end;
 { @end $4DBDBC }
 
@@ -152,7 +152,7 @@ end;
 function TParameter.GetNonCriticalMaximum: Integer;
 begin
   Result := MaxValue;
-  if (CriticalOutcome <> qoNone) and (CriticalOutcome <> qoSuccess) and not CriticalAtMinimum then Dec(Result);
+  if (CriticalOutcome <> quest_outcome_none) and (CriticalOutcome <> quest_outcome_success) and not CriticalAtMinimum then Dec(Result);
 end;
 { @end $4DBDD8 }
 

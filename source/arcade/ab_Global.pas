@@ -9,14 +9,14 @@ const
 
   // BonusTicks order from TabShip.ApplyDamage ($65FF7C), UpdateState ($6606DC)
   // and Advance ($66095C); shared with map bonus flags and pickup handling.
-  abkRegeneration = 0;
-  abkSpeed = 1;
-  abkSlow = 2;
-  abkWeaponLock = 3;
-  abkDamage = 4;
-  abkRecharge = 5;
-  abkShield = 6;
-  abkInvisibility = 7;
+  arcade_effect_regeneration = 0;
+  arcade_effect_speed_boost = 1;
+  arcade_effect_slowdown = 2;
+  arcade_effect_weapons_disabled = 3;
+  arcade_effect_damage_boost = 4;
+  arcade_effect_ammo_recharge = 5;
+  arcade_effect_shield = 6;
+  arcade_effect_invisibility = 7;
 
   ArcadeBonusKindMask = $FF;
   ArcadeHiddenBonusFlag = $80000000;

@@ -196,11 +196,11 @@ var
   Item: TEquipment;
 begin
   if (Galaxy = nil) or
-    (CurrentScreenId <> screenStarMap) or (StarMapScreen.Mode <> smmOrders) or (GetPlayer = nil) or not GetPlayer.InNormalSpace then Exit;
+    (CurrentScreenId <> screen_star_map) or (StarMapScreen.Mode <> map_mode_orders) or (GetPlayer = nil) or not GetPlayer.InNormalSpace then Exit;
   for I := 0 to GetPlayer.Inventory.Count - 1 do
   begin
     Item := GetPlayer.Inventory[I];
-    if (Item.ItemType = t_Hull) or ((Item.EquippedFlag <> 0) and (Item.ConditionPercent < 90)) then Item.Repair;
+    if (Item.ItemType = item_hull) or ((Item.EquippedFlag <> 0) and (Item.ConditionPercent < 90)) then Item.Repair;
   end;
   for I := 0 to GetPlayer.Artefacts.Count - 1 do
   begin
@@ -222,18 +222,18 @@ begin
   for StarIndex := 0 to Galaxy.Stars.Count - 1 do
   begin
     Star := Galaxy.Stars[StarIndex];
-    if not ((Star.ControlFaction = sfDominators) and (Star.Status.CustomFaction = '')) then Continue;
+    if not ((Star.ControlFaction = faction_dominators) and (Star.Status.CustomFaction = '')) then Continue;
     PlanetIndex := -1;
     while True do
     begin
-      if Star.ShipTypeCounts[stKling] >= 12 then Break;
+      if Star.ShipTypeCounts[ship_dominator] >= 12 then Break;
       Planet := nil;
       while True do
       begin
         Inc(PlanetIndex);
         if PlanetIndex >= Star.Planets.Count then PlanetIndex := 0;
         Planet := Star.Planets[PlanetIndex];
-        if Planet.OwnerId <> oiUninhabited then Break;
+        if Planet.OwnerId <> owner_uninhabited then Break;
       end;
       Planet.SpawnWeightedDominatorShip;
     end;
@@ -255,7 +255,7 @@ begin
   for StarIndex := 0 to Galaxy.Stars.Count - 1 do
   begin
     Star := Galaxy.Stars[StarIndex];
-    if not ((Star.ControlFaction = sfPirates) and (Star.Status.CustomFaction = '')) then Continue;
+    if not ((Star.ControlFaction = faction_pirates) and (Star.Status.CustomFaction = '')) then Continue;
     PlanetIndex := -1;
     while True do
     begin
@@ -266,7 +266,7 @@ begin
         Inc(PlanetIndex);
         if PlanetIndex >= Star.Planets.Count then PlanetIndex := 0;
         Planet := Star.Planets[PlanetIndex];
-        if Planet.OwnerId <> oiUninhabited then Break;
+        if Planet.OwnerId <> owner_uninhabited then Break;
       end;
       Planet.BuyWarrior(100);
       Inc(Created);
@@ -294,11 +294,11 @@ begin
   for StarIndex := 0 to Galaxy.Stars.Count - 1 do
   begin
     Star := Galaxy.Stars[StarIndex];
-    if (Star.ControlFaction <> sfCoalition) or (Star.Status.CustomFaction <> '') then Continue;
+    if (Star.ControlFaction <> faction_coalition) or (Star.Status.CustomFaction <> '') then Continue;
     for PlanetIndex := 0 to Star.Planets.Count - 1 do
     begin
       Planet := Star.Planets[PlanetIndex];
-      if Planet.OwnerId = oiUninhabited then Continue;
+      if Planet.OwnerId = owner_uninhabited then Continue;
       while (Planet.Warriors.Count < RemapClamped(Planet.Radius, 60, 100, 2, 6)) and (Created < 500) do
       begin
         Planet.BuyWarrior(100);
@@ -322,19 +322,19 @@ begin
   for DistanceIndex := 1 to Galaxy.Stars.Count - 1 do
   begin
     Star := GetPlayer.CurrentStar.StarDistances[DistanceIndex].Star as TStar;
-    if not ((Star.ControlFaction = sfDominators) and (Star.Battle = 0) and Galaxy.HasUnresolvedDominatorSeries([dsBlazer, dsKeller, dsTerron]) and (Star.Status.CustomFaction = '')) then Continue;
+    if not ((Star.ControlFaction = faction_dominators) and (Star.Battle = 0) and Galaxy.HasUnresolvedDominatorSeries([series_blazer, series_keller, series_terron]) and (Star.Status.CustomFaction = '')) then Continue;
     Eligible := 0;
     for ShipIndex := 0 to Star.Ships.Count - 1 do
     begin
       Ship := Star.Ships[ShipIndex];
-      if (Ship.OwnerId = oiDominator) and (Ship.Order = soNone) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
+      if (Ship.OwnerId = owner_dominator) and (Ship.Order = order_none) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
         Inc(Eligible);
     end;
     if Eligible > 2 then
       for ShipIndex := 0 to Star.Ships.Count - 1 do
       begin
         Ship := Star.Ships[ShipIndex];
-        if (Ship.OwnerId = oiDominator) and (Ship.Order = soNone) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
+        if (Ship.OwnerId = owner_dominator) and (Ship.Order = order_none) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
         begin
           Ship.OrderJump(GetPlayer.CurrentStar, True);
           Inc(Sent);
@@ -360,19 +360,19 @@ begin
   for DistanceIndex := 1 to Galaxy.Stars.Count - 1 do
   begin
     Star := GetPlayer.CurrentStar.StarDistances[DistanceIndex].Star as TStar;
-    if not ((Star.ControlFaction = sfPirates) and (Star.Battle = 0) and (Star.Status.CustomFaction = '')) then Continue;
+    if not ((Star.ControlFaction = faction_pirates) and (Star.Battle = 0) and (Star.Status.CustomFaction = '')) then Continue;
     Eligible := 0;
     for ShipIndex := 0 to Star.Ships.Count - 1 do
     begin
       Ship := Star.Ships[ShipIndex];
-      if (Ship.OwnerId = oiPirate) and (Ship.Order = soNone) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
+      if (Ship.OwnerId = owner_pirate) and (Ship.Order = order_none) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
         Inc(Eligible);
     end;
     if Eligible > 2 then
       for ShipIndex := 0 to Star.Ships.Count - 1 do
       begin
         Ship := Star.Ships[ShipIndex];
-        if (Ship.OwnerId = oiPirate) and (Ship.Order = soNone) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
+        if (Ship.OwnerId = owner_pirate) and (Ship.Order = order_none) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
         begin
           Ship.OrderJump(GetPlayer.CurrentStar, True);
           Inc(Sent);
@@ -390,12 +390,12 @@ end;
 procedure CheatRangerpoints;
 begin
   if Galaxy = nil then Exit;
-  if CurrentScreenId = screenShip then Exit;
+  if CurrentScreenId = screen_ship then Exit;
   if GetPlayer = nil then Exit;
   if not GetPlayer.IsDockedToShip then Exit;
-  if GetPlayer.DockedTo.TypeId <> rstRangerCenter then Exit;
+  if GetPlayer.DockedTo.TypeId <> station_ranger_center then Exit;
   if GetPlayer.FreeExperience >= 1000 then Exit;
-  GetPlayer.GainExperience(1000, esUnscaled);
+  GetPlayer.GainExperience(1000, experience_unscaled);
   ReportCheat(150, DecodeTextW('RIALNOGDEPROPRONIHNITIS')); // 'RANGERPOINTS'
 end;
 { @end $6856E8 }
@@ -404,13 +404,13 @@ end;
 procedure CheatNextrank;
 begin
   ReportCheat(90, DecodeTextW('NIETXATARNARNAK')); // 'NEXTRANK'
-  if (Galaxy <> nil) and (GetPlayer <> nil) and (CurrentScreenId <> screenShip) then
+  if (Galaxy <> nil) and (GetPlayer <> nil) and (CurrentScreenId <> screen_ship) then
   begin
     if GetPlayer.Rank <> High(TShipRank) then GetPlayer.AddRankPoints(GetPlayer.GetRankPointsToNextRank);
     if GetPlayer.PirateClanReal and (GetPlayer.PirateRank <> High(TShipRank)) then
       GetPlayer.AddPirateRankPoints(GetPlayer.GetPirateRankPointsToNextRank);
   end;
-  if CurrentScreenId = screenRuinsTalk then
+  if CurrentScreenId = screen_ruins_talk then
   begin
     RuinsTalkScreen.I_Start;
     RuinsTalkScreen.RestartTextPresentation;
@@ -424,15 +424,15 @@ var
   Item: TEquipment;
 begin
   if (Galaxy = nil) or
-    (CurrentScreenId = screenShip) or (GetPlayer = nil) or not GetPlayer.IsOnPlanet then Exit;
+    (CurrentScreenId = screen_ship) or (GetPlayer = nil) or not GetPlayer.IsOnPlanet then Exit;
   RestoreTemporaryShopStock;
   Item := TWeapon.Create;
   GetPlayer.CurrentPlanet.EquipmentShop.Add(Item);
-  (Item as TWeapon).Init(TItemType(RandomIntRange(Ord(t_Weapon9), Ord(t_Weapon12))), RandomIntRange(50, 100),
+  (Item as TWeapon).Init(TItemType(RandomIntRange(Ord(item_multiresonator), Ord(item_turbogravitron))), RandomIntRange(50, 100),
     RandomIntRange(4, 8), RaceToOwner(GetPlayer.CurrentPlanet.RaceId));
-  (Item as TWeapon).Improve(ikAny);
+  (Item as TWeapon).Improve(upgrade_random);
   BuildTemporaryShopSlotGrid;
-  if CurrentScreenId = screenEquipmentShop then
+  if CurrentScreenId = screen_equipment_shop then
   begin
     EquipmentShopScreen.BuildGoodsControls;
     EquipmentShopScreen.UpdateScrollButtons;
@@ -448,15 +448,15 @@ var
   Info: PWeaponInfo;
 begin
   if (Galaxy = nil) or
-    (CurrentScreenId = screenShip) or (GetPlayer = nil) or not GetPlayer.IsOnPlanet then Exit;
+    (CurrentScreenId = screen_ship) or (GetPlayer = nil) or not GetPlayer.IsOnPlanet then Exit;
   RestoreTemporaryShopStock;
-  Info := Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [waFree], 8, 1);
+  Info := Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [availability_unrestricted], 8, 1);
   Item := CreateGeneratedWeapon(Info, RandomIntRange(14, 200), RandomIntRange(1, 8), RaceToOwner(GetPlayer.CurrentPlanet.RaceId));
   GetPlayer.CurrentPlanet.EquipmentShop.Add(Item);
   Item.Cost := RandomIntRange(1, 10);
-  if Item.Weight > 100 then Item.Improve(ikMajor);
+  if Item.Weight > 100 then Item.Improve(upgrade_major);
   BuildTemporaryShopSlotGrid;
-  if CurrentScreenId = screenEquipmentShop then
+  if CurrentScreenId = screen_equipment_shop then
   begin
     EquipmentShopScreen.BuildGoodsControls;
     EquipmentShopScreen.UpdateScrollButtons;
@@ -471,12 +471,12 @@ var
   Item: TArtefact;
 begin
   if (Galaxy = nil) or
-    (GetPlayer = nil) or not GetPlayer.InNormalSpace or (CurrentScreenId <> screenStarMap) or (StarMapScreen.Mode <> smmOrders) then Exit;
+    (GetPlayer = nil) or not GetPlayer.InNormalSpace or (CurrentScreenId <> screen_star_map) or (StarMapScreen.Mode <> map_mode_orders) then Exit;
   Item := TArtefact.Create;
-  Item.Init(GetPlayer.HomePlanet.OwnerId, t_ArtefactBomb);
+  Item.Init(GetPlayer.HomePlanet.OwnerId, artefact_bomb);
   GetPlayer.Artefacts.Add(Item);
   Item := TArtefact.Create;
-  Item.Init(GetPlayer.HomePlanet.OwnerId, t_ArtefactBomb);
+  Item.Init(GetPlayer.HomePlanet.OwnerId, artefact_bomb);
   GetPlayer.Artefacts.Add(Item);
   GetPlayer.RefreshDerivedStats(True);
   StarMapScreen.MainPanel.RefreshMoneyAndCargo;
@@ -488,13 +488,13 @@ end;
 procedure CheatRobotforce;
 begin
   if (Galaxy = nil) or (GetPlayer = nil) or GetPlayer.InHyperspace then Exit;
-  GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, oiMaloc));
-  GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, oiPeleng));
-  GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, oiHuman));
-  GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, oiFeyan));
-  GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, oiGaal));
-  GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, oiUninhabited));
-  GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, oiPirate));
+  GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(artefact_tranclucator, owner_maloc));
+  GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(artefact_tranclucator, owner_peleng));
+  GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(artefact_tranclucator, owner_human));
+  GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(artefact_tranclucator, owner_feyan));
+  GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(artefact_tranclucator, owner_gaal));
+  GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(artefact_tranclucator, owner_uninhabited));
+  GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(artefact_tranclucator, owner_pirate));
   GetPlayer.RefreshDerivedStats(True);
   ReportCheat(60, DecodeTextW('RFOCBIOLTQFNOCROCRE')); // 'ROBOTFORCE'
 end;
@@ -505,8 +505,8 @@ procedure CheatArtefact;
 var
   Item: TItem;
 begin
-  if (Galaxy = nil) or (GetPlayer = nil) or (CurrentScreenId <> screenArcadeBattle) then Exit;
-  Item := CreateRandomLootItem(ilpAnyAvailable, RaceToOwner(GetPlayer.HomePlanet.RaceId), RandomIntRange(1, 1000000000));
+  if (Galaxy = nil) or (GetPlayer = nil) or (CurrentScreenId <> screen_arcade_battle) then Exit;
+  Item := CreateRandomLootItem(loot_any_available, RaceToOwner(GetPlayer.HomePlanet.RaceId), RandomIntRange(1, 1000000000));
   if Item is TArtefact then GetPlayer.Artefacts.Add(Item)
   else GetPlayer.Inventory.Add(Item);
   GetPlayer.RefreshDerivedStats(True);
@@ -518,19 +518,19 @@ end;
 procedure CheatMoney;
 begin
   if (Galaxy = nil) or (GetPlayer = nil) then Exit;
-  if not ((GetPlayer.InNormalSpace and (CurrentScreenId = screenStarMap) and (StarMapScreen.Mode = smmOrders)) or
-    (CurrentScreenId = screenPlanet) or (CurrentScreenId = screenPlanetNO) or
-    (CurrentScreenId = screenGoodsShop) or (CurrentScreenId = screenEquipmentShop)) then Exit;
+  if not ((GetPlayer.InNormalSpace and (CurrentScreenId = screen_star_map) and (StarMapScreen.Mode = map_mode_orders)) or
+    (CurrentScreenId = screen_planet) or (CurrentScreenId = screen_uninhabited_planet) or
+    (CurrentScreenId = screen_goods_shop) or (CurrentScreenId = screen_equipment_shop)) then Exit;
   GetPlayer.SetMoney(GetPlayer.Money + 10000);
-  if CurrentScreenId = screenStarMap then StarMapScreen.MainPanel.RefreshMoneyAndCargo
-  else if CurrentScreenId = screenPlanet then PlanetScreen.MainPanel.RefreshMoneyAndCargo
-  else if CurrentScreenId = screenPlanetNO then UninhabitedPlanetScreen.MainPanel.RefreshMoneyAndCargo
-  else if CurrentScreenId = screenGoodsShop then
+  if CurrentScreenId = screen_star_map then StarMapScreen.MainPanel.RefreshMoneyAndCargo
+  else if CurrentScreenId = screen_planet then PlanetScreen.MainPanel.RefreshMoneyAndCargo
+  else if CurrentScreenId = screen_uninhabited_planet then UninhabitedPlanetScreen.MainPanel.RefreshMoneyAndCargo
+  else if CurrentScreenId = screen_goods_shop then
   begin
     GoodsShopScreen.MainPanel.RefreshMoneyAndCargo;
     GoodsShopScreen.RefreshGoodsDisplay;
   end
-  else if CurrentScreenId = screenEquipmentShop then EquipmentShopScreen.MainPanel.RefreshMoneyAndCargo;
+  else if CurrentScreenId = screen_equipment_shop then EquipmentShopScreen.MainPanel.RefreshMoneyAndCargo;
   ReportCheat(40, DecodeTextW('MEOLNIERYE'));
 end;
 { @end $685F94 }
@@ -544,14 +544,14 @@ var
   Item: TEquipment;
 begin
   if (Galaxy = nil) or
-    (GetPlayer = nil) or not GetPlayer.InNormalSpace or (CurrentScreenId <> screenStarMap) or (StarMapScreen.Mode <> smmOrders) then Exit;
+    (GetPlayer = nil) or not GetPlayer.InNormalSpace or (CurrentScreenId <> screen_star_map) or (StarMapScreen.Mode <> map_mode_orders) then Exit;
   BestDistance := 1.0e30;
   Nearest := nil;
   for I := 0 to GetPlayer.CurrentStar.Ships.Count - 1 do
   begin
     Ship := GetPlayer.CurrentStar.Ships[I];
     if (GetPlayer = Ship) or (BlazerShip = Ship) or (KellerShip = Ship) or (TerronShip = Ship) or
-      not (Ship.TypeId in [stKling..stWarrior]) or Ship.IsOutsideStarSpace then Continue;
+      not (Ship.TypeId in [ship_dominator..ship_warrior]) or Ship.IsOutsideStarSpace then Continue;
     Distance := PointDistanceSquared(Ship.Position, GetPlayer.Position);
     if Distance < BestDistance then
     begin
@@ -564,9 +564,9 @@ begin
   for I := Ship.Inventory.Count - 1 downto 0 do
   begin
     Item := Ship.Inventory[I];
-    if Item.ItemType = t_Hull then Continue;
-    if (Item.ItemType = t_Engine) and (Item.EquippedFlag <> 0) then Continue;
-    if (Item.ItemType = t_FuelTanks) and (Item.EquippedFlag <> 0) then Continue;
+    if Item.ItemType = item_hull then Continue;
+    if (Item.ItemType = item_engine) and (Item.EquippedFlag <> 0) then Continue;
+    if (Item.ItemType = item_fuel_tanks) and (Item.EquippedFlag <> 0) then Continue;
     Ship.DropCarriedItemAsMovingLoot(Item);
   end;
   Ship.RefreshDerivedStats(True);
@@ -581,16 +581,16 @@ var
   I: Integer;
 begin
   if (Galaxy = nil) or
-    (GetPlayer = nil) or GetPlayer.InHyperspace or ((CurrentScreenId = screenStarMap) and (StarMapScreen.Mode <> smmOrders)) then Exit;
+    (GetPlayer = nil) or GetPlayer.InHyperspace or ((CurrentScreenId = screen_star_map) and (StarMapScreen.Mode <> map_mode_orders)) then Exit;
   for I := 1 to GetPlayer.Inventory.Count - 1 do
   begin
     Item := GetPlayer.Inventory[I];
-    if Item.ItemType <> t_Hull then Item.Weight := Max(1, Item.Weight div 2);
+    if Item.ItemType <> item_hull then Item.Weight := Max(1, Item.Weight div 2);
   end;
   for I := 0 to GetPlayer.Artefacts.Count - 1 do
   begin
     Item := GetPlayer.Artefacts[I];
-    if Item.ItemType = t_ArtefactTranclucator then
+    if Item.ItemType = artefact_tranclucator then
       TTranclucator((Item as TArtefactTranclucator).Ship).ArtefactSize := Max(1, Item.Weight div 2);
     Item.Weight := Max(1, Item.Weight div 2);
   end;
@@ -607,24 +607,24 @@ var
   Info: PWeaponInfo;
 begin
   if (Galaxy = nil) or
-    (GetPlayer = nil) or not GetPlayer.IsDockedToShip or (CurrentScreenId = screenShip) or (GetPlayer.DockedTo.TypeId <> rstScienceBase) then Exit;
-  Info := Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [waNotSoldAndNodeRepair], 8, 1);
-  Item := CreateGeneratedWeapon(Info, RandomIntRange(77, 200), RandomIntRange(1, 8), oiDominator);
+    (GetPlayer = nil) or not GetPlayer.IsDockedToShip or (CurrentScreenId = screen_ship) or (GetPlayer.DockedTo.TypeId <> station_science_base) then Exit;
+  Info := Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [availability_not_sold_node_repair], 8, 1);
+  Item := CreateGeneratedWeapon(Info, RandomIntRange(77, 200), RandomIntRange(1, 8), owner_dominator);
   case RandomIntRange(1, 3) of
-    1: Item.DominatorSeries := dsBlazer;
-    2: Item.DominatorSeries := dsKeller;
-    3: Item.DominatorSeries := dsTerron;
+    1: Item.DominatorSeries := series_blazer;
+    2: Item.DominatorSeries := series_keller;
+    3: Item.DominatorSeries := series_terron;
   end;
   GetPlayer.Inventory.Add(Item);
   GetPlayer.RefreshDerivedStats(True);
-  if CurrentScreenId = screenRuinsTalk then StarMapScreen.MainPanel.RefreshMoneyAndCargo
-  else if CurrentScreenId = screenGoodsShop then
+  if CurrentScreenId = screen_ruins_talk then StarMapScreen.MainPanel.RefreshMoneyAndCargo
+  else if CurrentScreenId = screen_goods_shop then
   begin
     GoodsShopScreen.MainPanel.RefreshMoneyAndCargo;
     GoodsShopScreen.RefreshGoodsDisplay;
   end
-  else if CurrentScreenId = screenEquipmentShop then EquipmentShopScreen.MainPanel.RefreshMoneyAndCargo
-  else if CurrentScreenId = screenInfo then InfoScreen.MainPanel.RefreshMoneyAndCargo;
+  else if CurrentScreenId = screen_equipment_shop then EquipmentShopScreen.MainPanel.RefreshMoneyAndCargo
+  else if CurrentScreenId = screen_info then InfoScreen.MainPanel.RefreshMoneyAndCargo;
   ReportCheat(160, DecodeTextW('KALKINSOSUANNIINTHEMM')); // 'KLISSANITEM'
 end;
 { @end $686468 }
@@ -637,16 +637,16 @@ var
   Ship: TShip;
 begin
   if (Galaxy = nil) or
-    (GetPlayer = nil) or not GetPlayer.IsDockedToShip or (CurrentScreenId = screenShip) or (GetPlayer.DockedTo.TypeId <> rstPirateBase) then Exit;
+    (GetPlayer = nil) or not GetPlayer.IsDockedToShip or (CurrentScreenId = screen_ship) or (GetPlayer.DockedTo.TypeId <> station_pirate_base) then Exit;
   for I := 0 to Galaxy.Stars.Count - 1 do
   begin
     Star := Galaxy.Stars[I];
     for J := 0 to Star.Ships.Count - 1 do
     begin
       Ship := Star.Ships[J];
-      if Ship.TypeId in [stKling, stTranclucator..rstCustomStation] then Continue;
-      if not ((Ship.TypeId = stPirate) or (GetPlayer = Ship) or
-        ((Ship.TypeId = stRanger) and ((Ship as TRanger).PreferredCareer = rcPirate))) then
+      if Ship.TypeId in [ship_dominator, ship_tranclucator..station_custom] then Continue;
+      if not ((Ship.TypeId = ship_pirate) or (GetPlayer = Ship) or
+        ((Ship.TypeId = ship_ranger) and ((Ship as TRanger).PreferredCareer = career_pirate))) then
       begin
         if GetPlayer <> Ship.PartnerShip then Ship.ChangeRelationToRanger(GetPlayer, -60);
         Continue;
@@ -659,16 +659,16 @@ begin
       Ship.RefreshDerivedStats(True);
     end;
   end;
-  GetPlayer.CareerStatus[rcPirate] := 100;
-  GetPlayer.ChangePlanetRelations(nil, rcmDecrease, 60, [oiMaloc, oiHuman, oiFeyan, oiGaal]);
-  if CurrentScreenId = screenRuinsTalk then StarMapScreen.MainPanel.RefreshMoneyAndCargo
-  else if CurrentScreenId = screenGoodsShop then
+  GetPlayer.CareerStatus[career_pirate] := 100;
+  GetPlayer.ChangePlanetRelations(nil, relation_change_subtract, 60, [owner_maloc, owner_human, owner_feyan, owner_gaal]);
+  if CurrentScreenId = screen_ruins_talk then StarMapScreen.MainPanel.RefreshMoneyAndCargo
+  else if CurrentScreenId = screen_goods_shop then
   begin
     GoodsShopScreen.MainPanel.RefreshMoneyAndCargo;
     GoodsShopScreen.RefreshGoodsDisplay;
   end
-  else if CurrentScreenId = screenEquipmentShop then EquipmentShopScreen.MainPanel.RefreshMoneyAndCargo
-  else if CurrentScreenId = screenInfo then InfoScreen.MainPanel.RefreshMoneyAndCargo;
+  else if CurrentScreenId = screen_equipment_shop then EquipmentShopScreen.MainPanel.RefreshMoneyAndCargo
+  else if CurrentScreenId = screen_info then InfoScreen.MainPanel.RefreshMoneyAndCargo;
   ReportCheat(200, DecodeTextW('WRENARPBOSNASOTERLEINAGATOHE')); // 'WEAPONSTRENGTH'
 end;
 { @end $68665C }
@@ -681,11 +681,11 @@ var
   I: Integer;
 begin
   if (Galaxy = nil) or
-    (GetPlayer = nil) or not GetPlayer.InNormalSpace or (CurrentScreenId <> screenStarMap) or (StarMapScreen.Mode <> smmOrders) then Exit;
+    (GetPlayer = nil) or not GetPlayer.InNormalSpace or (CurrentScreenId <> screen_star_map) or (StarMapScreen.Mode <> map_mode_orders) then Exit;
   for I := 0 to 9 do
   begin
     Item := TArtefact.Create;
-    Item.Init(GetPlayer.HomePlanet.OwnerId, t_ArtefactBomb);
+    Item.Init(GetPlayer.HomePlanet.OwnerId, artefact_bomb);
     Radius := RandomIntRange(300, 700);
     Angle := HeadingDegreesToRadians(RandomIntRange(0, 360));
     Item.Position.X := GetPlayer.Position.X + Sin(Angle) * Radius;
@@ -706,7 +706,7 @@ var
   X, Y: Single;
 begin
   if (Galaxy = nil) or
-    (GetPlayer = nil) or not GetPlayer.InNormalSpace or (CurrentScreenId <> screenStarMap) or (StarMapScreen.Mode <> smmOrders) then Exit;
+    (GetPlayer = nil) or not GetPlayer.InNormalSpace or (CurrentScreenId <> screen_star_map) or (StarMapScreen.Mode <> map_mode_orders) then Exit;
   Total := 0;
   while Total < 10000 do
   begin
@@ -741,7 +741,7 @@ begin
   if (Galaxy = nil) or (GetPlayer = nil) then Exit;
   TotalKinds := 7;
   Remaining := TotalKinds;
-  Kinds := [rstRangerCenter..rstDominion];
+  Kinds := [station_ranger_center..station_dominion];
   for I := 0 to GetPlayer.CurrentStar.Ships.Count - 1 do
   begin
     Ship := GetPlayer.CurrentStar.Ships[I];
@@ -752,7 +752,7 @@ begin
   if TotalKinds - Remaining >= 3 then Exit;
   Choice := RandomIntRange(1, Remaining);
   I := 0;
-  for Kind := rstRangerCenter to rstDominion do
+  for Kind := station_ranger_center to station_dominion do
     if Kind in Kinds then
     begin
       Inc(I);
@@ -774,7 +774,7 @@ var
   Constellation: TConstellation;
 begin
   if (Galaxy = nil) or
-    (GetPlayer = nil) or not GetPlayer.IsDockedToShip or (CurrentScreenId = screenShip) or (GetPlayer.DockedTo.TypeId <> rstPirateBase) then Exit;
+    (GetPlayer = nil) or not GetPlayer.IsDockedToShip or (CurrentScreenId = screen_ship) or (GetPlayer.DockedTo.TypeId <> station_pirate_base) then Exit;
   I := 0;
   // Native search skips hidden sectors here, then randomly seeks a hidden one.
   while I < Galaxy.Constellations.Count do
@@ -800,19 +800,19 @@ end;
 procedure CheatHugemoney;
 begin
   if (Galaxy = nil) or (GetPlayer = nil) then Exit;
-  if not ((GetPlayer.InNormalSpace and (CurrentScreenId = screenStarMap) and (StarMapScreen.Mode = smmOrders)) or
-    (CurrentScreenId = screenPlanet) or (CurrentScreenId = screenPlanetNO) or
-    (CurrentScreenId = screenGoodsShop) or (CurrentScreenId = screenEquipmentShop)) then Exit;
+  if not ((GetPlayer.InNormalSpace and (CurrentScreenId = screen_star_map) and (StarMapScreen.Mode = map_mode_orders)) or
+    (CurrentScreenId = screen_planet) or (CurrentScreenId = screen_uninhabited_planet) or
+    (CurrentScreenId = screen_goods_shop) or (CurrentScreenId = screen_equipment_shop)) then Exit;
   GetPlayer.SetMoney((GetPlayer.Money div 1000000 + 1) * 1000000);
-  if CurrentScreenId = screenStarMap then StarMapScreen.MainPanel.RefreshMoneyAndCargo
-  else if CurrentScreenId = screenPlanet then PlanetScreen.MainPanel.RefreshMoneyAndCargo
-  else if CurrentScreenId = screenPlanetNO then UninhabitedPlanetScreen.MainPanel.RefreshMoneyAndCargo
-  else if CurrentScreenId = screenGoodsShop then
+  if CurrentScreenId = screen_star_map then StarMapScreen.MainPanel.RefreshMoneyAndCargo
+  else if CurrentScreenId = screen_planet then PlanetScreen.MainPanel.RefreshMoneyAndCargo
+  else if CurrentScreenId = screen_uninhabited_planet then UninhabitedPlanetScreen.MainPanel.RefreshMoneyAndCargo
+  else if CurrentScreenId = screen_goods_shop then
   begin
     GoodsShopScreen.MainPanel.RefreshMoneyAndCargo;
     GoodsShopScreen.RefreshGoodsDisplay;
   end
-  else if CurrentScreenId = screenEquipmentShop then EquipmentShopScreen.MainPanel.RefreshMoneyAndCargo;
+  else if CurrentScreenId = screen_equipment_shop then EquipmentShopScreen.MainPanel.RefreshMoneyAndCargo;
   ReportCheat(300, DecodeTextW('HAUNGLESMIOMNEELYS'));
 end;
 { @end $686F6C }
@@ -824,14 +824,14 @@ var
   I: Integer;
 begin
   if (Galaxy = nil) or
-    (GetPlayer = nil) or not GetPlayer.IsOnPlanet or (GetPlayer.CurrentPlanet.OwnerId <> oiPeleng) or (CurrentScreenId = screenShip) then Exit;
+    (GetPlayer = nil) or not GetPlayer.IsOnPlanet or (GetPlayer.CurrentPlanet.OwnerId <> owner_peleng) or (CurrentScreenId = screen_ship) then Exit;
   for I := 0 to TemporaryShopSlots.Count - 1 do
   begin
     Item := TShopSlot(TemporaryShopSlots[I]).Item;
     if (Item <> nil) and (Item is TWeapon) then
       (Item as TWeapon).Range := (Item as TWeapon).Range * 2;
   end;
-  GetPlayer.ChangePlanetRelations(nil, rcmDecrease, 50, [oiMaloc, oiHuman, oiFeyan, oiGaal]);
+  GetPlayer.ChangePlanetRelations(nil, relation_change_subtract, 50, [owner_maloc, owner_human, owner_feyan, owner_gaal]);
   ReportCheat(100, DecodeTextW('PLEVLIESNOGASRUEROPTROINSAEN')); // 'PELENGSURPRISE'
 end;
 { @end $6870F0 }
@@ -840,7 +840,7 @@ end;
 procedure CheatSuperhull;
 begin
   if (Galaxy = nil) or
-    (GetPlayer = nil) or GetPlayer.InHyperspace or ((CurrentScreenId = screenStarMap) and (StarMapScreen.Mode <> smmOrders)) then Exit;
+    (GetPlayer = nil) or GetPlayer.InHyperspace or ((CurrentScreenId = screen_star_map) and (StarMapScreen.Mode <> map_mode_orders)) then Exit;
   GetPlayer.GetHull.Weight := Min(2000, Round(GetPlayer.GetHull.Weight * 1.3));
   GetPlayer.GetHull.HullPoints := GetPlayer.GetHull.Weight;
   GetPlayer.RefreshDerivedStats(True);
@@ -858,18 +858,18 @@ var
 begin
   if Galaxy = nil then Exit;
   if GetPlayer = nil then Exit;
-  if CurrentScreenId = screenArcadeBattle then
+  if CurrentScreenId = screen_arcade_battle then
     if KellerArcadeShip = nil then
       for I := PlayerArcadeShip.Enemies.Count - 1 downto 0 do
         TabHit(PlayerArcadeShip.Enemies[I]).ApplyDamage(
           Round(TabHit(PlayerArcadeShip.Enemies[I]).Health * 2 / ShieldDamageScale), nil, False);
-  if CurrentScreenId = screenStarMap then
+  if CurrentScreenId = screen_star_map then
     for I := 0 to GetPlayer.CurrentStar.Ships.Count - 1 do
     begin
       Ship := GetPlayer.CurrentStar.Ships[I];
       if GetPlayer <> Ship then
         if not Ship.InHyperspace then
-          if (Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> oiUninhabited) then
+          if (Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> owner_uninhabited) then
             Ship.DestroyQueued := True;
     end;
   ReportCheat(30, DecodeTextW('BLOSOMM')); // 'BOOM'
@@ -879,19 +879,19 @@ end;
 { @routine $687524 CheatHaterangers }
 procedure CheatHaterangers;
 const
-  ShipTypes = [htPirate..htDiplomat];
-  Owners = [oiMaloc..oiPirate];
+  ShipTypes = [hull_pirate..hull_diplomat];
+  Owners = [owner_maloc..owner_pirate];
 var
   I: Integer;
   Ship: TShip;
 begin
   if (Galaxy = nil) or
-    (GetPlayer = nil) or not GetPlayer.InNormalSpace or (CurrentScreenId <> screenStarMap) or (StarMapScreen.Mode <> smmOrders) then Exit;
+    (GetPlayer = nil) or not GetPlayer.InNormalSpace or (CurrentScreenId <> screen_star_map) or (StarMapScreen.Mode <> map_mode_orders) then Exit;
   ReportCheat(10, DecodeTextW('HEAVTIERROASNAGZEOROST')); // 'HATERANGERS'
   for I := 0 to Galaxy.Rangers.Count - 1 do
   begin
     Ship := Galaxy.Rangers[I];
-    (Ship as TRanger).ChangeShipRelations(nil, rcmDecrease, 80, ShipTypes, Owners);
+    (Ship as TRanger).ChangeShipRelations(nil, relation_change_subtract, 80, ShipTypes, Owners);
   end;
 end;
 { @end $687524 }
@@ -904,16 +904,16 @@ var
   Planet: TPlanet;
 begin
   if (Galaxy = nil) or
-    (GetPlayer = nil) or not GetPlayer.IsDockedToShip or (CurrentScreenId = screenShip) or (GetPlayer.DockedTo.TypeId <> rstPirateBase) then Exit;
+    (GetPlayer = nil) or not GetPlayer.IsDockedToShip or (CurrentScreenId = screen_ship) or (GetPlayer.DockedTo.TypeId <> station_pirate_base) then Exit;
   for I := 0 to Galaxy.Stars.Count - 1 do
   begin
     Star := Galaxy.Stars[I];
-    if not (Star.ControlFaction in [sfCoalition, sfPirates]) then Continue;
+    if not (Star.ControlFaction in [faction_coalition, faction_pirates]) then Continue;
     if Star.Status.CustomFaction <> '' then Continue;
     for Attempts := 1 to 6 do
     begin
       Planet := Star.Planets[RandomIntRange(0, Star.Planets.Count - 1)];
-      if Planet.OwnerId in [oiMaloc..oiGaal, oiPirate] then
+      if Planet.OwnerId in [owner_maloc..owner_gaal, owner_pirate] then
       begin
         Planet.BuyPirate(100);
         Break;
@@ -932,16 +932,16 @@ var
   Info: PWeaponInfo;
 begin
   if (Galaxy = nil) or (GetPlayer = nil) then Exit;
-  for I := 1 to CountItemTypesInMask([t_IndustrialLaser..t_Lirecron]) do
+  for I := 1 to CountItemTypesInMask([item_industrial_laser..item_lirecron]) do
   begin
-    Kind := GetItemTypeFromMask([t_IndustrialLaser..t_Lirecron], I);
+    Kind := GetItemTypeFromMask([item_industrial_laser..item_lirecron], I);
     GetPlayer.Inventory.Add(CreateGeneratedEquipment(Kind,
       Round(WeaponInfos[Kind].AverageSize * EquipmentSizeFactors[5]), Galaxy.TechLevel, GetPlayer.OwnerId));
   end;
   for I := 0 to Galaxy.CustomWeaponTypes.Count - 1 do
   begin
     Info := Galaxy.CustomWeaponTypes[I];
-    if Info.Availability = waSystemOnly then Continue;
+    if Info.Availability = availability_system_only then Continue;
     GetPlayer.Inventory.Add(CreateGeneratedWeapon(Info, Round(Info.AverageSize * EquipmentSizeFactors[5]), Galaxy.TechLevel, GetPlayer.OwnerId));
   end;
   ReportCheat(10, DecodeTextW('GOUMNO')); // 'GUN'
@@ -955,9 +955,9 @@ var
   Item: TEquipment;
 begin
   if (Galaxy = nil) or (GetPlayer = nil) then Exit;
-  for Owner := oiMaloc to oiGaal do
+  for Owner := owner_maloc to owner_gaal do
   begin
-    Item := CreateGeneratedEquipment(t_Vertix, 20, Galaxy.TechLevel, Owner);
+    Item := CreateGeneratedEquipment(item_vertix, 20, Galaxy.TechLevel, Owner);
     GetPlayer.Inventory.Add(Item);
   end;
   ReportCheat(10, DecodeTextW('VREVRETOIYX')); // 'VERTIX'
@@ -970,7 +970,7 @@ var
   Kind: TItemType;
 begin
   if (Galaxy = nil) or (GetPlayer = nil) then Exit;
-  for Kind := t_FuelTanks to t_DefGenerator do
+  for Kind := item_fuel_tanks to item_defense_generator do
     GetPlayer.Inventory.Add(CreateGeneratedEquipment(Kind,
       Round(GetAverageItemSize(Kind) * EquipmentSizeFactors[5]), 8, GetPlayer.OwnerId));
   ReportCheat(10, DecodeTextW('DREAVNIYCHER')); // 'DEVICE'
@@ -984,26 +984,26 @@ var
   Item: TEquipment;
 begin
   if (Galaxy = nil) or (GetPlayer = nil) then Exit;
-  for I := 0 to Length(ArtefactLootPools[ilpAnyAvailable]) - 1 do
+  for I := 0 to Length(ArtefactLootPools[loot_any_available]) - 1 do
   begin
-    Item := TObject(CreateConfiguredArtefactByItemType(ArtefactLootPools[ilpAnyAvailable][I], GetPlayer.OwnerId)) as TEquipmentWithActCode;
+    Item := TObject(CreateConfiguredArtefactByItemType(ArtefactLootPools[loot_any_available][I], GetPlayer.OwnerId)) as TEquipmentWithActCode;
     GetPlayer.Artefacts.Add(Item);
   end;
-  for I := 0 to Length(CustomArtefactLootPools[ilpAnyAvailable]) - 1 do
+  for I := 0 to Length(CustomArtefactLootPools[loot_any_available]) - 1 do
   begin
     Item := TArtefactCustom.Create;
     with TArtefactCustom(Item) do
     begin
-      ConfigBlockName := CustomArtefactLootPools[ilpAnyAvailable][I];
+      ConfigBlockName := CustomArtefactLootPools[loot_any_available][I];
       LoadConfig(True);
       Init(GetPlayer.OwnerId, ItemType);
     end;
     GetPlayer.Artefacts.Add(Item);
   end;
-  for I := 0 to Length(UselessItemLootPools[ilpAnyAvailable]) - 1 do
+  for I := 0 to Length(UselessItemLootPools[loot_any_available]) - 1 do
   begin
     Item := TUselessItem.Create;
-    TUselessItem(Item).Init(UselessItemLootPools[ilpAnyAvailable][I], dsBlazer, 0, False);
+    TUselessItem(Item).Init(UselessItemLootPools[loot_any_available][I], series_blazer, 0, False);
     Item.OwnerId := GetPlayer.OwnerId;
     GetPlayer.Inventory.Add(Item);
   end;
@@ -1253,7 +1253,7 @@ var
   end;
 begin
   if (Galaxy = nil) or
-    (GetPlayer = nil) or not GetPlayer.InNormalSpace or (CurrentScreenId <> screenStarMap) or (StarMapScreen.Mode <> smmOrders) then Exit;
+    (GetPlayer = nil) or not GetPlayer.InNormalSpace or (CurrentScreenId <> screen_star_map) or (StarMapScreen.Mode <> map_mode_orders) then Exit;
   Parent := RegisteredScreens[CurrentScreenId] as TMessageLoopGI;
   Items := TList.Create;
   Block := GameDataConfig.GetBlock('ABMap');
@@ -1303,11 +1303,11 @@ end;
 { @routine $688C70 CheatWin }
 procedure CheatWin;
 begin
-  if (Galaxy = nil) or (GetPlayer = nil) or (CurrentScreenId = screenArcadeBattle) then Exit;
+  if (Galaxy = nil) or (GetPlayer = nil) or (CurrentScreenId = screen_arcade_battle) then Exit;
   AddCheatPoints(10);
   ScoreScreen.RecordPlayerResult(True);
   AboutScreen.ReturnToScores := True;
-  RequestedScreenId := screenAbout;
+  RequestedScreenId := screen_about;
   (RegisteredScreens[CurrentScreenId] as TMessageLoopGI).RequestClose(1);
 end;
 { @end $688C70 }
@@ -1330,13 +1330,13 @@ begin
       MaxDamage := CalculateStandardMaxDamage;
       Range := CalculateStandardRange;
       Cost := CalculateGeneratedWeaponCost(GetWeaponInfo, Weight, TechLevel, OwnerId);
-      if GetWeaponInfo.ShotType in [wstTorpedo, wstMissile, wstRocket] then
+      if GetWeaponInfo.ShotType in [shot_torpedo, shot_missile, shot_rocket] then
       begin
         AmmoCapacity := CalculateGeneratedAmmoCapacity;
         if MicroModuleIndex <> 0 then
-          Inc(AmmoCapacity, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonAmmo]);
+          Inc(AmmoCapacity, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonus_ammo_capacity]);
         if SpecialModuleIndex <> 0 then
-          Inc(AmmoCapacity, MicroModuleTemplates[Item.SpecialModuleIndex - 1].StatBonuses[bonAmmo]);
+          Inc(AmmoCapacity, MicroModuleTemplates[Item.SpecialModuleIndex - 1].StatBonuses[bonus_ammo_capacity]);
       end;
     end;
   end;
@@ -1364,7 +1364,7 @@ begin
   if GetPlayer = nil then Exit;
   for I := 1 to 10 do
   begin
-    Item := TArtefactTransmitter(CreateConfiguredArtefactByItemType(t_ArtefactTransmitter, GetPlayer.OwnerId));
+    Item := TArtefactTransmitter(CreateConfiguredArtefactByItemType(artefact_transmitter, GetPlayer.OwnerId));
     Item.Power := 100;
     GetPlayer.Artefacts.Add(Item);
   end;
@@ -1412,7 +1412,7 @@ begin
   for I := 1 to GetPlayer.Inventory.Count - 1 do
   begin
     Item := GetPlayer.Inventory[I];
-    if Item.EquippedFlag <> 0 then Item.OwnerId := oiUninhabited;
+    if Item.EquippedFlag <> 0 then Item.OwnerId := owner_uninhabited;
   end;
   ReportCheat(10, DecodeTextW('MRALDIETISNOCIHSIMNIA')); // 'MADEINCHINA'
 end;
@@ -1433,7 +1433,7 @@ end;
 procedure ShowCheatFeedback(Text: WideString);
 begin
   if Galaxy = nil then ShowMessageBoxGI(nil, Text, mbgOK)
-  else AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
+  else AddOrUpdatePlayerBubble(message_galaxy_news, Galaxy.CurrentTurn, Text, '');
 end;
 { @end $6892A4 }
 
@@ -1471,7 +1471,7 @@ procedure HandleDebugKey(Key: Word);
 begin
   if IsCheatMessageBoxOpen then Exit;
   if (Galaxy <> nil) and Galaxy.CheatsDisabled then Exit;
-  if not (TurnCalculationPhase in [tcpIdle, tcpGalaxyFinished, tcpPlayerStarFinished, tcpPlayerStarPrepared])
+  if not (TurnCalculationPhase in [turn_idle, turn_galaxy_finished, turn_player_star_finished, turn_player_star_prepared])
     then Exit;
   while True do
   begin
@@ -1502,8 +1502,8 @@ end;
 procedure CheatMakedump;
 begin
   if (GetPlayer = nil) or Galaxy.IronWill or GetPlayer.InHyperspace or (Galaxy.FinalizationNameEncoded <> '')
-    or not (CurrentScreenId in [screenHangar, screenPlanet, screenPlanetNO, screenEquipmentShop,
-      screenGovernment, screenStarMap, screenRuinsTalk, screenInfo, screenGoodsShop]) or
+    or not (CurrentScreenId in [screen_hangar, screen_planet, screen_uninhabited_planet, screen_equipment_shop,
+      screen_government, screen_star_map, screen_ruins_talk, screen_info, screen_goods_shop]) or
     (TMessageLoopGI(RegisteredScreens[CurrentScreenId]).ChildLoop <> nil) then Exit;
   Galaxy.CheckIntegrityChecksum(888);
   Galaxy.CampaignFlag183 := 1;
@@ -1511,8 +1511,8 @@ begin
   CaptureGalaxyPreview(TMessageLoopGI(RegisteredScreens[CurrentScreenId]));
   Galaxy.PrimeIntegrityChecksum(889);
   SaveManagerReturnScreenId := CurrentScreenId;
-  SaveManagerMode := smmSave;
-  RequestedScreenId := screenSaveManager;
+  SaveManagerMode := save_dialog_save;
+  RequestedScreenId := screen_save_manager;
   TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
 end;
 { @end $6894A4 }

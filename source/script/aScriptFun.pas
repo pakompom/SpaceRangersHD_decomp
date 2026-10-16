@@ -759,20 +759,20 @@ begin
         ' not found in script ' + av[1].AsString);
   end;
   Index := 2;
-  while (Value.ValueKind = vkArray) and (Index < LastArg) do
+  while (Value.ValueKind = value_array) and (Index < LastArg) do
   begin
     Inc(Index);
-    if av[Index].ValueKind = vkString then
+    if av[Index].ValueKind = value_string then
       Value := Value.AsArray.NamedItems[av[Index].AsString]
     else
       Value := Value.AsArray[av[Index].AsInteger];
   end;
   case Value.ValueKind of
-    vkInt: av[0].AsInteger := Value.AsInteger;
-    vkDword: av[0].AsDword := Value.AsDword;
-    vkFloat: av[0].AsFloat := Value.AsFloat;
-    vkString: av[0].AsString := Value.AsString;
-    vkArray: av[0].AsInteger := Value.AsArray.Count;
+    value_int32: av[0].AsInteger := Value.AsInteger;
+    value_uint32: av[0].AsDword := Value.AsDword;
+    value_float64: av[0].AsFloat := Value.AsFloat;
+    value_string: av[0].AsString := Value.AsString;
+    value_array: av[0].AsInteger := Value.AsArray.Count;
   end;
 end;
 { @end $605F1C }
@@ -796,13 +796,13 @@ begin
   Name := 'g_' + av[2].AsString;
   Value := Script.InitCode.LocalVar.GetVarNE(Name);
   if Value = nil then Value := Script.TurnCode.LocalVar.GetVarNE(Name);
-  if (Value = nil) or (Value.ValueKind <> vkFunction) then
+  if (Value = nil) or (Value.ValueKind <> value_script_function) then
     raise Exception.Create('Error.Script RunFunctionFromScript - function ' + Name +
       ' not found in script ' + av[1].AsString);
   CallCode := TCodeEC.Create;
   CallCode.CopyFromFast(Value.AsFunction);
   for I := 3 to LastArg do
-    if CallCode.LocalVar[I - 3].Kind = vkRef then
+    if CallCode.LocalVar[I - 3].Kind = value_reference then
       CallCode.LocalVar[I - 3].SetRef(av[I])
     else
       CallCode.LocalVar[I - 3].Assume(av[I], False);
@@ -848,7 +848,7 @@ procedure SF_AddPlanetNews(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script AddPlanetNews');
   if High(av) > 1 then Galaxy.AddPlanetNews(TGalaxyNewsKind(av[2].AsInteger), av[1].AsString)
-  else Galaxy.AddPlanetNews(gnScript, av[1].AsString);
+  else Galaxy.AddPlanetNews(news_script, av[1].AsString);
 end;
 { @end $606894 }
 
@@ -915,7 +915,7 @@ begin
   Ship := TShip(av[1].AsDword);
   Owner := TOwnerId(av[2].AsInteger);
   Kind := TAwardKind(av[3].AsInteger);
-  Award := (Ship as TNormalShip).SelectAward(Owner, [Kind], [stKling..rstCustomStation]);
+  Award := (Ship as TNormalShip).SelectAward(Owner, [Kind], [ship_dominator..station_custom]);
   if Award = AwardNotFound then RaiseWideMessage('Error RewardNumber=255');
   Ship.AddAward(Award);
   av[0].AsInteger := Award;
@@ -1060,7 +1060,7 @@ begin
   Found := False;
   if High(av) < 2 then raise Exception.Create('Error.Script SF_DropItem');
   Ship := TShip(av[1].AsDword);
-  if (av[2].ValueKind = vkDword) and (av[2].AsDword > $10000) then
+  if (av[2].ValueKind = value_uint32) and (av[2].AsDword > $10000) then
   begin
     Item := TEquipment(av[2].AsDword);
     if High(av) >= 3 then
@@ -1204,9 +1204,9 @@ end;
 procedure SF_StatusPlayer(av: array of TVarEC; code: TCodeEC);
 begin
   case GetPlayer.GetDominantCareer of
-    rcTrader: av[0].AsInteger := 1;
-    rcWarrior: av[0].AsInteger := 0;
-    rcPirate: av[0].AsInteger := -1;
+    career_trader: av[0].AsInteger := 1;
+    career_warrior: av[0].AsInteger := 0;
+    career_pirate: av[0].AsInteger := -1;
   end;
 end;
 { @end $6078D4 }
@@ -1236,7 +1236,7 @@ var
   Owner: TOwnerId;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script SF_GalaxyMoney');
-  Owner := oiHuman;
+  Owner := owner_human;
   if High(av) >= 2 then Owner := TOwnerId(av[2].AsInteger);
   case av[1].AsInteger of
     0: av[0].AsInteger := Galaxy.ComputeScaledMiniMoney(Owner);
@@ -1387,11 +1387,11 @@ begin
   else if av[2].AsDword <> 0 then Scope := TObject(av[2].AsDword)
   else Scope := nil;
   case av[3].AsDword of
-    0: Mode := rcmCapAt;
-    1: Mode := rcmRaiseTo;
-    2: Mode := rcmIncrease;
-    3: Mode := rcmDecrease;
-  else Mode := rcmCapAt;
+    0: Mode := relation_change_cap;
+    1: Mode := relation_change_floor;
+    2: Mode := relation_change_add;
+    3: Mode := relation_change_subtract;
+  else Mode := relation_change_cap;
   end;
   ShipTypes := THullShipTypeMask(Word(av[5].AsDword));
   Owners := TOwnerMask(Byte(av[6].AsDword));
@@ -1415,11 +1415,11 @@ begin
   else if av[2].AsDword <> 0 then Scope := TObject(av[2].AsDword)
   else Scope := nil;
   case av[3].AsDword of
-    0: Mode := rcmCapAt;
-    1: Mode := rcmRaiseTo;
-    2: Mode := rcmIncrease;
-    3: Mode := rcmDecrease;
-  else Mode := rcmCapAt;
+    0: Mode := relation_change_cap;
+    1: Mode := relation_change_floor;
+    2: Mode := relation_change_add;
+    3: Mode := relation_change_subtract;
+  else Mode := relation_change_cap;
   end;
   Owners := TOwnerMask(Byte(av[5].AsDword));
   TRanger(Ranger).ChangePlanetRelations(Scope, Mode, av[4].AsInteger, Owners);
@@ -1798,14 +1798,14 @@ begin
     for J := 0 to FilterCount - 1 do
     begin
       Filter := ExtractDelimitedPartW(Filters, J, ',');
-      if (Filter = 'NotMaloc') and (Planet.OwnerId = oiMaloc) then Break
-      else if (Filter = 'NotPeleng') and (Planet.OwnerId = oiPeleng) then Break
-      else if (Filter = 'NotPeople') and (Planet.OwnerId = oiHuman) then Break
-      else if (Filter = 'NotFei') and (Planet.OwnerId = oiFeyan) then Break
-      else if (Filter = 'NotGaal') and (Planet.OwnerId = oiGaal) then Break
-      else if (Filter = 'NotKling') and (Planet.OwnerId = oiDominator) then Break
-      else if (Filter = 'NotPirateClan') and (Planet.OwnerId = oiPirate) then Break
-      else if (Filter = 'NotNone') and (Planet.OwnerId = oiUninhabited) then Break;
+      if (Filter = 'NotMaloc') and (Planet.OwnerId = owner_maloc) then Break
+      else if (Filter = 'NotPeleng') and (Planet.OwnerId = owner_peleng) then Break
+      else if (Filter = 'NotPeople') and (Planet.OwnerId = owner_human) then Break
+      else if (Filter = 'NotFei') and (Planet.OwnerId = owner_feyan) then Break
+      else if (Filter = 'NotGaal') and (Planet.OwnerId = owner_gaal) then Break
+      else if (Filter = 'NotKling') and (Planet.OwnerId = owner_dominator) then Break
+      else if (Filter = 'NotPirateClan') and (Planet.OwnerId = owner_pirate) then Break
+      else if (Filter = 'NotNone') and (Planet.OwnerId = owner_uninhabited) then Break;
     end;
     if J < FilterCount then Continue;
     Planets.Add(Planet);
@@ -1840,7 +1840,7 @@ begin
   Count := High(av) - 1;
   Fuel := 0;
   CheckFuel := False;
-  if (av[Count + 1].ValueKind = vkInt) and (av[Count + 1].AsInteger = 1) then
+  if (av[Count + 1].ValueKind = value_int32) and (av[Count + 1].AsInteger = 1) then
   begin
     CheckFuel := True;
     Fuel := Ship.GetFuelTanks.Fuel;
@@ -1995,8 +1995,8 @@ end;
 procedure SF_PlayerDominatorStatistic(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script PlayerDominatorStatistic');
-  av[0].AsInteger := GetPlayer.DominatorKillsByType[TKlingType(av[1].AsInteger)];
-  if High(av) > 1 then GetPlayer.DominatorKillsByType[TKlingType(av[1].AsInteger)] := av[2].AsInteger;
+  av[0].AsInteger := GetPlayer.DominatorKillsByType[TDominatorKind(av[1].AsInteger)];
+  if High(av) > 1 then GetPlayer.DominatorKillsByType[TDominatorKind(av[1].AsInteger)] := av[2].AsInteger;
 end;
 { @end $60A0F8 }
 
@@ -2086,9 +2086,9 @@ begin
   Obj := TObject(av[1].AsDword);
   if High(av) > 1 then
   begin
-    if av[2].AsString = 'EminentWarrior' then av[0].AsInteger := Ord(Galaxy.EminentCareerShips[rcWarrior] = Obj)
-    else if av[2].AsString = 'EminentTrader' then av[0].AsInteger := Ord(Galaxy.EminentCareerShips[rcTrader] = Obj)
-    else if av[2].AsString = 'EminentPirate' then av[0].AsInteger := Ord(Galaxy.EminentCareerShips[rcPirate] = Obj)
+    if av[2].AsString = 'EminentWarrior' then av[0].AsInteger := Ord(Galaxy.EminentCareerShips[career_warrior] = Obj)
+    else if av[2].AsString = 'EminentTrader' then av[0].AsInteger := Ord(Galaxy.EminentCareerShips[career_trader] = Obj)
+    else if av[2].AsString = 'EminentPirate' then av[0].AsInteger := Ord(Galaxy.EminentCareerShips[career_pirate] = Obj)
     else raise Exception.Create(AnsiString('Error.Script RangerStatus - unknown keyword ' + av[2].AsString));
     Exit;
   end;
@@ -2124,9 +2124,9 @@ begin
   Ranger.ExcludedFromRating := av[2].AsInteger <> 0;
   if Ranger.ExcludedFromRating then
   begin
-    if Galaxy.EminentCareerShips[rcTrader] = Ranger then Galaxy.EminentCareerShips[rcTrader] := nil;
-    if Galaxy.EminentCareerShips[rcPirate] = Ranger then Galaxy.EminentCareerShips[rcPirate] := nil;
-    if Galaxy.EminentCareerShips[rcWarrior] = Ranger then Galaxy.EminentCareerShips[rcWarrior] := nil;
+    if Galaxy.EminentCareerShips[career_trader] = Ranger then Galaxy.EminentCareerShips[career_trader] := nil;
+    if Galaxy.EminentCareerShips[career_pirate] = Ranger then Galaxy.EminentCareerShips[career_pirate] := nil;
+    if Galaxy.EminentCareerShips[career_warrior] = Ranger then Galaxy.EminentCareerShips[career_warrior] := nil;
   end;
 end;
 { @end $60A954 }
@@ -2188,8 +2188,8 @@ begin
     for J := 0 to Star.Ships.Count - 1 do
     begin
       Ship := Star.Ships[J];
-      if (Kind = 1) and (Ship.TypeId = stKling) and (TKling(Ship).DominatorSeries = dsBlazer) and
-        (TKling(Ship).KlingType <> ktBoss) and not Ship.HasIndependentScriptFaction then Ship.DestroyQueued := True;
+      if (Kind = 1) and (Ship.TypeId = ship_dominator) and (TKling(Ship).DominatorSeries = series_blazer) and
+        (TKling(Ship).KlingType <> dominator_boss) and not Ship.HasIndependentScriptFaction then Ship.DestroyQueued := True;
     end;
   end;
 end;
@@ -2268,7 +2268,7 @@ begin
   Ship.OrderJump(TStar(av[2].AsDword), Absolute);
   Ship.AbsoluteScriptOrder := SavedOrderLock;
   if GetPlayer = Ship then PendingPlayerFollowTarget := nil;
-  if (GetPlayer = Ship) and (GetInnermostScreenLoop = StarMapScreen) and (StarMapScreen.Mode = smmOrders) then
+  if (GetPlayer = Ship) and (GetInnermostScreenLoop = StarMapScreen) and (StarMapScreen.Mode = map_mode_orders) then
   begin
     StarMapScreen.ClearPathOverlay(True);
     StarMapScreen.BuildShipPathOverlay(Ship, False, '');
@@ -2293,7 +2293,7 @@ begin
   Ship.OrderLanding(TObject(av[2].AsDword), Absolute);
   Ship.AbsoluteScriptOrder := SavedOrderLock;
   if GetPlayer = Ship then PendingPlayerFollowTarget := nil;
-  if (GetPlayer = Ship) and (GetInnermostScreenLoop = StarMapScreen) and (StarMapScreen.Mode = smmOrders) then
+  if (GetPlayer = Ship) and (GetInnermostScreenLoop = StarMapScreen) and (StarMapScreen.Mode = map_mode_orders) then
   begin
     StarMapScreen.ClearPathOverlay(True);
     StarMapScreen.BuildShipPathOverlay(Ship, False, '');
@@ -2572,7 +2572,7 @@ var
   Snapshot: TScriptContextSnapshot;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script ChangeState');
-  if av[1].ValueKind <> vkString then Index := av[1].AsInteger
+  if av[1].ValueKind <> value_string then Index := av[1].AsInteger
   else
   begin
     for Index := 0 to CurrentScript.States.Count - 1 do
@@ -2604,7 +2604,7 @@ end;
 procedure SF_NewsAdd(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) <> 1 then raise Exception.Create('Error.Script NewsAdd');
-  AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, av[1].AsString, '');
+  AddOrUpdatePlayerBubble(message_galaxy_news, Galaxy.CurrentTurn, av[1].AsString, '');
 end;
 { @end $60BE20 }
 
@@ -2632,7 +2632,7 @@ begin
     av[0].AsInteger := 0
   else
   begin
-    with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, av[1].AsString, '') do
+    with AddOrUpdatePlayerBubble(message_radio, Galaxy.CurrentTurn, av[1].AsString, '') do
       Targets[0].ShipId := Ship.Id;
     av[0].AsInteger := 1;
   end;
@@ -2669,9 +2669,9 @@ begin
     end
     else raise Exception.Create('Error.Script Ether objtype');
   end;
-  if not (Kind in [pmRadio, pmRadioPlayer]) or (Obj = nil) or InPlayerSystem then
+  if not (Kind in [message_radio, message_radio_with_player]) or (Obj = nil) or InPlayerSystem then
   begin
-    if (Kind = pmQuestActive) and (Key <> '') and (CurrentScript <> nil) and (CurrentScript.EtherIds.IndexOf(Key) < 0) then
+    if (Kind = message_quest_active) and (Key <> '') and (CurrentScript <> nil) and (CurrentScript.EtherIds.IndexOf(Key) < 0) then
       CurrentScript.EtherIds.Add(Key);
     MessageEntry := AddOrUpdatePlayerBubble(Kind, Galaxy.CurrentTurn,
       ReplaceAllWideString(ReplaceAllWideString(av[3].AsString, '<clr>', TextHighlightColorTag), '<clrEnd>', EndColorTag), Key);
@@ -2727,9 +2727,9 @@ begin
     end
     else raise Exception.Create('Error.Script Ether objtype');
   end;
-  if not (Kind in [pmRadio, pmRadioPlayer]) or (Obj = nil) or InPlayerSystem then
+  if not (Kind in [message_radio, message_radio_with_player]) or (Obj = nil) or InPlayerSystem then
   begin
-    if (Kind = pmQuestActive) and (Key <> '') and (CurrentScript <> nil) and (CurrentScript.EtherIds.IndexOf(Key) < 0) then
+    if (Kind = message_quest_active) and (Key <> '') and (CurrentScript <> nil) and (CurrentScript.EtherIds.IndexOf(Key) < 0) then
       CurrentScript.EtherIds.Add(Key);
     MessageEntry := AddOrUpdatePlayerBubble(Kind, Galaxy.CurrentTurn,
       ReplaceAllWideString(ReplaceAllWideString(av[4].AsString, '<clr>', TextHighlightColorTag), '<clrEnd>', EndColorTag), Key);
@@ -2820,7 +2820,7 @@ begin
     for PlanetIndex := 0 to PlanetCount - 1 do
     begin
       Planet := Star.Planets[PlanetIndex];
-      if Planet.OwnerId <> oiUninhabited then Planet.ChangeRelationToRanger(Ranger, Amount);
+      if Planet.OwnerId <> owner_uninhabited then Planet.ChangeRelationToRanger(Ranger, Amount);
     end;
   end;
 end;
@@ -2929,9 +2929,9 @@ begin
   if GetPlayer = nil then Exit;
   if (High(av) = 1) and (av[1].AsDword = 0) then Exit;
   if not GetPlayer.InNormalSpace then Exit;
-  if CurrentScreenId <> screenStarMap then Exit;
+  if CurrentScreenId <> screen_star_map then Exit;
   if TalkDialogActive then Exit;
-  Immediate := TurnCalculationPhase in [tcpIdle, tcpGalaxyFinished, tcpPlayerStarFinished, tcpPlayerStarPrepared];
+  Immediate := TurnCalculationPhase in [turn_idle, turn_galaxy_finished, turn_player_star_finished, turn_player_star_prepared];
   ScriptSnap(Snapshot);
   if High(av) = 1 then
   begin
@@ -3161,7 +3161,7 @@ begin
     end
     else if ExtractDelimitedPartW(LowerCase(AnsiString(av[1].AsString)), 0, '~') = 'exit_end' then
     begin
-      GameEndReason := gerTerronConversion;
+      GameEndReason := game_end_terron_conversion;
       Count := CountDelimitedPartsW(av[1].AsString, '~');
       if Count > 1 then
         TalkScreen.AddScriptExitChoice(ExtractDelimitedRangeW(av[1].AsString, 1, Count - 1, '~'))
@@ -3510,10 +3510,10 @@ begin
   Kind := av[2].AsInteger;
   Planet := TPlanet(av[3].AsDword);
   av[0].AsInteger := 0;
-  if (Kind in [Ord(t_Food)..Ord(t_Narcotics)]) and (Planet.OwnerId <> oiPirate) then
+  if (Kind in [Ord(item_food)..Ord(item_narcotics)]) and (Planet.OwnerId <> owner_pirate) then
   begin
     if not GoodsLegalOnPlanet[Kind, Planet.RaceId, Planet.Government] then av[0].AsInteger := 1
-    else if (Kind in [Ord(t_Food), Ord(t_Medicine)]) and Ship.IsHealthEffectActive(heNewMolizone) then av[0].AsInteger := 1;
+    else if (Kind in [Ord(item_food), Ord(item_medicine)]) and Ship.IsHealthEffectActive(disease_new_molizone) then av[0].AsInteger := 1;
   end;
 end;
 { @end $610218 }
@@ -3652,7 +3652,7 @@ begin
   if Obj is TScriptPlace then
   begin
     Place := Obj as TScriptPlace;
-    if (Place.PlaceKind = spkPlanetPosition) or (Place.PlaceKind = spkDockedPlanet) then
+    if (Place.PlaceKind = place_planet_position) or (Place.PlaceKind = place_docked_at_planet) then
     begin
       Planet := TObject(Place.TargetValue) as TPlanet;
       Position := Planet.GetPosition;
@@ -3662,7 +3662,7 @@ begin
       Planet := nil;
       Position := Place.GetPoint;
     end;
-    Landed := Place.PlaceKind = spkDockedPlanet;
+    Landed := Place.PlaceKind = place_docked_at_planet;
     Star := Place.OriginStar;
   end
   else if Obj is TPlanet then
@@ -3787,7 +3787,7 @@ begin
   ScriptSnap(Snapshot);
   CurrentScript.BindShip(av[1].AsInteger, Ship);
   Binding := GetScriptShipBindingForContext(Ship, CurrentScript);
-  if (High(av) >= 3) and (av[3].ValueKind = vkString) then
+  if (High(av) >= 3) and (av[3].ValueKind = value_string) then
   begin
     StateIndex := -1;
     if av[3].AsString = '' then
@@ -3887,7 +3887,7 @@ begin
   Ship := TShip(av[1].AsDword);
   if (High(av) > 1) and (av[2].AsInteger <> 0) then
     while Ship.DockedTo <> nil do Ship := Ship.DockedTo;
-  if Ship.InHyperspace and (Ship.Order = soJumpHole) then av[0].AsInteger := 1
+  if Ship.InHyperspace and (Ship.Order = order_black_hole) then av[0].AsInteger := 1
   else av[0].AsInteger := 0;
 end;
 { @end $61169C }
@@ -3899,7 +3899,7 @@ var
 begin
   if High(av) <> 1 then raise Exception.Create('Error.Script ShipIsTakeoff');
   Ship := TShip(av[1].AsDword);
-  if Ship.Order = soTakeoff then av[0].AsInteger := 1 else av[0].AsInteger := 0;
+  if Ship.Order = order_takeoff then av[0].AsInteger := 1 else av[0].AsInteger := 0;
 end;
 { @end $61174C }
 
@@ -3935,7 +3935,7 @@ begin
   if High(av) < 2 then raise Exception.Create('Error.Script ShipEqInSlot');
   Ship := TShip(av[1].AsDword);
   ItemType := TItemType(av[2].AsInteger);
-  if ItemType in [t_Hull..t_DefGenerator] then av[0].AsDword := Cardinal(Ship.EquipmentCache.Slots[ItemType])
+  if ItemType in [item_hull..item_defense_generator] then av[0].AsDword := Cardinal(Ship.EquipmentCache.Slots[ItemType])
   else
   begin
     if High(av) < 3 then SlotIndex := 0 else SlotIndex := av[3].AsInteger - 1;
@@ -3957,17 +3957,17 @@ begin
   if High(av) < 2 then raise Exception.Create('Error.Script ArtefactTypeInUse');
   Ship := TShip(av[1].AsDword);
   Item := nil;
-  if (av[2].ValueKind = vkDword) and (av[2].AsDword > $FFFF) then Item := TArtefact(av[2].AsDword);
+  if (av[2].ValueKind = value_uint32) and (av[2].AsDword > $FFFF) then Item := TArtefact(av[2].AsDword);
   Name := '';
-  if (Item <> nil) and (Item.GetEffectiveType in [t_Artefact, t_Artefact2]) then Name := Item.ConfigBlockName
-  else if av[2].ValueKind = vkString then Name := av[2].AsString;
+  if (Item <> nil) and (Item.GetEffectiveType in [item_custom_artefact, item_custom_artefact_no_wear]) then Name := Item.ConfigBlockName
+  else if av[2].ValueKind = value_string then Name := av[2].AsString;
   if Name <> '' then
   begin
     Count := 0;
     for I := 0 to Ship.Artefacts.Count - 1 do
     begin
       Item := Ship.Artefacts[I];
-      if (Item.ItemType in [t_Artefact, t_Artefact2]) and (Item.ConfigBlockName = Name) and
+      if (Item.ItemType in [item_custom_artefact, item_custom_artefact_no_wear]) and (Item.ConfigBlockName = Name) and
         (Item.BrokenFlag = 0) and (Item.EquippedFlag <> 0) then Inc(Count);
     end;
     av[0].AsInteger := Count;
@@ -3989,7 +3989,7 @@ var
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script ArtefactTypeBoosted');
   Ship := TShip(av[1].AsDword);
-  if (av[2].ValueKind = vkDword) and (av[2].AsDword > $FF) then
+  if (av[2].ValueKind = value_uint32) and (av[2].AsDword > $FF) then
     ItemType := TArtefact(av[2].AsDword).GetEffectiveType
   else ItemType := TItemType(av[2].AsInteger);
   av[0].AsInteger := Ord(Ship.CanBoostArtefact(ItemType, nil, False));
@@ -4129,7 +4129,7 @@ begin
   begin
     Weapon := Ship.Weapons[I];
     if not Ship.IsEquipmentUsable(Weapon) then Continue;
-    if Weapon.GetWeaponInfo.ShotType in [wstMissile, wstRocket] then
+    if Weapon.GetWeaponInfo.ShotType in [shot_missile, shot_rocket] then
     begin
       MinDamage := MinDamage + Ship.GetWeaponMinDamage(Weapon) * Weapon.GetAttackCount * Weapon.GetShotCount;
       MaxDamage := MaxDamage + Ship.GetWeaponMaxDamage(Weapon) * Weapon.GetAttackCount * Weapon.GetShotCount;
@@ -4245,14 +4245,14 @@ end;
 procedure SF_ShipStatusEffect(av: array of TVarEC; code: TCodeEC);
 var
   Ship: TShip;
-  EffectType: TCombatStatusEffectType;
+  EffectType: TCombatEffectKind;
   Index: Integer;
   Strength: Single;
   Source: TShip;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script ShipStatusEffect');
   Ship := TShip(av[1].AsDword);
-  EffectType := TCombatStatusEffectType(av[2].AsInteger);
+  EffectType := TCombatEffectKind(av[2].AsInteger);
   Index := Ship.FindCombatStatusEffect(EffectType);
   if Index < 0 then av[0].AsFloat := 0
   else av[0].AsFloat := PCombatStatusEffect(Ship.CombatStatusEffects[Index]).Strength;
@@ -4453,9 +4453,9 @@ begin
   begin
     if High(av) > 1 then
       case av[2].AsInteger of
-        0: Kind := Byte(htTransport);
-        1: Kind := Byte(htLiner);
-        2: Kind := Byte(htDiplomat);
+        0: Kind := Byte(hull_transport);
+        1: Kind := Byte(hull_liner);
+        2: Kind := Byte(hull_diplomat);
       else Kind := 0;
       end
     else Kind := 0;
@@ -4552,12 +4552,12 @@ begin
   ProgramId := TProgramIndex(av[2].AsDword);
   Ship.ActiveProgramId := ProgramId;
   case ProgramId of
-    prgShipwreck: begin
+    program_shipwreck: begin
       if High(av) > 2 then Count := av[3].AsInteger else Count := SeededRandomIntRange(1, 3, Galaxy.CurrentTurn);
       Ship.DropItemsForDominatorProgram(Count);
     end;
-    prgSelfDestruction: Ship.DestroyQueued := True;
-    prgDisconnection: begin
+    program_self_destruction: Ship.DestroyQueued := True;
+    program_disconnection: begin
       Ship.OrderNone(False);
       Ship.ClearWeaponTargets(nil);
     end;
@@ -4773,7 +4773,7 @@ begin
   for Index := 0 to Ship.CurrentStar.Planets.Count - 1 do
   begin
     Planet := Ship.CurrentStar.Planets[Index];
-    if Planet.OwnerId = oiUninhabited then Continue;
+    if Planet.OwnerId = owner_uninhabited then Continue;
     Distance := PointDistanceSquared(Ship.Position, Planet.GetPosition);
     if Distance < BestDistance then
     begin
@@ -4821,25 +4821,25 @@ var
   Text: WideString;
   Block: TBlockParEC;
   // @nested $6148CC AddConfigBlock
-  procedure AddConfigBlock(Block: TBlockParEC; Dest: TVarEC); // @addr 0x006148CC @note "Nested in SF_CT. Appends to Dest's existing array; empty child blocks contain one vkEmpty placeholder."
+  procedure AddConfigBlock(Block: TBlockParEC; Dest: TVarEC); // @addr 0x006148CC @note "Nested in SF_CT. Appends to Dest's existing array; empty child blocks contain one value_empty placeholder."
   var
     I: Integer;
     Value: TVarEC;
   begin
     for I := 0 to Block.GetParamCount - 1 do
     begin
-      Value := TVarEC.Create(vkString);
+      Value := TVarEC.Create(value_string);
       Value.AsString := Block.GetParamValue(I);
       Value.Name := Block.GetParamName(I);
       Dest.AsArray.AddItem(Value);
     end;
     for I := 0 to Block.GetBlockCount - 1 do
     begin
-      Value := TVarEC.Create(vkArray);
+      Value := TVarEC.Create(value_array);
       Value.AsArray := TVarArrayEC.Create;
       Value.Name := Block.GetBlockNameByIndex(I);
       AddConfigBlock(Block.GetBlockByIndex(I), Value);
-      if Value.AsArray.Count = 0 then Value.AsArray.AddItem(TVarEC.Create(vkEmpty));
+      if Value.AsArray.Count = 0 then Value.AsArray.AddItem(TVarEC.Create(value_empty));
       Dest.AsArray.AddItem(Value);
     end;
   end;
@@ -4847,18 +4847,18 @@ begin
   if High(av) < 1 then raise Exception.Create('Error.Script CT');
   if High(av) > 1 then
   begin
-    if av[2].ValueKind = vkEmpty then
+    if av[2].ValueKind = value_empty then
     begin
-      av[2].ConvertToKind(vkArray);
+      av[2].ConvertToKind(value_array);
       av[2].AsArray := TVarArrayEC.Create;
     end
-    else if av[2].ValueKind <> vkArray then raise Exception.Create('Error.Script CT - 2nd argument is not an array');
+    else if av[2].ValueKind <> value_array then raise Exception.Create('Error.Script CT - 2nd argument is not an array');
     av[2].AsArray.Clear;
     if av[1].AsString = '' then Block := LanguageDataConfig
     else Block := LanguageDataConfig.FindBlockByPath(av[1].AsString);
     if Block <> nil then AddConfigBlock(Block, av[2]);
     av[0].AsInteger := av[2].AsArray.Count;
-    if av[2].AsArray.Count = 0 then av[2].AsArray.AddItem(TVarEC.Create(vkEmpty));
+    if av[2].AsArray.Count = 0 then av[2].AsArray.AddItem(TVarEC.Create(value_empty));
   end
   else
   begin
@@ -4903,25 +4903,25 @@ procedure SF_GetMainData(av: array of TVarEC; code: TCodeEC);
 var
   Block: TBlockParEC;
   // @nested $614FB8 AddMainDataBlock
-  procedure AddMainDataBlock(Block: TBlockParEC; Dest: TVarEC); // @addr 0x00614FB8 @note "Nested in SF_GetMainData. Appends to Dest's existing array; empty child blocks contain one vkEmpty placeholder."
+  procedure AddMainDataBlock(Block: TBlockParEC; Dest: TVarEC); // @addr 0x00614FB8 @note "Nested in SF_GetMainData. Appends to Dest's existing array; empty child blocks contain one value_empty placeholder."
   var
     I: Integer;
     Value: TVarEC;
   begin
     for I := 0 to Block.GetParamCount - 1 do
     begin
-      Value := TVarEC.Create(vkString);
+      Value := TVarEC.Create(value_string);
       Value.AsString := Block.GetParamValue(I);
       Value.Name := Block.GetParamName(I);
       Dest.AsArray.AddItem(Value);
     end;
     for I := 0 to Block.GetBlockCount - 1 do
     begin
-      Value := TVarEC.Create(vkArray);
+      Value := TVarEC.Create(value_array);
       Value.AsArray := TVarArrayEC.Create;
       Value.Name := Block.GetBlockNameByIndex(I);
       AddMainDataBlock(Block.GetBlockByIndex(I), Value);
-      if Value.AsArray.Count = 0 then Value.AsArray.AddItem(TVarEC.Create(vkEmpty));
+      if Value.AsArray.Count = 0 then Value.AsArray.AddItem(TVarEC.Create(value_empty));
       Dest.AsArray.AddItem(Value);
     end;
   end;
@@ -4929,18 +4929,18 @@ begin
   if High(av) < 1 then raise Exception.Create('Error.Script GetMainData');
   if High(av) > 1 then
   begin
-    if av[2].ValueKind = vkEmpty then
+    if av[2].ValueKind = value_empty then
     begin
-      av[2].ConvertToKind(vkArray);
+      av[2].ConvertToKind(value_array);
       av[2].AsArray := TVarArrayEC.Create;
     end
-    else if av[2].ValueKind <> vkArray then raise Exception.Create('Error.Script GetMainData - 2nd argument is not an array');
+    else if av[2].ValueKind <> value_array then raise Exception.Create('Error.Script GetMainData - 2nd argument is not an array');
     av[2].AsArray.Clear;
     if av[1].AsString = '' then Block := MainDataConfig
     else Block := MainDataConfig.FindBlockByPath(av[1].AsString);
     if Block <> nil then AddMainDataBlock(Block, av[2]);
     av[0].AsInteger := av[2].AsArray.Count;
-    if av[2].AsArray.Count = 0 then av[2].AsArray.AddItem(TVarEC.Create(vkEmpty));
+    if av[2].AsArray.Count = 0 then av[2].AsArray.AddItem(TVarEC.Create(value_empty));
   end
   else
     if MainDataConfig.CountParamsByPath(av[1].AsString) > 0 then av[0].AsString := MainDataConfig.GetParamByPath(av[1].AsString)
@@ -4975,7 +4975,7 @@ end;
 procedure SF_CurrentMods(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 1 then av[0].AsInteger := CountDelimitedPartsW(SelectedMods, ',')
-  else if av[1].ValueKind = vkString then
+  else if av[1].ValueKind = value_string then
     av[0].AsInteger := Ord(FindTextOffsetW(SelectedModsDisplaySuffix, ', ' + av[1].AsString + ',') >= 0)
   else if av[1].AsInteger = -1 then av[0].AsString := SelectedMods
   else av[0].AsString := ExtractDelimitedPartW(SelectedMods, av[1].AsInteger, ',');
@@ -5183,7 +5183,7 @@ var
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script SF_TranclucatorData');
   Ship := TTranclucator(av[1].AsDword);
-  if av[2].ValueKind = vkString then
+  if av[2].ValueKind = value_string then
   begin
     if av[2].AsString = 'Proprietor' then Kind := 0
     else if av[2].AsString = 'ArtSize' then Kind := 1
@@ -5235,40 +5235,40 @@ begin
       if WriteValue then Ship.StoreOnLanding := av[3].AsInteger <> 0;
     end;
     7: begin
-      av[0].AsInteger := Ord(Ship.StoragePermissions[tskPlanet]);
-      if WriteValue then Ship.StoragePermissions[tskPlanet] := av[3].AsInteger <> 0;
+      av[0].AsInteger := Ord(Ship.StoragePermissions[storage_planet]);
+      if WriteValue then Ship.StoragePermissions[storage_planet] := av[3].AsInteger <> 0;
     end;
     8: begin
-      av[0].AsInteger := Ord(Ship.StoragePermissions[tskStation]);
-      if WriteValue then Ship.StoragePermissions[tskStation] := av[3].AsInteger <> 0;
+      av[0].AsInteger := Ord(Ship.StoragePermissions[storage_station]);
+      if WriteValue then Ship.StoragePermissions[storage_station] := av[3].AsInteger <> 0;
     end;
     9: begin
-      av[0].AsInteger := Ord(Ship.CollectionPermissions[tckOther]);
-      if WriteValue then Ship.CollectionPermissions[tckOther] := av[3].AsInteger <> 0;
+      av[0].AsInteger := Ord(Ship.CollectionPermissions[collect_other]);
+      if WriteValue then Ship.CollectionPermissions[collect_other] := av[3].AsInteger <> 0;
     end;
     10: begin
-      av[0].AsInteger := Ord(Ship.CollectionPermissions[tckArtefact]);
-      if WriteValue then Ship.CollectionPermissions[tckArtefact] := av[3].AsInteger <> 0;
+      av[0].AsInteger := Ord(Ship.CollectionPermissions[collect_artefacts]);
+      if WriteValue then Ship.CollectionPermissions[collect_artefacts] := av[3].AsInteger <> 0;
     end;
     11: begin
-      av[0].AsInteger := Ord(Ship.CollectionPermissions[tckMicroModule]);
-      if WriteValue then Ship.CollectionPermissions[tckMicroModule] := av[3].AsInteger <> 0;
+      av[0].AsInteger := Ord(Ship.CollectionPermissions[collect_micromodules]);
+      if WriteValue then Ship.CollectionPermissions[collect_micromodules] := av[3].AsInteger <> 0;
     end;
     12: begin
-      av[0].AsInteger := Ord(Ship.CollectionPermissions[tckEquipment]);
-      if WriteValue then Ship.CollectionPermissions[tckEquipment] := av[3].AsInteger <> 0;
+      av[0].AsInteger := Ord(Ship.CollectionPermissions[collect_equipment]);
+      if WriteValue then Ship.CollectionPermissions[collect_equipment] := av[3].AsInteger <> 0;
     end;
     13: begin
-      av[0].AsInteger := Ord(Ship.CollectionPermissions[tckUseless]);
-      if WriteValue then Ship.CollectionPermissions[tckUseless] := av[3].AsInteger <> 0;
+      av[0].AsInteger := Ord(Ship.CollectionPermissions[collect_misc_items]);
+      if WriteValue then Ship.CollectionPermissions[collect_misc_items] := av[3].AsInteger <> 0;
     end;
     14: begin
-      av[0].AsInteger := Ord(Ship.CollectionPermissions[tckGoods]);
-      if WriteValue then Ship.CollectionPermissions[tckGoods] := av[3].AsInteger <> 0;
+      av[0].AsInteger := Ord(Ship.CollectionPermissions[collect_goods]);
+      if WriteValue then Ship.CollectionPermissions[collect_goods] := av[3].AsInteger <> 0;
     end;
     15: begin
-      av[0].AsInteger := Ord(Ship.CollectionPermissions[tckCountable]);
-      if WriteValue then Ship.CollectionPermissions[tckCountable] := av[3].AsInteger <> 0;
+      av[0].AsInteger := Ord(Ship.CollectionPermissions[collect_stackables]);
+      if WriteValue then Ship.CollectionPermissions[collect_stackables] := av[3].AsInteger <> 0;
     end;
   else raise Exception.Create('Error.Script SF_TranclucatorData - unknown property ' + IntToWideString(Kind));
   end;
@@ -5444,7 +5444,7 @@ begin
   if High(av) < 1 then raise Exception.Create('Error.Script ShipInPirateClan');
   Ship := TShip(av[1].AsDword);
   if GetPlayer = Ship then av[0].AsDword := Ord(GetPlayer.PirateClanReal)
-  else av[0].AsDword := Ord(Ship.OwnerId = oiPirate);
+  else av[0].AsDword := Ord(Ship.OwnerId = owner_pirate);
 end;
 { @end $616F34 }
 
@@ -5455,7 +5455,7 @@ var
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script ShipOnSidePirateClan');
   Ship := TShip(av[1].AsDword);
-  av[0].AsDword := Ord(Ship.OwnerId = oiPirate);
+  av[0].AsDword := Ord(Ship.OwnerId = owner_pirate);
 end;
 { @end $616FD0 }
 
@@ -5567,20 +5567,20 @@ begin
   if Obj is TScriptItem then Item := TScriptItem(Obj).Item;
   if Item <> nil then
   begin
-    IsGoods := Item.ItemType in [t_Food..t_Narcotics];
+    IsGoods := Item.ItemType in [item_food..item_narcotics];
     IsCountable := not IsGoods and (Item is TCountableItem);
-    if (IsCountable or IsGoods) and (High(av) > 1) and (av[2].ValueKind = vkString) and (av[2].AsString = 'Count') then
+    if (IsCountable or IsGoods) and (High(av) > 1) and (av[2].ValueKind = value_string) and (av[2].AsString = 'Count') then
     begin
       if IsCountable then av[0].AsDword := TCountableItem(Item).StackCount
       else av[0].AsDword := TGoods(Item).Quantity;
     end
     else av[0].AsDword := Item.Weight;
-    if (High(av) > 1) and (av[2].ValueKind <> vkString) then
+    if (High(av) > 1) and (av[2].ValueKind <> value_string) then
     begin
       Value := av[2].AsInteger;
       if IsCountable then
       begin
-        if (High(av) > 2) and (av[3].ValueKind = vkString) and (av[3].AsString = 'Count') then
+        if (High(av) > 2) and (av[3].ValueKind = value_string) and (av[3].AsString = 'Count') then
         begin
           Item.Cost := Round(Item.Cost * Value / Max(1, TCountableItem(Item).StackCount));
           TCountableItem(Item).StackCount := Value;
@@ -5596,7 +5596,7 @@ begin
       else if IsGoods then
       begin
         { Count-mode goods handling reads the countable-item offset, then rescales Cost again below. }
-        if (High(av) > 2) and (av[3].ValueKind = vkString) and (av[3].AsString = 'Count') then
+        if (High(av) > 2) and (av[3].ValueKind = value_string) and (av[3].AsString = 'Count') then
           Item.Cost := Round(Item.Cost * Value / Max(1, TCountableItem(Item).StackCount))
         else Item.Cost := Round(Item.Cost * Value / Max(1, Item.Weight));
         Item.Cost := Round(Item.Cost * Value / Max(1, Item.Weight));
@@ -5732,7 +5732,7 @@ begin
     end;
     Ship.RefreshAssignedItemSlots;
     Ship.RefreshDerivedStats(True);
-    Ship.ScriptItemsAct(satOnNonStandartEqChange, nil, nil, 0);
+    Ship.ScriptItemsAct(event_nonstandard_equipment_change, nil, nil, 0);
   end;
 end;
 { @end $617A3C }
@@ -5924,7 +5924,7 @@ begin
   if Item = nil then Exit;
   if High(av) > 1 then
   begin
-    if av[2].ValueKind = vkString then
+    if av[2].ValueKind = value_string then
     begin
       if Item is TEquipment then
       begin
@@ -5948,47 +5948,47 @@ begin
       6: av[0].AsDword := Dword((Item as TWeapon).GetDamageFlags);
   end
   else case Item.ItemType of
-    t_Hull: case Stat of
+    item_hull: case Stat of
       0: av[0].AsInteger := (Item as THull).Armor;
-      1: av[0].AsInteger := (Item as THull).GetSlotCount(sskWeapon);
-      2: av[0].AsInteger := (Item as THull).GetSlotCount(sskArtefact);
-      3: av[0].AsInteger := (Item as THull).GetSlotCount(sskRadar);
-      4: av[0].AsInteger := (Item as THull).GetSlotCount(sskScanner);
-      5: av[0].AsInteger := (Item as THull).GetSlotCount(sskRepairRobot);
-      6: av[0].AsInteger := (Item as THull).GetSlotCount(sskCargoHook);
-      7: av[0].AsInteger := (Item as THull).GetSlotCount(sskDefGenerator);
-      8: av[0].AsInteger := (Item as THull).GetSlotCount(sskAfterburner);
+      1: av[0].AsInteger := (Item as THull).GetSlotCount(slot_weapon);
+      2: av[0].AsInteger := (Item as THull).GetSlotCount(slot_artefact);
+      3: av[0].AsInteger := (Item as THull).GetSlotCount(slot_radar);
+      4: av[0].AsInteger := (Item as THull).GetSlotCount(slot_scanner);
+      5: av[0].AsInteger := (Item as THull).GetSlotCount(slot_repair_robot);
+      6: av[0].AsInteger := (Item as THull).GetSlotCount(slot_cargo_hook);
+      7: av[0].AsInteger := (Item as THull).GetSlotCount(slot_defense_generator);
+      8: av[0].AsInteger := (Item as THull).GetSlotCount(slot_afterburner);
     end;
-    t_FuelTanks: case Stat of
+    item_fuel_tanks: case Stat of
       0: av[0].AsInteger := (Item as TFuelTanks).Capacity;
       1: av[0].AsInteger := (Item as TFuelTanks).Fuel;
     end;
-    t_Engine: case Stat of
+    item_engine: case Stat of
       0: av[0].AsInteger := (Item as TEngine).Speed;
       1: av[0].AsInteger := (Item as TEngine).JumpRange;
     end;
-    t_Radar: av[0].AsInteger := (Item as TRadar).Range;
-    t_Scaner: av[0].AsInteger := (Item as TScaner).ScanPower;
-    t_RepairRobot: av[0].AsInteger := (Item as TRepairRobot).RepairPoints;
-    t_CargoHook: case Stat of
+    item_radar: av[0].AsInteger := (Item as TRadar).Range;
+    item_scanner: av[0].AsInteger := (Item as TScaner).ScanPower;
+    item_repair_robot: av[0].AsInteger := (Item as TRepairRobot).RepairPoints;
+    item_cargo_hook: case Stat of
       0: av[0].AsInteger := (Item as TCargoHook).PickupPower;
       1: av[0].AsInteger := (Item as TCargoHook).Range;
       2: av[0].AsFloat := (Item as TCargoHook).MinPullSpeed;
       3: av[0].AsFloat := (Item as TCargoHook).MaxPullSpeed;
     end;
-    t_DefGenerator: av[0].AsInteger := Round(100 - (Item as TDefGenerator).DamageFactor * 100);
-    t_Cistern: case Stat of
+    item_defense_generator: av[0].AsInteger := Round(100 - (Item as TDefGenerator).DamageFactor * 100);
+    item_fuel_container: case Stat of
       0: av[0].AsInteger := (Item as TCistern).Capacity;
       1: av[0].AsInteger := (Item as TCistern).Fuel;
     end;
-    t_Satellite: case Stat of
+    item_satellite: case Stat of
       0: av[0].AsInteger := (Item as TSatellite).WaterExplorationRate;
       1: av[0].AsInteger := (Item as TSatellite).LandExplorationRate;
       2: av[0].AsInteger := (Item as TSatellite).HillExplorationRate;
       3: av[0].AsFloat := (Item as TSatellite).WearPerTurn;
     end;
   end;
-  if av[0].ValueKind = vkEmpty then av[0].AsInteger := 0;
+  if av[0].ValueKind = value_empty then av[0].AsInteger := 0;
 end;
 { @end $618310 }
 
@@ -6016,30 +6016,30 @@ begin
       2: (Item as TWeapon).Range := Value;
   end
   else case Item.ItemType of
-    t_Hull: (Item as THull).Armor := Value;
-    t_FuelTanks: case Stat of
+    item_hull: (Item as THull).Armor := Value;
+    item_fuel_tanks: case Stat of
       0: (Item as TFuelTanks).Capacity := Value;
       1: (Item as TFuelTanks).Fuel := Value;
     end;
-    t_Engine: case Stat of
+    item_engine: case Stat of
       0: (Item as TEngine).Speed := Value;
       1: (Item as TEngine).JumpRange := Value;
     end;
-    t_Radar: (Item as TRadar).Range := Value;
-    t_Scaner: (Item as TScaner).ScanPower := Value;
-    t_RepairRobot: (Item as TRepairRobot).RepairPoints := Value;
-    t_CargoHook: case Stat of
+    item_radar: (Item as TRadar).Range := Value;
+    item_scanner: (Item as TScaner).ScanPower := Value;
+    item_repair_robot: (Item as TRepairRobot).RepairPoints := Value;
+    item_cargo_hook: case Stat of
       0: (Item as TCargoHook).PickupPower := Value;
       1: (Item as TCargoHook).Range := Value;
       2: (Item as TCargoHook).MinPullSpeed := av[2].AsFloat;
       3: (Item as TCargoHook).MaxPullSpeed := av[2].AsFloat;
     end;
-    t_DefGenerator: (Item as TDefGenerator).DamageFactor := Integer(100 - Value) * 0.01;
-    t_Cistern: case Stat of
+    item_defense_generator: (Item as TDefGenerator).DamageFactor := Integer(100 - Value) * 0.01;
+    item_fuel_container: case Stat of
       0: (Item as TCistern).Capacity := Value;
       1: (Item as TCistern).Fuel := Value;
     end;
-    t_Satellite: case Stat of
+    item_satellite: case Stat of
       0: (Item as TSatellite).WaterExplorationRate := Value;
       1: (Item as TSatellite).LandExplorationRate := Value;
       2: (Item as TSatellite).HillExplorationRate := Value;
@@ -6085,7 +6085,7 @@ begin
   Weight := av[2].AsInteger;
   Level := av[3].AsInteger;
   Owner := TOwnerId(av[4].AsDword);
-  if Kind = t_Cistern then
+  if Kind = item_fuel_container then
   begin
     Item := TCistern.Create;
     TCistern(Item).Init(Level, Weight, Owner);
@@ -6239,7 +6239,7 @@ begin
   if High(av) < 1 then raise Exception.Create('Error.Script CreateNodes');
   Count := av[1].AsInteger;
   DropFlag := False;
-  Series := dsBlazer;
+  Series := series_blazer;
   if High(av) > 1 then Series := TDominatorSeries(av[2].AsInteger);
   if High(av) > 2 then DropFlag := av[3].AsInteger <> 0;
   Item := TProtoplasm.Create;
@@ -6332,12 +6332,12 @@ var
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script ShipJoinsClan');
   Ship := TShip(av[1].AsDword);
-  if (Ship.TypeId = stPirate) and (Ship.OwnerId <> oiPirate) then
+  if (Ship.TypeId = ship_pirate) and (Ship.OwnerId <> owner_pirate) then
   begin
     Inc(Galaxy.PirateClanCount);
     Dec(Galaxy.PirateCount);
   end;
-  Ship.OwnerId := oiPirate;
+  Ship.OwnerId := owner_pirate;
   if GetPlayer = Ship then GetPlayer.PirateClanReal := True;
 end;
 { @end $619A84 }
@@ -6380,7 +6380,7 @@ begin
     THull(Item).OwnerShip := Ship;
     Ship.RefreshAssignedItemSlots;
     Ship.RefreshDerivedStats(True);
-    Ship.ScriptItemsAct(satOnNonStandartEqChange, nil, nil, 0);
+    Ship.ScriptItemsAct(event_nonstandard_equipment_change, nil, nil, 0);
   end
   else if Item is TArtefact then Ship.Artefacts.Add(Item)
   else if Item is TEquipment then Ship.Inventory.Add(Item);
@@ -6398,7 +6398,7 @@ begin
   Ship := TShip(av[1].AsDword);
   av[0].AsDword := 0;
   if Ship = nil then Exit;
-  if (av[2].ValueKind = vkDword) and (av[2].AsDword > $10000) then
+  if (av[2].ValueKind = value_uint32) and (av[2].AsDword > $10000) then
   begin
     Item := TItem(av[2].AsDword);
     Index := Ship.Inventory.IndexOf(Item);
@@ -6409,14 +6409,14 @@ begin
     Index := av[2].AsInteger;
     if (Index < 0) or (Index >= Ship.Inventory.Count) then Exit;
     Item := Ship.Inventory[Index];
-    if (av[2].ValueKind = vkDword) and (av[2].AsDword = 0) and (Item is THull) then
+    if (av[2].ValueKind = value_uint32) and (av[2].AsDword = 0) and (Item is THull) then
       AppendLogLineThreadSafe('Warning, GetItemFromShip received 0 from dword-type variable and will remove hull from ship ' + Ship.GetFullName(' ') + ' (' + GetScriptContextDescription + ')');
   end;
   av[0].AsDword := Cardinal(Item);
   if Ship.GetHull = Item then
   begin
     Ship.GetHull.OwnerShip := nil;
-    Ship.UnequipSlot(t_Hull, 0);
+    Ship.UnequipSlot(item_hull, 0);
   end
   else if (Item is TEquipment) and ((Item as TEquipment).EquippedFlag <> 0) then
   begin
@@ -6444,7 +6444,7 @@ begin
   Ship := TShip(av[1].AsDword);
   av[0].AsDword := 0;
   if Ship = nil then Exit;
-  if (av[2].ValueKind = vkDword) and (av[2].AsDword > $10000) then
+  if (av[2].ValueKind = value_uint32) and (av[2].AsDword > $10000) then
   begin
     Item := TEquipment(av[2].AsDword);
     Index := Ship.Artefacts.IndexOf(Item);
@@ -6576,7 +6576,7 @@ begin
   if Shop is TPlanet then Items := TPlanet(Shop).EquipmentShop
   else if Shop is TRuins then Items := TRuins(Shop).EquipmentShop
   else Exit;
-  if (av[2].ValueKind = vkDword) and (av[2].AsDword > $10000) then
+  if (av[2].ValueKind = value_uint32) and (av[2].AsDword > $10000) then
   begin
     Index := Items.IndexOf(TItem(av[2].AsDword));
     if Index >= 0 then
@@ -6832,7 +6832,7 @@ begin
   Star := TStar(av[1].AsDword);
   av[0].AsDword := 0;
   if Star = nil then Exit;
-  if (av[2].ValueKind = vkDword) and (av[2].AsDword > $10000) then
+  if (av[2].ValueKind = value_uint32) and (av[2].AsDword > $10000) then
   begin
     Item := TItem(av[2].AsDword);
     Index := Star.Items.IndexOf(Item);
@@ -7237,14 +7237,14 @@ var
       Item := Value.AsArray[I];
       if Item.Name <> '' then Path := Prefix + '''' + Item.Name + ''''
       else Path := Prefix + IntToWideString(I);
-      if Item.ValueKind <> vkArray then AppendLogLineThreadSafe(AnsiString(Path + ']=' + Item.AsString))
+      if Item.ValueKind <> value_array then AppendLogLineThreadSafe(AnsiString(Path + ']=' + Item.AsString))
       else LogArray(Path + ',', Item);
     end;
   end;
 begin
   if High(av) < 1 then Exit;
   for I := 1 to High(av) do
-    if av[I].ValueKind = vkArray then LogArray(av[I].Name + '[', av[I])
+    if av[I].ValueKind = value_array then LogArray(av[I].Name + '[', av[I])
     else AppendLogLineThreadSafe(AnsiString(av[I].AsString));
 end;
 { @end $61C520 }
@@ -7266,7 +7266,7 @@ begin
   if High(av) > 2 then Request.FailureCaption := av[3].AsString else Request.FailureCaption := '';
   Request.Script := CurrentScript;
   QueuedTextQuests.Add(Request);
-  if CurrentScript <> nil then CurrentScript.InitCode.LocalVar.NamedItems['GQuestStatus'].AsInteger := Ord(sqsQueued);
+  if CurrentScript <> nil then CurrentScript.InitCode.LocalVar.NamedItems['GQuestStatus'].AsInteger := Ord(quest_status_queued);
   av[0].AsInteger := 1;
 end;
 { @end $61C5E8 }
@@ -7328,7 +7328,7 @@ begin
   begin
     Weapon := Source.FindEquippedItemInSlot(WeaponCategoryItemType, I) as TWeapon;
     if not Source.IsEquipmentUsable(Weapon) then Continue;
-    if Weapon.ItemType <> t_CustomWeapon then ab_Weapon_Initialize(@Ship.Weapons[I], Ord(Weapon.ItemType))
+    if Weapon.ItemType <> item_custom_weapon then ab_Weapon_Initialize(@Ship.Weapons[I], Ord(Weapon.ItemType))
     else ab_Weapon_Initialize(@Ship.Weapons[I], Weapon.GetWeaponInfo.ArcadeWeaponType);
     Ship.Weapons[I].SlotData := Weapon.AssignedSlotData;
     Inc(Ship.WeaponCount);
@@ -7406,8 +7406,8 @@ begin
   end;
   if High(av) > 1 then
   begin
-    if av[2].ValueKind = vkInt then Request.BackgroundId := av[2].AsInteger
-    else if av[2].ValueKind = vkString then Request.BackgroundMapName := av[2].AsString;
+    if av[2].ValueKind = value_int32 then Request.BackgroundId := av[2].AsInteger
+    else if av[2].ValueKind = value_string then Request.BackgroundMapName := av[2].AsString;
   end;
   QueuedArcadeBattles.Add(Request);
   if CurrentScript <> nil then CurrentScript.InitCode.LocalVar.NamedItems['GABStatus'].AsInteger := 1;
@@ -7487,9 +7487,9 @@ begin
     av[0].AsInteger := Ord(Ship.OwnerId);
     if High(av) > 1 then
     begin
-      WasPirateClan := (Ship.TypeId = stPirate) and (Ship.OwnerId = oiPirate);
+      WasPirateClan := (Ship.TypeId = ship_pirate) and (Ship.OwnerId = owner_pirate);
       Ship.OwnerId := TOwnerId(av[2].AsInteger);
-      IsPirateClan := (Ship.TypeId = stPirate) and (Ship.OwnerId = oiPirate);
+      IsPirateClan := (Ship.TypeId = ship_pirate) and (Ship.OwnerId = owner_pirate);
       if WasPirateClan and not IsPirateClan then
       begin
         Dec(Galaxy.PirateClanCount);
@@ -7533,7 +7533,7 @@ begin
   Ship := TShip(av[1].AsDword);
   if Ship = nil then Exit;
   Current := False;
-  if av[2].ValueKind = vkString then
+  if av[2].ValueKind = value_string then
   begin
     if av[2].AsString = 'Accuracy' then Skill := 0
     else if av[2].AsString = 'AccuracyCur' then begin Skill := 0; Current := True; end
@@ -7574,7 +7574,7 @@ begin
   if Ship = nil then Exit;
   if High(av) > 1 then
   begin
-    if av[2].ValueKind = vkString then
+    if av[2].ValueKind = value_string then
     begin
       if av[2].AsString = 'Init' then
       begin
@@ -7928,12 +7928,12 @@ begin
   Planet := TPlanet(av[1].AsDword);
   if Planet = nil then Exit;
   if High(av) = 1 then Ship := TShip(Planet.SpawnWeightedDominatorShip)
-  else if High(av) = 2 then Ship := TShip(Planet.SpawnDominatorShip(TKlingType(av[2].AsInteger)))
+  else if High(av) = 2 then Ship := TShip(Planet.SpawnDominatorShip(TDominatorKind(av[2].AsInteger)))
   else
   begin
     SavedSeries := Planet.CurrentStar.DominatorSeries;
     Planet.CurrentStar.DominatorSeries := TDominatorSeries(av[3].AsInteger);
-    Ship := TShip(Planet.SpawnDominatorShip(TKlingType(av[2].AsInteger)));
+    Ship := TShip(Planet.SpawnDominatorShip(TDominatorKind(av[2].AsInteger)));
     Planet.CurrentStar.DominatorSeries := SavedSeries;
   end;
   av[0].AsDword := Cardinal(Ship);
@@ -8004,7 +8004,7 @@ begin
       if (GetPlayer = Ship) and (TemporaryShopSlots <> nil) then RestoreTemporaryShopStock;
       Ship.CurrentPlanet := Planet;
       Ship.DockedTo := Station;
-      Ship.Order := soNone;
+      Ship.Order := order_none;
       Ship.OrderStateData := 0;
       Ship.OrderTarget := nil;
       Ship.OrderDestination.X := 0;
@@ -8047,10 +8047,10 @@ begin
   if Ship = nil then Exit;
   if Ship.AfterburnerActive then av[0].AsInteger := 1;
   if High(av) <= 1 then Exit;
-  if av[2].AsInteger <> 0 then Ship.AfterburnerActive := (Ship.GetSlotCount(sskAfterburner) > 0) and Ship.IsEquipmentUsable(Ship.GetEngine)
+  if av[2].AsInteger <> 0 then Ship.AfterburnerActive := (Ship.GetSlotCount(slot_afterburner) > 0) and Ship.IsEquipmentUsable(Ship.GetEngine)
   else Ship.AfterburnerActive := False;
   Ship.RefreshDerivedStats(True);
-  if (GetPlayer = Ship) and (GetInnermostScreenLoop = StarMapScreen) and (StarMapScreen.Mode = smmOrders) then
+  if (GetPlayer = Ship) and (GetInnermostScreenLoop = StarMapScreen) and (StarMapScreen.Mode = map_mode_orders) then
   begin
     StarMapScreen.ClearPathOverlay(True);
     GetPlayer.BuildOrderMovementPath(FullPathNodeLimit);
@@ -8073,7 +8073,7 @@ begin
   Ship.OrderNone(False);
   Ship.AbsoluteScriptOrder := SavedOrderLock;
   if GetPlayer = Ship then PendingPlayerFollowTarget := nil;
-  if (GetPlayer = Ship) and (GetInnermostScreenLoop = StarMapScreen) and (StarMapScreen.Mode = smmOrders) then
+  if (GetPlayer = Ship) and (GetInnermostScreenLoop = StarMapScreen) and (StarMapScreen.Mode = map_mode_orders) then
   begin
     StarMapScreen.ClearPathOverlay(True);
     StarMapScreen.BuildShipPathOverlay(Ship, False, '');
@@ -8104,7 +8104,7 @@ begin
   end
   else
   begin
-    if (av[2].ValueKind = vkDword) and (TObject(av[2].AsDword) is TScriptPlace) then
+    if (av[2].ValueKind = value_uint32) and (TObject(av[2].AsDword) is TScriptPlace) then
     begin
       Absolute := False;
       if High(av) > 2 then Absolute := av[3].AsInteger <> 0;
@@ -8114,7 +8114,7 @@ begin
   end;
   Ship.AbsoluteScriptOrder := SavedOrderLock;
   if GetPlayer = Ship then PendingPlayerFollowTarget := nil;
-  if (GetPlayer = Ship) and (GetInnermostScreenLoop = StarMapScreen) and (StarMapScreen.Mode = smmOrders) then
+  if (GetPlayer = Ship) and (GetInnermostScreenLoop = StarMapScreen) and (StarMapScreen.Mode = map_mode_orders) then
   begin
     StarMapScreen.ClearPathOverlay(True);
     StarMapScreen.BuildShipPathOverlay(Ship, False, '');
@@ -8149,7 +8149,7 @@ begin
         Ship.OrderTeleport(TStar(av[2].AsDword), Destination, TransitionData, Absolute);
         Ship.AbsoluteScriptOrder := SavedOrderLock;
         if GetPlayer = Ship then PendingPlayerFollowTarget := nil;
-        if (GetPlayer = Ship) and (GetInnermostScreenLoop = StarMapScreen) and (StarMapScreen.Mode = smmOrders) then
+        if (GetPlayer = Ship) and (GetInnermostScreenLoop = StarMapScreen) and (StarMapScreen.Mode = map_mode_orders) then
         begin
           StarMapScreen.ClearPathOverlay(True);
           StarMapScreen.BuildShipPathOverlay(Ship, False, '');
@@ -8185,7 +8185,7 @@ var
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script OrderFollowShip');
   Absolute := False;
-  FollowMode := fmFollowNear;
+  FollowMode := follow_close;
   if High(av) > 2 then FollowMode := TFollowMode(Byte(av[3].AsInteger));
   if High(av) > 3 then Absolute := av[4].AsInteger <> 0;
   if (av[1].AsDword <> 0) and (av[2].AsDword <> 0) then
@@ -8197,7 +8197,7 @@ begin
         Ship.AbsoluteScriptOrder := 0;
         Ship.OrderFollowShip(TShip(av[2].AsDword), FollowMode, Absolute);
         Ship.AbsoluteScriptOrder := SavedOrderLock;
-        if (GetPlayer = Ship) and (GetInnermostScreenLoop = StarMapScreen) and (StarMapScreen.Mode = smmOrders) then
+        if (GetPlayer = Ship) and (GetInnermostScreenLoop = StarMapScreen) and (StarMapScreen.Mode = map_mode_orders) then
         begin
           StarMapScreen.ClearPathOverlay(True);
           StarMapScreen.BuildShipPathOverlay(Ship, False, '');
@@ -8227,7 +8227,7 @@ begin
     Ship.OrderJumpHole(Hole, Absolute);
     Ship.AbsoluteScriptOrder := SavedOrderLock;
     if GetPlayer = Ship then PendingPlayerFollowTarget := nil;
-    if (GetPlayer = Ship) and (GetInnermostScreenLoop = StarMapScreen) and (StarMapScreen.Mode = smmOrders) then
+    if (GetPlayer = Ship) and (GetInnermostScreenLoop = StarMapScreen) and (StarMapScreen.Mode = map_mode_orders) then
     begin
       StarMapScreen.ClearPathOverlay(True);
       StarMapScreen.BuildShipPathOverlay(Ship, False, '');
@@ -8447,7 +8447,7 @@ var
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script PlanetSetGraph');
   Planet := TPlanet(av[1].AsDword);
-  if av[2].ValueKind = vkString then
+  if av[2].ValueKind = value_string then
   begin
     Planet.GraphName := av[2].AsString;
     RotationInterval := Planet.Graphic.RotationTimerInterval;
@@ -8560,17 +8560,17 @@ begin
   Planet := TPlanet(av[1].AsDword);
   Terrain := TPlanetTerrainKind(av[2].AsInteger);
   case Terrain of
-    ptWater: av[0].AsInteger := Planet.WaterTiles;
-    ptLand: av[0].AsInteger := Planet.LandTiles;
-    ptHill: av[0].AsInteger := Planet.HillTiles;
+    terrain_water: av[0].AsInteger := Planet.WaterTiles;
+    terrain_land: av[0].AsInteger := Planet.LandTiles;
+    terrain_hills: av[0].AsInteger := Planet.HillTiles;
   else raise Exception.Create('Error.Script PlanetTerrain ttype');
   end;
   if High(av) <= 2 then Exit;
   Value := av[3].AsInteger;
   case Terrain of
-    ptWater: Planet.WaterTiles := Value;
-    ptLand: Planet.LandTiles := Value;
-    ptHill: Planet.HillTiles := Value;
+    terrain_water: Planet.WaterTiles := Value;
+    terrain_land: Planet.LandTiles := Value;
+    terrain_hills: Planet.HillTiles := Value;
   end;
   if Planet.SurfaceLootEntries <> nil then
     for I := 0 to Planet.SurfaceLootEntries.Count - 1 do
@@ -8591,16 +8591,16 @@ begin
   Planet := TPlanet(av[1].AsDword);
   Terrain := TPlanetTerrainKind(av[2].AsInteger);
   case Terrain of
-    ptWater: av[0].AsInteger := Planet.WaterExplored;
-    ptLand: av[0].AsInteger := Planet.LandExplored;
-    ptHill: av[0].AsInteger := Planet.HillExplored;
+    terrain_water: av[0].AsInteger := Planet.WaterExplored;
+    terrain_land: av[0].AsInteger := Planet.LandExplored;
+    terrain_hills: av[0].AsInteger := Planet.HillExplored;
   else raise Exception.Create('Error.Script PlanetTerrainExplored ttype');
   end;
   if High(av) <= 2 then Exit;
   case Terrain of
-    ptWater: Planet.WaterExplored := av[3].AsInteger;
-    ptLand: Planet.LandExplored := av[3].AsInteger;
-    ptHill: Planet.HillExplored := av[3].AsInteger;
+    terrain_water: Planet.WaterExplored := av[3].AsInteger;
+    terrain_land: Planet.LandExplored := av[3].AsInteger;
+    terrain_hills: Planet.HillExplored := av[3].AsInteger;
   end;
 end;
 { @end $620D68 }
@@ -8649,7 +8649,7 @@ begin
   if High(av) < 1 then raise Exception.Create('Error.Script PlanetCurInvention');
   Planet := TPlanet(av[1].AsDword);
   av[0].AsInteger := Ord(Planet.CurrentInvention);
-  if High(av) > 1 then Planet.CurrentInvention := TPlanetInvention(av[2].AsInteger);
+  if High(av) > 1 then Planet.CurrentInvention := TResearchTrack(av[2].AsInteger);
 end;
 { @end $62109C }
 
@@ -8669,11 +8669,11 @@ end;
 procedure SF_PlanetInventionLevel(av: array of TVarEC; code: TCodeEC);
 var
   Planet: TPlanet;
-  Index: TPlanetInvention;
+  Index: TResearchTrack;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script PlanetInventionLevel');
   Planet := TPlanet(av[1].AsDword);
-  Index := TPlanetInvention(av[2].AsInteger);
+  Index := TResearchTrack(av[2].AsInteger);
   av[0].AsInteger := Planet.InventionLevels[Index];
   if High(av) > 2 then Planet.InventionLevels[Index] := av[3].AsInteger;
 end;
@@ -8736,7 +8736,7 @@ end;
 procedure SF_GalaxyDominatorResearchPercent(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 1 then
-    av[0].AsFloat := (Galaxy.DominatorResearch[dsBlazer].Progress + Galaxy.DominatorResearch[dsKeller].Progress + Galaxy.DominatorResearch[dsTerron].Progress) / 3
+    av[0].AsFloat := (Galaxy.DominatorResearch[series_blazer].Progress + Galaxy.DominatorResearch[series_keller].Progress + Galaxy.DominatorResearch[series_terron].Progress) / 3
   else
   begin
     av[0].AsFloat := Galaxy.DominatorResearch[TDominatorSeries(av[1].AsInteger)].Progress;
@@ -8806,7 +8806,7 @@ begin
   av[0].AsInteger := Hull.HullPoints;
   if High(av) > 1 then
   begin
-    if av[2].ValueKind = vkString then
+    if av[2].ValueKind = value_string then
     begin
       Amount := Round(av[2].AsInteger * 0.01 * Hull.Weight);
       if Pos('UpTo', av[2].AsString) = 1 then Hull.HullPoints := Max(Hull.HullPoints, Amount)
@@ -8820,7 +8820,7 @@ begin
     if Obj is TShip then Ship := TShip(Obj) else Ship := TShip(Hull.OwnerShip);
     if (Ship <> nil) and Ship.IsHullDestroyed and not Ship.DestroyQueued then
     begin
-      if av[0].AsInteger > 0 then Ship.ScriptItemsAct(satOnDeath, nil, nil, 0);
+      if av[0].AsInteger > 0 then Ship.ScriptItemsAct(event_death, nil, nil, 0);
       if (Ship.CurrentStar <> nil) and Ship.CurrentStar.RecordingTurnFilm then Ship.CurrentStar.ClearShipReferences(Obj);
     end;
   end;
@@ -8840,7 +8840,7 @@ begin
   else if Obj is THull then Hull := THull(Obj)
   else if (Obj is TScriptItem) and ((Obj as TScriptItem).Item is THull) then Hull := (Obj as TScriptItem).Item as THull
   else Exit;
-  av[0].AsInteger := Round(Hull.GetFragilityFactor([TDamageKind(av[2].AsDword)]) * 100);
+  av[0].AsInteger := Round(Hull.GetFragilityFactor([TDamageFlag(av[2].AsDword)]) * 100);
 end;
 { @end $621B5C }
 
@@ -9104,7 +9104,7 @@ begin
     av[0].AsInteger := Found + 1;
     Exit;
   end;
-  if av[2].ValueKind = vkString then
+  if av[2].ValueKind = value_string then
   begin
     for I := 0 to Star.Ships.Count - 1 do
     begin
@@ -9141,8 +9141,8 @@ var
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script CreateQuestItem');
   Item := TUselessItem.Create;
-  Item.Init(av[1].AsString, dsBlazer, 0, False);
-  if High(av) = 1 then Item.OwnerId := oiUninhabited
+  Item.Init(av[1].AsString, series_blazer, 0, False);
+  if High(av) = 1 then Item.OwnerId := owner_uninhabited
   else if av[2].AsInteger >= 0 then Item.OwnerId := TOwnerId(av[2].AsInteger);
   av[0].AsDword := Cardinal(Item);
 end;
@@ -9166,7 +9166,7 @@ var
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script ShipOrder');
   Ship := TShip(av[1].AsDword);
-  if (High(av) > 1) and (av[2].ValueKind = vkString) then
+  if (High(av) > 1) and (av[2].ValueKind = value_string) then
   begin
     if av[2].AsString = 'X' then
     begin
@@ -9250,7 +9250,7 @@ begin
   end
   else if Obj is TRuins then
   begin
-    if (High(av) > 1) and (av[2].ValueKind = vkString) and (av[2].AsString = 'Date') then
+    if (High(av) > 1) and (av[2].ValueKind = value_string) and (av[2].AsString = 'Date') then
     begin
       // Native Date query reads the target pointer at +558, while its setter writes FlyDate at +55C.
       av[0].AsInteger := Integer(TRuins(Obj).FlyToStar);
@@ -9280,7 +9280,7 @@ begin
   begin
     Station := nil;
     Kind := av[2].AsInteger;
-    if TShipType(Kind) in [rstRangerCenter..rstCustomStation] then
+    if TShipType(Kind) in [station_ranger_center..station_custom] then
     begin
       Station := TRuins.Create;
       Station.Init(TStationType(Kind), Star, '');
@@ -9302,9 +9302,9 @@ begin
   begin
     Station := TRuins.Create;
     av[0].AsDword := Cardinal(Station);
-    Station.Init(rstCustomStation, Star, av[2].AsString);
+    Station.Init(station_custom, Star, av[2].AsString);
     if High(av) > 2 then Station.CurrentStanding := TShipStanding(av[3].AsInteger)
-    else Station.CurrentStanding := ssUnaligned;
+    else Station.CurrentStanding := standing_unaligned;
   end;
 end;
 { @end $62335C }
@@ -9320,15 +9320,15 @@ begin
   Obj := TObject(av[1].AsDword);
   if not (Obj is TRuins) then Exit;
   Station := TRuins(Obj);
-  if av[2].ValueKind = vkString then
-    for Index := rstRangerCenter to rstCustomStation do
+  if av[2].ValueKind = value_string then
+    for Index := station_ranger_center to station_custom do
       if av[2].AsString = ShipTypeNames[Index].Name then
       begin
         Station.TypeId := Index;
         Exit;
       end;
   Index := TShipType(av[2].AsInteger);
-  if Index in [rstRangerCenter..rstCustomStation] then Station.TypeId := Index;
+  if Index in [station_ranger_center..station_custom] then Station.TypeId := Index;
 end;
 { @end $623458 }
 
@@ -9355,14 +9355,14 @@ begin
   av[0].AsInteger := 0;
   if Ship <> nil then
     case av[2].AsInteger of
-      1: av[0].AsInteger := Ship.GetSlotCount(sskWeapon);
-      2: av[0].AsInteger := Ship.GetSlotCount(sskArtefact);
-      3: av[0].AsInteger := Ship.GetSlotCount(sskRadar);
-      4: av[0].AsInteger := Ship.GetSlotCount(sskScanner);
-      5: av[0].AsInteger := Ship.GetSlotCount(sskRepairRobot);
-      6: av[0].AsInteger := Ship.GetSlotCount(sskCargoHook);
-      7: av[0].AsInteger := Ship.GetSlotCount(sskDefGenerator);
-      8: av[0].AsInteger := Ship.GetSlotCount(sskAfterburner);
+      1: av[0].AsInteger := Ship.GetSlotCount(slot_weapon);
+      2: av[0].AsInteger := Ship.GetSlotCount(slot_artefact);
+      3: av[0].AsInteger := Ship.GetSlotCount(slot_radar);
+      4: av[0].AsInteger := Ship.GetSlotCount(slot_scanner);
+      5: av[0].AsInteger := Ship.GetSlotCount(slot_repair_robot);
+      6: av[0].AsInteger := Ship.GetSlotCount(slot_cargo_hook);
+      7: av[0].AsInteger := Ship.GetSlotCount(slot_defense_generator);
+      8: av[0].AsInteger := Ship.GetSlotCount(slot_afterburner);
     end;
 end;
 { @end $6235FC }
@@ -9508,7 +9508,7 @@ var
   NewValue, SourceValue: TVarEC;
 begin
   if High(Args) < 2 then raise Exception.Create('Error.Script ArrayAdd');
-  if Args[1].ValueKind <> vkArray then
+  if Args[1].ValueKind <> value_array then
     raise Exception.Create('Error.Script ArrayAdd - not array');
   SourceValue := Args[2].Resolve;
   NewValue := TVarEC.Create(SourceValue.ValueKind);
@@ -9525,9 +9525,9 @@ var
   ElementIndex: Integer;
 begin
   if High(Args) < 2 then raise Exception.Create('Error.Script ArrayDelete');
-  if Args[1].ValueKind <> vkArray then
+  if Args[1].ValueKind <> value_array then
     raise Exception.Create('Error.Script ArrayDelete - not array');
-  if Args[2].ValueKind = vkString then Args[1].AsArray.DeleteByName(Args[2].AsString)
+  if Args[2].ValueKind = value_string then Args[1].AsArray.DeleteByName(Args[2].AsString)
   else
   begin
     ElementIndex := Args[2].AsInteger;
@@ -9541,11 +9541,11 @@ end;
 procedure SF_ArrayClear(Args: array of TVarEC; Code: TCodeEC);
 begin
   if High(Args) < 1 then raise Exception.Create('Error.Script ArrayClear');
-  if Args[1].ValueKind <> vkArray then
+  if Args[1].ValueKind <> value_array then
     raise Exception.Create('Error.Script ArrayClear - not array');
   Args[1].AsArray.Clear;
   { Native arrays retain one empty placeholder after this operation. }
-  Args[1].AsArray.AddItem(TVarEC.Create(vkEmpty));
+  Args[1].AsArray.AddItem(TVarEC.Create(value_empty));
 end;
 { @end $624244 }
 
@@ -9553,7 +9553,7 @@ end;
 procedure SF_ArrayDim(Args: array of TVarEC; Code: TCodeEC);
 begin
   if High(Args) < 1 then raise Exception.Create('Error.Script ArrayDim');
-  if Args[1].ValueKind <> vkArray then
+  if Args[1].ValueKind <> value_array then
     raise Exception.Create('Error.Script ArrayDim - not array');
   Args[0].AsInteger := Args[1].AsArray.Count;
 end;
@@ -9567,14 +9567,14 @@ var
 begin
   ArrayCount := High(Args);
   if ArrayCount < 1 then raise Exception.Create('Error.Script ArraySort');
-  if Args[1].ValueKind <> vkArray then
+  if Args[1].ValueKind <> value_array then
     raise Exception.Create('Error.Script ArraySort - not array');
   ElementCount := Args[1].AsArray.Count;
   if ElementCount < 2 then Exit;
   if ArrayCount > 1 then
     for I := 2 to ArrayCount do
     begin
-      if Args[I].ValueKind <> vkArray then
+      if Args[I].ValueKind <> value_array then
         raise Exception.Create('Error.Script ArraySort - type mismatch');
       if Args[I].AsArray.Count <> ElementCount then
         raise Exception.Create('Error.Script ArraySort - size mismatch');
@@ -9599,7 +9599,7 @@ var
 begin
   ArrayCount := High(Args) - 1;
   if ArrayCount < 1 then raise Exception.Create('Error.Script ArraySortPartial');
-  if Args[2].ValueKind <> vkArray then
+  if Args[2].ValueKind <> value_array then
     raise Exception.Create('Error.Script ArraySortPartial - not array');
   ElementCount := Args[2].AsArray.Count;
   MinIndex := Args[1].AsInteger;
@@ -9607,7 +9607,7 @@ begin
   if ArrayCount > 1 then
     for I := 2 to ArrayCount do
     begin
-      if Args[I + 1].ValueKind <> vkArray then
+      if Args[I + 1].ValueKind <> value_array then
         raise Exception.Create('Error.Script ArraySortPartial - type mismatch');
       if Args[I + 1].AsArray.Count <> ElementCount then
         raise Exception.Create('Error.Script ArraySortPartial - size mismatch');
@@ -9635,13 +9635,13 @@ var
 begin
   LastArgIndex := High(Args);
   if LastArgIndex < 2 then raise Exception.Create('Error.Script ArrayRandomize');
-  if Args[2].ValueKind <> vkArray then
+  if Args[2].ValueKind <> value_array then
     raise Exception.Create('Error.Script ArrayRandomize - not array');
   ElementCount := Args[2].AsArray.Count;
   if ElementCount < 2 then Exit;
   SwapCount := Args[1].AsInteger;
   HasSeed := False;
-  if Args[LastArgIndex].ValueKind <> vkArray then
+  if Args[LastArgIndex].ValueKind <> value_array then
   begin
     Seed := Args[LastArgIndex].AsDword;
     HasSeed := True;
@@ -9649,7 +9649,7 @@ begin
   end;
   for I := 3 to LastArgIndex do
   begin
-    if Args[I].ValueKind <> vkArray then
+    if Args[I].ValueKind <> value_array then
       raise Exception.Create('Error.Script ArrayRandomize - type mismatch');
     if Args[I].AsArray.Count <> ElementCount then
       raise Exception.Create('Error.Script ArrayRandomize - size mismatch');
@@ -9688,10 +9688,10 @@ var
   ElementIndex: Integer;
 begin
   if High(Args) < 2 then raise Exception.Create('Error.Script ArrayFind');
-  if Args[1].ValueKind <> vkArray then
+  if Args[1].ValueKind <> value_array then
     raise Exception.Create('Error.Script ArrayFind - not array');
   Args[0].AsInteger := -1;
-  if Args[2].ValueKind = vkInt then
+  if Args[2].ValueKind = value_int32 then
   begin
     for ElementIndex := 0 to Args[1].AsArray.Count - 1 do
       if Args[1].AsArray[ElementIndex].AsInteger = Args[2].AsInteger then
@@ -9700,7 +9700,7 @@ begin
         Exit;
       end;
   end
-  else if Args[2].ValueKind = vkDword then
+  else if Args[2].ValueKind = value_uint32 then
   begin
     for ElementIndex := 0 to Args[1].AsArray.Count - 1 do
       if Args[1].AsArray[ElementIndex].AsDword = Args[2].AsDword then
@@ -9709,7 +9709,7 @@ begin
         Exit;
       end;
   end
-  else if Args[2].ValueKind = vkString then
+  else if Args[2].ValueKind = value_string then
   begin
     for ElementIndex := 0 to Args[1].AsArray.Count - 1 do
       if Args[1].AsArray[ElementIndex].AsString = Args[2].AsString then
@@ -9718,7 +9718,7 @@ begin
         Exit;
       end;
   end
-  else if Args[2].ValueKind = vkFloat then
+  else if Args[2].ValueKind = value_float64 then
   begin
     for ElementIndex := 0 to Args[1].AsArray.Count - 1 do
       if Args[1].AsArray[ElementIndex].AsFloat = Args[2].AsFloat then
@@ -9737,7 +9737,7 @@ var
   ProbeValue, ProbeIndex, Pass, InterpolationPassCount, ScanDirection: Integer;
 begin
   if High(Args) < 2 then raise Exception.Create('Error.Script ArrayFindInSorted');
-  if Args[1].ValueKind <> vkArray then
+  if Args[1].ValueKind <> value_array then
     raise Exception.Create('Error.Script ArrayFindInSorted - not array');
   ProbeIndex := 0;
   ElementCount := Args[1].AsArray.Count;
@@ -9825,7 +9825,7 @@ begin
   while I < Galaxy.Stars.Count do
   begin
     Other := Star.StarDistances[I].Star as TStar;
-    if (Other.ControlFaction = sfDominators) or (Other.Status.CustomFaction <> '') then Break;
+    if (Other.ControlFaction = faction_dominators) or (Other.Status.CustomFaction <> '') then Break;
     Inc(I);
   end;
   if I = Galaxy.Stars.Count then av[0].AsInteger := -1
@@ -9846,7 +9846,7 @@ begin
   Star := TStar(av[1].AsDword);
   IncludePirates := (High(av) > 1) and (av[2].AsInteger = 1);
   if Star = nil then raise Exception.Create('Error.Script StarEnemyThreatLevel');
-  if (Star.ControlFaction = sfDominators) or (Star.Status.CustomFaction <> '') or (IncludePirates and (Star.ControlFaction = sfPirates)) then
+  if (Star.ControlFaction = faction_dominators) or (Star.Status.CustomFaction <> '') or (IncludePirates and (Star.ControlFaction = faction_pirates)) then
   begin
     av[0].AsInteger := 3;
     Exit;
@@ -9861,12 +9861,12 @@ begin
     av[0].AsInteger := 1;
     Exit;
   end;
-  Standings := [ssDominator, ssCustom];
-  if IncludePirates then Standings := Standings + [ssPirateActive, ssPirateMilitary];
+  Standings := [standing_dominator, standing_custom];
+  if IncludePirates then Standings := Standings + [standing_pirate_active, standing_pirate_military];
   for J := 0 to Star.Ships.Count - 1 do
   begin
     Ship := Star.Ships[J];
-    if ((Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> oiUninhabited)) and (Ship.CurrentStanding in Standings) then
+    if ((Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> owner_uninhabited)) and (Ship.CurrentStanding in Standings) then
     begin
       av[0].AsInteger := 1;
       Exit;
@@ -9876,7 +9876,7 @@ begin
   begin
     Other := TStar(Star.StarDistances[I].Star);
     // Native code tests the original star's custom/pirate fields here.
-    if (Other.ControlFaction = sfDominators) or (Star.Status.CustomFaction <> '') or (IncludePirates and (Star.ControlFaction = sfPirates)) then
+    if (Other.ControlFaction = faction_dominators) or (Star.Status.CustomFaction <> '') or (IncludePirates and (Star.ControlFaction = faction_pirates)) then
       for J := 0 to Other.Ships.Count - 1 do
       begin
         Ship := Other.Ships[J];
@@ -9905,12 +9905,12 @@ var
   Value: TVarEC;
 begin
   if High(av) < 4 then raise Exception.Create('Error.Script BuildListOfQuestPossibleLocations');
-  if av[1].ValueKind = vkEmpty then
+  if av[1].ValueKind = value_empty then
   begin
-    av[1].ConvertToKind(vkArray);
+    av[1].ConvertToKind(value_array);
     av[1].AsArray := TVarArrayEC.Create;
   end
-  else if av[1].ValueKind <> vkArray then raise Exception.Create('Error.Script BuildListOfQuestPossibleLocations - not array');
+  else if av[1].ValueKind <> value_array then raise Exception.Create('Error.Script BuildListOfQuestPossibleLocations - not array');
   Star := TStar(av[2].AsDword);
   MinDistance := av[3].AsInteger;
   MaxDistance := av[4].AsInteger;
@@ -9920,7 +9920,7 @@ begin
   begin
     Candidate := TStar(Star.StarDistances[I].Star);
     if (Star.StarDistances[I].Distance >= MinDistance) and
-      (Candidate.ControlFaction = sfCoalition) and (Candidate.Status.CustomFaction = '') and
+      (Candidate.ControlFaction = faction_coalition) and (Candidate.Status.CustomFaction = '') and
       (Candidate.Battle = 0) and (Galaxy.KellerTargetStar <> Candidate) and Candidate.IsConstellationVisible then
     begin
       Allowed := True;
@@ -9929,7 +9929,7 @@ begin
           if TStar(av[J].AsDword) = Candidate then Allowed := False;
       if Allowed then
       begin
-        Value := TVarEC.Create(vkDword);
+        Value := TVarEC.Create(value_uint32);
         Value.AsDword := Cardinal(Candidate);
         av[1].AsArray.AddItem(Value);
       end;
@@ -9943,7 +9943,7 @@ begin
     J := 0;
     Allowed := True;
     while Allowed and (J < Star.Ships.Count) do
-      if TShip(Star.Ships[J]).TypeId = stKling then
+      if TShip(Star.Ships[J]).TypeId = ship_dominator then
       begin
         Allowed := False;
         av[1].AsArray.Delete(I);
@@ -9955,9 +9955,9 @@ begin
   while (I < Galaxy.Stars.Count) and (Count > 0) do
   begin
     Star := Galaxy.Stars[I];
-    if Star.ControlFaction = sfDominators then
+    if Star.ControlFaction = faction_dominators then
       for J := 0 to Star.Ships.Count - 1 do
-        if (TShip(Star.Ships[J]).TypeId = stKling) and (TShip(Star.Ships[J]).OrderTarget is TStar) then
+        if (TShip(Star.Ships[J]).TypeId = ship_dominator) and (TShip(Star.Ships[J]).OrderTarget is TStar) then
         begin
           Candidate := TShip(Star.Ships[J]).OrderTarget as TStar;
           for K := av[1].AsArray.Count - 1 downto 0 do
@@ -9971,7 +9971,7 @@ begin
   end;
   Count := av[1].AsArray.Count;
   av[0].AsInteger := Count;
-  if Count = 0 then av[1].AsArray.AddItem(TVarEC.Create(vkEmpty));
+  if Count = 0 then av[1].AsArray.AddItem(TVarEC.Create(value_empty));
 end;
 { @end $625460 }
 
@@ -10257,7 +10257,7 @@ var
   RandomMode, IsHull, IsWeapon, IsOther: Boolean;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script SpecialToEquipment');
-  RandomMode := (High(av) = 1) or ((av[1].ValueKind = vkDword) and (av[1].AsDword > $FFFF));
+  RandomMode := (High(av) = 1) or ((av[1].ValueKind = value_uint32) and (av[1].AsDword > $FFFF));
   if RandomMode then Obj := TObject(av[1].AsDword) else Obj := TObject(av[2].AsDword);
   RawItem := nil;
   if Obj is TItem then RawItem := TItem(Obj);
@@ -10324,7 +10324,7 @@ var
   RandomMode: Boolean;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script ModuleToEquipment');
-  RandomMode := (High(av) = 1) or ((av[1].ValueKind = vkDword) and (av[1].AsDword > $FFFF));
+  RandomMode := (High(av) = 1) or ((av[1].ValueKind = value_uint32) and (av[1].AsDword > $FFFF));
   if RandomMode then Obj := TObject(av[1].AsDword) else Obj := TObject(av[2].AsDword);
   RawItem := nil;
   if Obj is TItem then RawItem := TItem(Obj);
@@ -10438,12 +10438,12 @@ var
   ExcludeRacial: Boolean;
 begin
   if High(av) < 3 then raise Exception.Create('Error.Script BuildListOfMMByPriority');
-  if av[1].ValueKind = vkEmpty then
+  if av[1].ValueKind = value_empty then
   begin
-    av[1].ConvertToKind(vkArray);
+    av[1].ConvertToKind(value_array);
     av[1].AsArray := TVarArrayEC.Create;
   end
-  else if av[1].ValueKind <> vkArray then raise Exception.Create('Error.Script BuildListOfMMByPriority - not array');
+  else if av[1].ValueKind <> value_array then raise Exception.Create('Error.Script BuildListOfMMByPriority - not array');
   if High(av) > 3 then ExcludeRacial := av[4].AsInteger <> 0 else ExcludeRacial := True;
   if av[2].AsInteger < av[3].AsInteger then
   begin
@@ -10462,13 +10462,13 @@ begin
     if (MicroModuleTemplates[I].Priority > HighPriority) or
       (MicroModuleTemplates[I].Priority < LowPriority) or
       ((Byte(ExcludeRacial) and Byte(MicroModuleTemplates[I].RacialRestriction)) <> 0) then Continue;
-    Value := TVarEC.Create(vkInt);
+    Value := TVarEC.Create(value_int32);
     Value.AsInteger := I;
     av[1].AsArray.AddItem(Value);
   end;
   Count := av[1].AsArray.Count;
   av[0].AsInteger := Count;
-  if Count = 0 then av[1].AsArray.AddItem(TVarEC.Create(vkEmpty));
+  if Count = 0 then av[1].AsArray.AddItem(TVarEC.Create(value_empty));
 end;
 { @end $627370 }
 
@@ -10518,7 +10518,7 @@ var
         if not Found then Exit;
       end;
     end;
-    Value := TVarEC.Create(vkInt);
+    Value := TVarEC.Create(value_int32);
     Value.AsDword := Cardinal(Ship);
     av[1].AsArray.AddItem(Value);
   end;
@@ -10533,17 +10533,17 @@ var
 
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script BuildListOfNewShips');
-  if av[1].ValueKind = vkEmpty then
+  if av[1].ValueKind = value_empty then
   begin
-    av[1].ConvertToKind(vkArray);
+    av[1].ConvertToKind(value_array);
     av[1].AsArray := TVarArrayEC.Create;
   end
-  else if av[1].ValueKind <> vkArray then raise Exception.Create('Error.Script BuildListOfNewShips - not array');
+  else if av[1].ValueKind <> value_array then raise Exception.Create('Error.Script BuildListOfNewShips - not array');
   av[1].AsArray.Clear;
   MinimumId := av[2].AsDword;
-  if (High(av) > 2) and (av[3].AsDword <> 0) then Word(Mask) := av[3].AsDword else Mask := [stKling..stWarrior, rstRangerCenter..rstCustomStation];
+  if (High(av) > 2) and (av[3].AsDword <> 0) then Word(Mask) := av[3].AsDword else Mask := [ship_dominator..ship_warrior, station_ranger_center..station_custom];
   // Parsed by the native routine but never consulted.
-  if (High(av) > 3) and (av[4].AsDword <> 0) then OwnerMask := TOwnerMask(Byte(av[4].AsDword)) else OwnerMask := [oiMaloc..oiPirate];
+  if (High(av) > 3) and (av[4].AsDword <> 0) then OwnerMask := TOwnerMask(Byte(av[4].AsDword)) else OwnerMask := [owner_maloc..owner_pirate];
   IncludeScripted := False;
   if (High(av) > 4) and (av[5].AsInteger <> 0) then IncludeScripted := True;
   if High(av) > 5 then
@@ -10580,9 +10580,9 @@ begin
     for J := 0 to Star.Ships.Count - 1 do
     begin
       Ship := Star.Ships[J];
-      if Ship.TypeId <> stWarrior then CheckShip(Ship);
+      if Ship.TypeId <> ship_warrior then CheckShip(Ship);
     end;
-    if stWarrior in Mask then
+    if ship_warrior in Mask then
       for J := 0 to Star.Planets.Count - 1 do
       begin
         Planet := Star.Planets[J];
@@ -10593,7 +10593,7 @@ begin
         end;
       end;
   end;
-  if stTranclucator in Mask then
+  if ship_tranclucator in Mask then
   begin
     for I := 0 to Galaxy.Stars.Count - 1 do
     begin
@@ -10601,7 +10601,7 @@ begin
       for J := 0 to Star.Ships.Count - 1 do
       begin
         Ship := Star.Ships[J];
-        if Ship.TypeId <> stWarrior then
+        if Ship.TypeId <> ship_warrior then
           for K := 0 to Ship.Artefacts.Count - 1 do CheckItem(TItem(Ship.Artefacts[K]));
       end;
       for J := 0 to Star.Planets.Count - 1 do
@@ -10622,7 +10622,7 @@ begin
   end;
   Count := av[1].AsArray.Count;
   av[0].AsInteger := Count;
-  if Count = 0 then av[1].AsArray.AddItem(TVarEC.Create(vkEmpty));
+  if Count = 0 then av[1].AsArray.AddItem(TVarEC.Create(value_empty));
 end;
 { @end $6277A4 }
 
@@ -10666,9 +10666,9 @@ begin
     ReleaseSpaceObject(Ship.Graphic);
     Ship.RefreshGraphic;
   end;
-  if (High(av) > 2) and (av[3].AsInteger <> 0) and (CurrentScreenId = screenStarMap) then
+  if (High(av) > 2) and (av[3].AsInteger <> 0) and (CurrentScreenId = screen_star_map) then
   begin
-    RequestedScreenId := screenStarMap;
+    RequestedScreenId := screen_star_map;
     TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
   end;
 end;
@@ -10747,7 +10747,7 @@ begin
   if High(av) < 2 then raise Exception.Create('Error.Script SwitchToMirrorImage');
   Ship := TShip(av[1].AsDword);
   if Ship = nil then Ship := GetPlayer;
-  if Ship.ScriptChameleon and (av[2].ValueKind = vkString) then
+  if Ship.ScriptChameleon and (av[2].ValueKind = value_string) then
   begin
     Mirror := CreateSpaceObjectByName('Ship2', av[2].AsString, Point(0, 0)) as TShip2SE;
     Mirror.CopyDataFromMirrorImage(Ship.Graphic);
@@ -10756,7 +10756,7 @@ begin
     Exit;
   end;
   Hull := Ship.GetHull;
-  if Hull.HullType <> htSpecial then raise Exception.Create('Error.Script SwitchToMirrorImage: Not a special hull');
+  if Hull.HullType <> hull_special then raise Exception.Create('Error.Script SwitchToMirrorImage: Not a special hull');
   Hull.SpecialModuleIndex := av[2].AsInteger + 1;
   if Ship.ScriptChameleon or Ship.ChameleonActive or Ship.GraphDominator then Exit;
   Mirror := CreateSpaceObjectByName('Ship2', 'Ship.Akrin.' + Hull.GetSpecialKindGraph, Point(0, 0)) as TShip2SE;
@@ -10774,7 +10774,7 @@ var
   Item: TItem;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script EquipmentImageName');
-  if (av[1].ValueKind = vkString) and (av[1].AsString = 'GetImagePath') then
+  if (av[1].ValueKind = value_string) and (av[1].AsString = 'GetImagePath') then
   begin
     if High(av) < 2 then raise Exception.Create('Error.Script EquipmentImageName 2');
     Item := TItem(av[2].AsDword);
@@ -10858,18 +10858,18 @@ var
   Temp: TVarEC;
   ScorePtr: PDouble;
   Scores: TList;
-  Weights: array[oiMaloc..oiGaal] of Integer;
+  Weights: array[owner_maloc..owner_gaal] of Integer;
 begin
   if High(av) < 6 then raise Exception.Create('Error.Script StarListToPlanetList');
-  if av[1].ValueKind <> vkArray then raise Exception.Create('Error.Script StarListToPlanetList - not array');
-  if (High(av) > 6) and (av[7].ValueKind <> vkArray) then raise Exception.Create('Error.Script StarListToPlanetList - not array');
+  if av[1].ValueKind <> value_array then raise Exception.Create('Error.Script StarListToPlanetList - not array');
+  if (High(av) > 6) and (av[7].ValueKind <> value_array) then raise Exception.Create('Error.Script StarListToPlanetList - not array');
   Penalty := 0;
   if High(av) > 7 then Penalty := av[8].AsInteger / 100;
-  Weights[oiMaloc] := av[2].AsInteger;
-  Weights[oiPeleng] := av[3].AsInteger;
-  Weights[oiHuman] := av[4].AsInteger;
-  Weights[oiFeyan] := av[5].AsInteger;
-  Weights[oiGaal] := av[6].AsInteger;
+  Weights[owner_maloc] := av[2].AsInteger;
+  Weights[owner_peleng] := av[3].AsInteger;
+  Weights[owner_human] := av[4].AsInteger;
+  Weights[owner_feyan] := av[5].AsInteger;
+  Weights[owner_gaal] := av[6].AsInteger;
   Count := av[1].AsArray.Count;
   for I := Count - 1 downto 0 do
   begin
@@ -10879,7 +10879,7 @@ begin
     for J := 0 to Star.Planets.Count - 1 do
     begin
       Planet := Star.Planets[J];
-      if Planet.OwnerId in [oiMaloc..oiGaal] then
+      if Planet.OwnerId in [owner_maloc..owner_gaal] then
         if Weights[Planet.OwnerId] > Priority then
         begin
           BestPlanet := Planet;
@@ -10899,7 +10899,7 @@ begin
       Star := Planet.CurrentStar;
       J := 0;
       while (J < Galaxy.Stars.Count) and
-        ((Star.StarDistances[J].Star as TStar).ControlFaction <> sfDominators) and
+        ((Star.StarDistances[J].Star as TStar).ControlFaction <> faction_dominators) and
         ((Star.StarDistances[J].Star as TStar).Status.CustomFaction = '') do Inc(J);
       if J = Galaxy.Stars.Count then EnemyDistance := 1 else EnemyDistance := Star.StarDistances[J].Distance;
       Score := EnemyDistance * Weights[Planet.OwnerId];
@@ -10926,7 +10926,7 @@ begin
     Scores.Free;
   end;
   av[0].AsInteger := Count;
-  if Count = 0 then av[1].AsArray.AddItem(TVarEC.Create(vkEmpty));
+  if Count = 0 then av[1].AsArray.AddItem(TVarEC.Create(value_empty));
 end;
 { @end $628AA4 }
 
@@ -10936,14 +10936,14 @@ begin
   if High(av) > 0 then
   begin
     GameEndReason := av[1].AsInteger;
-    RequestedScreenId := screenGameEnd;
+    RequestedScreenId := screen_game_end;
     TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
   end
   else
   begin
     ScoreScreen.RecordPlayerResult(GetPlayer <> nil);
     AboutScreen.ReturnToScores := True;
-    RequestedScreenId := screenAbout;
+    RequestedScreenId := screen_about;
     TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
   end;
 end;
@@ -10959,8 +10959,8 @@ begin
   Event.AddTextData(av[1].AsString);
   if High(av) > 1 then Event.AddTextData(av[2].AsString)
   else Event.AddTextData('');
-  GameEndReason := gerDefault;
-  RequestedScreenId := screenGameEnd;
+  GameEndReason := game_end_default;
+  RequestedScreenId := screen_game_end;
   TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
 end;
 { @end $629064 }
@@ -10975,8 +10975,8 @@ begin
   Event.AddTextData(av[1].AsString);
   if High(av) > 1 then Event.AddTextData(av[2].AsString)
   else Event.AddTextData('');
-  GameEndReason := gerDefault;
-  RequestedScreenId := screenGameEnd;
+  GameEndReason := game_end_default;
+  RequestedScreenId := screen_game_end;
   TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
 end;
 { @end $629188 }
@@ -11144,7 +11144,7 @@ begin
     av[0].AsInteger := Ord(GetPlayer.TalkLocked);
     Exit;
   end;
-  if (High(av) = 1) and ((av[1].ValueKind <> vkDword) or (av[1].AsDword < $FF)) then
+  if (High(av) = 1) and ((av[1].ValueKind <> value_uint32) or (av[1].AsDword < $FF)) then
   begin
     av[0].AsInteger := Ord(GetPlayer.TalkLocked);
     GetPlayer.TalkLocked := av[1].AsInteger <> 0;
@@ -11167,7 +11167,7 @@ begin
     av[0].AsInteger := Ord(GetPlayer.ScanLocked);
     Exit;
   end;
-  if (High(av) = 1) and ((av[1].ValueKind <> vkDword) or (av[1].AsDword < $FF)) then
+  if (High(av) = 1) and ((av[1].ValueKind <> value_uint32) or (av[1].AsDword < $FF)) then
   begin
     av[0].AsInteger := Ord(GetPlayer.ScanLocked);
     GetPlayer.ScanLocked := av[1].AsInteger <> 0;
@@ -11324,12 +11324,12 @@ begin
     end
     else
       case Ship.TypeId of
-        stRanger:
+        ship_ranger:
           begin
             av[0].AsInteger := (Ship as TRanger).PrisonTermRemaining;
             if High(av) > 1 then (Ship as TRanger).PrisonTermRemaining := av[2].AsInteger;
           end;
-        stPirate:
+        ship_pirate:
           begin
             av[0].AsInteger := (Ship as TPirate).PrisonTermRemaining;
             if High(av) > 1 then (Ship as TPirate).PrisonTermRemaining := av[2].AsInteger;
@@ -11429,24 +11429,24 @@ var
 begin
   if High(av) < 1 then
   begin
-    if not Galaxy.HasUnresolvedDominatorSeries([dsBlazer, dsKeller, dsTerron]) then av[0].AsInteger := 1
+    if not Galaxy.HasUnresolvedDominatorSeries([series_blazer, series_keller, series_terron]) then av[0].AsInteger := 1
     else av[0].AsInteger := 0;
   end
   else
   begin
     Series := TDominatorSeries(av[1].AsInteger);
     case Series of
-      dsBlazer:
+      series_blazer:
         if Galaxy.BlazerSeriesResolvedTurn = 0 then av[0].AsInteger := 0
         else if (Galaxy.BlazerLandingPlanetId <> 0) and (BlazerShip <> nil) then av[0].AsInteger := 3
         else if Galaxy.BlazerSelfDestructTurn <> 0 then av[0].AsInteger := 2
         else av[0].AsInteger := 1;
-      dsKeller:
+      series_keller:
         if Galaxy.KellerSeriesResolvedTurn = 0 then av[0].AsInteger := 0
         else if Galaxy.KellerLeaveTurn <> 0 then av[0].AsInteger := 2
         else if Galaxy.KellerResearchTargetStarId <> 0 then av[0].AsInteger := 3
         else av[0].AsInteger := 1;
-      dsTerron:
+      series_terron:
         if Galaxy.TerronSeriesResolvedTurn = 0 then av[0].AsInteger := 0
         else if Galaxy.TerronToStarTurn <> 0 then av[0].AsInteger := 2
         else if Galaxy.TerronLandingLockTurn <> 0 then av[0].AsInteger := 3
@@ -11528,12 +11528,12 @@ var
   // @nested $62AC50 CalcValue
   procedure CalcValue; // @addr 0x0062AC50 @ida "void __cdecl $name(void *ParentFrame);" @note "Nested in SF_FindPlanetByAdvancement; reads its selected planet and writes its local score."
   var
-    I: TPlanetInvention;
+    I: TResearchTrack;
   begin
     Score := 0;
-    for I := Low(TPlanetInvention) to High(TPlanetInvention) do Score := Score + Planet.InventionLevels[I];
-    for I := piHull to piMainTech do Score := Score + 2 * Planet.InventionLevels[I];
-    Score := Score + 8 * Planet.InventionLevels[piMainTech] + 4 * Planet.InventionLevels[piHull] + 2 * Planet.InventionLevels[piRepairRobot];
+    for I := Low(TResearchTrack) to High(TResearchTrack) do Score := Score + Planet.InventionLevels[I];
+    for I := research_hull to research_main_technology do Score := Score + 2 * Planet.InventionLevels[I];
+    Score := Score + 8 * Planet.InventionLevels[research_main_technology] + 4 * Planet.InventionLevels[research_hull] + 2 * Planet.InventionLevels[research_repair_robot];
   end;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script FindPlanetByAdvancement');
@@ -11549,7 +11549,7 @@ begin
       for J := 0 to Star.Planets.Count - 1 do
       begin
         Planet := Star.Planets[J];
-        if Planet.OwnerId = oiUninhabited then Continue;
+        if Planet.OwnerId = owner_uninhabited then Continue;
         CalcValue;
         MaxScore := Max(Score, MaxScore);
         MinScore := Min(Score, MinScore);
@@ -11565,7 +11565,7 @@ begin
       for J := 0 to Star.Planets.Count - 1 do
       begin
         Planet := Star.Planets[J];
-        if Planet.OwnerId = oiUninhabited then Continue;
+        if Planet.OwnerId = owner_uninhabited then Continue;
         CalcValue;
         if (BestPlanet = nil) or (Abs(Score - TargetScore) < BestDistance) then
         begin
@@ -11599,12 +11599,12 @@ begin
   Destination := TStar(av[3].AsDword);
   Limit := BaseDistance + av[4].AsInteger;
   DirectDistance := Round(PointDistance(Origin.Position, Destination.Position));
-  if av[1].ValueKind <> vkArray then raise Exception.Create('Error.Script StarListToTransitPlanetList - not array');
+  if av[1].ValueKind <> value_array then raise Exception.Create('Error.Script StarListToTransitPlanetList - not array');
   if High(av) > 8 then
     for I := Low(Weights) to High(Weights) do Weights[I] := av[I + 5].AsInteger
   else
     for I := Low(Weights) to High(Weights) do Weights[I] := 100;
-  if (High(av) > 10) and (av[10].ValueKind <> vkArray) then raise Exception.Create('Error.Script StarListToTransitPlanetList - not array2');
+  if (High(av) > 10) and (av[10].ValueKind <> value_array) then raise Exception.Create('Error.Script StarListToTransitPlanetList - not array2');
   Penalty := 0;
   if High(av) > 10 then Penalty := av[11].AsInteger / 100;
   Scores := TList.Create;
@@ -11662,7 +11662,7 @@ begin
     Scores.Free;
   end;
   av[0].AsInteger := Count;
-  if Count = 0 then av[1].AsArray.AddItem(TVarEC.Create(vkEmpty));
+  if Count = 0 then av[1].AsArray.AddItem(TVarEC.Create(value_empty));
 end;
 { @end $62AF14 }
 
@@ -11896,7 +11896,7 @@ begin
   while Index < GetPlayer.StorageEntries.Count do
   begin
     Entry := GetPlayer.StorageEntries[Index];
-    if ((Entry.LocationOwner = Location) or (Location = nil)) and (Entry.Item.ItemType = t_Protoplasm) then
+    if ((Entry.LocationOwner = Location) or (Location = nil)) and (Entry.Item.ItemType = item_nodes) then
     begin
       Nodes := TProtoplasm(Entry.Item);
       // Native does not advance Index when the series differs.
@@ -12006,7 +12006,7 @@ begin
   else if Ship is TRanger then av[0].AsInteger := Ord(TRanger(Ship).PreferredCareer)
   else av[0].AsInteger := 0;
   if High(av) <= 1 then Exit;
-  if Ship is TKling then TKling(Ship).KlingType := TKlingType(av[2].AsInteger)
+  if Ship is TKling then TKling(Ship).KlingType := TDominatorKind(av[2].AsInteger)
   else if Ship is TTransport then TTransport(Ship).TransportType := TTransportType(av[2].AsInteger)
   else if Ship is TWarrior then TWarrior(Ship).WarriorType := TWarriorType(av[2].AsInteger)
   else if Ship is TPirate then TPirate(Ship).PirateType := av[2].AsInteger
@@ -12031,7 +12031,7 @@ end;
 { @routine $62C680 SF_IsFilm }
 procedure SF_IsFilm(av: array of TVarEC; code: TCodeEC);
 begin
-  if StarMapScreen.Mode = smmTurnFilm then av[0].AsInteger := 1 else av[0].AsInteger := 0;
+  if StarMapScreen.Mode = map_mode_playback then av[0].AsInteger := 1 else av[0].AsInteger := 0;
   SysUtils.Sleep(1);
 end;
 { @end $62C680 }
@@ -12359,7 +12359,7 @@ begin
   begin
     Missile := TMissile(Target);
     Hit := Missile.CanBeHit(Ship, Weapon);
-    Hit := Ship.ScriptItemsAct(satOnWeaponShot, Missile, Weapon, Ord(Hit)) <> 0;
+    Hit := Ship.ScriptItemsAct(event_weapon_shot, Missile, Weapon, Ord(Hit)) <> 0;
     if Hit then
     begin
       Star := Missile.CurrentStar;
@@ -12393,7 +12393,7 @@ begin
   if (Source <> nil) and (Source is TItem) then av[0].AsInteger := Ship.ApplyExplosionDamage(nil, Source, Damage, nil)
   else
   begin
-    if High(av) > 3 then Dword(Flags) := av[4].AsDword else Flags := [dkEnergy];
+    if High(av) > 3 then Dword(Flags) := av[4].AsDword else Flags := [damage_flag_energy];
     if High(av) > 4 then Range := av[5].AsInteger else Range := -1;
     av[0].AsInteger := Ship.ApplyDamage(Source, Damage, Range, Color, Flags);
   end;
@@ -12427,7 +12427,7 @@ begin
     Missile := TMissile.Create;
     Missile.InitializeShot(Ship.CurrentStar, Ship, Weapon, Target, Shot);
   end;
-  Ship.ScriptItemsAct(satOnMissileShot, Missile, Weapon, 0);
+  Ship.ScriptItemsAct(event_missile_shot, Missile, Weapon, 0);
   av[0].AsDword := Cardinal(Missile);
   if not Ship.CurrentStar.RecordingTurnFilm then Exit;
   Step := Ship.CurrentStar.CurrentStepIndex;
@@ -12469,7 +12469,7 @@ begin
     Module := 0;
     Special := 0;
   end;
-  if av[9].ValueKind = vkString then
+  if av[9].ValueKind = value_string then
   begin
     Missile := TCustomMissile.Create;
     TCustomMissile(Missile).InitializeUnownedShot(Star, Target, X, Y, Direction, MinDamage, MaxDamage, Speed, av[9].AsString, Module, Special);
@@ -12600,7 +12600,7 @@ begin
     for Index := 0 to PlayerOldQuests.Count - 1 do
     begin
       Quest := PlayerOldQuests[Index];
-      if ((High(av) < 1) or (TQuestType(av[1].AsInteger) = Quest.QuestType)) and (Quest.Successful) then av[0].AsInteger := av[0].AsInteger + 1;
+      if ((High(av) < 1) or (TQuestKind(av[1].AsInteger) = Quest.QuestType)) and (Quest.Successful) then av[0].AsInteger := av[0].AsInteger + 1;
     end;
 end;
 { @end $62E2C8 }
@@ -12608,13 +12608,13 @@ end;
 { @routine $62E36C SF_QuestsStatusByNom }
 procedure SF_QuestsStatusByNom(av: array of TVarEC; code: TCodeEC);
 var
-  Kind: TQuestType;
+  Kind: TQuestKind;
   Number, Index: Integer;
   OldQuest: PPlayerOldQuest;
   Quest: PQuest;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script QuestsStatusByNom');
-  Kind := TQuestType(av[1].AsInteger);
+  Kind := TQuestKind(av[1].AsInteger);
   Number := av[2].AsInteger;
   if (PlayerOldQuests <> nil) and (PlayerOldQuests.Count > 0) then
     for Index := 0 to PlayerOldQuests.Count - 1 do
@@ -12728,7 +12728,7 @@ begin
   if Obj is TItem then Item := TItem(Obj);
   if Obj is TScriptItem then Item := TScriptItem(Obj).Item;
   av[0].AsInteger := 0;
-  if Item.ItemType in [t_Hull..t_CustomWeapon] then
+  if Item.ItemType in [item_hull..item_custom_weapon] then
   begin
     Equipment := TEquipment(Item);
     if not Equipment.HasStandardStats then av[0].AsInteger := 1;
@@ -12742,10 +12742,10 @@ begin
       begin
         SavedId := Equipment.Id;
         Equipment.Id := av[4].AsDword;
-        Equipment.Improve(TImprovementKind(Kind));
+        Equipment.Improve(TUpgradeKind(Kind));
         Equipment.Id := SavedId;
       end
-      else Equipment.Improve(TImprovementKind(Kind));
+      else Equipment.Improve(TUpgradeKind(Kind));
     end;
   end;
 end;
@@ -12974,7 +12974,7 @@ var
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script ShipDeleteCustomShipInfo');
   Ship := TShip(av[1].AsDword);
-  if av[2].ValueKind = vkString then begin
+  if av[2].ValueKind = value_string then begin
     for I := 0 to Ship.CustomShipInfos.Count - 1 do
     begin
       Info := Ship.CustomShipInfos[I];
@@ -13041,7 +13041,7 @@ begin
   if High(av) < 1 then raise Exception.Create('Error.Script ShipCustomShipInfoDescription');
   av[0].AsString := '';
   Ship := TShip(av[1].AsDword);
-  if av[2].ValueKind = vkString then
+  if av[2].ValueKind = value_string then
   begin
     Info := nil;
     for I := 0 to Ship.CustomShipInfos.Count - 1 do
@@ -13090,7 +13090,7 @@ begin
   if High(av) < 3 then raise Exception.Create('Error.Script ShipCustomShipInfoData');
   av[0].AsInteger := 0;
   Ship := TShip(av[1].AsDword);
-  if av[2].ValueKind = vkString then
+  if av[2].ValueKind = value_string then
   begin
     Info := nil;
     for I := 0 to Ship.CustomShipInfos.Count - 1 do
@@ -13145,7 +13145,7 @@ begin
   if High(av) < 3 then raise Exception.Create('Error.Script ShipCustomShipInfoTextData');
   av[0].AsString := '';
   Ship := TShip(av[1].AsDword);
-  if av[2].ValueKind = vkString then
+  if av[2].ValueKind = value_string then
   begin
     Info := nil;
     for I := 0 to Ship.CustomShipInfos.Count - 1 do
@@ -13225,7 +13225,7 @@ var
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script StarDeleteCustomStarInfo');
   Star := TStar(av[1].AsDword);
-  if av[2].ValueKind = vkString then
+  if av[2].ValueKind = value_string then
   begin
     for I := 0 to Star.CustomSystemInfos.Count - 1 do
     begin
@@ -13315,7 +13315,7 @@ begin
   Item := nil;
   if Obj is TItem then Item := TItem(Obj);
   if Obj is TScriptItem then Item := TScriptItem(Obj).Item;
-  if Item <> nil then CanBreak := (Item.ItemType in [t_FuelTanks..t_CustomWeapon, t_Satellite]) or (Item.ItemType in [t_Artefact, t_ArtefactHull..t_ArtefactAntigrav, t_ArtDefToEnergy..t_ArtGiperJump, t_ArtBio..t_ArtFastRacks]);
+  if Item <> nil then CanBreak := (Item.ItemType in [item_fuel_tanks..item_custom_weapon, item_satellite]) or (Item.ItemType in [item_custom_artefact, artefact_hull..artefact_antigravity, artefact_defense_to_energy..artefact_hyperjump, artefact_health_protection..artefact_extra_missiles]);
   av[0].AsDword := Ord(CanBreak);
 end;
 { @end $6305E8 }
@@ -13380,7 +13380,7 @@ begin
   if Obj is TItem then Item := TItem(Obj);
   if Obj is TScriptItem then Item := TScriptItem(Obj).Item;
   if Item <> nil then
-    if Item.ItemType in [t_Hull..t_CustomWeapon] then
+    if Item.ItemType in [item_hull..item_custom_weapon] then
     begin
       OldLevel := (Item as TEquipment).GetLevel;
       if High(av) > 1 then
@@ -13397,40 +13397,40 @@ begin
           NewBase := CreateGeneratedEquipment(Item.ItemType, Item.Weight, NewLevel, Item.OwnerId);
         end;
         case Item.ItemType of
-          t_Hull: begin
+          item_hull: begin
             THull(Item).TechLevel := NewLevel;
             THull(Item).Armor := THull(Item).Armor + THull(NewBase).Armor - THull(OldBase).Armor;
           end;
-          t_FuelTanks: begin
+          item_fuel_tanks: begin
             TFuelTanks(Item).TechLevel := NewLevel;
             TFuelTanks(Item).Capacity := TFuelTanks(Item).Capacity + TFuelTanks(NewBase).Capacity - TFuelTanks(OldBase).Capacity;
             TFuelTanks(Item).Fuel := Max(0, Min(TFuelTanks(Item).Fuel, TFuelTanks(Item).Capacity));
           end;
-          t_Engine: begin
+          item_engine: begin
             TEngine(Item).TechLevel := NewLevel;
             TEngine(Item).Speed := TEngine(Item).Speed + TEngine(NewBase).Speed - TEngine(OldBase).Speed;
             TEngine(Item).JumpRange := TEngine(Item).JumpRange + TEngine(NewBase).JumpRange - TEngine(OldBase).JumpRange;
           end;
-          t_Radar: begin
+          item_radar: begin
             TRadar(Item).TechLevel := NewLevel;
             TRadar(Item).Range := TRadar(Item).Range + TRadar(NewBase).Range - TRadar(OldBase).Range;
           end;
-          t_Scaner: begin
+          item_scanner: begin
             TScaner(Item).TechLevel := NewLevel;
             TScaner(Item).ScanPower := TScaner(Item).ScanPower + TScaner(NewBase).ScanPower - TScaner(OldBase).ScanPower;
           end;
-          t_RepairRobot: begin
+          item_repair_robot: begin
             TRepairRobot(Item).TechLevel := NewLevel;
             TRepairRobot(Item).RepairPoints := TRepairRobot(Item).RepairPoints + TRepairRobot(NewBase).RepairPoints - TRepairRobot(OldBase).RepairPoints;
           end;
-          t_CargoHook: begin
+          item_cargo_hook: begin
             TCargoHook(Item).TechLevel := NewLevel;
             TCargoHook(Item).PickupPower := TCargoHook(Item).PickupPower + TCargoHook(NewBase).PickupPower - TCargoHook(OldBase).PickupPower;
             TCargoHook(Item).Range := TCargoHook(Item).Range + TCargoHook(NewBase).Range - TCargoHook(OldBase).Range;
             TCargoHook(Item).MinPullSpeed := TCargoHook(Item).MinPullSpeed + TCargoHook(NewBase).MinPullSpeed - TCargoHook(OldBase).MinPullSpeed;
             TCargoHook(Item).MaxPullSpeed := TCargoHook(Item).MaxPullSpeed + TCargoHook(NewBase).MaxPullSpeed - TCargoHook(OldBase).MaxPullSpeed;
           end;
-          t_DefGenerator: begin
+          item_defense_generator: begin
             TDefGenerator(Item).TechLevel := NewLevel;
             TDefGenerator(Item).DamageFactor := TDefGenerator(Item).DamageFactor + TDefGenerator(NewBase).DamageFactor - TDefGenerator(OldBase).DamageFactor;
           end;
@@ -13504,7 +13504,7 @@ begin
   if Obj is TItem then Item := TItem(Obj);
   if Obj is TScriptItem then Item := TScriptItem(Obj).Item;
   if Item <> nil then
-    if TWeapon(Item).GetWeaponInfo.ShotType in [wstTorpedo..wstRocket] then
+    if TWeapon(Item).GetWeaponInfo.ShotType in [shot_torpedo..shot_rocket] then
     begin
       // Native checks the base equipment class here, then accesses weapon fields.
       Needed := TWeapon(Item as TEquipment).AmmoCapacity - TWeapon(Item as TEquipment).Ammo;
@@ -13574,7 +13574,7 @@ begin
   if High(av) < 2 then raise Exception.Create('Error.Script SF_ShipSpecialBonuses');
   Ship := TShip(av[1].AsDword);
   Kind := TEquipmentBonusKind(av[2].AsInteger);
-  if (High(av) > 2) and (av[3].ValueKind = vkString) and (av[3].AsString = 'Total') then
+  if (High(av) > 2) and (av[3].ValueKind = value_string) and (av[3].AsString = 'Total') then
     av[0].AsInteger := Ship.GetTotalStatBonus(Kind)
   else
   begin
@@ -13591,7 +13591,7 @@ var
   Index, Count: Integer;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script SF_ItemExtraSpecials');
-  if (High(av) = 1) and (TItem(av[1].AsDword).ItemType in [t_Food..t_Narcotics]) then
+  if (High(av) = 1) and (TItem(av[1].AsDword).ItemType in [item_food..item_narcotics]) then
   begin
     av[0].AsInteger := 0;
     Exit;
@@ -13617,7 +13617,7 @@ var
   Entry: PExtraSpecial;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script SF_ItemExtraSpecialsCountByType');
-  if TItem(av[1].AsDword).ItemType in [t_Food..t_Narcotics] then
+  if TItem(av[1].AsDword).ItemType in [item_food..item_narcotics] then
   begin
     av[0].AsInteger := 0;
     Exit;
@@ -13855,15 +13855,15 @@ end;
 { @routine $6320EC SF_CreateActCodeEvent }
 procedure SF_CreateActCodeEvent(av: array of TVarEC; code: TCodeEC);
 var
-  ActionType: TScriptActionType;
+  ActionType: TScriptEventKind;
   Obj, Object1, Object2: TObject;
   Info: PCustomShipInfo;
   Ship: TShip;
   Param, I: Integer;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script CreateActCodeEvent');
-  ActionType := TScriptActionType(av[1].AsInteger);
-  if av[2].ValueKind = vkString then
+  ActionType := TScriptEventKind(av[1].AsInteger);
+  if av[2].ValueKind = value_string then
   begin
     if High(av) < 3 then raise Exception.Create('Error.Script CreateActCodeEvent cant call info without ship');
     Obj := TObject(av[3].AsDword);
@@ -14255,7 +14255,7 @@ begin
   if High(av) > 7 then
   begin
     Choices := TList.Create;
-    if av[8].ValueKind = vkArray then
+    if av[8].ValueKind = value_array then
       for Index := 0 to av[8].AsArray.Count - 1 do
       begin
         New(Entry);
@@ -14314,7 +14314,7 @@ begin
   Caption := av[1].AsString;
   Choices := TList.Create;
   Index := -1;
-  if av[2].ValueKind = vkArray then
+  if av[2].ValueKind = value_array then
     for Index := 0 to av[2].AsArray.Count - 1 do
     begin
       New(Entry);
@@ -14856,7 +14856,7 @@ begin
   if Control = nil then raise Exception.Create('Error.Script ButtonClick - Object not found');
   if not (Control is TGraphButtonGI) then raise Exception.Create('Error.Script ButtonClick - Object not a button');
   Button := Control as TGraphButtonGI;
-  if (High(av) < 3) or (av[3].ValueKind <> vkString) or (av[3].AsString = 'AllCode') then
+  if (High(av) < 3) or (av[3].ValueKind <> value_string) or (av[3].AsString = 'AllCode') then
   begin
     if Assigned(Button.UpCallback) then Button.UpCallback(Button)
     else if Assigned(Button.DownCallback) then Button.DownCallback(Button);
@@ -14897,12 +14897,12 @@ begin
   if GetInnermostScreenLoop <> ShipScreen then raise Exception.Create('Error.Script FormShipCurItem');
   if High(av) < 1 then
   begin
-    if not (ShipScreen.SelectedHoldKind in [phkEquipment, phkArtefact]) then av[0].AsDword := 0
+    if not (ShipScreen.SelectedHoldKind in [hold_equipment, hold_artefact]) then av[0].AsDword := 0
     else av[0].AsDword := Cardinal(ShipScreen.SelectedHoldItem);
     Exit;
   end;
 
-  if av[1].ValueKind = vkString then
+  if av[1].ValueKind = value_string then
   begin
     if av[1].AsString = 'MoveType' then Query := 0
     else if av[1].AsString = 'StackableType' then Query := 1
@@ -14925,7 +14925,7 @@ begin
     5: begin
       if ShipScreen.SelectedHoldItem <> nil then ShipScreen.SelectedHoldItem.Free;
       ShipScreen.SelectedHoldItem := nil;
-      ShipScreen.SelectedHoldKind := phkEmpty;
+      ShipScreen.SelectedHoldKind := hold_empty;
       PlayerHoldShip.RefreshDerivedStats(True);
       if not ShipScreen.IsCursorImageSelected('Main') then ShipScreen.SetCursorByName('Main');
       ShipScreen.RefreshShipView;
@@ -14933,19 +14933,19 @@ begin
     6: begin
       av[0].AsDword := Cardinal(ShipScreen.SelectedHoldItem);
       ShipScreen.SelectedHoldItem := nil;
-      ShipScreen.SelectedHoldKind := phkEmpty;
+      ShipScreen.SelectedHoldKind := hold_empty;
       PlayerHoldShip.RefreshDerivedStats(True);
       if not ShipScreen.IsCursorImageSelected('Main') then ShipScreen.SetCursorByName('Main');
       ShipScreen.RefreshShipView;
     end;
     7: begin
       if (High(av) < 2) or (av[2].AsDword = 0) then raise Exception.Create('Error.Script FormShipCurItem no replacing item');
-      if (ShipScreen.SelectedHoldItem = nil) or not (ShipScreen.SelectedHoldKind in [phkEquipment, phkArtefact]) then
+      if (ShipScreen.SelectedHoldItem = nil) or not (ShipScreen.SelectedHoldKind in [hold_equipment, hold_artefact]) then
         raise Exception.Create('Error.Script FormShipCurItem no item to replace');
       Item := TObject(av[2].AsDword);
       av[0].AsDword := Cardinal(ShipScreen.SelectedHoldItem);
       ShipScreen.SelectedHoldItem := TItem(Item);
-      if Item is TArtefact then ShipScreen.SelectedHoldKind := phkArtefact else ShipScreen.SelectedHoldKind := phkEquipment;
+      if Item is TArtefact then ShipScreen.SelectedHoldKind := hold_artefact else ShipScreen.SelectedHoldKind := hold_equipment;
       PlayerHoldShip.RefreshDerivedStats(True);
       ShipScreen.UpdateActionCursor(True);
       ShipScreen.RefreshShipView;
@@ -14989,7 +14989,7 @@ begin
   end;
 
   Name := av[1].AsString;
-  for Id := screenNone to screenAchievements do
+  for Id := screen_none to screen_achievements do
     if (RegisteredScreens[Id] <> nil) and
       (RegisteredScreens[Id] is TMessageLoopGI) and
       ((RegisteredScreens[Id] as TMessageLoopGI).RegisteredLoopName = Name) then
@@ -14999,7 +14999,7 @@ begin
       begin
         if High(av) >= 2 then ShipScreen.ShipToInspect := TShip(av[2].AsDword);
         ShipReturnScreenId := CurrentScreenId;
-        if (CurrentScreenId = screenStarMap) or
+        if (CurrentScreenId = screen_star_map) or
           not (RegisteredScreens[CurrentScreenId] is TMessageLoopGIWithMainPanel) or
           (TMessageLoopGIWithMainPanel(RegisteredScreens[CurrentScreenId]).MainPanel = nil) then
         begin
@@ -15032,7 +15032,7 @@ var
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script RunChildForm');
   Name := av[1].AsString;
-  for Id := screenNone to screenAchievements do
+  for Id := screen_none to screen_achievements do
   begin
     if (RegisteredScreens[Id] = nil) or
       not (RegisteredScreens[Id] is TMessageLoopGI) or
@@ -15273,7 +15273,7 @@ procedure SF_StarMapCustomSelectionMode(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 10 then raise Exception.Create('Error.Script StarMapCustomSelectionMode');
   if GetInnermostScreenLoop <> StarMapScreen then Exit;
-  if av[1].ValueKind = vkString then
+  if av[1].ValueKind = value_string then
   begin
     StarMapScreen.CustomSelectionInfoName := av[1].AsString;
     StarMapScreen.CustomSelectionItem := nil;
@@ -15308,15 +15308,15 @@ begin
   if High(av) <> 1 then raise Exception.Create('Error.Script BlinkingWarning');
   if av[1].AsString = 'Money' then
   begin
-    if CurrentScreenId = screenShip then ShipScreen.StartMoneyWarning
-    else if (CurrentScreenId = screenGoodsShop) and GetPlayer.InNormalSpace then GoodsShopScreen.FlashMoneyWarning
+    if CurrentScreenId = screen_ship then ShipScreen.StartMoneyWarning
+    else if (CurrentScreenId = screen_goods_shop) and GetPlayer.InNormalSpace then GoodsShopScreen.FlashMoneyWarning
     else if RegisteredScreens[CurrentScreenId] is TMessageLoopGIWithMainPanel then
       TMessageLoopGIWithMainPanel(RegisteredScreens[CurrentScreenId]).MainPanel.FlashMoneyWarning;
   end
   else if (av[1].AsString = 'Space') then
-    if (CurrentScreenId <> screenShip) then
+    if (CurrentScreenId <> screen_ship) then
   begin
-    if (CurrentScreenId = screenGoodsShop) and GetPlayer.InNormalSpace then GoodsShopScreen.FlashCargoWarning
+    if (CurrentScreenId = screen_goods_shop) and GetPlayer.InNormalSpace then GoodsShopScreen.FlashCargoWarning
     else if RegisteredScreens[CurrentScreenId] is TMessageLoopGIWithMainPanel then
       TMessageLoopGIWithMainPanel(RegisteredScreens[CurrentScreenId]).MainPanel.FlashCargoWarning;
   end;
@@ -15349,8 +15349,8 @@ begin
   if High(av) < 1 then raise Exception.Create('Error.Script InventNewCustomWeapon');
   Info := Galaxy.GetOrCreateCustomWeaponInfo(av[1].AsString);
   av[0].AsDword := Cardinal(Info);
-  if High(av) > 1 then Kind := TItemType(av[2].AsInteger) else Kind := t_IndustrialLaser;
-  if not (Kind in [t_IndustrialLaser..t_Lirecron]) then raise Exception.Create(AnsiString('Error.Script InventNewCustomWeapon - invalid type ' + av[2].AsString));
+  if High(av) > 1 then Kind := TItemType(av[2].AsInteger) else Kind := item_industrial_laser;
+  if not (Kind in [item_industrial_laser..item_lirecron]) then raise Exception.Create(AnsiString('Error.Script InventNewCustomWeapon - invalid type ' + av[2].AsString));
   Base := @WeaponInfos[Kind];
   Info.TechLevel := Base.TechLevel;
   Info.InventionIndex := Base.InventionIndex;
@@ -15395,7 +15395,7 @@ var
   Key: WideString;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script GetCustomWeaponStats');
-  if av[1].ValueKind = vkString then Info := Galaxy.RequireCustomWeaponInfo(av[1].AsString)
+  if av[1].ValueKind = value_string then Info := Galaxy.RequireCustomWeaponInfo(av[1].AsString)
   else Info := @WeaponInfos[TItemType(av[1].AsInteger)];
   Key := av[2].AsString;
   if Key = 'TechLevel' then av[0].AsInteger := Info.TechLevel
@@ -15411,28 +15411,28 @@ begin
   else if Key = 'ShotCount' then av[0].AsInteger := Info.ShotCount
   else if Key = 'ShotType' then
     case Info.ShotType of
-      wstNormal: av[0].AsString := 'Normal';
-      wstSplash: av[0].AsString := 'Splash';
-      wstExploder: av[0].AsString := 'Exploder';
-      wstAreaDamage: av[0].AsString := 'AreaDamage';
-      wstTorpedo: av[0].AsString := 'Torpedo';
-      wstMissile: av[0].AsString := 'Missile';
-      wstRocket: av[0].AsString := 'Rocket';
-      wstChain: av[0].AsString := 'Chain';
+      shot_single_target: av[0].AsString := 'Normal';
+      shot_splash: av[0].AsString := 'Splash';
+      shot_explode_on_kill: av[0].AsString := 'Exploder';
+      shot_area_damage: av[0].AsString := 'AreaDamage';
+      shot_torpedo: av[0].AsString := 'Torpedo';
+      shot_missile: av[0].AsString := 'Missile';
+      shot_rocket: av[0].AsString := 'Rocket';
+      shot_chain: av[0].AsString := 'Chain';
     end
   else if Key = 'Availability' then
     case Info.Availability of
-      waFree: av[0].AsString := 'Free';
-      waCoalitionOnly: av[0].AsString := 'CoalitionOnly';
-      waPirateOnly: av[0].AsString := 'PirateOnly';
-      waNotSold: av[0].AsString := 'NotSold';
-      waNotSoldAndNodeRepair: av[0].AsString := 'NotSoldAndNodeRepair';
-      waMalocOnly: av[0].AsString := 'MalocOnly';
-      waPelengOnly: av[0].AsString := 'PelengOnly';
-      waPeopleOnly: av[0].AsString := 'PeopleOnly';
-      waFeiOnly: av[0].AsString := 'FeiOnly';
-      waGaalOnly: av[0].AsString := 'GaalOnly';
-      waSystemOnly: av[0].AsString := 'SystemOnly';
+      availability_unrestricted: av[0].AsString := 'Free';
+      availability_coalition_only: av[0].AsString := 'CoalitionOnly';
+      availability_pirate_only: av[0].AsString := 'PirateOnly';
+      availability_not_sold: av[0].AsString := 'NotSold';
+      availability_not_sold_node_repair: av[0].AsString := 'NotSoldAndNodeRepair';
+      availability_maloc_only: av[0].AsString := 'MalocOnly';
+      availability_peleng_only: av[0].AsString := 'PelengOnly';
+      availability_human_only: av[0].AsString := 'PeopleOnly';
+      availability_feyan_only: av[0].AsString := 'FeiOnly';
+      availability_gaal_only: av[0].AsString := 'GaalOnly';
+      availability_system_only: av[0].AsString := 'SystemOnly';
     else raise Exception.Create('Error.Script GetCustomWeaponStats - unknown availability type');
     end
   else raise Exception.Create(AnsiString('Error.Script GetCustomWeaponStats - unknown stat ' + Key));
@@ -15445,7 +15445,7 @@ var
   Info: PWeaponInfo;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script GetCustomWeaponPrimaryDamageType');
-  if av[1].ValueKind = vkString then Info := Galaxy.RequireCustomWeaponInfo(av[1].AsString)
+  if av[1].ValueKind = value_string then Info := Galaxy.RequireCustomWeaponInfo(av[1].AsString)
   else Info := @WeaponInfos[TItemType(av[1].AsInteger)];
   av[0].AsInteger := Ord(ClassifyWeaponDamageFlags(Info.DamageFlags));
 end;
@@ -15461,18 +15461,18 @@ begin
   Info := PWeaponInfo(av[1].AsDword);
   av[0].AsDword := Cardinal(Info);
   Text := av[2].AsString;
-  if Text = 'Free' then Info.Availability := waFree
-  else if Text = 'CoalitionOnly' then Info.Availability := waCoalitionOnly
-  else if Text = 'PirateOnly' then Info.Availability := waPirateOnly
-  else if Text = 'NotSold' then Info.Availability := waNotSold
-  else if Text = 'NotSoldAndNodeRepair' then Info.Availability := waNotSoldAndNodeRepair
-  else if Text = 'MalocOnly' then Info.Availability := waMalocOnly
-  else if Text = 'PelengOnly' then Info.Availability := waPelengOnly
-  else if Text = 'PeopleOnly' then Info.Availability := waPeopleOnly
-  else if Text = 'FeiOnly' then Info.Availability := waFeiOnly
-  else if Text = 'GaalOnly' then Info.Availability := waGaalOnly
-  else if Text = 'SystemOnly' then Info.Availability := waSystemOnly
-  else Info.Availability := waFree;
+  if Text = 'Free' then Info.Availability := availability_unrestricted
+  else if Text = 'CoalitionOnly' then Info.Availability := availability_coalition_only
+  else if Text = 'PirateOnly' then Info.Availability := availability_pirate_only
+  else if Text = 'NotSold' then Info.Availability := availability_not_sold
+  else if Text = 'NotSoldAndNodeRepair' then Info.Availability := availability_not_sold_node_repair
+  else if Text = 'MalocOnly' then Info.Availability := availability_maloc_only
+  else if Text = 'PelengOnly' then Info.Availability := availability_peleng_only
+  else if Text = 'PeopleOnly' then Info.Availability := availability_human_only
+  else if Text = 'FeiOnly' then Info.Availability := availability_feyan_only
+  else if Text = 'GaalOnly' then Info.Availability := availability_gaal_only
+  else if Text = 'SystemOnly' then Info.Availability := availability_system_only
+  else Info.Availability := availability_unrestricted;
 end;
 { @end $6398E8 }
 
@@ -15485,7 +15485,7 @@ begin
   Info := PWeaponInfo(av[1].AsDword);
   av[0].AsDword := Cardinal(Info);
   Info.TechLevel := av[2].AsInteger;
-  if not (TItemType(av[3].AsInteger) in [t_IndustrialLaser..t_Lirecron]) then
+  if not (TItemType(av[3].AsInteger) in [item_industrial_laser..item_lirecron]) then
     raise Exception.Create('Error.Script SetCustomWeaponPrimaryData invalid tech');
   Info.InventionIndex := WeaponInfos[TItemType(av[3].AsInteger)].InventionIndex;
   Info.ArcadeWeaponType := av[4].AsInteger;
@@ -15524,11 +15524,11 @@ begin
     Info.MinDamage := av[2].AsInteger;
     Info.MaxDamage := av[3].AsInteger;
     Flags := EmptyFlags;
-    if av[4].ValueKind = vkString then
+    if av[4].ValueKind = value_string then
     begin
       Text := ',' + av[4].AsString + ',';
       for Flag := Low(WeaponDamageFlagNames) to High(WeaponDamageFlagNames) do
-        if Pos(',' + WeaponDamageFlagNames[Flag] + ',', Text) > 0 then Include(Flags, TDamageKind(Flag));
+        if Pos(',' + WeaponDamageFlagNames[Flag] + ',', Text) > 0 then Include(Flags, TDamageFlag(Flag));
       Break;
     end
     else
@@ -15538,7 +15538,7 @@ begin
     end;
   end;
   Info.DamageFlags := Flags;
-  if (High(av) > 4) and (av[5].ValueKind = vkString) then
+  if (High(av) > 4) and (av[5].ValueKind = value_string) then
   begin
     Text := av[5].AsString;
     Count := CountDelimitedPartsW(Text, ',');
@@ -15547,7 +15547,7 @@ begin
     Exit;
   end;
   for I := Low(Info.DamageScaleByLevel) to Min(High(Info.DamageScaleByLevel), High(av) - 4) do
-    if not (av[4 + I].ValueKind in [vkInt, vkDword]) or (av[4 + I].AsInteger <> 0) then
+    if not (av[4 + I].ValueKind in [value_int32, value_uint32]) or (av[4 + I].AsInteger <> 0) then
       Info.DamageScaleByLevel[I] := av[4 + I].AsFloat;
 end;
 { @end $639D7C }
@@ -15562,19 +15562,19 @@ begin
   Info := PWeaponInfo(av[1].AsDword);
   av[0].AsDword := Cardinal(Info);
   Text := av[2].AsString;
-  Info.ShotType := wstNormal;
+  Info.ShotType := shot_single_target;
   Info.ShotCount := 1;
   if Pos('Normal', Text) <= 0 then
   begin
-    if Pos('Splash', Text) > 0 then Info.ShotType := wstSplash
-    else if Pos('Exploder', Text) > 0 then Info.ShotType := wstExploder
-    else if Pos('AreaDamage', Text) > 0 then Info.ShotType := wstAreaDamage
-    else if Pos('Torpedo', Text) > 0 then Info.ShotType := wstTorpedo
-    else if Pos('Missile', Text) > 0 then Info.ShotType := wstMissile
-    else if Pos('Rocket', Text) > 0 then Info.ShotType := wstRocket
-    else if Pos('Chain', Text) > 0 then Info.ShotType := wstChain;
+    if Pos('Splash', Text) > 0 then Info.ShotType := shot_splash
+    else if Pos('Exploder', Text) > 0 then Info.ShotType := shot_explode_on_kill
+    else if Pos('AreaDamage', Text) > 0 then Info.ShotType := shot_area_damage
+    else if Pos('Torpedo', Text) > 0 then Info.ShotType := shot_torpedo
+    else if Pos('Missile', Text) > 0 then Info.ShotType := shot_missile
+    else if Pos('Rocket', Text) > 0 then Info.ShotType := shot_rocket
+    else if Pos('Chain', Text) > 0 then Info.ShotType := shot_chain;
   end;
-  if Info.ShotType in [wstChain, wstMissile, wstRocket] then Info.ShotCount := ExtractDigitsToIntW(Text);
+  if Info.ShotType in [shot_chain, shot_missile, shot_rocket] then Info.ShotCount := ExtractDigitsToIntW(Text);
   if High(av) > 2 then Info.ShotSpeedPercent := av[3].AsInteger;
   if High(av) > 3 then Info.AverageRange := av[4].AsInteger;
   if High(av) > 4 then Info.SecondaryDamageRadius := av[5].AsInteger;
@@ -15694,7 +15694,7 @@ end;
 procedure SF_ImportedFunction(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script ImportedFunction');
-  av[0].ConvertToKind(vkLibraryFun);
+  av[0].ConvertToKind(value_library_function);
   av[0].AsString := av[1].AsString + ',' + av[2].AsString;
   if ScriptLibraryCache = nil then ScriptLibraryCache := TLibraryCache.Create;
   ScriptLibraryCache.InitFunction(av[0]);
@@ -15724,770 +15724,770 @@ end;
 procedure InitializeScriptBuiltinsAndConstants(Scope: TVarArrayEC);
 var
   WeaponIndex: Integer;
-  ActionIndex: TScriptActionType;
+  ActionIndex: TScriptEventKind;
   BonusIndex: TEquipmentBonusKind;
 begin
   RegisterExpressionBuiltins(Scope);
-  Scope.Add('GRun', vkExternFun).AsExternFun := @SF_GRun;
-  Scope.Add('GCntRun', vkExternFun).AsExternFun := @SF_GCntRun;
-  Scope.Add('GLastTurnRun', vkExternFun).AsExternFun := @SF_GLastTurnRun;
-  Scope.Add('GAllCntRun', vkExternFun).AsExternFun := @SF_GAllCntRun;
-  Scope.Add('IsScriptActive', vkExternFun).AsExternFun := @SF_IsScriptActive;
-  Scope.Add('GetValueFromScript', vkExternFun).AsExternFun := @SF_GetValueFromScript;
-  Scope.Add('RunFunctionFromScript', vkExternFun).AsExternFun := @SF_RunFunctionFromScript;
-  Scope.Add('GetVariableName', vkExternFun).AsExternFun := @SF_GetVariableName;
-  Scope.Add('GetVariableType', vkExternFun).AsExternFun := @SF_GetVariableType;
-  Scope.Add('StatusPlayer', vkExternFun).AsExternFun := @SF_StatusPlayer;
-  Scope.Add('AddPlanetNews', vkExternFun).AsExternFun := @SF_AddPlanetNews;
-  Scope.Add('AddJournalRecord', vkExternFun).AsExternFun := @SF_AddJournalRecord;
-  Scope.Add('AutoBattle', vkExternFun).AsExternFun := @SF_AutoBattle;
-  Scope.Add('GetOwner', vkExternFun).AsExternFun := @SF_GetOwner;
-  Scope.Add('GiveReward', vkExternFun).AsExternFun := @SF_GiveReward;
-  Scope.Add('GiveRewardByNom', vkExternFun).AsExternFun := @SF_GiveRewardByNom;
-  Scope.Add('CountReward', vkExternFun).AsExternFun := @SF_CountReward;
-  Scope.Add('CountRewardByNom', vkExternFun).AsExternFun := @SF_CountRewardByNom;
-  Scope.Add('DeleteRewardByNom', vkExternFun).AsExternFun := @SF_DeleteRewardByNom;
-  Scope.Add('Rnd', vkExternFun).AsExternFun := @SF_Rnd;
-  Scope.Add('GameDateTxtByTurn', vkExternFun).AsExternFun := @SF_GameDateTxtByTurn;
-  Scope.Add('Id', vkExternFun).AsExternFun := @SF_Id;
-  Scope.Add('SetName', vkExternFun).AsExternFun := @SF_SetName;
-  Scope.Add('UseTranclucator', vkExternFun).AsExternFun := @SF_UseTranclucator;
-  Scope.Add('HullDamage', vkExternFun).AsExternFun := @SF_HullDamage;
-  Scope.Add('Hitpoints', vkExternFun).AsExternFun := @SF_Hitpoints;
-  Scope.Add('Hit', vkExternFun).AsExternFun := @SF_Hit;
-  Scope.Add('ChangeGlobalRelationsShips', vkExternFun).AsExternFun := @SF_ChangeGlobalRelationsShips;
-  Scope.Add('ChangeGlobalRelationsPlanets', vkExternFun).AsExternFun := @SF_ChangeGlobalRelationsPlanets;
-  Scope.Add('GlobalRelationsShips', vkExternFun).AsExternFun := @SF_GlobalRelationsShips;
-  Scope.Add('GlobalRelationsPlanets', vkExternFun).AsExternFun := @SF_GlobalRelationsPlanets;
-  Scope.Add('SetRelationGroup', vkExternFun).AsExternFun := @SF_SetRelationGroup;
-  Scope.Add('SetRelationPlanet', vkExternFun).AsExternFun := @SF_SetRelationPlanet;
-  Scope.Add('GetRelationPlanet', vkExternFun).AsExternFun := @SF_GetRelationPlanet;
-  Scope.Add('CurTurn', vkExternFun).AsExternFun := @SF_CurTurn;
-  Scope.Add('ShipType', vkExternFun).AsExternFun := @SF_ShipType;
-  Scope.Add('ConName', vkExternFun).AsExternFun := @SF_ConName;
-  Scope.Add('StarName', vkExternFun).AsExternFun := @SF_StarName;
-  Scope.Add('StarMapLabel', vkExternFun).AsExternFun := @SF_StarMapLabel;
-  Scope.Add('PlanetName', vkExternFun).AsExternFun := @SF_PlanetName;
-  Scope.Add('IdToPlanet', vkExternFun).AsExternFun := @SF_IdToPlanet;
-  Scope.Add('IdToShip', vkExternFun).AsExternFun := @SF_IdToShip;
-  Scope.Add('IdToItem', vkExternFun).AsExternFun := @SF_IdToItem;
-  Scope.Add('PlanetSetGoods', vkExternFun).AsExternFun := @SF_PlanetSetGoods;
-  Scope.Add('ShipName', vkExternFun).AsExternFun := @SF_ShipName;
-  Scope.Add('ShipRank', vkExternFun).AsExternFun := @SF_ShipRank;
-  Scope.Add('ShipRankPoints', vkExternFun).AsExternFun := @SF_ShipRankPoints;
-  Scope.Add('ShipNextRankPoints', vkExternFun).AsExternFun := @SF_ShipNextRankPoints;
-  Scope.Add('ShipRaiseRank', vkExternFun).AsExternFun := @SF_ShipRaiseRank;
-  Scope.Add('ShipStar', vkExternFun).AsExternFun := @SF_ShipStar;
-  Scope.Add('StarToCon', vkExternFun).AsExternFun := @SF_StarToCon;
-  Scope.Add('ConNear', vkExternFun).AsExternFun := @SF_ConNear;
-  Scope.Add('ConStars', vkExternFun).AsExternFun := @SF_ConStars;
-  Scope.Add('ConStar', vkExternFun).AsExternFun := @SF_ConStar;
-  Scope.Add('GalaxyStars', vkExternFun).AsExternFun := @SF_GalaxyStars;
-  Scope.Add('GalaxyStar', vkExternFun).AsExternFun := @SF_GalaxyStar;
-  Scope.Add('StarAngleBetween', vkExternFun).AsExternFun := @SF_StarAngleBetween;
-  Scope.Add('FindPlanet', vkExternFun).AsExternFun := @SF_FindPlanet;
-  Scope.Add('IsPlayer', vkExternFun).AsExternFun := @SF_IsPlayer;
-  Scope.Add('GroupCount', vkExternFun).AsExternFun := @SF_GroupCount;
-  Scope.Add('GroupIn', vkExternFun).AsExternFun := @SF_GroupIn;
-  Scope.Add('CountIn', vkExternFun).AsExternFun := @SF_CountIn;
-  Scope.Add('ChangeState', vkExternFun).AsExternFun := @SF_ChangeState;
-  Scope.Add('NearestGroup', vkExternFun).AsExternFun := @SF_NearestGroup;
-  Scope.Add('StarAngle', vkExternFun).AsExternFun := @SF_StarAngle;
-  Scope.Add('NewsAdd', vkExternFun).AsExternFun := @SF_NewsAdd;
-  Scope.Add('MsgAdd', vkExternFun).AsExternFun := @SF_MsgAdd;
-  Scope.Add('Ether', vkExternFun).AsExternFun := @SF_Ether;
-  Scope.Add('CustomEther', vkExternFun).AsExternFun := @SF_CustomEther;
-  Scope.Add('EtherDelete', vkExternFun).AsExternFun := @SF_EtherDelete;
-  Scope.Add('EtherIdAdd', vkExternFun).AsExternFun := @SF_EtherIdAdd;
-  Scope.Add('EtherIdDelete', vkExternFun).AsExternFun := @SF_EtherIdDelete;
-  Scope.Add('EtherState', vkExternFun).AsExternFun := @SF_EtherState;
-  Scope.Add('ConChangeRelationToRanger', vkExternFun).AsExternFun := @SF_ConChangeRelationToRanger;
-  Scope.Add('GetData', vkExternFun).AsExternFun := @SF_GetData;
-  Scope.Add('SetData', vkExternFun).AsExternFun := @SF_SetData;
-  Scope.Add('ShipData', vkExternFun).AsExternFun := @SF_ShipData;
-  Scope.Add('Format', vkExternFun).AsExternFun := @SF_Format;
-  Scope.Add('DeleteTags', vkExternFun).AsExternFun := @SF_DeleteTags;
-  Scope.Add('Dialog', vkExternFun).AsExternFun := @SF_Dialog;
-  Scope.Add('DText', vkExternFun).AsExternFun := @SF_DText;
-  Scope.Add('DAddText', vkExternFun).AsExternFun := @SF_DAddText;
-  Scope.Add('DAdd', vkExternFun).AsExternFun := @SF_DAdd;
-  Scope.Add('DChange', vkExternFun).AsExternFun := @SF_DChange;
-  Scope.Add('DAnswer', vkExternFun).AsExternFun := @SF_DAnswer;
-  Scope.Add('Player', vkExternFun).AsExternFun := @SF_Player;
-  Scope.Add('ItemExist', vkExternFun).AsExternFun := @SF_ItemExist;
-  Scope.Add('ItemIn', vkExternFun).AsExternFun := @SF_ItemIn;
-  Scope.Add('ItemCost', vkExternFun).AsExternFun := @SF_ItemCost;
-  Scope.Add('ItemCount', vkExternFun).AsExternFun := @SF_ItemCount;
-  Scope.Add('ShipPicksItem', vkExternFun).AsExternFun := @SF_ShipPicksItem;
-  Scope.Add('DropItem', vkExternFun).AsExternFun := @SF_DropItem;
-  Scope.Add('DropScriptItem', vkExternFun).AsExternFun := @SF_DropScriptItem;
-  Scope.Add('DeleteEquipment', vkExternFun).AsExternFun := @SF_DeleteEquipment;
-  Scope.Add('DecayGoods', vkExternFun).AsExternFun := @SF_DecayGoods;
-  Scope.Add('UpsurgeGoods', vkExternFun).AsExternFun := @SF_UpsurgeGoods;
-  Scope.Add('GoodsAdd', vkExternFun).AsExternFun := @SF_GoodsAdd;
-  Scope.Add('GoodsCount', vkExternFun).AsExternFun := @SF_GoodsCount;
-  Scope.Add('GoodsCost', vkExternFun).AsExternFun := @SF_GoodsCost;
-  Scope.Add('GoodsRuinsForBuy', vkExternFun).AsExternFun := @SF_GoodsRuinsForBuy;
-  Scope.Add('ShipGoods', vkExternFun).AsExternFun := @SF_ShipGoods;
-  Scope.Add('ShipGoodsIllegalOnPlanet', vkExternFun).AsExternFun := @SF_ShipGoodsIllegalOnPlanet;
-  Scope.Add('GoodsDrop', vkExternFun).AsExternFun := @SF_GoodsDrop;
-  Scope.Add('UselessItemCreate', vkExternFun).AsExternFun := @SF_UselessItemCreate;
-  Scope.Add('GoodsSellPrice', vkExternFun).AsExternFun := @SF_GoodsSellPrice;
-  Scope.Add('GoodsBuyPrice', vkExternFun).AsExternFun := @SF_GoodsBuyPrice;
-  Scope.Add('CountTurn', vkExternFun).AsExternFun := @SF_CountTurn;
-  Scope.Add('ShipSetBad', vkExternFun).AsExternFun := @SF_ShipSetBad;
-  Scope.Add('GroupSetBad', vkExternFun).AsExternFun := @SF_GroupSetBad;
-  Scope.Add('ShipSetPartner', vkExternFun).AsExternFun := @SF_ShipSetPartner;
-  Scope.Add('ShipJoin', vkExternFun).AsExternFun := @SF_ShipJoin;
-  Scope.Add('ShipOut', vkExternFun).AsExternFun := @SF_ShipOut;
-  Scope.Add('AllShipOut', vkExternFun).AsExternFun := @SF_AllShipOut;
-  Scope.Add('ShipInScript', vkExternFun).AsExternFun := @SF_ShipInScript;
-  Scope.Add('ShipInGameEvent', vkExternFun).AsExternFun := @SF_ShipInGameEvent;
-  Scope.Add('ShipInCurScript', vkExternFun).AsExternFun := @SF_ShipInCurScript;
-  Scope.Add('ShipInNormalSpace', vkExternFun).AsExternFun := @SF_ShipInNormalSpace;
-  Scope.Add('ShipInHole', vkExternFun).AsExternFun := @SF_ShipInHole;
-  Scope.Add('ShipIsTakeoff', vkExternFun).AsExternFun := @SF_ShipIsTakeoff;
-  Scope.Add('ShipCntWeapon', vkExternFun).AsExternFun := @SF_ShipCntWeapon;
-  Scope.Add('ShipWeapon', vkExternFun).AsExternFun := @SF_ShipWeapon;
-  Scope.Add('ShipEqInSlot', vkExternFun).AsExternFun := @SF_ShipEqInSlot;
-  Scope.Add('ArtefactTypeInUse', vkExternFun).AsExternFun := @SF_ArtefactTypeInUse;
-  Scope.Add('ArtefactTypeBoosted', vkExternFun).AsExternFun := @SF_ArtefactTypeBoosted;
-  Scope.Add('ShipSpeed', vkExternFun).AsExternFun := @SF_ShipSpeed;
-  Scope.Add('EnginePower', vkExternFun).AsExternFun := @SF_EnginePower;
-  Scope.Add('ShipJump', vkExternFun).AsExternFun := @SF_ShipJump;
-  Scope.Add('ShipArmor', vkExternFun).AsExternFun := @SF_ShipArmor;
-  Scope.Add('ShipProtectability', vkExternFun).AsExternFun := @SF_ShipProtectability;
-  Scope.Add('ShipDroidRepair', vkExternFun).AsExternFun := @SF_ShipDroidRepair;
-  Scope.Add('ShipRadarRange', vkExternFun).AsExternFun := @SF_ShipRadarRange;
-  Scope.Add('ShipScanerPower', vkExternFun).AsExternFun := @SF_ShipScanerPower;
-  Scope.Add('ShipHookPower', vkExternFun).AsExternFun := @SF_ShipHookPower;
-  Scope.Add('ShipHookRange', vkExternFun).AsExternFun := @SF_ShipHookRange;
-  Scope.Add('ShipAverageDamage', vkExternFun).AsExternFun := @SF_ShipAverageDamage;
-  Scope.Add('ShipHealthFactor', vkExternFun).AsExternFun := @SF_ShipHealthFactor;
-  Scope.Add('ShipHealthFactorStatus', vkExternFun).AsExternFun := @SF_ShipHealthFactorStatus;
-  Scope.Add('PlayerImmunity', vkExternFun).AsExternFun := @SF_PlayerImmunity;
-  Scope.Add('ShipStatusEffect', vkExternFun).AsExternFun := @SF_ShipStatusEffect;
-  Scope.Add('ShipGroup', vkExternFun).AsExternFun := @SF_ShipGroup;
-  Scope.Add('ShipCanJump', vkExternFun).AsExternFun := @SF_ShipCanJump;
-  Scope.Add('ShipInStar', vkExternFun).AsExternFun := @SF_ShipInStar;
-  Scope.Add('ShipInPlanet', vkExternFun).AsExternFun := @SF_ShipInPlanet;
-  Scope.Add('ShipStatistic', vkExternFun).AsExternFun := @SF_ShipStatistic;
-  Scope.Add('PlayerDominatorStatistic', vkExternFun).AsExternFun := @SF_PlayerDominatorStatistic;
-  Scope.Add('ShipMoney', vkExternFun).AsExternFun := @SF_ShipMoney;
-  Scope.Add('ShipFuel', vkExternFun).AsExternFun := @SF_ShipFuel;
-  Scope.Add('ShipFuelLow', vkExternFun).AsExternFun := @SF_ShipFuelLow;
-  Scope.Add('ShipStrengthInBestRanger', vkExternFun).AsExternFun := @SF_ShipStrengthInBestRanger;
-  Scope.Add('ShipStrengthInAverageRanger', vkExternFun).AsExternFun := @SF_ShipStrengthInAverageRanger;
-  Scope.Add('ChanceToWin', vkExternFun).AsExternFun := @SF_ChanceToWin;
-  Scope.Add('ShipFind', vkExternFun).AsExternFun := @SF_ShipFind;
-  Scope.Add('RangerStatus', vkExternFun).AsExternFun := @SF_RangerStatus;
-  Scope.Add('RangerPlaceInRating', vkExternFun).AsExternFun := @SF_RangerPlaceInRating;
-  Scope.Add('RangerExcludedFromRating', vkExternFun).AsExternFun := @SF_RangerExcludedFromRating;
-  Scope.Add('GalaxyMoney', vkExternFun).AsExternFun := @SF_GalaxyMoney;
-  Scope.Add('ShipDestroy', vkExternFun).AsExternFun := @SF_ShipDestroy;
-  Scope.Add('ShipDestroyType', vkExternFun).AsExternFun := @SF_ShipDestroyType;
-  Scope.Add('ItemDestroy', vkExternFun).AsExternFun := @SF_ItemDestroy;
-  Scope.Add('RangersCapital', vkExternFun).AsExternFun := @SF_RangersCapital;
-  Scope.Add('GroupToShip', vkExternFun).AsExternFun := @SF_GroupToShip;
-  Scope.Add('OrderLanding', vkExternFun).AsExternFun := @SF_OrderLanding;
-  Scope.Add('OrderJump', vkExternFun).AsExternFun := @SF_OrderJump;
-  Scope.Add('GroupIs', vkExternFun).AsExternFun := @SF_GroupIs;
-  Scope.Add('StateIs', vkExternFun).AsExternFun := @SF_StateIs;
-  Scope.Add('Dist', vkExternFun).AsExternFun := @SF_Dist;
-  Scope.Add('Angle', vkExternFun).AsExternFun := @SF_Angle;
-  Scope.Add('Dist2Star', vkExternFun).AsExternFun := @SF_Dist2Star;
-  Scope.Add('BuyPirate', vkExternFun).AsExternFun := @SF_BuyPirate;
-  Scope.Add('BuyTransport', vkExternFun).AsExternFun := @SF_BuyTransport;
-  Scope.Add('Name', vkExternFun).AsExternFun := @SF_Name;
-  Scope.Add('ShortName', vkExternFun).AsExternFun := @SF_ShortName;
-  Scope.Add('FirstGiveMoney', vkExternFun).AsExternFun := @SF_FirstGiveMoney;
-  Scope.Add('HaveProgramm', vkExternFun).AsExternFun := @SF_HaveProgramm;
-  Scope.Add('GetProgramm', vkExternFun).AsExternFun := @SF_GetProgramm;
-  Scope.Add('SetProgramm', vkExternFun).AsExternFun := @SF_SetProgramm;
-  Scope.Add('DomikProgramm', vkExternFun).AsExternFun := @SF_DomikProgramm;
-  Scope.Add('DomikProgrammDate', vkExternFun).AsExternFun := @SF_DomikProgrammDate;
-  Scope.Add('HoleMamaCreate', vkExternFun).AsExternFun := @SF_HoleMamaCreate;
-  Scope.Add('HoleCreate', vkExternFun).AsExternFun := @SF_HoleCreate;
-  Scope.Add('TerronWeaponLock', vkExternFun).AsExternFun := @SF_TerronWeaponLock;
-  Scope.Add('TerronGrowLock', vkExternFun).AsExternFun := @SF_TerronGrowLock;
-  Scope.Add('TerronLandingLock', vkExternFun).AsExternFun := @SF_TerronLandingLock;
-  Scope.Add('TerronToStar', vkExternFun).AsExternFun := @SF_TerronToStar;
-  Scope.Add('KellerLeave', vkExternFun).AsExternFun := @SF_KellerLeave;
-  Scope.Add('KellerNewResearch', vkExternFun).AsExternFun := @SF_KellerNewResearch;
-  Scope.Add('KellerKill', vkExternFun).AsExternFun := @SF_KellerKill;
-  Scope.Add('BlazerLanding', vkExternFun).AsExternFun := @SF_BlazerLanding;
-  Scope.Add('BlazerSelfDestruction', vkExternFun).AsExternFun := @SF_BlazerSelfDestruction;
-  Scope.Add('GalaxyShipId', vkExternFun).AsExternFun := @SF_GalaxyShipId;
-  Scope.Add('NearCivilPlanet', vkExternFun).AsExternFun := @SF_NearCivilPlanet;
-  Scope.Add('SkipGreeting', vkExternFun).AsExternFun := @SF_SkipGreeting;
-  Scope.Add('Sound', vkExternFun).AsExternFun := @SF_Sound;
-  Scope.Add('Tips', vkExternFun).AsExternFun := @SF_Tips;
-  Scope.Add('TipsState', vkExternFun).AsExternFun := @SF_TipsState;
-  Scope.Add('CT', vkExternFun).AsExternFun := @SF_CT;
-  Scope.Add('BlockExist', vkExternFun).AsExternFun := @SF_BlockExist;
-  Scope.Add('GetMainData', vkExternFun).AsExternFun := @SF_GetMainData;
-  Scope.Add('GetGameOptions', vkExternFun).AsExternFun := @SF_GetGameOptions;
-  Scope.Add('ResourceExist', vkExternFun).AsExternFun := @SF_ResourceExist;
-  Scope.Add('SFT', vkExternFun).AsExternFun := @SF_SFT;
-  Scope.Add('CurrentMods', vkExternFun).AsExternFun := @SF_CurrentMods;
-  Scope.Add('RobotSupport', vkExternFun).AsExternFun := @SF_RobotSupport;
-  Scope.Add('UselessItem', vkInt).AsInteger := Ord(t_UselessItem);
-  Scope.Add('ForLiberationSystem', vkInt).AsInteger := Ord(atLiberation);
-  Scope.Add('ForAccomplishment', vkInt).AsInteger := Ord(atAccomplishment);
-  Scope.Add('ForSecretMission', vkInt).AsInteger := Ord(atSecretMission);
-  Scope.Add('ForCowardice', vkInt).AsInteger := Ord(atCowardice);
-  Scope.Add('ForPerfidy', vkInt).AsInteger := Ord(atPerfidy);
-  Scope.Add('ForPlanetBattle', vkInt).AsInteger := Ord(atPlanetBattle);
-  Scope.Add('Maloc', vkInt).AsInteger := Ord(oiMaloc);
-  Scope.Add('Peleng', vkInt).AsInteger := Ord(oiPeleng);
-  Scope.Add('People', vkInt).AsInteger := Ord(oiHuman);
-  Scope.Add('Fei', vkInt).AsInteger := Ord(oiFeyan);
-  Scope.Add('Gaal', vkInt).AsInteger := Ord(oiGaal);
-  Scope.Add('Kling', vkInt).AsInteger := Ord(oiDominator);
-  Scope.Add('None', vkInt).AsInteger := Ord(oiUninhabited);
-  Scope.Add('PirateClan', vkInt).AsInteger := Ord(oiPirate);
-  Scope.Add('t_Food', vkInt).AsInteger := Ord(t_Food);
-  Scope.Add('t_Medicine', vkInt).AsInteger := Ord(t_Medicine);
-  Scope.Add('t_Technics', vkInt).AsInteger := Ord(t_Technics);
-  Scope.Add('t_Luxury', vkInt).AsInteger := Ord(t_Luxury);
-  Scope.Add('t_Minerals', vkInt).AsInteger := Ord(t_Minerals);
-  Scope.Add('t_Alcohol', vkInt).AsInteger := Ord(t_Alcohol);
-  Scope.Add('t_Arms', vkInt).AsInteger := Ord(t_Arms);
-  Scope.Add('t_Narcotics', vkInt).AsInteger := Ord(t_Narcotics);
-  Scope.Add('t_Artefact', vkInt).AsInteger := Ord(t_Artefact);
-  Scope.Add('t_Artefact2', vkInt).AsInteger := Ord(t_Artefact2);
-  Scope.Add('t_ArtefactHull', vkInt).AsInteger := Ord(t_ArtefactHull);
-  Scope.Add('t_ArtefactFuel', vkInt).AsInteger := Ord(t_ArtefactFuel);
-  Scope.Add('t_ArtefactSpeed', vkInt).AsInteger := Ord(t_ArtefactSpeed);
-  Scope.Add('t_ArtefactPower', vkInt).AsInteger := Ord(t_ArtefactPower);
-  Scope.Add('t_ArtefactRadar', vkInt).AsInteger := Ord(t_ArtefactRadar);
-  Scope.Add('t_ArtefactScaner', vkInt).AsInteger := Ord(t_ArtefactScaner);
-  Scope.Add('t_ArtefactDroid', vkInt).AsInteger := Ord(t_ArtefactDroid);
-  Scope.Add('t_ArtefactNano', vkInt).AsInteger := Ord(t_ArtefactNano);
-  Scope.Add('t_ArtefactHook', vkInt).AsInteger := Ord(t_ArtefactHook);
-  Scope.Add('t_ArtefactDef', vkInt).AsInteger := Ord(t_ArtefactDef);
-  Scope.Add('t_ArtefactAnalyzer', vkInt).AsInteger := Ord(t_ArtefactAnalyzer);
-  Scope.Add('t_ArtefactMiniExpl', vkInt).AsInteger := Ord(t_ArtefactMiniExpl);
-  Scope.Add('t_ArtefactAntigrav', vkInt).AsInteger := Ord(t_ArtefactAntigrav);
-  Scope.Add('t_ArtefactTransmitter', vkInt).AsInteger := Ord(t_ArtefactTransmitter);
-  Scope.Add('t_ArtefactBomb', vkInt).AsInteger := Ord(t_ArtefactBomb);
-  Scope.Add('t_ArtefactTranclucator', vkInt).AsInteger := Ord(t_ArtefactTranclucator);
-  Scope.Add('t_Hull', vkInt).AsInteger := Ord(t_Hull);
-  Scope.Add('t_FuelTanks', vkInt).AsInteger := Ord(t_FuelTanks);
-  Scope.Add('t_Engine', vkInt).AsInteger := Ord(t_Engine);
-  Scope.Add('t_Radar', vkInt).AsInteger := Ord(t_Radar);
-  Scope.Add('t_Scaner', vkInt).AsInteger := Ord(t_Scaner);
-  Scope.Add('t_RepairRobot', vkInt).AsInteger := Ord(t_RepairRobot);
-  Scope.Add('t_CargoHook', vkInt).AsInteger := Ord(t_CargoHook);
-  Scope.Add('t_DefGenerator', vkInt).AsInteger := Ord(t_DefGenerator);
-  for WeaponIndex := 1 to CountItemTypesInMask([t_IndustrialLaser..t_Lirecron]) do
-    Scope.Add('t_Weapon' + IntToStr(WeaponIndex), vkInt).AsInteger := Ord(GetItemTypeFromMask([t_IndustrialLaser..t_Lirecron], WeaponIndex));
-  Scope.Add('t_CustomWeapon', vkInt).AsInteger := Ord(t_CustomWeapon);
-  Scope.Add('t_Protoplasm', vkInt).AsInteger := Ord(t_Protoplasm);
-  Scope.Add('t_UselessItem', vkInt).AsInteger := Ord(t_UselessItem);
-  Scope.Add('ReWar', vkInt).AsInteger := Ord(rlHostile);
-  Scope.Add('ReBad', vkInt).AsInteger := Ord(rlBad);
-  Scope.Add('ReNormal', vkInt).AsInteger := Ord(rlNormal);
-  Scope.Add('ReGood', vkInt).AsInteger := Ord(rlGood);
-  Scope.Add('ReBest', vkInt).AsInteger := Ord(rlExcellent);
-  Scope.Add('Trader', vkInt).AsInteger := Ord(rcTrader);
-  Scope.Add('Pirate', vkInt).AsInteger := Ord(rcPirate);
-  Scope.Add('Warrior', vkInt).AsInteger := Ord(rcWarrior);
-  Scope.Add('t_Kling', vkInt).AsInteger := Ord(stKling);
-  Scope.Add('t_Ranger', vkInt).AsInteger := Ord(stRanger);
-  Scope.Add('t_Transport', vkInt).AsInteger := Ord(stTransport);
-  Scope.Add('t_Pirate', vkInt).AsInteger := Ord(stPirate);
-  Scope.Add('t_Warrior', vkInt).AsInteger := Ord(stWarrior);
-  Scope.Add('t_Tranclucator', vkInt).AsInteger := Ord(stTranclucator);
-  Scope.Add('t_RC', vkInt).AsInteger := Ord(rstRangerCenter);
-  Scope.Add('t_PB', vkInt).AsInteger := Ord(rstPirateBase);
-  Scope.Add('t_WB', vkInt).AsInteger := Ord(rstMilitaryBase);
-  Scope.Add('t_SB', vkInt).AsInteger := Ord(rstScienceBase);
-  Scope.Add('t_BK', vkInt).AsInteger := Ord(rstBusinessCenter);
-  Scope.Add('t_MC', vkInt).AsInteger := Ord(rstMedicalBase);
-  Scope.Add('t_CB', vkInt).AsInteger := Ord(rstDominion);
-  Scope.Add('t_UB', vkInt).AsInteger := Ord(rstCustomStation);
-  Scope.Add('progKellerCall', vkInt).AsInteger := Ord(prgKellerCall);
-  Scope.Add('progLogicalNegation', vkInt).AsInteger := Ord(prgLogicalNegation);
-  Scope.Add('progDematerial', vkInt).AsInteger := Ord(prgDematerial);
-  Scope.Add('progEnergotron', vkInt).AsInteger := Ord(prgEnergotron);
-  Scope.Add('progSabCrack', vkInt).AsInteger := Ord(prgSabCrack);
-  Scope.Add('progIntercom', vkInt).AsInteger := Ord(prgIntercom);
-  Scope.Add('StarShips', vkExternFun).AsExternFun := @SF_StarShips;
-  Scope.Add('StarPlanets', vkExternFun).AsExternFun := @SF_StarPlanets;
-  Scope.Add('StarMissiles', vkExternFun).AsExternFun := @SF_StarMissiles;
-  Scope.Add('StarAsteroids', vkExternFun).AsExternFun := @SF_StarAsteroids;
-  Scope.Add('GroupShip', vkExternFun).AsExternFun := @SF_GroupShip;
-  Scope.Add('ShipItems', vkExternFun).AsExternFun := @SF_ShipItems;
-  Scope.Add('ShipArts', vkExternFun).AsExternFun := @SF_ShipArts;
-  Scope.Add('PlayerTranclucators', vkExternFun).AsExternFun := @SF_PlayerTranclucators;
-  Scope.Add('ArtTranclucatorToShip', vkExternFun).AsExternFun := @SF_ArtTranclucatorToShip;
-  Scope.Add('TranclucatorData', vkExternFun).AsExternFun := @SF_TranclucatorData;
-  Scope.Add('LinkItemToScript', vkExternFun).AsExternFun := @SF_LinkItemToScript;
-  Scope.Add('ReleaseItemFromScript', vkExternFun).AsExternFun := @SF_ReleaseItemFromScript;
-  Scope.Add('ScriptItemData', vkExternFun).AsExternFun := @SF_ScriptItemData;
-  Scope.Add('ScriptItemTextData', vkExternFun).AsExternFun := @SF_ScriptItemTextData;
-  Scope.Add('ScriptItemToItem', vkExternFun).AsExternFun := @SF_ScriptItemToItem;
-  Scope.Add('GetShipPirateRank', vkExternFun).AsExternFun := @SF_GetShipPirateRank;
-  Scope.Add('ShipPirateRankPoints', vkExternFun).AsExternFun := @SF_ShipPirateRankPoints;
-  Scope.Add('ShipNextPirateRankPoints', vkExternFun).AsExternFun := @SF_ShipNextPirateRankPoints;
-  Scope.Add('ShipInPirateClan', vkExternFun).AsExternFun := @SF_ShipInPirateClan;
-  Scope.Add('ShipOnSidePirateClan', vkExternFun).AsExternFun := @SF_ShipOnSidePirateClan;
-  Scope.Add('RaisePirateRank', vkExternFun).AsExternFun := @SF_RaisePirateRank;
-  Scope.Add('ItemType', vkExternFun).AsExternFun := @SF_ItemType;
-  Scope.Add('CustomWeaponType', vkExternFun).AsExternFun := @SF_CustomWeaponType;
-  Scope.Add('ItemName', vkExternFun).AsExternFun := @SF_ItemName;
-  Scope.Add('ItemFullName', vkExternFun).AsExternFun := @SF_ItemFullName;
-  Scope.Add('ItemSize', vkExternFun).AsExternFun := @SF_ItemSize;
-  Scope.Add('ItemOwner', vkExternFun).AsExternFun := @SF_ItemOwner;
-  Scope.Add('ItemSubrace', vkExternFun).AsExternFun := @SF_ItemSubrace;
-  Scope.Add('ItemIsInUse', vkExternFun).AsExternFun := @SF_ItemIsInUse;
-  Scope.Add('ItemIsInSet', vkExternFun).AsExternFun := @SF_ItemIsInSet;
-  Scope.Add('PlayerEqSet', vkExternFun).AsExternFun := @SF_PlayerEqSet;
-  Scope.Add('ItemIsBroken', vkExternFun).AsExternFun := @SF_ItemIsBroken;
-  Scope.Add('ShipCanUseEq', vkExternFun).AsExternFun := @SF_ShipCanUseEq;
-  Scope.Add('ShipCanRepairEq', vkExternFun).AsExternFun := @SF_ShipCanRepairEq;
-  Scope.Add('ShipTechLevelKnowledge', vkExternFun).AsExternFun := @SF_ShipTechLevelKnowledge;
-  Scope.Add('WeaponTarget', vkExternFun).AsExternFun := @SF_WeaponTarget;
-  Scope.Add('GetEquipmentStats', vkExternFun).AsExternFun := @SF_GetEquipmentStats;
-  Scope.Add('SetEquipmentStats', vkExternFun).AsExternFun := @SF_SetEquipmentStats;
-  Scope.Add('CreateHull', vkExternFun).AsExternFun := @SF_CreateHull;
-  Scope.Add('CreateEquipment', vkExternFun).AsExternFun := @SF_CreateEquipment;
-  Scope.Add('CreateArt', vkExternFun).AsExternFun := @SF_CreateArt;
-  Scope.Add('CreateCustomWeapon', vkExternFun).AsExternFun := @SF_CreateCustomWeapon;
-  Scope.Add('CreateCustomArt', vkExternFun).AsExternFun := @SF_CreateCustomArt;
-  Scope.Add('CustomArtData', vkExternFun).AsExternFun := @SF_CustomArtData;
-  Scope.Add('CustomArtTextData', vkExternFun).AsExternFun := @SF_CustomArtTextData;
-  Scope.Add('CreateMM', vkExternFun).AsExternFun := @SF_CreateMM;
-  Scope.Add('CreateNodes', vkExternFun).AsExternFun := @SF_CreateNodes;
-  Scope.Add('CreateCustomCountableItem', vkExternFun).AsExternFun := @SF_CreateCustomCountableItem;
-  Scope.Add('CreateZond', vkExternFun).AsExternFun := @SF_CreateZond;
-  Scope.Add('ExistingZonds', vkExternFun).AsExternFun := @SF_ExistingZonds;
-  Scope.Add('FreeItem', vkExternFun).AsExternFun := @SF_FreeItem;
-  Scope.Add('ShipJoinsClan', vkExternFun).AsExternFun := @SF_ShipJoinsClan;
-  Scope.Add('AddItemToShip', vkExternFun).AsExternFun := @SF_AddItemToShip;
-  Scope.Add('GetItemFromShip', vkExternFun).AsExternFun := @SF_GetItemFromShip;
-  Scope.Add('GetArtFromShip', vkExternFun).AsExternFun := @SF_GetArtFromShip;
-  Scope.Add('ArrangeItems', vkExternFun).AsExternFun := @SF_ArrangeItems;
-  Scope.Add('AddItemToPlanet', vkExternFun).AsExternFun := @SF_AddItemToPlanet;
-  Scope.Add('GetItemFromPlanet', vkExternFun).AsExternFun := @SF_GetItemFromPlanet;
-  Scope.Add('AddItemToShop', vkExternFun).AsExternFun := @SF_AddItemToShop;
-  Scope.Add('GetItemFromShop', vkExternFun).AsExternFun := @SF_GetItemFromShop;
-  Scope.Add('AddItemToStorage', vkExternFun).AsExternFun := @SF_AddItemToStorage;
-  Scope.Add('GetItemFromStorage', vkExternFun).AsExternFun := @SF_GetItemFromStorage;
-  Scope.Add('FindItemInStorage', vkExternFun).AsExternFun := @SF_FindItemInStorage;
-  Scope.Add('PutItemInVault', vkExternFun).AsExternFun := @SF_PutItemInVault;
-  Scope.Add('GetItemFromVault', vkExternFun).AsExternFun := @SF_GetItemFromVault;
-  Scope.Add('DropItemInSystem', vkExternFun).AsExternFun := @SF_DropItemInSystem;
-  Scope.Add('StopMovingItem', vkExternFun).AsExternFun := @SF_StopMovingItem;
-  Scope.Add('StarItems', vkExternFun).AsExternFun := @SF_StarItems;
-  Scope.Add('GetItemFromStar', vkExternFun).AsExternFun := @SF_GetItemFromStar;
-  Scope.Add('PlanetItems', vkExternFun).AsExternFun := @SF_PlanetItems;
-  Scope.Add('StorageItems', vkExternFun).AsExternFun := @SF_StorageItems;
-  Scope.Add('StorageItemLocation', vkExternFun).AsExternFun := @SF_StorageItemLocation;
-  Scope.Add('ShopItems', vkExternFun).AsExternFun := @SF_ShopItems;
-  Scope.Add('AddDialogOverride', vkExternFun).AsExternFun := @SF_AddDialogOverride;
-  Scope.Add('AddDialogInject', vkExternFun).AsExternFun := @SF_AddDialogInject;
-  Scope.Add('InjectAnswer', vkExternFun).AsExternFun := @SF_InjectAnswer;
-  Scope.Add('AddDialogBlock', vkExternFun).AsExternFun := @SF_AddDialogBlock;
-  Scope.Add('GotoGov', vkExternFun).AsExternFun := @SF_GotoGov;
-  Scope.Add('GetShipPlanet', vkExternFun).AsExternFun := @SF_GetShipPlanet;
-  Scope.Add('GetShipHomePlanet', vkExternFun).AsExternFun := @SF_GetShipHomePlanet;
-  Scope.Add('GetShipRuins', vkExternFun).AsExternFun := @SF_GetShipRuins;
-  Scope.Add('GetTalkShip', vkExternFun).AsExternFun := @SF_GetTalkShip;
-  Scope.Add('GetTalkType', vkExternFun).AsExternFun := @SF_GetTalkType;
-  Scope.Add('TalkByAI', vkExternFun).AsExternFun := @SF_TalkByAI;
-  Scope.Add('ScriptRun', vkExternFun).AsExternFun := @SF_ScriptRun;
-  Scope.Add('CreateABShip', vkExternFun).AsExternFun := @SF_CreateABShip;
-  Scope.Add('ConvertToABShip', vkExternFun).AsExternFun := @SF_ConvertToABShip;
-  Scope.Add('ABShipModifiers', vkExternFun).AsExternFun := @SF_ABShipModifiers;
-  Scope.Add('StartAB', vkExternFun).AsExternFun := @SF_StartAB;
-  Scope.Add('StartTextQuest', vkExternFun).AsExternFun := @SF_StartTextQuest;
-  Scope.Add('StartRobots', vkExternFun).AsExternFun := @SF_StartRobots;
-  Scope.Add('MarkRobotsMapAsUsed', vkExternFun).AsExternFun := @SF_MarkRobotsMapAsUsed;
-  Scope.Add('ShipOwner', vkExternFun).AsExternFun := @SF_ShipOwner;
-  Scope.Add('ShipPilotRace', vkExternFun).AsExternFun := @SF_ShipPilotRace;
-  Scope.Add('ShipSkill', vkExternFun).AsExternFun := @SF_ShipSkill;
-  Scope.Add('ShipFace', vkExternFun).AsExternFun := @SF_ShipFace;
-  Scope.Add('ShipFreeExp', vkExternFun).AsExternFun := @SF_ShipFreeExp;
-  Scope.Add('GetShipExpByType', vkExternFun).AsExternFun := @SF_GetShipExpByType;
-  Scope.Add('CoordX', vkExternFun).AsExternFun := @SF_CoordX;
-  Scope.Add('CoordY', vkExternFun).AsExternFun := @SF_CoordY;
-  Scope.Add('ShipSetCoords', vkExternFun).AsExternFun := @SF_ShipSetCoords;
-  Scope.Add('ShipAngle', vkExternFun).AsExternFun := @SF_ShipAngle;
-  Scope.Add('ObjectType', vkExternFun).AsExternFun := @SF_ObjectType;
-  Scope.Add('ShipInHyperSpace', vkExternFun).AsExternFun := @SF_ShipInHyperSpace;
-  Scope.Add('ShipStatus', vkExternFun).AsExternFun := @SF_ShipStatus;
-  Scope.Add('BuyRanger', vkExternFun).AsExternFun := @SF_BuyRanger;
-  Scope.Add('BuyWarrior', vkExternFun).AsExternFun := @SF_BuyWarrior;
-  Scope.Add('BuyBigWarrior', vkExternFun).AsExternFun := @SF_BuyBigWarrior;
-  Scope.Add('BuyDomik', vkExternFun).AsExternFun := @SF_BuyDomik;
-  Scope.Add('BuyDomikExtremal', vkExternFun).AsExternFun := @SF_BuyDomikExtremal;
-  Scope.Add('BuyTranclucator', vkExternFun).AsExternFun := @SF_BuyTranclucator;
-  Scope.Add('TransferShip', vkExternFun).AsExternFun := @SF_TransferShip;
-  Scope.Add('OrderForsage', vkExternFun).AsExternFun := @SF_OrderForsage;
-  Scope.Add('OrderNone', vkExternFun).AsExternFun := @SF_OrderNone;
-  Scope.Add('OrderMove', vkExternFun).AsExternFun := @SF_OrderMove;
-  Scope.Add('OrderTeleport', vkExternFun).AsExternFun := @SF_OrderTeleport;
-  Scope.Add('OrderTakeOff', vkExternFun).AsExternFun := @SF_OrderTakeOff;
-  Scope.Add('OrderFollowShip', vkExternFun).AsExternFun := @SF_OrderFollowShip;
-  Scope.Add('OrderJumpHole', vkExternFun).AsExternFun := @SF_OrderJumpHole;
-  Scope.Add('RelationToRanger', vkExternFun).AsExternFun := @SF_RelationToRanger;
-  Scope.Add('RelationToShip', vkExternFun).AsExternFun := @SF_RelationToShip;
-  Scope.Add('StarOwner', vkExternFun).AsExternFun := @SF_StarOwner;
-  Scope.Add('StarBattle', vkExternFun).AsExternFun := @SF_StarBattle;
-  Scope.Add('StarSeries', vkExternFun).AsExternFun := @SF_StarSeries;
-  Scope.Add('StarHoles', vkExternFun).AsExternFun := @SF_StarHoles;
-  Scope.Add('StarNearbyStars', vkExternFun).AsExternFun := @SF_StarNearbyStars;
-  Scope.Add('StarNearbyStarsDist', vkExternFun).AsExternFun := @SF_StarNearbyStarsDist;
-  Scope.Add('StarSetGraph', vkExternFun).AsExternFun := @SF_StarSetGraph;
-  Scope.Add('CreatePlanet', vkExternFun).AsExternFun := @SF_CreatePlanet;
-  Scope.Add('PlanetSetGraph', vkExternFun).AsExternFun := @SF_PlanetSetGraph;
-  Scope.Add('PlanetGetGraph', vkExternFun).AsExternFun := @SF_PlanetGetGraph;
-  Scope.Add('PlanetPopulation', vkExternFun).AsExternFun := @SF_PlanetPopulation;
-  Scope.Add('PlanetOwner', vkExternFun).AsExternFun := @SF_PlanetOwner;
-  Scope.Add('PlanetRace', vkExternFun).AsExternFun := @SF_PlanetRace;
-  Scope.Add('PlanetGov', vkExternFun).AsExternFun := @SF_PlanetGov;
-  Scope.Add('PlanetEco', vkExternFun).AsExternFun := @SF_PlanetEco;
-  Scope.Add('PlanetTerrain', vkExternFun).AsExternFun := @SF_PlanetTerrain;
-  Scope.Add('PlanetTerrainExplored', vkExternFun).AsExternFun := @SF_PlanetTerrainExplored;
-  Scope.Add('PlanetOrbitRadius', vkExternFun).AsExternFun := @SF_PlanetOrbitRadius;
-  Scope.Add('PlanetOrbitalVelocity', vkExternFun).AsExternFun := @SF_PlanetOrbitalVelocity;
-  Scope.Add('PlanetSize', vkExternFun).AsExternFun := @SF_PlanetSize;
-  Scope.Add('PlanetCurInvention', vkExternFun).AsExternFun := @SF_PlanetCurInvention;
-  Scope.Add('PlanetCurInventionPoints', vkExternFun).AsExternFun := @SF_PlanetCurInventionPoints;
-  Scope.Add('PlanetInventionLevel', vkExternFun).AsExternFun := @SF_PlanetInventionLevel;
-  Scope.Add('PlanetBoostInventions', vkExternFun).AsExternFun := @SF_PlanetBoostInventions;
-  Scope.Add('PlanetWarriors', vkExternFun).AsExternFun := @SF_PlanetWarriors;
-  Scope.Add('GalaxySectors', vkExternFun).AsExternFun := @SF_GalaxySectors;
-  Scope.Add('GalaxyTechLevel', vkExternFun).AsExternFun := @SF_GalaxyTechLevel;
-  Scope.Add('GalaxyDominatorResearchPercent', vkExternFun).AsExternFun := @SF_GalaxyDominatorResearchPercent;
-  Scope.Add('GalaxyDominatorResearchMaterial', vkExternFun).AsExternFun := @SF_GalaxyDominatorResearchMaterial;
-  Scope.Add('GalaxyDiffLevels', vkExternFun).AsExternFun := @SF_GalaxyDiffLevels;
-  Scope.Add('SectorVisible', vkExternFun).AsExternFun := @SF_SectorVisible;
-  Scope.Add('HullHP', vkExternFun).AsExternFun := @SF_HullHP;
-  Scope.Add('HullDamageSuspectibility', vkExternFun).AsExternFun := @SF_HullDamageSuspectibility;
-  Scope.Add('HullType', vkExternFun).AsExternFun := @SF_HullType;
-  Scope.Add('HullSpecial', vkExternFun).AsExternFun := @SF_HullSpecial;
-  Scope.Add('HullSeries', vkExternFun).AsExternFun := @SF_HullSeries;
-  Scope.Add('GalaxyHoles', vkExternFun).AsExternFun := @SF_GalaxyHoles;
-  Scope.Add('HoleCreate2', vkExternFun).AsExternFun := @SF_HoleCreate2;
-  Scope.Add('HoleStar1', vkExternFun).AsExternFun := @SF_HoleStar1;
-  Scope.Add('HoleStar2', vkExternFun).AsExternFun := @SF_HoleStar2;
-  Scope.Add('HoleX1', vkExternFun).AsExternFun := @SF_HoleX1;
-  Scope.Add('HoleY1', vkExternFun).AsExternFun := @SF_HoleY1;
-  Scope.Add('HoleX2', vkExternFun).AsExternFun := @SF_HoleX2;
-  Scope.Add('HoleY2', vkExternFun).AsExternFun := @SF_HoleY2;
-  Scope.Add('HoleTurnCreate', vkExternFun).AsExternFun := @SF_HoleTurnCreate;
-  Scope.Add('HoleMap', vkExternFun).AsExternFun := @SF_HoleMap;
-  Scope.Add('HoleGraph', vkExternFun).AsExternFun := @SF_HoleGraph;
-  Scope.Add('StarRuins', vkExternFun).AsExternFun := @SF_StarRuins;
-  Scope.Add('CreateQuestItem', vkExternFun).AsExternFun := @SF_CreateQuestItem;
-  Scope.Add('ShipOrder', vkExternFun).AsExternFun := @SF_ShipOrder;
-  Scope.Add('ShipTurnBeforeEndOrder', vkExternFun).AsExternFun := @SF_ShipTurnBeforeEndOrder;
-  Scope.Add('ShipOrderData1', vkExternFun).AsExternFun := @SF_ShipOrderData1;
-  Scope.Add('ShipOrderData2', vkExternFun).AsExternFun := @SF_ShipOrderData2;
-  Scope.Add('ShipOrderObj', vkExternFun).AsExternFun := @SF_ShipOrderObj;
-  Scope.Add('ShipDestination', vkExternFun).AsExternFun := @SF_ShipDestination;
-  Scope.Add('BuildRuins', vkExternFun).AsExternFun := @SF_BuildRuins;
-  Scope.Add('BuildCustomRuins', vkExternFun).AsExternFun := @SF_BuildCustomRuins;
-  Scope.Add('RuinsChangeType', vkExternFun).AsExternFun := @SF_RuinsChangeType;
-  Scope.Add('ShipStanding', vkExternFun).AsExternFun := @SF_ShipStanding;
-  Scope.Add('ShipSlots', vkExternFun).AsExternFun := @SF_ShipSlots;
-  Scope.Add('MissileStar', vkExternFun).AsExternFun := @SF_MissileStar;
-  Scope.Add('MissileType', vkExternFun).AsExternFun := @SF_MissileType;
-  Scope.Add('CustomMissileType', vkExternFun).AsExternFun := @SF_CustomMissileType;
-  Scope.Add('MissileOwner', vkExternFun).AsExternFun := @SF_MissileOwner;
-  Scope.Add('MissileWeaponID', vkExternFun).AsExternFun := @SF_MissileWeaponID;
-  Scope.Add('MissileTarget', vkExternFun).AsExternFun := @SF_MissileTarget;
-  Scope.Add('MissileMaxDamage', vkExternFun).AsExternFun := @SF_MissileMaxDamage;
-  Scope.Add('MissileMinDamage', vkExternFun).AsExternFun := @SF_MissileMinDamage;
-  Scope.Add('MissileLive', vkExternFun).AsExternFun := @SF_MissileLive;
-  Scope.Add('MissileSpeed', vkExternFun).AsExternFun := @SF_MissileSpeed;
-  Scope.Add('MissileAngle', vkExternFun).AsExternFun := @SF_MissileAngle;
-  Scope.Add('AsteroidMinerals', vkExternFun).AsExternFun := @SF_AsteroidMinerals;
-  Scope.Add('AsteroidGraph', vkExternFun).AsExternFun := @SF_AsteroidGraph;
-  Scope.Add('AsteroidRespawn', vkExternFun).AsExternFun := @SF_AsteroidRespawn;
-  Scope.Add('ArrayAdd', vkExternFun).AsExternFun := @SF_ArrayAdd;
-  Scope.Add('ArrayDelete', vkExternFun).AsExternFun := @SF_ArrayDelete;
-  Scope.Add('ArrayClear', vkExternFun).AsExternFun := @SF_ArrayClear;
-  Scope.Add('ArrayDim', vkExternFun).AsExternFun := @SF_ArrayDim;
-  Scope.Add('ArraySort', vkExternFun).AsExternFun := @SF_ArraySort;
-  Scope.Add('ArraySortPartial', vkExternFun).AsExternFun := @SF_ArraySortPartial;
-  Scope.Add('ArrayRandomize', vkExternFun).AsExternFun := @SF_ArrayRandomize;
-  Scope.Add('ArrayFind', vkExternFun).AsExternFun := @SF_ArrayFind;
-  Scope.Add('ArrayFindInSorted', vkExternFun).AsExternFun := @SF_ArrayFindInSorted;
-  Scope.Add('DistToNearestEnemySystem', vkExternFun).AsExternFun := @SF_DistToNearestEnemySystem;
-  Scope.Add('StarEnemyThreatLevel', vkExternFun).AsExternFun := @SF_StarEnemyThreatLevel;
-  Scope.Add('BuildListOfQuestPossibleLocations', vkExternFun).AsExternFun := @SF_BuildListOfQuestPossibleLocations;
-  Scope.Add('FindItemInShip', vkExternFun).AsExternFun := @SF_FindItemInShip;
-  Scope.Add('GalaxyRangers', vkExternFun).AsExternFun := @SF_GalaxyRangers;
-  Scope.Add('MakeShipEnterStar', vkExternFun).AsExternFun := @SF_MakeShipEnterStar;
-  Scope.Add('ShipGetBad', vkExternFun).AsExternFun := @SF_ShipGetBad;
-  Scope.Add('ShipAddDropItem', vkExternFun).AsExternFun := @SF_ShipAddDropItem;
-  Scope.Add('OrderLock', vkExternFun).AsExternFun := @SF_OrderLock;
-  Scope.Add('BonusCount', vkExternFun).AsExternFun := @SF_BonusCount;
-  Scope.Add('SeriesCount', vkExternFun).AsExternFun := @SF_SeriesCount;
-  Scope.Add('BonusPriority', vkExternFun).AsExternFun := @SF_BonusPriority;
-  Scope.Add('BonusIsSpecial', vkExternFun).AsExternFun := @SF_BonusIsSpecial;
-  Scope.Add('BonusName', vkExternFun).AsExternFun := @SF_BonusName;
-  Scope.Add('BonusNumInCfg', vkExternFun).AsExternFun := @SF_BonusNumInCfg;
-  Scope.Add('SeriesNumInCfg', vkExternFun).AsExternFun := @SF_SeriesNumInCfg;
-  Scope.Add('BonusValue', vkExternFun).AsExternFun := @SF_BonusValue;
-  Scope.Add('FindBonusByName', vkExternFun).AsExternFun := @SF_FindBonusByName;
-  Scope.Add('FindSeriesByName', vkExternFun).AsExternFun := @SF_FindSeriesByName;
-  Scope.Add('FindBonusByCustomTag', vkExternFun).AsExternFun := @SF_FindBonusByCustomTag;
-  Scope.Add('FindBonusByNameInCfg', vkExternFun).AsExternFun := @SF_FindBonusByNameInCfg;
-  Scope.Add('BonusCustomTag', vkExternFun).AsExternFun := @SF_BonusCustomTag;
-  Scope.Add('CreateEquipmentWithSpecial', vkExternFun).AsExternFun := @SF_CreateEquipmentWithSpecial;
-  Scope.Add('SpecialToEquipment', vkExternFun).AsExternFun := @SF_SpecialToEquipment;
-  Scope.Add('ModuleToEquipment', vkExternFun).AsExternFun := @SF_ModuleToEquipment;
-  Scope.Add('EqSpecial', vkExternFun).AsExternFun := @SF_EqSpecial;
-  Scope.Add('EqModule', vkExternFun).AsExternFun := @SF_EqModule;
-  Scope.Add('MayAddBonusToEq', vkExternFun).AsExternFun := @SF_MayAddBonusToEq;
-  Scope.Add('BuildListOfMMByPriority', vkExternFun).AsExternFun := @SF_BuildListOfMMByPriority;
-  Scope.Add('BuildListOfNewShips', vkExternFun).AsExternFun := @SF_BuildListOfNewShips;
-  Scope.Add('PlanetToStar', vkExternFun).AsExternFun := @SF_PlanetToStar;
-  Scope.Add('Chameleon', vkExternFun).AsExternFun := @SF_Chameleon;
-  Scope.Add('IsChameleon', vkExternFun).AsExternFun := @SF_IsChameleon;
-  Scope.Add('PlayerChameleonCharges', vkExternFun).AsExternFun := @SF_PlayerChameleonCharges;
-  Scope.Add('PlayerChameleonCurType', vkExternFun).AsExternFun := @SF_PlayerChameleonCurType;
-  Scope.Add('PlayerChameleonDetected', vkExternFun).AsExternFun := @SF_PlayerChameleonDetected;
-  Scope.Add('PlayerLogicChameleon', vkExternFun).AsExternFun := @SF_PlayerLogicChameleon;
-  Scope.Add('SwitchToMirrorImage', vkExternFun).AsExternFun := @SF_SwitchToMirrorImage;
-  Scope.Add('EquipmentImageName', vkExternFun).AsExternFun := @SF_EquipmentImageName;
-  Scope.Add('StarFonImage', vkExternFun).AsExternFun := @SF_StarFonImage;
-  Scope.Add('ExtremalTakeOff', vkExternFun).AsExternFun := @SF_ExtremalTakeOff;
-  Scope.Add('ForceNextDay', vkExternFun).AsExternFun := @SF_ForceNextDay;
-  Scope.Add('ScriptActionsRun', vkExternFun).AsExternFun := @SF_ScriptActionsRun;
-  Scope.Add('StarListToPlanetList', vkExternFun).AsExternFun := @SF_StarListToPlanetList;
-  Scope.Add('EndGame', vkExternFun).AsExternFun := @SF_EndGame;
-  Scope.Add('CustomWin', vkExternFun).AsExternFun := @SF_CustomWin;
-  Scope.Add('CustomLose', vkExternFun).AsExternFun := @SF_CustomLose;
-  Scope.Add('PirateWin', vkExternFun).AsExternFun := @SF_PirateWin;
-  Scope.Add('StartVideo', vkExternFun).AsExternFun := @SF_StartVideo;
-  Scope.Add('StartMusic', vkExternFun).AsExternFun := @SF_StartMusic;
-  Scope.Add('MusicControls', vkExternFun).AsExternFun := @SF_MusicControls;
-  Scope.Add('NoComeKlingToStar', vkExternFun).AsExternFun := @SF_NoComeKlingToStar;
-  Scope.Add('NoDropToShip', vkExternFun).AsExternFun := @SF_NoDropToShip;
-  Scope.Add('NoTargetToShip', vkExternFun).AsExternFun := @SF_NoTargetToShip;
-  Scope.Add('NoTalkToShip', vkExternFun).AsExternFun := @SF_NoTalkToShip;
-  Scope.Add('NoScanToShip', vkExternFun).AsExternFun := @SF_NoScanToShip;
-  Scope.Add('NoJump', vkExternFun).AsExternFun := @SF_NoJump;
-  Scope.Add('NoLanding', vkExternFun).AsExternFun := @SF_NoLanding;
-  Scope.Add('NoShopUpdate', vkExternFun).AsExternFun := @SF_NoShopUpdate;
-  Scope.Add('PlanetExtraFlags', vkExternFun).AsExternFun := @SF_PlanetExtraFlags;
-  Scope.Add('NoDropItem', vkExternFun).AsExternFun := @SF_NoDropItem;
-  Scope.Add('CanSellItem', vkExternFun).AsExternFun := @SF_CanSellItem;
-  Scope.Add('TruceBetweenShips', vkExternFun).AsExternFun := @SF_TruceBetweenShips;
-  Scope.Add('ShipInPrison', vkExternFun).AsExternFun := @SF_ShipInPrison;
-  Scope.Add('ShipPartners', vkExternFun).AsExternFun := @SF_ShipPartners;
-  Scope.Add('PlayerPirates', vkExternFun).AsExternFun := @SF_PlayerPirates;
-  Scope.Add('ShipIsPartner', vkExternFun).AsExternFun := @SF_ShipIsPartner;
-  Scope.Add('ShipFreeSpace', vkExternFun).AsExternFun := @SF_ShipFreeSpace;
-  Scope.Add('ShipWealth', vkExternFun).AsExternFun := @SF_ShipWealth;
-  Scope.Add('DomiksDefeated', vkExternFun).AsExternFun := @SF_DomiksDefeated;
-  Scope.Add('CoalitionDefeated', vkExternFun).AsExternFun := @SF_CoalitionDefeated;
-  Scope.Add('ShipRefuel', vkExternFun).AsExternFun := @SF_ShipRefuel;
-  Scope.Add('ShipRepairEq', vkExternFun).AsExternFun := @SF_ShipRepairEq;
-  Scope.Add('ItemInScript', vkExternFun).AsExternFun := @SF_ItemInScript;
-  Scope.Add('FindPlanetByAdvancement', vkExternFun).AsExternFun := @SF_FindPlanetByAdvancement;
-  Scope.Add('StarListToTransitPlanetList', vkExternFun).AsExternFun := @SF_StarListToTransitPlanetList;
-  Scope.Add('GalaxyEvents', vkExternFun).AsExternFun := @SF_GalaxyEvents;
-  Scope.Add('GalaxyEventDate', vkExternFun).AsExternFun := @SF_GalaxyEventDate;
-  Scope.Add('GalaxyEventType', vkExternFun).AsExternFun := @SF_GalaxyEventType;
-  Scope.Add('GalaxyEventData', vkExternFun).AsExternFun := @SF_GalaxyEventData;
-  Scope.Add('GalaxyEventsTextData', vkExternFun).AsExternFun := @SF_GalaxyEventsTextData;
-  Scope.Add('PlanetNews', vkExternFun).AsExternFun := @SF_PlanetNews;
-  Scope.Add('PlanetNewsDate', vkExternFun).AsExternFun := @SF_PlanetNewsDate;
-  Scope.Add('PlanetNewsType', vkExternFun).AsExternFun := @SF_PlanetNewsType;
-  Scope.Add('PlanetNewsText', vkExternFun).AsExternFun := @SF_PlanetNewsText;
-  Scope.Add('ControlledSystems', vkExternFun).AsExternFun := @SF_ControlledSystems;
-  Scope.Add('DeltaWin', vkExternFun).AsExternFun := @SF_DeltaWin;
-  Scope.Add('ShipInFear', vkExternFun).AsExternFun := @SF_ShipInFear;
-  Scope.Add('CreateGoods', vkExternFun).AsExternFun := @SF_CreateGoods;
-  Scope.Add('GetNodesFromShip', vkExternFun).AsExternFun := @SF_GetNodesFromShip;
-  Scope.Add('GetNodesFromStorage', vkExternFun).AsExternFun := @SF_GetNodesFromStorage;
-  Scope.Add('RangerBaseNodes', vkExternFun).AsExternFun := @SF_RangerBaseNodes;
-  Scope.Add('RuinsAllowModernization', vkExternFun).AsExternFun := @SF_RuinsAllowModernization;
-  Scope.Add('RuinsMicromoduleChain', vkExternFun).AsExternFun := @SF_RuinsMicromoduleChain;
-  Scope.Add('DomikKilledInCurSystem', vkExternFun).AsExternFun := @SF_DomikKilledInCurSystem;
-  Scope.Add('ShipTypeN', vkExternFun).AsExternFun := @SF_ShipTypeN;
-  Scope.Add('ShipSubType', vkExternFun).AsExternFun := @SF_ShipSubType;
-  Scope.Add('ShipChangeStar', vkExternFun).AsExternFun := @SF_ShipChangeStar;
-  Scope.Add('IsFilm', vkExternFun).AsExternFun := @SF_IsFilm;
-  Scope.Add('FilmFlags', vkExternFun).AsExternFun := @SF_FilmFlags;
-  Scope.Add('ShowEffect', vkExternFun).AsExternFun := @SF_ShowEffect;
-  Scope.Add('ShowStaticEffect', vkExternFun).AsExternFun := @SF_ShowStaticEffect;
-  Scope.Add('ShipConnect', vkExternFun).AsExternFun := @SF_ShipConnect;
-  Scope.Add('FilmSound', vkExternFun).AsExternFun := @SF_FilmSound;
-  Scope.Add('FireWeapon', vkExternFun).AsExternFun := @SF_FireWeapon;
-  Scope.Add('WeaponHit', vkExternFun).AsExternFun := @SF_WeaponHit;
-  Scope.Add('DealDamageToShip', vkExternFun).AsExternFun := @SF_DealDamageToShip;
-  Scope.Add('LaunchMissile', vkExternFun).AsExternFun := @SF_LaunchMissile;
-  Scope.Add('SpawnMissile', vkExternFun).AsExternFun := @SF_SpawnMissile;
-  Scope.Add('BonusText', vkExternFun).AsExternFun := @SF_BonusText;
-  Scope.Add('PlanetPirateClan', vkExternFun).AsExternFun := @SF_PlanetPirateClan;
-  Scope.Add('Blazer', vkExternFun).AsExternFun := @SF_Blazer;
-  Scope.Add('Keller', vkExternFun).AsExternFun := @SF_Keller;
-  Scope.Add('Terron', vkExternFun).AsExternFun := @SF_Terron;
-  Scope.Add('PirateType', vkExternFun).AsExternFun := @SF_PirateType;
-  Scope.Add('PlayerQuestInProgress', vkExternFun).AsExternFun := @SF_PlayerQuestInProgress;
-  Scope.Add('PlayerQuestsCompleted', vkExternFun).AsExternFun := @SF_PlayerQuestsCompleted;
-  Scope.Add('QuestsStatusByNom', vkExternFun).AsExternFun := @SF_QuestsStatusByNom;
-  Scope.Add('PlayerPlanetaryBattlesCompleted', vkExternFun).AsExternFun := @SF_PlayerPlanetaryBattlesCompleted;
-  Scope.Add('PlayerMayTakeSubCrack', vkExternFun).AsExternFun := @SF_PlayerMayTakeSubCrack;
-  Scope.Add('SubCrackCost', vkExternFun).AsExternFun := @SF_SubCrackCost;
-  Scope.Add('ShipCalcParam', vkExternFun).AsExternFun := @SF_ShipCalcParam;
-  Scope.Add('ShipRefit', vkExternFun).AsExternFun := @SF_ShipRefit;
-  Scope.Add('ShipImproveItems', vkExternFun).AsExternFun := @SF_ShipImproveItems;
-  Scope.Add('ItemImprovement', vkExternFun).AsExternFun := @SF_ItemImprovement;
-  Scope.Add('ShipFreeFlight', vkExternFun).AsExternFun := @SF_ShipFreeFlight;
-  Scope.Add('ShipKillFactionInCurSystem', vkExternFun).AsExternFun := @SF_ShipKillFactionInCurSystem;
-  Scope.Add('CapitalShipStats', vkExternFun).AsExternFun := @SF_CapitalShipStats;
-  Scope.Add('PlayerBridge', vkExternFun).AsExternFun := @SF_PlayerBridge;
-  Scope.Add('PlayerDebt', vkExternFun).AsExternFun := @SF_PlayerDebt;
-  Scope.Add('PlayerDebtDate', vkExternFun).AsExternFun := @SF_PlayerDebtDate;
-  Scope.Add('PlayerDebtCnt', vkExternFun).AsExternFun := @SF_PlayerDebtCnt;
-  Scope.Add('PlayerDeposit', vkExternFun).AsExternFun := @SF_PlayerDeposit;
-  Scope.Add('PlayerDepositDate', vkExternFun).AsExternFun := @SF_PlayerDepositDate;
-  Scope.Add('PlayerDepositDay', vkExternFun).AsExternFun := @SF_PlayerDepositDay;
-  Scope.Add('PlayerDepositPercent', vkExternFun).AsExternFun := @SF_PlayerDepositPercent;
-  Scope.Add('PlayerMedPolicy', vkExternFun).AsExternFun := @SF_PlayerMedPolicy;
-  Scope.Add('ShipCustomShipInfosCount', vkExternFun).AsExternFun := @SF_ShipCustomShipInfosCount;
-  Scope.Add('ShipAddCustomShipInfo', vkExternFun).AsExternFun := @SF_ShipAddCustomShipInfo;
-  Scope.Add('ShipDeleteCustomShipInfo', vkExternFun).AsExternFun := @SF_ShipDeleteCustomShipInfo;
-  Scope.Add('ShipFindCustomShipInfoByType', vkExternFun).AsExternFun := @SF_ShipFindCustomShipInfoByType;
-  Scope.Add('ShipCustomShipInfoDescription', vkExternFun).AsExternFun := @SF_ShipCustomShipInfoDescription;
-  Scope.Add('ShipCustomShipInfoData', vkExternFun).AsExternFun := @SF_ShipCustomShipInfoData;
-  Scope.Add('ShipCustomShipInfoTextData', vkExternFun).AsExternFun := @SF_ShipCustomShipInfoTextData;
-  Scope.Add('StarCustomStarInfosCount', vkExternFun).AsExternFun := @SF_StarCustomStarInfosCount;
-  Scope.Add('StarAddCustomStarInfo', vkExternFun).AsExternFun := @SF_StarAddCustomStarInfo;
-  Scope.Add('StarDeleteCustomStarInfo', vkExternFun).AsExternFun := @SF_StarDeleteCustomStarInfo;
-  Scope.Add('StarFindCustomStarInfoByType', vkExternFun).AsExternFun := @SF_StarFindCustomStarInfoByType;
-  Scope.Add('StarCustomStarInfoData', vkExternFun).AsExternFun := @SF_StarCustomStarInfoData;
-  Scope.Add('ItemCanBeBroken', vkExternFun).AsExternFun := @SF_ItemCanBeBroken;
-  Scope.Add('ItemFragility', vkExternFun).AsExternFun := @SF_ItemFragility;
-  Scope.Add('ItemDurability', vkExternFun).AsExternFun := @SF_ItemDurability;
-  Scope.Add('ItemLevel', vkExternFun).AsExternFun := @SF_ItemLevel;
-  Scope.Add('ContainerFuel', vkExternFun).AsExternFun := @SF_ContainerFuel;
-  Scope.Add('ItemCharge', vkExternFun).AsExternFun := @SF_ItemCharge;
-  Scope.Add('MissilesToRearm', vkExternFun).AsExternFun := @SF_MissilesToRearm;
-  Scope.Add('WeaponAmmunition', vkExternFun).AsExternFun := @SF_WeaponAmmunition;
-  Scope.Add('WeaponMaxAmmunition', vkExternFun).AsExternFun := @SF_WeaponMaxAmmunition;
-  Scope.Add('ShipSpecialBonuses', vkExternFun).AsExternFun := @SF_ShipSpecialBonuses;
-  Scope.Add('ItemExtraSpecials', vkExternFun).AsExternFun := @SF_ItemExtraSpecials;
-  Scope.Add('ItemExtraSpecialsCountByType', vkExternFun).AsExternFun := @SF_ItemExtraSpecialsCountByType;
-  Scope.Add('ItemExtraSpecialsAddByType', vkExternFun).AsExternFun := @SF_ItemExtraSpecialsAddByType;
-  Scope.Add('ItemExtraSpecialsDeleteByType', vkExternFun).AsExternFun := @SF_ItemExtraSpecialsDeleteByType;
-  Scope.Add('ExecuteCodeFromString', vkExternFun).AsExternFun := @SF_ExecuteCodeFromString;
-  Scope.Add('GenerateCodeStringFromBlock', vkExternFun).AsExternFun := @SF_GenerateCodeStringFromBlock;
-  Scope.Add('ItemOnUseCode', vkExternFun).AsExternFun := @SF_ItemOnUseCode;
-  Scope.Add('ItemOnActCode', vkExternFun).AsExternFun := @SF_ItemOnActCode;
-  Scope.Add('CreateActCodeEvent', vkExternFun).AsExternFun := @SF_CreateActCodeEvent;
-  Scope.Add('CurItem', vkExternFun).AsExternFun := @SF_CurItem;
-  Scope.Add('CurInfo', vkExternFun).AsExternFun := @SF_CurInfo;
-  Scope.Add('ScriptItemActShip', vkExternFun).AsExternFun := @SF_ScriptItemActShip;
-  Scope.Add('ScriptItemActObject1', vkExternFun).AsExternFun := @SF_ScriptItemActObject1;
-  Scope.Add('ScriptItemActObject2', vkExternFun).AsExternFun := @SF_ScriptItemActObject2;
-  Scope.Add('ScriptItemActParam', vkExternFun).AsExternFun := @SF_ScriptItemActParam;
-  Scope.Add('ScriptItemActionType', vkExternFun).AsExternFun := @SF_ScriptItemActionType;
-  Scope.Add('OnUseCodeTranclucator', vkExternFun).AsExternFun := @SF_OnUseCodeTranclucator;
-  Scope.Add('OnUseCodeTransmitter', vkExternFun).AsExternFun := @SF_OnUseCodeTransmitter;
-  Scope.Add('OnUseCodeBlackHole', vkExternFun).AsExternFun := @SF_OnUseCodeBlackHole;
-  Scope.Add('OnUseCodeMissileDef', vkExternFun).AsExternFun := @SF_OnUseCodeMissileDef;
-  Scope.Add('MessageBox', vkExternFun).AsExternFun := @SF_MessageBox;
-  Scope.Add('MessageBoxYesNo', vkExternFun).AsExternFun := @SF_MessageBoxYesNo;
-  Scope.Add('CountBox', vkExternFun).AsExternFun := @SF_CountBox;
-  Scope.Add('NumberBox', vkExternFun).AsExternFun := @SF_NumberBox;
-  Scope.Add('TextBox', vkExternFun).AsExternFun := @SF_TextBox;
-  Scope.Add('ListBox', vkExternFun).AsExternFun := @SF_ListBox;
-  Scope.Add('FormCurShip', vkExternFun).AsExternFun := @SF_FormCurShip;
-  Scope.Add('UselessItemText', vkExternFun).AsExternFun := @SF_UselessItemText;
-  Scope.Add('UselessItemData', vkExternFun).AsExternFun := @SF_UselessItemData;
-  Scope.Add('GetAchievementSHU', vkExternFun).AsExternFun := @SF_GetAchievementSHU;
-  Scope.Add('GetAchievementGIRLSHIRE', vkExternFun).AsExternFun := @SF_GetAchievementGIRLSHIRE;
-  Scope.Add('GetAchievementGIRLSQUEST', vkExternFun).AsExternFun := @SF_GetAchievementGIRLSQUEST;
-  Scope.Add('GetAchievementPIRATEWIN', vkExternFun).AsExternFun := @SF_GetAchievementPIRATEWIN;
-  Scope.Add('GetAchievementCOALLITION', vkExternFun).AsExternFun := @SF_GetAchievementCOALLITION;
-  Scope.Add('GetAchievementHULL', vkExternFun).AsExternFun := @SF_GetAchievementHULL;
-  Scope.Add('UICheckElement', vkExternFun).AsExternFun := @SF_UICheckElement;
-  Scope.Add('InterfaceState', vkExternFun).AsExternFun := @SF_InterfaceState;
-  Scope.Add('InterfaceText', vkExternFun).AsExternFun := @SF_InterfaceText;
-  Scope.Add('InterfaceImage', vkExternFun).AsExternFun := @SF_InterfaceImage;
-  Scope.Add('InterfacePos', vkExternFun).AsExternFun := @SF_InterfacePos;
-  Scope.Add('InterfaceSize', vkExternFun).AsExternFun := @SF_InterfaceSize;
-  Scope.Add('ButtonClick', vkExternFun).AsExternFun := @SF_ButtonClick;
-  Scope.Add('SetFocus', vkExternFun).AsExternFun := @SF_SetFocus;
-  Scope.Add('CurrentForm', vkExternFun).AsExternFun := @SF_CurrentForm;
-  Scope.Add('FormShipCurItem', vkExternFun).AsExternFun := @SF_FormShipCurItem;
-  Scope.Add('UpdateFormShip', vkExternFun).AsExternFun := @SF_UpdateFormShip;
-  Scope.Add('FormChange', vkExternFun).AsExternFun := @SF_FormChange;
-  Scope.Add('RunChildForm', vkExternFun).AsExternFun := @SF_RunChildForm;
-  Scope.Add('OpenCustomForm', vkExternFun).AsExternFun := @SF_OpenCustomForm;
-  Scope.Add('CloseCustomForm', vkExternFun).AsExternFun := @SF_CloseCustomForm;
-  Scope.Add('CustomInterfaceState', vkExternFun).AsExternFun := @SF_CustomInterfaceState;
-  Scope.Add('CustomInterfaceText', vkExternFun).AsExternFun := @SF_CustomInterfaceText;
-  Scope.Add('CustomInterfaceImage', vkExternFun).AsExternFun := @SF_CustomInterfaceImage;
-  Scope.Add('CustomInterfacePos', vkExternFun).AsExternFun := @SF_CustomInterfacePos;
-  Scope.Add('CustomInterfacePosZ', vkExternFun).AsExternFun := @SF_CustomInterfacePosZ;
-  Scope.Add('CustomInterfaceSize', vkExternFun).AsExternFun := @SF_CustomInterfaceSize;
-  Scope.Add('StarMapCenterView', vkExternFun).AsExternFun := @SF_StarMapCenterView;
-  Scope.Add('StarMapCurPosX', vkExternFun).AsExternFun := @SF_StarMapCurPosX;
-  Scope.Add('StarMapCurPosY', vkExternFun).AsExternFun := @SF_StarMapCurPosY;
-  Scope.Add('StarMapCustomSelectionMode', vkExternFun).AsExternFun := @SF_StarMapCustomSelectionMode;
-  Scope.Add('StarMapBlinkingMessage', vkExternFun).AsExternFun := @SF_StarMapBlinkingMessage;
-  Scope.Add('BlinkingWarning', vkExternFun).AsExternFun := @SF_BlinkingWarning;
-  Scope.Add('CustomWeaponTypes', vkExternFun).AsExternFun := @SF_CustomWeaponTypes;
-  Scope.Add('InventNewCustomWeapon', vkExternFun).AsExternFun := @SF_InventNewCustomWeapon;
-  Scope.Add('GetCustomWeaponInfo', vkExternFun).AsExternFun := @SF_GetCustomWeaponInfo;
-  Scope.Add('GetCustomWeaponData', vkExternFun).AsExternFun := @SF_GetCustomWeaponData;
-  Scope.Add('GetCustomWeaponPrimaryDamageType', vkExternFun).AsExternFun := @SF_GetCustomWeaponPrimaryDamageType;
-  Scope.Add('SetCustomWeaponAvailability', vkExternFun).AsExternFun := @SF_SetCustomWeaponAvailability;
-  Scope.Add('SetCustomWeaponSE', vkExternFun).AsExternFun := @SF_SetCustomWeaponSE;
-  Scope.Add('SetCustomWeaponPrimaryData', vkExternFun).AsExternFun := @SF_SetCustomWeaponPrimaryData;
-  Scope.Add('SetCustomWeaponSizeAndCost', vkExternFun).AsExternFun := @SF_SetCustomWeaponSizeAndCost;
-  Scope.Add('SetCustomWeaponDamageData', vkExternFun).AsExternFun := @SF_SetCustomWeaponDamageData;
-  Scope.Add('SetCustomWeaponShotData', vkExternFun).AsExternFun := @SF_SetCustomWeaponShotData;
-  Scope.Add('SetCustomMissileWeaponStats', vkExternFun).AsExternFun := @SF_SetCustomMissileWeaponStats;
-  Scope.Add('StarCustomFaction', vkExternFun).AsExternFun := @SF_StarCustomFaction;
-  Scope.Add('ShipCustomFaction', vkExternFun).AsExternFun := @SF_ShipCustomFaction;
-  Scope.Add('EqCustomFaction', vkExternFun).AsExternFun := @SF_EqCustomFaction;
-  Scope.Add('PlanetCustomFaction', vkExternFun).AsExternFun := @SF_PlanetCustomFaction;
-  Scope.Add('ImportedFunction', vkExternFun).AsExternFun := @SF_ImportedFunction;
-  Scope.Add('ImportAll', vkExternFun).AsExternFun := @SF_ImportAll;
-  Scope.Add('GalaxyPtr', vkExternFun).AsExternFun := @SF_GalaxyPtr;
-  Scope.Add('t_ArtDefToEnergy', vkInt).AsInteger := Ord(t_ArtDefToEnergy);
-  Scope.Add('t_ArtEnergyPulse', vkInt).AsInteger := Ord(t_ArtEnergyPulse);
-  Scope.Add('t_ArtEnergyDef', vkInt).AsInteger := Ord(t_ArtEnergyDef);
-  Scope.Add('t_ArtSplinter', vkInt).AsInteger := Ord(t_ArtSplinter);
-  Scope.Add('t_ArtDecelerate', vkInt).AsInteger := Ord(t_ArtDecelerate);
-  Scope.Add('t_ArtMissileDef', vkInt).AsInteger := Ord(t_ArtMissileDef);
-  Scope.Add('t_ArtForsage', vkInt).AsInteger := Ord(t_ArtForsage);
-  Scope.Add('t_ArtWeaponToSpeed', vkInt).AsInteger := Ord(t_ArtWeaponToSpeed);
-  Scope.Add('t_ArtGiperJump', vkInt).AsInteger := Ord(t_ArtGiperJump);
-  Scope.Add('t_ArtBlackHole', vkInt).AsInteger := Ord(t_ArtBlackHole);
-  Scope.Add('t_ArtDefToArms1', vkInt).AsInteger := Ord(t_ArtDefToArms1);
-  Scope.Add('t_ArtDefToArms2', vkInt).AsInteger := Ord(t_ArtDefToArms2);
-  Scope.Add('t_ArtArtefactor', vkInt).AsInteger := Ord(t_ArtArtefactor);
-  Scope.Add('t_ArtBio', vkInt).AsInteger := Ord(t_ArtBio);
-  Scope.Add('t_ArtPDTurret', vkInt).AsInteger := Ord(t_ArtPDTurret);
-  Scope.Add('t_ArtFastRacks', vkInt).AsInteger := Ord(t_ArtFastRacks);
-  Scope.Add('t_Cistern', vkInt).AsInteger := Ord(t_Cistern);
-  Scope.Add('t_Satellite', vkInt).AsInteger := Ord(t_Satellite);
-  Scope.Add('t_MicroModule', vkInt).AsInteger := Ord(t_MicroModule);
-  Scope.Add('t_UselessCountableItem', vkInt).AsInteger := Ord(t_UselessCountableItem);
-  Scope.Add('TalkMoney', vkInt).AsInteger := Ord(tkMoneyDemand);
-  Scope.Add('TalkGoods', vkInt).AsInteger := Ord(tkGoodsDemand);
-  Scope.Add('TalkTruce', vkInt).AsInteger := Ord(tkTruceOffer);
-  Scope.Add('TalkAttack', vkInt).AsInteger := Ord(tkAttack);
-  Scope.Add('TalkBreakPartner', vkInt).AsInteger := Ord(tkPartnerBreak);
-  Scope.Add('TalkPartnerTheEnd', vkInt).AsInteger := Ord(tkPartnerEnd);
-  Scope.Add('TalkPartnerRiot', vkInt).AsInteger := Ord(tkPartnerRiot);
+  Scope.Add('GRun', value_host_function).AsExternFun := @SF_GRun;
+  Scope.Add('GCntRun', value_host_function).AsExternFun := @SF_GCntRun;
+  Scope.Add('GLastTurnRun', value_host_function).AsExternFun := @SF_GLastTurnRun;
+  Scope.Add('GAllCntRun', value_host_function).AsExternFun := @SF_GAllCntRun;
+  Scope.Add('IsScriptActive', value_host_function).AsExternFun := @SF_IsScriptActive;
+  Scope.Add('GetValueFromScript', value_host_function).AsExternFun := @SF_GetValueFromScript;
+  Scope.Add('RunFunctionFromScript', value_host_function).AsExternFun := @SF_RunFunctionFromScript;
+  Scope.Add('GetVariableName', value_host_function).AsExternFun := @SF_GetVariableName;
+  Scope.Add('GetVariableType', value_host_function).AsExternFun := @SF_GetVariableType;
+  Scope.Add('StatusPlayer', value_host_function).AsExternFun := @SF_StatusPlayer;
+  Scope.Add('AddPlanetNews', value_host_function).AsExternFun := @SF_AddPlanetNews;
+  Scope.Add('AddJournalRecord', value_host_function).AsExternFun := @SF_AddJournalRecord;
+  Scope.Add('AutoBattle', value_host_function).AsExternFun := @SF_AutoBattle;
+  Scope.Add('GetOwner', value_host_function).AsExternFun := @SF_GetOwner;
+  Scope.Add('GiveReward', value_host_function).AsExternFun := @SF_GiveReward;
+  Scope.Add('GiveRewardByNom', value_host_function).AsExternFun := @SF_GiveRewardByNom;
+  Scope.Add('CountReward', value_host_function).AsExternFun := @SF_CountReward;
+  Scope.Add('CountRewardByNom', value_host_function).AsExternFun := @SF_CountRewardByNom;
+  Scope.Add('DeleteRewardByNom', value_host_function).AsExternFun := @SF_DeleteRewardByNom;
+  Scope.Add('Rnd', value_host_function).AsExternFun := @SF_Rnd;
+  Scope.Add('GameDateTxtByTurn', value_host_function).AsExternFun := @SF_GameDateTxtByTurn;
+  Scope.Add('Id', value_host_function).AsExternFun := @SF_Id;
+  Scope.Add('SetName', value_host_function).AsExternFun := @SF_SetName;
+  Scope.Add('UseTranclucator', value_host_function).AsExternFun := @SF_UseTranclucator;
+  Scope.Add('HullDamage', value_host_function).AsExternFun := @SF_HullDamage;
+  Scope.Add('Hitpoints', value_host_function).AsExternFun := @SF_Hitpoints;
+  Scope.Add('Hit', value_host_function).AsExternFun := @SF_Hit;
+  Scope.Add('ChangeGlobalRelationsShips', value_host_function).AsExternFun := @SF_ChangeGlobalRelationsShips;
+  Scope.Add('ChangeGlobalRelationsPlanets', value_host_function).AsExternFun := @SF_ChangeGlobalRelationsPlanets;
+  Scope.Add('GlobalRelationsShips', value_host_function).AsExternFun := @SF_GlobalRelationsShips;
+  Scope.Add('GlobalRelationsPlanets', value_host_function).AsExternFun := @SF_GlobalRelationsPlanets;
+  Scope.Add('SetRelationGroup', value_host_function).AsExternFun := @SF_SetRelationGroup;
+  Scope.Add('SetRelationPlanet', value_host_function).AsExternFun := @SF_SetRelationPlanet;
+  Scope.Add('GetRelationPlanet', value_host_function).AsExternFun := @SF_GetRelationPlanet;
+  Scope.Add('CurTurn', value_host_function).AsExternFun := @SF_CurTurn;
+  Scope.Add('ShipType', value_host_function).AsExternFun := @SF_ShipType;
+  Scope.Add('ConName', value_host_function).AsExternFun := @SF_ConName;
+  Scope.Add('StarName', value_host_function).AsExternFun := @SF_StarName;
+  Scope.Add('StarMapLabel', value_host_function).AsExternFun := @SF_StarMapLabel;
+  Scope.Add('PlanetName', value_host_function).AsExternFun := @SF_PlanetName;
+  Scope.Add('IdToPlanet', value_host_function).AsExternFun := @SF_IdToPlanet;
+  Scope.Add('IdToShip', value_host_function).AsExternFun := @SF_IdToShip;
+  Scope.Add('IdToItem', value_host_function).AsExternFun := @SF_IdToItem;
+  Scope.Add('PlanetSetGoods', value_host_function).AsExternFun := @SF_PlanetSetGoods;
+  Scope.Add('ShipName', value_host_function).AsExternFun := @SF_ShipName;
+  Scope.Add('ShipRank', value_host_function).AsExternFun := @SF_ShipRank;
+  Scope.Add('ShipRankPoints', value_host_function).AsExternFun := @SF_ShipRankPoints;
+  Scope.Add('ShipNextRankPoints', value_host_function).AsExternFun := @SF_ShipNextRankPoints;
+  Scope.Add('ShipRaiseRank', value_host_function).AsExternFun := @SF_ShipRaiseRank;
+  Scope.Add('ShipStar', value_host_function).AsExternFun := @SF_ShipStar;
+  Scope.Add('StarToCon', value_host_function).AsExternFun := @SF_StarToCon;
+  Scope.Add('ConNear', value_host_function).AsExternFun := @SF_ConNear;
+  Scope.Add('ConStars', value_host_function).AsExternFun := @SF_ConStars;
+  Scope.Add('ConStar', value_host_function).AsExternFun := @SF_ConStar;
+  Scope.Add('GalaxyStars', value_host_function).AsExternFun := @SF_GalaxyStars;
+  Scope.Add('GalaxyStar', value_host_function).AsExternFun := @SF_GalaxyStar;
+  Scope.Add('StarAngleBetween', value_host_function).AsExternFun := @SF_StarAngleBetween;
+  Scope.Add('FindPlanet', value_host_function).AsExternFun := @SF_FindPlanet;
+  Scope.Add('IsPlayer', value_host_function).AsExternFun := @SF_IsPlayer;
+  Scope.Add('GroupCount', value_host_function).AsExternFun := @SF_GroupCount;
+  Scope.Add('GroupIn', value_host_function).AsExternFun := @SF_GroupIn;
+  Scope.Add('CountIn', value_host_function).AsExternFun := @SF_CountIn;
+  Scope.Add('ChangeState', value_host_function).AsExternFun := @SF_ChangeState;
+  Scope.Add('NearestGroup', value_host_function).AsExternFun := @SF_NearestGroup;
+  Scope.Add('StarAngle', value_host_function).AsExternFun := @SF_StarAngle;
+  Scope.Add('NewsAdd', value_host_function).AsExternFun := @SF_NewsAdd;
+  Scope.Add('MsgAdd', value_host_function).AsExternFun := @SF_MsgAdd;
+  Scope.Add('Ether', value_host_function).AsExternFun := @SF_Ether;
+  Scope.Add('CustomEther', value_host_function).AsExternFun := @SF_CustomEther;
+  Scope.Add('EtherDelete', value_host_function).AsExternFun := @SF_EtherDelete;
+  Scope.Add('EtherIdAdd', value_host_function).AsExternFun := @SF_EtherIdAdd;
+  Scope.Add('EtherIdDelete', value_host_function).AsExternFun := @SF_EtherIdDelete;
+  Scope.Add('EtherState', value_host_function).AsExternFun := @SF_EtherState;
+  Scope.Add('ConChangeRelationToRanger', value_host_function).AsExternFun := @SF_ConChangeRelationToRanger;
+  Scope.Add('GetData', value_host_function).AsExternFun := @SF_GetData;
+  Scope.Add('SetData', value_host_function).AsExternFun := @SF_SetData;
+  Scope.Add('ShipData', value_host_function).AsExternFun := @SF_ShipData;
+  Scope.Add('Format', value_host_function).AsExternFun := @SF_Format;
+  Scope.Add('DeleteTags', value_host_function).AsExternFun := @SF_DeleteTags;
+  Scope.Add('Dialog', value_host_function).AsExternFun := @SF_Dialog;
+  Scope.Add('DText', value_host_function).AsExternFun := @SF_DText;
+  Scope.Add('DAddText', value_host_function).AsExternFun := @SF_DAddText;
+  Scope.Add('DAdd', value_host_function).AsExternFun := @SF_DAdd;
+  Scope.Add('DChange', value_host_function).AsExternFun := @SF_DChange;
+  Scope.Add('DAnswer', value_host_function).AsExternFun := @SF_DAnswer;
+  Scope.Add('Player', value_host_function).AsExternFun := @SF_Player;
+  Scope.Add('ItemExist', value_host_function).AsExternFun := @SF_ItemExist;
+  Scope.Add('ItemIn', value_host_function).AsExternFun := @SF_ItemIn;
+  Scope.Add('ItemCost', value_host_function).AsExternFun := @SF_ItemCost;
+  Scope.Add('ItemCount', value_host_function).AsExternFun := @SF_ItemCount;
+  Scope.Add('ShipPicksItem', value_host_function).AsExternFun := @SF_ShipPicksItem;
+  Scope.Add('DropItem', value_host_function).AsExternFun := @SF_DropItem;
+  Scope.Add('DropScriptItem', value_host_function).AsExternFun := @SF_DropScriptItem;
+  Scope.Add('DeleteEquipment', value_host_function).AsExternFun := @SF_DeleteEquipment;
+  Scope.Add('DecayGoods', value_host_function).AsExternFun := @SF_DecayGoods;
+  Scope.Add('UpsurgeGoods', value_host_function).AsExternFun := @SF_UpsurgeGoods;
+  Scope.Add('GoodsAdd', value_host_function).AsExternFun := @SF_GoodsAdd;
+  Scope.Add('GoodsCount', value_host_function).AsExternFun := @SF_GoodsCount;
+  Scope.Add('GoodsCost', value_host_function).AsExternFun := @SF_GoodsCost;
+  Scope.Add('GoodsRuinsForBuy', value_host_function).AsExternFun := @SF_GoodsRuinsForBuy;
+  Scope.Add('ShipGoods', value_host_function).AsExternFun := @SF_ShipGoods;
+  Scope.Add('ShipGoodsIllegalOnPlanet', value_host_function).AsExternFun := @SF_ShipGoodsIllegalOnPlanet;
+  Scope.Add('GoodsDrop', value_host_function).AsExternFun := @SF_GoodsDrop;
+  Scope.Add('UselessItemCreate', value_host_function).AsExternFun := @SF_UselessItemCreate;
+  Scope.Add('GoodsSellPrice', value_host_function).AsExternFun := @SF_GoodsSellPrice;
+  Scope.Add('GoodsBuyPrice', value_host_function).AsExternFun := @SF_GoodsBuyPrice;
+  Scope.Add('CountTurn', value_host_function).AsExternFun := @SF_CountTurn;
+  Scope.Add('ShipSetBad', value_host_function).AsExternFun := @SF_ShipSetBad;
+  Scope.Add('GroupSetBad', value_host_function).AsExternFun := @SF_GroupSetBad;
+  Scope.Add('ShipSetPartner', value_host_function).AsExternFun := @SF_ShipSetPartner;
+  Scope.Add('ShipJoin', value_host_function).AsExternFun := @SF_ShipJoin;
+  Scope.Add('ShipOut', value_host_function).AsExternFun := @SF_ShipOut;
+  Scope.Add('AllShipOut', value_host_function).AsExternFun := @SF_AllShipOut;
+  Scope.Add('ShipInScript', value_host_function).AsExternFun := @SF_ShipInScript;
+  Scope.Add('ShipInGameEvent', value_host_function).AsExternFun := @SF_ShipInGameEvent;
+  Scope.Add('ShipInCurScript', value_host_function).AsExternFun := @SF_ShipInCurScript;
+  Scope.Add('ShipInNormalSpace', value_host_function).AsExternFun := @SF_ShipInNormalSpace;
+  Scope.Add('ShipInHole', value_host_function).AsExternFun := @SF_ShipInHole;
+  Scope.Add('ShipIsTakeoff', value_host_function).AsExternFun := @SF_ShipIsTakeoff;
+  Scope.Add('ShipCntWeapon', value_host_function).AsExternFun := @SF_ShipCntWeapon;
+  Scope.Add('ShipWeapon', value_host_function).AsExternFun := @SF_ShipWeapon;
+  Scope.Add('ShipEqInSlot', value_host_function).AsExternFun := @SF_ShipEqInSlot;
+  Scope.Add('ArtefactTypeInUse', value_host_function).AsExternFun := @SF_ArtefactTypeInUse;
+  Scope.Add('ArtefactTypeBoosted', value_host_function).AsExternFun := @SF_ArtefactTypeBoosted;
+  Scope.Add('ShipSpeed', value_host_function).AsExternFun := @SF_ShipSpeed;
+  Scope.Add('EnginePower', value_host_function).AsExternFun := @SF_EnginePower;
+  Scope.Add('ShipJump', value_host_function).AsExternFun := @SF_ShipJump;
+  Scope.Add('ShipArmor', value_host_function).AsExternFun := @SF_ShipArmor;
+  Scope.Add('ShipProtectability', value_host_function).AsExternFun := @SF_ShipProtectability;
+  Scope.Add('ShipDroidRepair', value_host_function).AsExternFun := @SF_ShipDroidRepair;
+  Scope.Add('ShipRadarRange', value_host_function).AsExternFun := @SF_ShipRadarRange;
+  Scope.Add('ShipScanerPower', value_host_function).AsExternFun := @SF_ShipScanerPower;
+  Scope.Add('ShipHookPower', value_host_function).AsExternFun := @SF_ShipHookPower;
+  Scope.Add('ShipHookRange', value_host_function).AsExternFun := @SF_ShipHookRange;
+  Scope.Add('ShipAverageDamage', value_host_function).AsExternFun := @SF_ShipAverageDamage;
+  Scope.Add('ShipHealthFactor', value_host_function).AsExternFun := @SF_ShipHealthFactor;
+  Scope.Add('ShipHealthFactorStatus', value_host_function).AsExternFun := @SF_ShipHealthFactorStatus;
+  Scope.Add('PlayerImmunity', value_host_function).AsExternFun := @SF_PlayerImmunity;
+  Scope.Add('ShipStatusEffect', value_host_function).AsExternFun := @SF_ShipStatusEffect;
+  Scope.Add('ShipGroup', value_host_function).AsExternFun := @SF_ShipGroup;
+  Scope.Add('ShipCanJump', value_host_function).AsExternFun := @SF_ShipCanJump;
+  Scope.Add('ShipInStar', value_host_function).AsExternFun := @SF_ShipInStar;
+  Scope.Add('ShipInPlanet', value_host_function).AsExternFun := @SF_ShipInPlanet;
+  Scope.Add('ShipStatistic', value_host_function).AsExternFun := @SF_ShipStatistic;
+  Scope.Add('PlayerDominatorStatistic', value_host_function).AsExternFun := @SF_PlayerDominatorStatistic;
+  Scope.Add('ShipMoney', value_host_function).AsExternFun := @SF_ShipMoney;
+  Scope.Add('ShipFuel', value_host_function).AsExternFun := @SF_ShipFuel;
+  Scope.Add('ShipFuelLow', value_host_function).AsExternFun := @SF_ShipFuelLow;
+  Scope.Add('ShipStrengthInBestRanger', value_host_function).AsExternFun := @SF_ShipStrengthInBestRanger;
+  Scope.Add('ShipStrengthInAverageRanger', value_host_function).AsExternFun := @SF_ShipStrengthInAverageRanger;
+  Scope.Add('ChanceToWin', value_host_function).AsExternFun := @SF_ChanceToWin;
+  Scope.Add('ShipFind', value_host_function).AsExternFun := @SF_ShipFind;
+  Scope.Add('RangerStatus', value_host_function).AsExternFun := @SF_RangerStatus;
+  Scope.Add('RangerPlaceInRating', value_host_function).AsExternFun := @SF_RangerPlaceInRating;
+  Scope.Add('RangerExcludedFromRating', value_host_function).AsExternFun := @SF_RangerExcludedFromRating;
+  Scope.Add('GalaxyMoney', value_host_function).AsExternFun := @SF_GalaxyMoney;
+  Scope.Add('ShipDestroy', value_host_function).AsExternFun := @SF_ShipDestroy;
+  Scope.Add('ShipDestroyType', value_host_function).AsExternFun := @SF_ShipDestroyType;
+  Scope.Add('ItemDestroy', value_host_function).AsExternFun := @SF_ItemDestroy;
+  Scope.Add('RangersCapital', value_host_function).AsExternFun := @SF_RangersCapital;
+  Scope.Add('GroupToShip', value_host_function).AsExternFun := @SF_GroupToShip;
+  Scope.Add('OrderLanding', value_host_function).AsExternFun := @SF_OrderLanding;
+  Scope.Add('OrderJump', value_host_function).AsExternFun := @SF_OrderJump;
+  Scope.Add('GroupIs', value_host_function).AsExternFun := @SF_GroupIs;
+  Scope.Add('StateIs', value_host_function).AsExternFun := @SF_StateIs;
+  Scope.Add('Dist', value_host_function).AsExternFun := @SF_Dist;
+  Scope.Add('Angle', value_host_function).AsExternFun := @SF_Angle;
+  Scope.Add('Dist2Star', value_host_function).AsExternFun := @SF_Dist2Star;
+  Scope.Add('BuyPirate', value_host_function).AsExternFun := @SF_BuyPirate;
+  Scope.Add('BuyTransport', value_host_function).AsExternFun := @SF_BuyTransport;
+  Scope.Add('Name', value_host_function).AsExternFun := @SF_Name;
+  Scope.Add('ShortName', value_host_function).AsExternFun := @SF_ShortName;
+  Scope.Add('FirstGiveMoney', value_host_function).AsExternFun := @SF_FirstGiveMoney;
+  Scope.Add('HaveProgramm', value_host_function).AsExternFun := @SF_HaveProgramm;
+  Scope.Add('GetProgramm', value_host_function).AsExternFun := @SF_GetProgramm;
+  Scope.Add('SetProgramm', value_host_function).AsExternFun := @SF_SetProgramm;
+  Scope.Add('DomikProgramm', value_host_function).AsExternFun := @SF_DomikProgramm;
+  Scope.Add('DomikProgrammDate', value_host_function).AsExternFun := @SF_DomikProgrammDate;
+  Scope.Add('HoleMamaCreate', value_host_function).AsExternFun := @SF_HoleMamaCreate;
+  Scope.Add('HoleCreate', value_host_function).AsExternFun := @SF_HoleCreate;
+  Scope.Add('TerronWeaponLock', value_host_function).AsExternFun := @SF_TerronWeaponLock;
+  Scope.Add('TerronGrowLock', value_host_function).AsExternFun := @SF_TerronGrowLock;
+  Scope.Add('TerronLandingLock', value_host_function).AsExternFun := @SF_TerronLandingLock;
+  Scope.Add('TerronToStar', value_host_function).AsExternFun := @SF_TerronToStar;
+  Scope.Add('KellerLeave', value_host_function).AsExternFun := @SF_KellerLeave;
+  Scope.Add('KellerNewResearch', value_host_function).AsExternFun := @SF_KellerNewResearch;
+  Scope.Add('KellerKill', value_host_function).AsExternFun := @SF_KellerKill;
+  Scope.Add('BlazerLanding', value_host_function).AsExternFun := @SF_BlazerLanding;
+  Scope.Add('BlazerSelfDestruction', value_host_function).AsExternFun := @SF_BlazerSelfDestruction;
+  Scope.Add('GalaxyShipId', value_host_function).AsExternFun := @SF_GalaxyShipId;
+  Scope.Add('NearCivilPlanet', value_host_function).AsExternFun := @SF_NearCivilPlanet;
+  Scope.Add('SkipGreeting', value_host_function).AsExternFun := @SF_SkipGreeting;
+  Scope.Add('Sound', value_host_function).AsExternFun := @SF_Sound;
+  Scope.Add('Tips', value_host_function).AsExternFun := @SF_Tips;
+  Scope.Add('TipsState', value_host_function).AsExternFun := @SF_TipsState;
+  Scope.Add('CT', value_host_function).AsExternFun := @SF_CT;
+  Scope.Add('BlockExist', value_host_function).AsExternFun := @SF_BlockExist;
+  Scope.Add('GetMainData', value_host_function).AsExternFun := @SF_GetMainData;
+  Scope.Add('GetGameOptions', value_host_function).AsExternFun := @SF_GetGameOptions;
+  Scope.Add('ResourceExist', value_host_function).AsExternFun := @SF_ResourceExist;
+  Scope.Add('SFT', value_host_function).AsExternFun := @SF_SFT;
+  Scope.Add('CurrentMods', value_host_function).AsExternFun := @SF_CurrentMods;
+  Scope.Add('RobotSupport', value_host_function).AsExternFun := @SF_RobotSupport;
+  Scope.Add('UselessItem', value_int32).AsInteger := Ord(item_misc);
+  Scope.Add('ForLiberationSystem', value_int32).AsInteger := Ord(award_liberation);
+  Scope.Add('ForAccomplishment', value_int32).AsInteger := Ord(award_accomplishment);
+  Scope.Add('ForSecretMission', value_int32).AsInteger := Ord(award_secret_mission);
+  Scope.Add('ForCowardice', value_int32).AsInteger := Ord(award_cowardice);
+  Scope.Add('ForPerfidy', value_int32).AsInteger := Ord(award_perfidy);
+  Scope.Add('ForPlanetBattle', value_int32).AsInteger := Ord(award_planet_battle);
+  Scope.Add('Maloc', value_int32).AsInteger := Ord(owner_maloc);
+  Scope.Add('Peleng', value_int32).AsInteger := Ord(owner_peleng);
+  Scope.Add('People', value_int32).AsInteger := Ord(owner_human);
+  Scope.Add('Fei', value_int32).AsInteger := Ord(owner_feyan);
+  Scope.Add('Gaal', value_int32).AsInteger := Ord(owner_gaal);
+  Scope.Add('Kling', value_int32).AsInteger := Ord(owner_dominator);
+  Scope.Add('None', value_int32).AsInteger := Ord(owner_uninhabited);
+  Scope.Add('PirateClan', value_int32).AsInteger := Ord(owner_pirate);
+  Scope.Add('t_Food', value_int32).AsInteger := Ord(item_food);
+  Scope.Add('t_Medicine', value_int32).AsInteger := Ord(item_medicine);
+  Scope.Add('t_Technics', value_int32).AsInteger := Ord(item_technical_goods);
+  Scope.Add('t_Luxury', value_int32).AsInteger := Ord(item_luxury);
+  Scope.Add('t_Minerals', value_int32).AsInteger := Ord(item_minerals);
+  Scope.Add('t_Alcohol', value_int32).AsInteger := Ord(item_alcohol);
+  Scope.Add('t_Arms', value_int32).AsInteger := Ord(item_arms);
+  Scope.Add('t_Narcotics', value_int32).AsInteger := Ord(item_narcotics);
+  Scope.Add('t_Artefact', value_int32).AsInteger := Ord(item_custom_artefact);
+  Scope.Add('t_Artefact2', value_int32).AsInteger := Ord(item_custom_artefact_no_wear);
+  Scope.Add('t_ArtefactHull', value_int32).AsInteger := Ord(artefact_hull);
+  Scope.Add('t_ArtefactFuel', value_int32).AsInteger := Ord(artefact_fuel);
+  Scope.Add('t_ArtefactSpeed', value_int32).AsInteger := Ord(artefact_speed);
+  Scope.Add('t_ArtefactPower', value_int32).AsInteger := Ord(artefact_power);
+  Scope.Add('t_ArtefactRadar', value_int32).AsInteger := Ord(artefact_radar);
+  Scope.Add('t_ArtefactScaner', value_int32).AsInteger := Ord(artefact_scanner);
+  Scope.Add('t_ArtefactDroid', value_int32).AsInteger := Ord(artefact_repair_robot);
+  Scope.Add('t_ArtefactNano', value_int32).AsInteger := Ord(artefact_nano_repair);
+  Scope.Add('t_ArtefactHook', value_int32).AsInteger := Ord(artefact_cargo_hook);
+  Scope.Add('t_ArtefactDef', value_int32).AsInteger := Ord(artefact_defense);
+  Scope.Add('t_ArtefactAnalyzer', value_int32).AsInteger := Ord(artefact_analyzer);
+  Scope.Add('t_ArtefactMiniExpl', value_int32).AsInteger := Ord(artefact_extra_loot);
+  Scope.Add('t_ArtefactAntigrav', value_int32).AsInteger := Ord(artefact_antigravity);
+  Scope.Add('t_ArtefactTransmitter', value_int32).AsInteger := Ord(artefact_transmitter);
+  Scope.Add('t_ArtefactBomb', value_int32).AsInteger := Ord(artefact_bomb);
+  Scope.Add('t_ArtefactTranclucator', value_int32).AsInteger := Ord(artefact_tranclucator);
+  Scope.Add('t_Hull', value_int32).AsInteger := Ord(item_hull);
+  Scope.Add('t_FuelTanks', value_int32).AsInteger := Ord(item_fuel_tanks);
+  Scope.Add('t_Engine', value_int32).AsInteger := Ord(item_engine);
+  Scope.Add('t_Radar', value_int32).AsInteger := Ord(item_radar);
+  Scope.Add('t_Scaner', value_int32).AsInteger := Ord(item_scanner);
+  Scope.Add('t_RepairRobot', value_int32).AsInteger := Ord(item_repair_robot);
+  Scope.Add('t_CargoHook', value_int32).AsInteger := Ord(item_cargo_hook);
+  Scope.Add('t_DefGenerator', value_int32).AsInteger := Ord(item_defense_generator);
+  for WeaponIndex := 1 to CountItemTypesInMask([item_industrial_laser..item_lirecron]) do
+    Scope.Add('t_Weapon' + IntToStr(WeaponIndex), value_int32).AsInteger := Ord(GetItemTypeFromMask([item_industrial_laser..item_lirecron], WeaponIndex));
+  Scope.Add('t_CustomWeapon', value_int32).AsInteger := Ord(item_custom_weapon);
+  Scope.Add('t_Protoplasm', value_int32).AsInteger := Ord(item_nodes);
+  Scope.Add('t_UselessItem', value_int32).AsInteger := Ord(item_misc);
+  Scope.Add('ReWar', value_int32).AsInteger := Ord(relation_level_hostile);
+  Scope.Add('ReBad', value_int32).AsInteger := Ord(relation_level_bad);
+  Scope.Add('ReNormal', value_int32).AsInteger := Ord(relation_level_normal);
+  Scope.Add('ReGood', value_int32).AsInteger := Ord(relation_level_good);
+  Scope.Add('ReBest', value_int32).AsInteger := Ord(relation_level_excellent);
+  Scope.Add('Trader', value_int32).AsInteger := Ord(career_trader);
+  Scope.Add('Pirate', value_int32).AsInteger := Ord(career_pirate);
+  Scope.Add('Warrior', value_int32).AsInteger := Ord(career_warrior);
+  Scope.Add('t_Kling', value_int32).AsInteger := Ord(ship_dominator);
+  Scope.Add('t_Ranger', value_int32).AsInteger := Ord(ship_ranger);
+  Scope.Add('t_Transport', value_int32).AsInteger := Ord(ship_transport);
+  Scope.Add('t_Pirate', value_int32).AsInteger := Ord(ship_pirate);
+  Scope.Add('t_Warrior', value_int32).AsInteger := Ord(ship_warrior);
+  Scope.Add('t_Tranclucator', value_int32).AsInteger := Ord(ship_tranclucator);
+  Scope.Add('t_RC', value_int32).AsInteger := Ord(station_ranger_center);
+  Scope.Add('t_PB', value_int32).AsInteger := Ord(station_pirate_base);
+  Scope.Add('t_WB', value_int32).AsInteger := Ord(station_military_base);
+  Scope.Add('t_SB', value_int32).AsInteger := Ord(station_science_base);
+  Scope.Add('t_BK', value_int32).AsInteger := Ord(station_business_center);
+  Scope.Add('t_MC', value_int32).AsInteger := Ord(station_medical_base);
+  Scope.Add('t_CB', value_int32).AsInteger := Ord(station_dominion);
+  Scope.Add('t_UB', value_int32).AsInteger := Ord(station_custom);
+  Scope.Add('progKellerCall', value_int32).AsInteger := Ord(program_keller_call);
+  Scope.Add('progLogicalNegation', value_int32).AsInteger := Ord(program_logical_negation);
+  Scope.Add('progDematerial', value_int32).AsInteger := Ord(program_dematerial);
+  Scope.Add('progEnergotron', value_int32).AsInteger := Ord(program_energotron);
+  Scope.Add('progSabCrack', value_int32).AsInteger := Ord(program_sab_crack);
+  Scope.Add('progIntercom', value_int32).AsInteger := Ord(program_intercom);
+  Scope.Add('StarShips', value_host_function).AsExternFun := @SF_StarShips;
+  Scope.Add('StarPlanets', value_host_function).AsExternFun := @SF_StarPlanets;
+  Scope.Add('StarMissiles', value_host_function).AsExternFun := @SF_StarMissiles;
+  Scope.Add('StarAsteroids', value_host_function).AsExternFun := @SF_StarAsteroids;
+  Scope.Add('GroupShip', value_host_function).AsExternFun := @SF_GroupShip;
+  Scope.Add('ShipItems', value_host_function).AsExternFun := @SF_ShipItems;
+  Scope.Add('ShipArts', value_host_function).AsExternFun := @SF_ShipArts;
+  Scope.Add('PlayerTranclucators', value_host_function).AsExternFun := @SF_PlayerTranclucators;
+  Scope.Add('ArtTranclucatorToShip', value_host_function).AsExternFun := @SF_ArtTranclucatorToShip;
+  Scope.Add('TranclucatorData', value_host_function).AsExternFun := @SF_TranclucatorData;
+  Scope.Add('LinkItemToScript', value_host_function).AsExternFun := @SF_LinkItemToScript;
+  Scope.Add('ReleaseItemFromScript', value_host_function).AsExternFun := @SF_ReleaseItemFromScript;
+  Scope.Add('ScriptItemData', value_host_function).AsExternFun := @SF_ScriptItemData;
+  Scope.Add('ScriptItemTextData', value_host_function).AsExternFun := @SF_ScriptItemTextData;
+  Scope.Add('ScriptItemToItem', value_host_function).AsExternFun := @SF_ScriptItemToItem;
+  Scope.Add('GetShipPirateRank', value_host_function).AsExternFun := @SF_GetShipPirateRank;
+  Scope.Add('ShipPirateRankPoints', value_host_function).AsExternFun := @SF_ShipPirateRankPoints;
+  Scope.Add('ShipNextPirateRankPoints', value_host_function).AsExternFun := @SF_ShipNextPirateRankPoints;
+  Scope.Add('ShipInPirateClan', value_host_function).AsExternFun := @SF_ShipInPirateClan;
+  Scope.Add('ShipOnSidePirateClan', value_host_function).AsExternFun := @SF_ShipOnSidePirateClan;
+  Scope.Add('RaisePirateRank', value_host_function).AsExternFun := @SF_RaisePirateRank;
+  Scope.Add('ItemType', value_host_function).AsExternFun := @SF_ItemType;
+  Scope.Add('CustomWeaponType', value_host_function).AsExternFun := @SF_CustomWeaponType;
+  Scope.Add('ItemName', value_host_function).AsExternFun := @SF_ItemName;
+  Scope.Add('ItemFullName', value_host_function).AsExternFun := @SF_ItemFullName;
+  Scope.Add('ItemSize', value_host_function).AsExternFun := @SF_ItemSize;
+  Scope.Add('ItemOwner', value_host_function).AsExternFun := @SF_ItemOwner;
+  Scope.Add('ItemSubrace', value_host_function).AsExternFun := @SF_ItemSubrace;
+  Scope.Add('ItemIsInUse', value_host_function).AsExternFun := @SF_ItemIsInUse;
+  Scope.Add('ItemIsInSet', value_host_function).AsExternFun := @SF_ItemIsInSet;
+  Scope.Add('PlayerEqSet', value_host_function).AsExternFun := @SF_PlayerEqSet;
+  Scope.Add('ItemIsBroken', value_host_function).AsExternFun := @SF_ItemIsBroken;
+  Scope.Add('ShipCanUseEq', value_host_function).AsExternFun := @SF_ShipCanUseEq;
+  Scope.Add('ShipCanRepairEq', value_host_function).AsExternFun := @SF_ShipCanRepairEq;
+  Scope.Add('ShipTechLevelKnowledge', value_host_function).AsExternFun := @SF_ShipTechLevelKnowledge;
+  Scope.Add('WeaponTarget', value_host_function).AsExternFun := @SF_WeaponTarget;
+  Scope.Add('GetEquipmentStats', value_host_function).AsExternFun := @SF_GetEquipmentStats;
+  Scope.Add('SetEquipmentStats', value_host_function).AsExternFun := @SF_SetEquipmentStats;
+  Scope.Add('CreateHull', value_host_function).AsExternFun := @SF_CreateHull;
+  Scope.Add('CreateEquipment', value_host_function).AsExternFun := @SF_CreateEquipment;
+  Scope.Add('CreateArt', value_host_function).AsExternFun := @SF_CreateArt;
+  Scope.Add('CreateCustomWeapon', value_host_function).AsExternFun := @SF_CreateCustomWeapon;
+  Scope.Add('CreateCustomArt', value_host_function).AsExternFun := @SF_CreateCustomArt;
+  Scope.Add('CustomArtData', value_host_function).AsExternFun := @SF_CustomArtData;
+  Scope.Add('CustomArtTextData', value_host_function).AsExternFun := @SF_CustomArtTextData;
+  Scope.Add('CreateMM', value_host_function).AsExternFun := @SF_CreateMM;
+  Scope.Add('CreateNodes', value_host_function).AsExternFun := @SF_CreateNodes;
+  Scope.Add('CreateCustomCountableItem', value_host_function).AsExternFun := @SF_CreateCustomCountableItem;
+  Scope.Add('CreateZond', value_host_function).AsExternFun := @SF_CreateZond;
+  Scope.Add('ExistingZonds', value_host_function).AsExternFun := @SF_ExistingZonds;
+  Scope.Add('FreeItem', value_host_function).AsExternFun := @SF_FreeItem;
+  Scope.Add('ShipJoinsClan', value_host_function).AsExternFun := @SF_ShipJoinsClan;
+  Scope.Add('AddItemToShip', value_host_function).AsExternFun := @SF_AddItemToShip;
+  Scope.Add('GetItemFromShip', value_host_function).AsExternFun := @SF_GetItemFromShip;
+  Scope.Add('GetArtFromShip', value_host_function).AsExternFun := @SF_GetArtFromShip;
+  Scope.Add('ArrangeItems', value_host_function).AsExternFun := @SF_ArrangeItems;
+  Scope.Add('AddItemToPlanet', value_host_function).AsExternFun := @SF_AddItemToPlanet;
+  Scope.Add('GetItemFromPlanet', value_host_function).AsExternFun := @SF_GetItemFromPlanet;
+  Scope.Add('AddItemToShop', value_host_function).AsExternFun := @SF_AddItemToShop;
+  Scope.Add('GetItemFromShop', value_host_function).AsExternFun := @SF_GetItemFromShop;
+  Scope.Add('AddItemToStorage', value_host_function).AsExternFun := @SF_AddItemToStorage;
+  Scope.Add('GetItemFromStorage', value_host_function).AsExternFun := @SF_GetItemFromStorage;
+  Scope.Add('FindItemInStorage', value_host_function).AsExternFun := @SF_FindItemInStorage;
+  Scope.Add('PutItemInVault', value_host_function).AsExternFun := @SF_PutItemInVault;
+  Scope.Add('GetItemFromVault', value_host_function).AsExternFun := @SF_GetItemFromVault;
+  Scope.Add('DropItemInSystem', value_host_function).AsExternFun := @SF_DropItemInSystem;
+  Scope.Add('StopMovingItem', value_host_function).AsExternFun := @SF_StopMovingItem;
+  Scope.Add('StarItems', value_host_function).AsExternFun := @SF_StarItems;
+  Scope.Add('GetItemFromStar', value_host_function).AsExternFun := @SF_GetItemFromStar;
+  Scope.Add('PlanetItems', value_host_function).AsExternFun := @SF_PlanetItems;
+  Scope.Add('StorageItems', value_host_function).AsExternFun := @SF_StorageItems;
+  Scope.Add('StorageItemLocation', value_host_function).AsExternFun := @SF_StorageItemLocation;
+  Scope.Add('ShopItems', value_host_function).AsExternFun := @SF_ShopItems;
+  Scope.Add('AddDialogOverride', value_host_function).AsExternFun := @SF_AddDialogOverride;
+  Scope.Add('AddDialogInject', value_host_function).AsExternFun := @SF_AddDialogInject;
+  Scope.Add('InjectAnswer', value_host_function).AsExternFun := @SF_InjectAnswer;
+  Scope.Add('AddDialogBlock', value_host_function).AsExternFun := @SF_AddDialogBlock;
+  Scope.Add('GotoGov', value_host_function).AsExternFun := @SF_GotoGov;
+  Scope.Add('GetShipPlanet', value_host_function).AsExternFun := @SF_GetShipPlanet;
+  Scope.Add('GetShipHomePlanet', value_host_function).AsExternFun := @SF_GetShipHomePlanet;
+  Scope.Add('GetShipRuins', value_host_function).AsExternFun := @SF_GetShipRuins;
+  Scope.Add('GetTalkShip', value_host_function).AsExternFun := @SF_GetTalkShip;
+  Scope.Add('GetTalkType', value_host_function).AsExternFun := @SF_GetTalkType;
+  Scope.Add('TalkByAI', value_host_function).AsExternFun := @SF_TalkByAI;
+  Scope.Add('ScriptRun', value_host_function).AsExternFun := @SF_ScriptRun;
+  Scope.Add('CreateABShip', value_host_function).AsExternFun := @SF_CreateABShip;
+  Scope.Add('ConvertToABShip', value_host_function).AsExternFun := @SF_ConvertToABShip;
+  Scope.Add('ABShipModifiers', value_host_function).AsExternFun := @SF_ABShipModifiers;
+  Scope.Add('StartAB', value_host_function).AsExternFun := @SF_StartAB;
+  Scope.Add('StartTextQuest', value_host_function).AsExternFun := @SF_StartTextQuest;
+  Scope.Add('StartRobots', value_host_function).AsExternFun := @SF_StartRobots;
+  Scope.Add('MarkRobotsMapAsUsed', value_host_function).AsExternFun := @SF_MarkRobotsMapAsUsed;
+  Scope.Add('ShipOwner', value_host_function).AsExternFun := @SF_ShipOwner;
+  Scope.Add('ShipPilotRace', value_host_function).AsExternFun := @SF_ShipPilotRace;
+  Scope.Add('ShipSkill', value_host_function).AsExternFun := @SF_ShipSkill;
+  Scope.Add('ShipFace', value_host_function).AsExternFun := @SF_ShipFace;
+  Scope.Add('ShipFreeExp', value_host_function).AsExternFun := @SF_ShipFreeExp;
+  Scope.Add('GetShipExpByType', value_host_function).AsExternFun := @SF_GetShipExpByType;
+  Scope.Add('CoordX', value_host_function).AsExternFun := @SF_CoordX;
+  Scope.Add('CoordY', value_host_function).AsExternFun := @SF_CoordY;
+  Scope.Add('ShipSetCoords', value_host_function).AsExternFun := @SF_ShipSetCoords;
+  Scope.Add('ShipAngle', value_host_function).AsExternFun := @SF_ShipAngle;
+  Scope.Add('ObjectType', value_host_function).AsExternFun := @SF_ObjectType;
+  Scope.Add('ShipInHyperSpace', value_host_function).AsExternFun := @SF_ShipInHyperSpace;
+  Scope.Add('ShipStatus', value_host_function).AsExternFun := @SF_ShipStatus;
+  Scope.Add('BuyRanger', value_host_function).AsExternFun := @SF_BuyRanger;
+  Scope.Add('BuyWarrior', value_host_function).AsExternFun := @SF_BuyWarrior;
+  Scope.Add('BuyBigWarrior', value_host_function).AsExternFun := @SF_BuyBigWarrior;
+  Scope.Add('BuyDomik', value_host_function).AsExternFun := @SF_BuyDomik;
+  Scope.Add('BuyDomikExtremal', value_host_function).AsExternFun := @SF_BuyDomikExtremal;
+  Scope.Add('BuyTranclucator', value_host_function).AsExternFun := @SF_BuyTranclucator;
+  Scope.Add('TransferShip', value_host_function).AsExternFun := @SF_TransferShip;
+  Scope.Add('OrderForsage', value_host_function).AsExternFun := @SF_OrderForsage;
+  Scope.Add('OrderNone', value_host_function).AsExternFun := @SF_OrderNone;
+  Scope.Add('OrderMove', value_host_function).AsExternFun := @SF_OrderMove;
+  Scope.Add('OrderTeleport', value_host_function).AsExternFun := @SF_OrderTeleport;
+  Scope.Add('OrderTakeOff', value_host_function).AsExternFun := @SF_OrderTakeOff;
+  Scope.Add('OrderFollowShip', value_host_function).AsExternFun := @SF_OrderFollowShip;
+  Scope.Add('OrderJumpHole', value_host_function).AsExternFun := @SF_OrderJumpHole;
+  Scope.Add('RelationToRanger', value_host_function).AsExternFun := @SF_RelationToRanger;
+  Scope.Add('RelationToShip', value_host_function).AsExternFun := @SF_RelationToShip;
+  Scope.Add('StarOwner', value_host_function).AsExternFun := @SF_StarOwner;
+  Scope.Add('StarBattle', value_host_function).AsExternFun := @SF_StarBattle;
+  Scope.Add('StarSeries', value_host_function).AsExternFun := @SF_StarSeries;
+  Scope.Add('StarHoles', value_host_function).AsExternFun := @SF_StarHoles;
+  Scope.Add('StarNearbyStars', value_host_function).AsExternFun := @SF_StarNearbyStars;
+  Scope.Add('StarNearbyStarsDist', value_host_function).AsExternFun := @SF_StarNearbyStarsDist;
+  Scope.Add('StarSetGraph', value_host_function).AsExternFun := @SF_StarSetGraph;
+  Scope.Add('CreatePlanet', value_host_function).AsExternFun := @SF_CreatePlanet;
+  Scope.Add('PlanetSetGraph', value_host_function).AsExternFun := @SF_PlanetSetGraph;
+  Scope.Add('PlanetGetGraph', value_host_function).AsExternFun := @SF_PlanetGetGraph;
+  Scope.Add('PlanetPopulation', value_host_function).AsExternFun := @SF_PlanetPopulation;
+  Scope.Add('PlanetOwner', value_host_function).AsExternFun := @SF_PlanetOwner;
+  Scope.Add('PlanetRace', value_host_function).AsExternFun := @SF_PlanetRace;
+  Scope.Add('PlanetGov', value_host_function).AsExternFun := @SF_PlanetGov;
+  Scope.Add('PlanetEco', value_host_function).AsExternFun := @SF_PlanetEco;
+  Scope.Add('PlanetTerrain', value_host_function).AsExternFun := @SF_PlanetTerrain;
+  Scope.Add('PlanetTerrainExplored', value_host_function).AsExternFun := @SF_PlanetTerrainExplored;
+  Scope.Add('PlanetOrbitRadius', value_host_function).AsExternFun := @SF_PlanetOrbitRadius;
+  Scope.Add('PlanetOrbitalVelocity', value_host_function).AsExternFun := @SF_PlanetOrbitalVelocity;
+  Scope.Add('PlanetSize', value_host_function).AsExternFun := @SF_PlanetSize;
+  Scope.Add('PlanetCurInvention', value_host_function).AsExternFun := @SF_PlanetCurInvention;
+  Scope.Add('PlanetCurInventionPoints', value_host_function).AsExternFun := @SF_PlanetCurInventionPoints;
+  Scope.Add('PlanetInventionLevel', value_host_function).AsExternFun := @SF_PlanetInventionLevel;
+  Scope.Add('PlanetBoostInventions', value_host_function).AsExternFun := @SF_PlanetBoostInventions;
+  Scope.Add('PlanetWarriors', value_host_function).AsExternFun := @SF_PlanetWarriors;
+  Scope.Add('GalaxySectors', value_host_function).AsExternFun := @SF_GalaxySectors;
+  Scope.Add('GalaxyTechLevel', value_host_function).AsExternFun := @SF_GalaxyTechLevel;
+  Scope.Add('GalaxyDominatorResearchPercent', value_host_function).AsExternFun := @SF_GalaxyDominatorResearchPercent;
+  Scope.Add('GalaxyDominatorResearchMaterial', value_host_function).AsExternFun := @SF_GalaxyDominatorResearchMaterial;
+  Scope.Add('GalaxyDiffLevels', value_host_function).AsExternFun := @SF_GalaxyDiffLevels;
+  Scope.Add('SectorVisible', value_host_function).AsExternFun := @SF_SectorVisible;
+  Scope.Add('HullHP', value_host_function).AsExternFun := @SF_HullHP;
+  Scope.Add('HullDamageSuspectibility', value_host_function).AsExternFun := @SF_HullDamageSuspectibility;
+  Scope.Add('HullType', value_host_function).AsExternFun := @SF_HullType;
+  Scope.Add('HullSpecial', value_host_function).AsExternFun := @SF_HullSpecial;
+  Scope.Add('HullSeries', value_host_function).AsExternFun := @SF_HullSeries;
+  Scope.Add('GalaxyHoles', value_host_function).AsExternFun := @SF_GalaxyHoles;
+  Scope.Add('HoleCreate2', value_host_function).AsExternFun := @SF_HoleCreate2;
+  Scope.Add('HoleStar1', value_host_function).AsExternFun := @SF_HoleStar1;
+  Scope.Add('HoleStar2', value_host_function).AsExternFun := @SF_HoleStar2;
+  Scope.Add('HoleX1', value_host_function).AsExternFun := @SF_HoleX1;
+  Scope.Add('HoleY1', value_host_function).AsExternFun := @SF_HoleY1;
+  Scope.Add('HoleX2', value_host_function).AsExternFun := @SF_HoleX2;
+  Scope.Add('HoleY2', value_host_function).AsExternFun := @SF_HoleY2;
+  Scope.Add('HoleTurnCreate', value_host_function).AsExternFun := @SF_HoleTurnCreate;
+  Scope.Add('HoleMap', value_host_function).AsExternFun := @SF_HoleMap;
+  Scope.Add('HoleGraph', value_host_function).AsExternFun := @SF_HoleGraph;
+  Scope.Add('StarRuins', value_host_function).AsExternFun := @SF_StarRuins;
+  Scope.Add('CreateQuestItem', value_host_function).AsExternFun := @SF_CreateQuestItem;
+  Scope.Add('ShipOrder', value_host_function).AsExternFun := @SF_ShipOrder;
+  Scope.Add('ShipTurnBeforeEndOrder', value_host_function).AsExternFun := @SF_ShipTurnBeforeEndOrder;
+  Scope.Add('ShipOrderData1', value_host_function).AsExternFun := @SF_ShipOrderData1;
+  Scope.Add('ShipOrderData2', value_host_function).AsExternFun := @SF_ShipOrderData2;
+  Scope.Add('ShipOrderObj', value_host_function).AsExternFun := @SF_ShipOrderObj;
+  Scope.Add('ShipDestination', value_host_function).AsExternFun := @SF_ShipDestination;
+  Scope.Add('BuildRuins', value_host_function).AsExternFun := @SF_BuildRuins;
+  Scope.Add('BuildCustomRuins', value_host_function).AsExternFun := @SF_BuildCustomRuins;
+  Scope.Add('RuinsChangeType', value_host_function).AsExternFun := @SF_RuinsChangeType;
+  Scope.Add('ShipStanding', value_host_function).AsExternFun := @SF_ShipStanding;
+  Scope.Add('ShipSlots', value_host_function).AsExternFun := @SF_ShipSlots;
+  Scope.Add('MissileStar', value_host_function).AsExternFun := @SF_MissileStar;
+  Scope.Add('MissileType', value_host_function).AsExternFun := @SF_MissileType;
+  Scope.Add('CustomMissileType', value_host_function).AsExternFun := @SF_CustomMissileType;
+  Scope.Add('MissileOwner', value_host_function).AsExternFun := @SF_MissileOwner;
+  Scope.Add('MissileWeaponID', value_host_function).AsExternFun := @SF_MissileWeaponID;
+  Scope.Add('MissileTarget', value_host_function).AsExternFun := @SF_MissileTarget;
+  Scope.Add('MissileMaxDamage', value_host_function).AsExternFun := @SF_MissileMaxDamage;
+  Scope.Add('MissileMinDamage', value_host_function).AsExternFun := @SF_MissileMinDamage;
+  Scope.Add('MissileLive', value_host_function).AsExternFun := @SF_MissileLive;
+  Scope.Add('MissileSpeed', value_host_function).AsExternFun := @SF_MissileSpeed;
+  Scope.Add('MissileAngle', value_host_function).AsExternFun := @SF_MissileAngle;
+  Scope.Add('AsteroidMinerals', value_host_function).AsExternFun := @SF_AsteroidMinerals;
+  Scope.Add('AsteroidGraph', value_host_function).AsExternFun := @SF_AsteroidGraph;
+  Scope.Add('AsteroidRespawn', value_host_function).AsExternFun := @SF_AsteroidRespawn;
+  Scope.Add('ArrayAdd', value_host_function).AsExternFun := @SF_ArrayAdd;
+  Scope.Add('ArrayDelete', value_host_function).AsExternFun := @SF_ArrayDelete;
+  Scope.Add('ArrayClear', value_host_function).AsExternFun := @SF_ArrayClear;
+  Scope.Add('ArrayDim', value_host_function).AsExternFun := @SF_ArrayDim;
+  Scope.Add('ArraySort', value_host_function).AsExternFun := @SF_ArraySort;
+  Scope.Add('ArraySortPartial', value_host_function).AsExternFun := @SF_ArraySortPartial;
+  Scope.Add('ArrayRandomize', value_host_function).AsExternFun := @SF_ArrayRandomize;
+  Scope.Add('ArrayFind', value_host_function).AsExternFun := @SF_ArrayFind;
+  Scope.Add('ArrayFindInSorted', value_host_function).AsExternFun := @SF_ArrayFindInSorted;
+  Scope.Add('DistToNearestEnemySystem', value_host_function).AsExternFun := @SF_DistToNearestEnemySystem;
+  Scope.Add('StarEnemyThreatLevel', value_host_function).AsExternFun := @SF_StarEnemyThreatLevel;
+  Scope.Add('BuildListOfQuestPossibleLocations', value_host_function).AsExternFun := @SF_BuildListOfQuestPossibleLocations;
+  Scope.Add('FindItemInShip', value_host_function).AsExternFun := @SF_FindItemInShip;
+  Scope.Add('GalaxyRangers', value_host_function).AsExternFun := @SF_GalaxyRangers;
+  Scope.Add('MakeShipEnterStar', value_host_function).AsExternFun := @SF_MakeShipEnterStar;
+  Scope.Add('ShipGetBad', value_host_function).AsExternFun := @SF_ShipGetBad;
+  Scope.Add('ShipAddDropItem', value_host_function).AsExternFun := @SF_ShipAddDropItem;
+  Scope.Add('OrderLock', value_host_function).AsExternFun := @SF_OrderLock;
+  Scope.Add('BonusCount', value_host_function).AsExternFun := @SF_BonusCount;
+  Scope.Add('SeriesCount', value_host_function).AsExternFun := @SF_SeriesCount;
+  Scope.Add('BonusPriority', value_host_function).AsExternFun := @SF_BonusPriority;
+  Scope.Add('BonusIsSpecial', value_host_function).AsExternFun := @SF_BonusIsSpecial;
+  Scope.Add('BonusName', value_host_function).AsExternFun := @SF_BonusName;
+  Scope.Add('BonusNumInCfg', value_host_function).AsExternFun := @SF_BonusNumInCfg;
+  Scope.Add('SeriesNumInCfg', value_host_function).AsExternFun := @SF_SeriesNumInCfg;
+  Scope.Add('BonusValue', value_host_function).AsExternFun := @SF_BonusValue;
+  Scope.Add('FindBonusByName', value_host_function).AsExternFun := @SF_FindBonusByName;
+  Scope.Add('FindSeriesByName', value_host_function).AsExternFun := @SF_FindSeriesByName;
+  Scope.Add('FindBonusByCustomTag', value_host_function).AsExternFun := @SF_FindBonusByCustomTag;
+  Scope.Add('FindBonusByNameInCfg', value_host_function).AsExternFun := @SF_FindBonusByNameInCfg;
+  Scope.Add('BonusCustomTag', value_host_function).AsExternFun := @SF_BonusCustomTag;
+  Scope.Add('CreateEquipmentWithSpecial', value_host_function).AsExternFun := @SF_CreateEquipmentWithSpecial;
+  Scope.Add('SpecialToEquipment', value_host_function).AsExternFun := @SF_SpecialToEquipment;
+  Scope.Add('ModuleToEquipment', value_host_function).AsExternFun := @SF_ModuleToEquipment;
+  Scope.Add('EqSpecial', value_host_function).AsExternFun := @SF_EqSpecial;
+  Scope.Add('EqModule', value_host_function).AsExternFun := @SF_EqModule;
+  Scope.Add('MayAddBonusToEq', value_host_function).AsExternFun := @SF_MayAddBonusToEq;
+  Scope.Add('BuildListOfMMByPriority', value_host_function).AsExternFun := @SF_BuildListOfMMByPriority;
+  Scope.Add('BuildListOfNewShips', value_host_function).AsExternFun := @SF_BuildListOfNewShips;
+  Scope.Add('PlanetToStar', value_host_function).AsExternFun := @SF_PlanetToStar;
+  Scope.Add('Chameleon', value_host_function).AsExternFun := @SF_Chameleon;
+  Scope.Add('IsChameleon', value_host_function).AsExternFun := @SF_IsChameleon;
+  Scope.Add('PlayerChameleonCharges', value_host_function).AsExternFun := @SF_PlayerChameleonCharges;
+  Scope.Add('PlayerChameleonCurType', value_host_function).AsExternFun := @SF_PlayerChameleonCurType;
+  Scope.Add('PlayerChameleonDetected', value_host_function).AsExternFun := @SF_PlayerChameleonDetected;
+  Scope.Add('PlayerLogicChameleon', value_host_function).AsExternFun := @SF_PlayerLogicChameleon;
+  Scope.Add('SwitchToMirrorImage', value_host_function).AsExternFun := @SF_SwitchToMirrorImage;
+  Scope.Add('EquipmentImageName', value_host_function).AsExternFun := @SF_EquipmentImageName;
+  Scope.Add('StarFonImage', value_host_function).AsExternFun := @SF_StarFonImage;
+  Scope.Add('ExtremalTakeOff', value_host_function).AsExternFun := @SF_ExtremalTakeOff;
+  Scope.Add('ForceNextDay', value_host_function).AsExternFun := @SF_ForceNextDay;
+  Scope.Add('ScriptActionsRun', value_host_function).AsExternFun := @SF_ScriptActionsRun;
+  Scope.Add('StarListToPlanetList', value_host_function).AsExternFun := @SF_StarListToPlanetList;
+  Scope.Add('EndGame', value_host_function).AsExternFun := @SF_EndGame;
+  Scope.Add('CustomWin', value_host_function).AsExternFun := @SF_CustomWin;
+  Scope.Add('CustomLose', value_host_function).AsExternFun := @SF_CustomLose;
+  Scope.Add('PirateWin', value_host_function).AsExternFun := @SF_PirateWin;
+  Scope.Add('StartVideo', value_host_function).AsExternFun := @SF_StartVideo;
+  Scope.Add('StartMusic', value_host_function).AsExternFun := @SF_StartMusic;
+  Scope.Add('MusicControls', value_host_function).AsExternFun := @SF_MusicControls;
+  Scope.Add('NoComeKlingToStar', value_host_function).AsExternFun := @SF_NoComeKlingToStar;
+  Scope.Add('NoDropToShip', value_host_function).AsExternFun := @SF_NoDropToShip;
+  Scope.Add('NoTargetToShip', value_host_function).AsExternFun := @SF_NoTargetToShip;
+  Scope.Add('NoTalkToShip', value_host_function).AsExternFun := @SF_NoTalkToShip;
+  Scope.Add('NoScanToShip', value_host_function).AsExternFun := @SF_NoScanToShip;
+  Scope.Add('NoJump', value_host_function).AsExternFun := @SF_NoJump;
+  Scope.Add('NoLanding', value_host_function).AsExternFun := @SF_NoLanding;
+  Scope.Add('NoShopUpdate', value_host_function).AsExternFun := @SF_NoShopUpdate;
+  Scope.Add('PlanetExtraFlags', value_host_function).AsExternFun := @SF_PlanetExtraFlags;
+  Scope.Add('NoDropItem', value_host_function).AsExternFun := @SF_NoDropItem;
+  Scope.Add('CanSellItem', value_host_function).AsExternFun := @SF_CanSellItem;
+  Scope.Add('TruceBetweenShips', value_host_function).AsExternFun := @SF_TruceBetweenShips;
+  Scope.Add('ShipInPrison', value_host_function).AsExternFun := @SF_ShipInPrison;
+  Scope.Add('ShipPartners', value_host_function).AsExternFun := @SF_ShipPartners;
+  Scope.Add('PlayerPirates', value_host_function).AsExternFun := @SF_PlayerPirates;
+  Scope.Add('ShipIsPartner', value_host_function).AsExternFun := @SF_ShipIsPartner;
+  Scope.Add('ShipFreeSpace', value_host_function).AsExternFun := @SF_ShipFreeSpace;
+  Scope.Add('ShipWealth', value_host_function).AsExternFun := @SF_ShipWealth;
+  Scope.Add('DomiksDefeated', value_host_function).AsExternFun := @SF_DomiksDefeated;
+  Scope.Add('CoalitionDefeated', value_host_function).AsExternFun := @SF_CoalitionDefeated;
+  Scope.Add('ShipRefuel', value_host_function).AsExternFun := @SF_ShipRefuel;
+  Scope.Add('ShipRepairEq', value_host_function).AsExternFun := @SF_ShipRepairEq;
+  Scope.Add('ItemInScript', value_host_function).AsExternFun := @SF_ItemInScript;
+  Scope.Add('FindPlanetByAdvancement', value_host_function).AsExternFun := @SF_FindPlanetByAdvancement;
+  Scope.Add('StarListToTransitPlanetList', value_host_function).AsExternFun := @SF_StarListToTransitPlanetList;
+  Scope.Add('GalaxyEvents', value_host_function).AsExternFun := @SF_GalaxyEvents;
+  Scope.Add('GalaxyEventDate', value_host_function).AsExternFun := @SF_GalaxyEventDate;
+  Scope.Add('GalaxyEventType', value_host_function).AsExternFun := @SF_GalaxyEventType;
+  Scope.Add('GalaxyEventData', value_host_function).AsExternFun := @SF_GalaxyEventData;
+  Scope.Add('GalaxyEventsTextData', value_host_function).AsExternFun := @SF_GalaxyEventsTextData;
+  Scope.Add('PlanetNews', value_host_function).AsExternFun := @SF_PlanetNews;
+  Scope.Add('PlanetNewsDate', value_host_function).AsExternFun := @SF_PlanetNewsDate;
+  Scope.Add('PlanetNewsType', value_host_function).AsExternFun := @SF_PlanetNewsType;
+  Scope.Add('PlanetNewsText', value_host_function).AsExternFun := @SF_PlanetNewsText;
+  Scope.Add('ControlledSystems', value_host_function).AsExternFun := @SF_ControlledSystems;
+  Scope.Add('DeltaWin', value_host_function).AsExternFun := @SF_DeltaWin;
+  Scope.Add('ShipInFear', value_host_function).AsExternFun := @SF_ShipInFear;
+  Scope.Add('CreateGoods', value_host_function).AsExternFun := @SF_CreateGoods;
+  Scope.Add('GetNodesFromShip', value_host_function).AsExternFun := @SF_GetNodesFromShip;
+  Scope.Add('GetNodesFromStorage', value_host_function).AsExternFun := @SF_GetNodesFromStorage;
+  Scope.Add('RangerBaseNodes', value_host_function).AsExternFun := @SF_RangerBaseNodes;
+  Scope.Add('RuinsAllowModernization', value_host_function).AsExternFun := @SF_RuinsAllowModernization;
+  Scope.Add('RuinsMicromoduleChain', value_host_function).AsExternFun := @SF_RuinsMicromoduleChain;
+  Scope.Add('DomikKilledInCurSystem', value_host_function).AsExternFun := @SF_DomikKilledInCurSystem;
+  Scope.Add('ShipTypeN', value_host_function).AsExternFun := @SF_ShipTypeN;
+  Scope.Add('ShipSubType', value_host_function).AsExternFun := @SF_ShipSubType;
+  Scope.Add('ShipChangeStar', value_host_function).AsExternFun := @SF_ShipChangeStar;
+  Scope.Add('IsFilm', value_host_function).AsExternFun := @SF_IsFilm;
+  Scope.Add('FilmFlags', value_host_function).AsExternFun := @SF_FilmFlags;
+  Scope.Add('ShowEffect', value_host_function).AsExternFun := @SF_ShowEffect;
+  Scope.Add('ShowStaticEffect', value_host_function).AsExternFun := @SF_ShowStaticEffect;
+  Scope.Add('ShipConnect', value_host_function).AsExternFun := @SF_ShipConnect;
+  Scope.Add('FilmSound', value_host_function).AsExternFun := @SF_FilmSound;
+  Scope.Add('FireWeapon', value_host_function).AsExternFun := @SF_FireWeapon;
+  Scope.Add('WeaponHit', value_host_function).AsExternFun := @SF_WeaponHit;
+  Scope.Add('DealDamageToShip', value_host_function).AsExternFun := @SF_DealDamageToShip;
+  Scope.Add('LaunchMissile', value_host_function).AsExternFun := @SF_LaunchMissile;
+  Scope.Add('SpawnMissile', value_host_function).AsExternFun := @SF_SpawnMissile;
+  Scope.Add('BonusText', value_host_function).AsExternFun := @SF_BonusText;
+  Scope.Add('PlanetPirateClan', value_host_function).AsExternFun := @SF_PlanetPirateClan;
+  Scope.Add('Blazer', value_host_function).AsExternFun := @SF_Blazer;
+  Scope.Add('Keller', value_host_function).AsExternFun := @SF_Keller;
+  Scope.Add('Terron', value_host_function).AsExternFun := @SF_Terron;
+  Scope.Add('PirateType', value_host_function).AsExternFun := @SF_PirateType;
+  Scope.Add('PlayerQuestInProgress', value_host_function).AsExternFun := @SF_PlayerQuestInProgress;
+  Scope.Add('PlayerQuestsCompleted', value_host_function).AsExternFun := @SF_PlayerQuestsCompleted;
+  Scope.Add('QuestsStatusByNom', value_host_function).AsExternFun := @SF_QuestsStatusByNom;
+  Scope.Add('PlayerPlanetaryBattlesCompleted', value_host_function).AsExternFun := @SF_PlayerPlanetaryBattlesCompleted;
+  Scope.Add('PlayerMayTakeSubCrack', value_host_function).AsExternFun := @SF_PlayerMayTakeSubCrack;
+  Scope.Add('SubCrackCost', value_host_function).AsExternFun := @SF_SubCrackCost;
+  Scope.Add('ShipCalcParam', value_host_function).AsExternFun := @SF_ShipCalcParam;
+  Scope.Add('ShipRefit', value_host_function).AsExternFun := @SF_ShipRefit;
+  Scope.Add('ShipImproveItems', value_host_function).AsExternFun := @SF_ShipImproveItems;
+  Scope.Add('ItemImprovement', value_host_function).AsExternFun := @SF_ItemImprovement;
+  Scope.Add('ShipFreeFlight', value_host_function).AsExternFun := @SF_ShipFreeFlight;
+  Scope.Add('ShipKillFactionInCurSystem', value_host_function).AsExternFun := @SF_ShipKillFactionInCurSystem;
+  Scope.Add('CapitalShipStats', value_host_function).AsExternFun := @SF_CapitalShipStats;
+  Scope.Add('PlayerBridge', value_host_function).AsExternFun := @SF_PlayerBridge;
+  Scope.Add('PlayerDebt', value_host_function).AsExternFun := @SF_PlayerDebt;
+  Scope.Add('PlayerDebtDate', value_host_function).AsExternFun := @SF_PlayerDebtDate;
+  Scope.Add('PlayerDebtCnt', value_host_function).AsExternFun := @SF_PlayerDebtCnt;
+  Scope.Add('PlayerDeposit', value_host_function).AsExternFun := @SF_PlayerDeposit;
+  Scope.Add('PlayerDepositDate', value_host_function).AsExternFun := @SF_PlayerDepositDate;
+  Scope.Add('PlayerDepositDay', value_host_function).AsExternFun := @SF_PlayerDepositDay;
+  Scope.Add('PlayerDepositPercent', value_host_function).AsExternFun := @SF_PlayerDepositPercent;
+  Scope.Add('PlayerMedPolicy', value_host_function).AsExternFun := @SF_PlayerMedPolicy;
+  Scope.Add('ShipCustomShipInfosCount', value_host_function).AsExternFun := @SF_ShipCustomShipInfosCount;
+  Scope.Add('ShipAddCustomShipInfo', value_host_function).AsExternFun := @SF_ShipAddCustomShipInfo;
+  Scope.Add('ShipDeleteCustomShipInfo', value_host_function).AsExternFun := @SF_ShipDeleteCustomShipInfo;
+  Scope.Add('ShipFindCustomShipInfoByType', value_host_function).AsExternFun := @SF_ShipFindCustomShipInfoByType;
+  Scope.Add('ShipCustomShipInfoDescription', value_host_function).AsExternFun := @SF_ShipCustomShipInfoDescription;
+  Scope.Add('ShipCustomShipInfoData', value_host_function).AsExternFun := @SF_ShipCustomShipInfoData;
+  Scope.Add('ShipCustomShipInfoTextData', value_host_function).AsExternFun := @SF_ShipCustomShipInfoTextData;
+  Scope.Add('StarCustomStarInfosCount', value_host_function).AsExternFun := @SF_StarCustomStarInfosCount;
+  Scope.Add('StarAddCustomStarInfo', value_host_function).AsExternFun := @SF_StarAddCustomStarInfo;
+  Scope.Add('StarDeleteCustomStarInfo', value_host_function).AsExternFun := @SF_StarDeleteCustomStarInfo;
+  Scope.Add('StarFindCustomStarInfoByType', value_host_function).AsExternFun := @SF_StarFindCustomStarInfoByType;
+  Scope.Add('StarCustomStarInfoData', value_host_function).AsExternFun := @SF_StarCustomStarInfoData;
+  Scope.Add('ItemCanBeBroken', value_host_function).AsExternFun := @SF_ItemCanBeBroken;
+  Scope.Add('ItemFragility', value_host_function).AsExternFun := @SF_ItemFragility;
+  Scope.Add('ItemDurability', value_host_function).AsExternFun := @SF_ItemDurability;
+  Scope.Add('ItemLevel', value_host_function).AsExternFun := @SF_ItemLevel;
+  Scope.Add('ContainerFuel', value_host_function).AsExternFun := @SF_ContainerFuel;
+  Scope.Add('ItemCharge', value_host_function).AsExternFun := @SF_ItemCharge;
+  Scope.Add('MissilesToRearm', value_host_function).AsExternFun := @SF_MissilesToRearm;
+  Scope.Add('WeaponAmmunition', value_host_function).AsExternFun := @SF_WeaponAmmunition;
+  Scope.Add('WeaponMaxAmmunition', value_host_function).AsExternFun := @SF_WeaponMaxAmmunition;
+  Scope.Add('ShipSpecialBonuses', value_host_function).AsExternFun := @SF_ShipSpecialBonuses;
+  Scope.Add('ItemExtraSpecials', value_host_function).AsExternFun := @SF_ItemExtraSpecials;
+  Scope.Add('ItemExtraSpecialsCountByType', value_host_function).AsExternFun := @SF_ItemExtraSpecialsCountByType;
+  Scope.Add('ItemExtraSpecialsAddByType', value_host_function).AsExternFun := @SF_ItemExtraSpecialsAddByType;
+  Scope.Add('ItemExtraSpecialsDeleteByType', value_host_function).AsExternFun := @SF_ItemExtraSpecialsDeleteByType;
+  Scope.Add('ExecuteCodeFromString', value_host_function).AsExternFun := @SF_ExecuteCodeFromString;
+  Scope.Add('GenerateCodeStringFromBlock', value_host_function).AsExternFun := @SF_GenerateCodeStringFromBlock;
+  Scope.Add('ItemOnUseCode', value_host_function).AsExternFun := @SF_ItemOnUseCode;
+  Scope.Add('ItemOnActCode', value_host_function).AsExternFun := @SF_ItemOnActCode;
+  Scope.Add('CreateActCodeEvent', value_host_function).AsExternFun := @SF_CreateActCodeEvent;
+  Scope.Add('CurItem', value_host_function).AsExternFun := @SF_CurItem;
+  Scope.Add('CurInfo', value_host_function).AsExternFun := @SF_CurInfo;
+  Scope.Add('ScriptItemActShip', value_host_function).AsExternFun := @SF_ScriptItemActShip;
+  Scope.Add('ScriptItemActObject1', value_host_function).AsExternFun := @SF_ScriptItemActObject1;
+  Scope.Add('ScriptItemActObject2', value_host_function).AsExternFun := @SF_ScriptItemActObject2;
+  Scope.Add('ScriptItemActParam', value_host_function).AsExternFun := @SF_ScriptItemActParam;
+  Scope.Add('ScriptItemActionType', value_host_function).AsExternFun := @SF_ScriptItemActionType;
+  Scope.Add('OnUseCodeTranclucator', value_host_function).AsExternFun := @SF_OnUseCodeTranclucator;
+  Scope.Add('OnUseCodeTransmitter', value_host_function).AsExternFun := @SF_OnUseCodeTransmitter;
+  Scope.Add('OnUseCodeBlackHole', value_host_function).AsExternFun := @SF_OnUseCodeBlackHole;
+  Scope.Add('OnUseCodeMissileDef', value_host_function).AsExternFun := @SF_OnUseCodeMissileDef;
+  Scope.Add('MessageBox', value_host_function).AsExternFun := @SF_MessageBox;
+  Scope.Add('MessageBoxYesNo', value_host_function).AsExternFun := @SF_MessageBoxYesNo;
+  Scope.Add('CountBox', value_host_function).AsExternFun := @SF_CountBox;
+  Scope.Add('NumberBox', value_host_function).AsExternFun := @SF_NumberBox;
+  Scope.Add('TextBox', value_host_function).AsExternFun := @SF_TextBox;
+  Scope.Add('ListBox', value_host_function).AsExternFun := @SF_ListBox;
+  Scope.Add('FormCurShip', value_host_function).AsExternFun := @SF_FormCurShip;
+  Scope.Add('UselessItemText', value_host_function).AsExternFun := @SF_UselessItemText;
+  Scope.Add('UselessItemData', value_host_function).AsExternFun := @SF_UselessItemData;
+  Scope.Add('GetAchievementSHU', value_host_function).AsExternFun := @SF_GetAchievementSHU;
+  Scope.Add('GetAchievementGIRLSHIRE', value_host_function).AsExternFun := @SF_GetAchievementGIRLSHIRE;
+  Scope.Add('GetAchievementGIRLSQUEST', value_host_function).AsExternFun := @SF_GetAchievementGIRLSQUEST;
+  Scope.Add('GetAchievementPIRATEWIN', value_host_function).AsExternFun := @SF_GetAchievementPIRATEWIN;
+  Scope.Add('GetAchievementCOALLITION', value_host_function).AsExternFun := @SF_GetAchievementCOALLITION;
+  Scope.Add('GetAchievementHULL', value_host_function).AsExternFun := @SF_GetAchievementHULL;
+  Scope.Add('UICheckElement', value_host_function).AsExternFun := @SF_UICheckElement;
+  Scope.Add('InterfaceState', value_host_function).AsExternFun := @SF_InterfaceState;
+  Scope.Add('InterfaceText', value_host_function).AsExternFun := @SF_InterfaceText;
+  Scope.Add('InterfaceImage', value_host_function).AsExternFun := @SF_InterfaceImage;
+  Scope.Add('InterfacePos', value_host_function).AsExternFun := @SF_InterfacePos;
+  Scope.Add('InterfaceSize', value_host_function).AsExternFun := @SF_InterfaceSize;
+  Scope.Add('ButtonClick', value_host_function).AsExternFun := @SF_ButtonClick;
+  Scope.Add('SetFocus', value_host_function).AsExternFun := @SF_SetFocus;
+  Scope.Add('CurrentForm', value_host_function).AsExternFun := @SF_CurrentForm;
+  Scope.Add('FormShipCurItem', value_host_function).AsExternFun := @SF_FormShipCurItem;
+  Scope.Add('UpdateFormShip', value_host_function).AsExternFun := @SF_UpdateFormShip;
+  Scope.Add('FormChange', value_host_function).AsExternFun := @SF_FormChange;
+  Scope.Add('RunChildForm', value_host_function).AsExternFun := @SF_RunChildForm;
+  Scope.Add('OpenCustomForm', value_host_function).AsExternFun := @SF_OpenCustomForm;
+  Scope.Add('CloseCustomForm', value_host_function).AsExternFun := @SF_CloseCustomForm;
+  Scope.Add('CustomInterfaceState', value_host_function).AsExternFun := @SF_CustomInterfaceState;
+  Scope.Add('CustomInterfaceText', value_host_function).AsExternFun := @SF_CustomInterfaceText;
+  Scope.Add('CustomInterfaceImage', value_host_function).AsExternFun := @SF_CustomInterfaceImage;
+  Scope.Add('CustomInterfacePos', value_host_function).AsExternFun := @SF_CustomInterfacePos;
+  Scope.Add('CustomInterfacePosZ', value_host_function).AsExternFun := @SF_CustomInterfacePosZ;
+  Scope.Add('CustomInterfaceSize', value_host_function).AsExternFun := @SF_CustomInterfaceSize;
+  Scope.Add('StarMapCenterView', value_host_function).AsExternFun := @SF_StarMapCenterView;
+  Scope.Add('StarMapCurPosX', value_host_function).AsExternFun := @SF_StarMapCurPosX;
+  Scope.Add('StarMapCurPosY', value_host_function).AsExternFun := @SF_StarMapCurPosY;
+  Scope.Add('StarMapCustomSelectionMode', value_host_function).AsExternFun := @SF_StarMapCustomSelectionMode;
+  Scope.Add('StarMapBlinkingMessage', value_host_function).AsExternFun := @SF_StarMapBlinkingMessage;
+  Scope.Add('BlinkingWarning', value_host_function).AsExternFun := @SF_BlinkingWarning;
+  Scope.Add('CustomWeaponTypes', value_host_function).AsExternFun := @SF_CustomWeaponTypes;
+  Scope.Add('InventNewCustomWeapon', value_host_function).AsExternFun := @SF_InventNewCustomWeapon;
+  Scope.Add('GetCustomWeaponInfo', value_host_function).AsExternFun := @SF_GetCustomWeaponInfo;
+  Scope.Add('GetCustomWeaponData', value_host_function).AsExternFun := @SF_GetCustomWeaponData;
+  Scope.Add('GetCustomWeaponPrimaryDamageType', value_host_function).AsExternFun := @SF_GetCustomWeaponPrimaryDamageType;
+  Scope.Add('SetCustomWeaponAvailability', value_host_function).AsExternFun := @SF_SetCustomWeaponAvailability;
+  Scope.Add('SetCustomWeaponSE', value_host_function).AsExternFun := @SF_SetCustomWeaponSE;
+  Scope.Add('SetCustomWeaponPrimaryData', value_host_function).AsExternFun := @SF_SetCustomWeaponPrimaryData;
+  Scope.Add('SetCustomWeaponSizeAndCost', value_host_function).AsExternFun := @SF_SetCustomWeaponSizeAndCost;
+  Scope.Add('SetCustomWeaponDamageData', value_host_function).AsExternFun := @SF_SetCustomWeaponDamageData;
+  Scope.Add('SetCustomWeaponShotData', value_host_function).AsExternFun := @SF_SetCustomWeaponShotData;
+  Scope.Add('SetCustomMissileWeaponStats', value_host_function).AsExternFun := @SF_SetCustomMissileWeaponStats;
+  Scope.Add('StarCustomFaction', value_host_function).AsExternFun := @SF_StarCustomFaction;
+  Scope.Add('ShipCustomFaction', value_host_function).AsExternFun := @SF_ShipCustomFaction;
+  Scope.Add('EqCustomFaction', value_host_function).AsExternFun := @SF_EqCustomFaction;
+  Scope.Add('PlanetCustomFaction', value_host_function).AsExternFun := @SF_PlanetCustomFaction;
+  Scope.Add('ImportedFunction', value_host_function).AsExternFun := @SF_ImportedFunction;
+  Scope.Add('ImportAll', value_host_function).AsExternFun := @SF_ImportAll;
+  Scope.Add('GalaxyPtr', value_host_function).AsExternFun := @SF_GalaxyPtr;
+  Scope.Add('t_ArtDefToEnergy', value_int32).AsInteger := Ord(artefact_defense_to_energy);
+  Scope.Add('t_ArtEnergyPulse', value_int32).AsInteger := Ord(artefact_energy_pulse);
+  Scope.Add('t_ArtEnergyDef', value_int32).AsInteger := Ord(artefact_energy_defense);
+  Scope.Add('t_ArtSplinter', value_int32).AsInteger := Ord(artefact_splinter);
+  Scope.Add('t_ArtDecelerate', value_int32).AsInteger := Ord(artefact_decelerate);
+  Scope.Add('t_ArtMissileDef', value_int32).AsInteger := Ord(artefact_missile_defense);
+  Scope.Add('t_ArtForsage', value_int32).AsInteger := Ord(artefact_afterburner);
+  Scope.Add('t_ArtWeaponToSpeed', value_int32).AsInteger := Ord(artefact_weapon_to_speed);
+  Scope.Add('t_ArtGiperJump', value_int32).AsInteger := Ord(artefact_hyperjump);
+  Scope.Add('t_ArtBlackHole', value_int32).AsInteger := Ord(artefact_black_hole);
+  Scope.Add('t_ArtDefToArms1', value_int32).AsInteger := Ord(artefact_defense_to_weapon_slot);
+  Scope.Add('t_ArtDefToArms2', value_int32).AsInteger := Ord(artefact_defense_slot_to_weapons);
+  Scope.Add('t_ArtArtefactor', value_int32).AsInteger := Ord(artefact_artefactor);
+  Scope.Add('t_ArtBio', value_int32).AsInteger := Ord(artefact_health_protection);
+  Scope.Add('t_ArtPDTurret', value_int32).AsInteger := Ord(artefact_point_defense);
+  Scope.Add('t_ArtFastRacks', value_int32).AsInteger := Ord(artefact_extra_missiles);
+  Scope.Add('t_Cistern', value_int32).AsInteger := Ord(item_fuel_container);
+  Scope.Add('t_Satellite', value_int32).AsInteger := Ord(item_satellite);
+  Scope.Add('t_MicroModule', value_int32).AsInteger := Ord(item_micro_module);
+  Scope.Add('t_UselessCountableItem', value_int32).AsInteger := Ord(item_stackable_misc);
+  Scope.Add('TalkMoney', value_int32).AsInteger := Ord(talk_event_demand_money);
+  Scope.Add('TalkGoods', value_int32).AsInteger := Ord(talk_event_demand_goods);
+  Scope.Add('TalkTruce', value_int32).AsInteger := Ord(talk_event_offer_truce);
+  Scope.Add('TalkAttack', value_int32).AsInteger := Ord(talk_event_attack);
+  Scope.Add('TalkBreakPartner', value_int32).AsInteger := Ord(talk_event_partnership_broken);
+  Scope.Add('TalkPartnerTheEnd', value_int32).AsInteger := Ord(talk_event_partnership_expired);
+  Scope.Add('TalkPartnerRiot', value_int32).AsInteger := Ord(talk_event_partner_rebellion);
   for BonusIndex := Low(TEquipmentBonusKind) to High(TEquipmentBonusKind) do
-    Scope.Add(EquipmentBonusNames[BonusIndex], vkInt).AsInteger := Ord(BonusIndex);
-  for ActionIndex := Low(TScriptActionType) to High(TScriptActionType) do
-    Scope.Add(ScriptActionTypeNames[ActionIndex], vkInt).AsInteger := Ord(ActionIndex);
+    Scope.Add(EquipmentBonusNames[BonusIndex], value_int32).AsInteger := Ord(BonusIndex);
+  for ActionIndex := Low(TScriptEventKind) to High(TScriptEventKind) do
+    Scope.Add(ScriptActionTypeNames[ActionIndex], value_int32).AsInteger := Ord(ActionIndex);
   ScriptRequestThread := TScriptThread.Create;
   ScriptRequestThread.SetPriority(ThreadPriorityBelowNormal);
   ScriptItemContextStack := TList.Create;

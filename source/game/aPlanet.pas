@@ -5,7 +5,7 @@ interface
 uses Classes, EC_BlockPar, EC_Buf, EC_Str, EC_Struct, SE_Planet, SE_Sputnik, Types, aEFilm, aGalaxy, aGalaxyStruct, aItem, aMyFunction;
 
 type
-  TPlanetTerrainKind = (ptWater = 0, ptLand = 1, ptHill = 2); // @size 0x01
+  TPlanetTerrainKind = (terrain_water = 0, terrain_land = 1, terrain_hills = 2); // @size 0x01
 
   TPlanetSurfaceLootEntry = packed record // @size 0x0C
     GridX: Byte; // @offset 0x00  Display grid column, 0..13.
@@ -17,7 +17,7 @@ type
   end;
   PPlanetSurfaceLootEntry = ^TPlanetSurfaceLootEntry;
 
-  TDominatorSpawnWeightRow = array[TKlingType] of Integer;
+  TDominatorSpawnWeightRow = array[TDominatorKind] of Integer;
   TDominatorSpawnWeightTable = array[1..5] of TDominatorSpawnWeightRow;
 
   // The satellite wrapper owns a retained space-object reference.
@@ -49,8 +49,8 @@ type
     Reserved34: Cardinal; // @offset 0x34  Cleared by Create; no subsequent use identified in this build.
     Radius: Integer; // @offset 0x38  Script.PlanetSize.
     OrbitalVelocity: Double; // @offset 0x40  Degrees per unscaled movement step.
-    InventionLevels: array[TPlanetInvention] of Byte; // @offset 0x48  piMainTech is the main technology level used to gate the other tracks.
-    CurrentInvention: TPlanetInvention; // @offset 0x5C
+    InventionLevels: array[TResearchTrack] of Byte; // @offset 0x48  research_main_technology is the main technology level used to gate the other tracks.
+    CurrentInvention: TResearchTrack; // @offset 0x5C
     CurrentInventionPoints: Single; // @offset 0x60
     ResearchLevelPercent: Byte; // @offset 0x64  Selection ceiling, compared with invention level * 12.5.
     ResearchLevelStep: Byte; // @offset 0x65  Increment used when no eligible invention remains.
@@ -95,7 +95,7 @@ type
     constructor Create; // @addr 0x00728E2C
     destructor Destroy; override; // @addr 0x00728EFC
     procedure InitGenerated(Star: TStar; TotalPlanetCount, InhabitedCountOrSpecialMode: Integer); // @addr 0x00729024 @note "Fourth argument: 0 selects the Solar System, 1..3 limit inhabited planets, 10/11 select special systems. Caller inserts Self into the star's planet list."
-    procedure InitDominatorSpawnProxy(Star: TStar); // @addr 0x0072BED8 @note "Only sets CurrentStar, OwnerId to oiDominator and all invention levels to 8; used by the separate Dominator spawn planet."
+    procedure InitDominatorSpawnProxy(Star: TStar); // @addr 0x0072BED8 @note "Only sets CurrentStar, OwnerId to owner_dominator and all invention levels to 8; used by the separate Dominator spawn planet."
     procedure InitGeneratedUninhabited(Star: TStar); // @addr 0x0072BEF0 @note "Creates graphics, surface terrain, loot and initial market/research state; caller owns planet registration."
     procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x0072D84C
     procedure LoadFromBlock(Block: TBlockParEC); // @addr 0x0072FAAC @note "Loads editable text fields, updates existing items/ships and processes creation requests. The first matching item name ends the search even when its type is disallowed or creation returns nil."
@@ -105,13 +105,13 @@ type
     procedure TryDispatchPirateAttacks; // @addr 0x007336A8 @note "Uses Self's random state for galaxy-wide attacks; disabled by pirate ending 3."
     procedure TrySpawnPirateBaseRaid; // @addr 0x00733C58 @note "Targets a pirate base in a Coalition system; disabled by pirate endings 3 and 5."
     function BuyRanger(MoneyPercent: Integer): Pointer; // @addr 0x00737D2C
-    function SpawnTransport(Kind: Byte; MoneyPercent: Integer): Pointer; // @addr 0x00737E60 @note "Kind 0 randomizes the subtype; otherwise it holds a THullType: htTransport selects transport, htLiner liner, and all others diplomat. Result is owned by CurrentStar.Ships."
+    function SpawnTransport(Kind: Byte; MoneyPercent: Integer): Pointer; // @addr 0x00737E60 @note "Kind 0 randomizes the subtype; otherwise it holds a THullType: hull_transport selects transport, hull_liner liner, and all others diplomat. Result is owned by CurrentStar.Ships."
     function BuyWarrior(MoneyPercent: Integer): Pointer; // @addr 0x00738034 @note "Creates a TPirate for Pirate Clan ownership, otherwise a TWarrior."
     function BuyPirate(MoneyPercent: Integer): Pointer; // @addr 0x00737F40
     function SpawnTranclucator(BasicEquipment: Boolean): Pointer; // @addr 0x00737FF4 @note "Creates an unowned Tranclucator docked here and inserts it into CurrentStar.Ships."
-    function BuyFlagship(MoneyPercent: Integer): Pointer; // @addr 0x00738394 @note "Generates a wtFlagship warrior and scales its budget by Coalition control."
+    function BuyFlagship(MoneyPercent: Integer): Pointer; // @addr 0x00738394 @note "Generates a warrior_flagship warrior and scales its budget by Coalition control."
     function SpawnWeightedDominatorShip: Pointer; // @addr 0x00738540 @note "Excludes boss type; suppresses Bertors when the constellation already has one of this series or Self is the spawn proxy."
-    function SpawnDominatorShip(Kind: TKlingType): Pointer; // @addr 0x0073868C
+    function SpawnDominatorShip(Kind: TDominatorKind): Pointer; // @addr 0x0073868C
     function GenerateShipForScriptGroup(Group: Pointer): Pointer; // @addr 0x00738704 @note "Uses group owner/type/equipment constraints; returns nil for a boss request. Temporarily changes planet ownership, star series and global technology."
     procedure InitializeFilmState(StepIndex: Integer; RecordFilm: Boolean); // @addr 0x0073417C @note "Always initializes LastFilmPosition; optionally creates film entries for the planet and satellites."
     procedure AdvanceOrbitStep(StepIndex: Integer; RecordFilm: Boolean); // @addr 0x007344C4
@@ -132,16 +132,16 @@ type
     function GetNativeRaceName: WideString; // @addr 0x00737070 @note "Localized DisplayName for RaceToOwner(RaceId)."
     function GetFactionResourceName: WideString; // @addr 0x0073709C @note "Faction/series/internal owner identifier used for resource selection."
     function CalculateBasePopulation: Integer; // @addr 0x0073719C @note "Maps Radius 60..100 to population 100000..1000000 with clamping and rounding."
-    function CountPlanetsOfSameRace: Integer; // @addr 0x007371D4 @note "For oiUninhabited counts all uninhabited planets; otherwise counts non-uninhabited planets with the same RaceId. Includes Self."
+    function CountPlanetsOfSameRace: Integer; // @addr 0x007371D4 @note "For owner_uninhabited counts all uninhabited planets; otherwise counts non-uninhabited planets with the same RaceId. Includes Self."
     function FindUnchartedNeighborConstellation: TConstellation; // @addr 0x00737230 @note "First adjacent invisible constellation, excluding ID 20; borrowed result or nil."
     function FindNearestPlanetByOwnerMask(OwnerMask: TOwnerMask): TPlanet; // @addr 0x00737294 @note "Searches stars in CurrentStar's distance order, then each star's planet list; no planet-distance tie break."
     procedure NormalizeSurfaceLootEntries; // @addr 0x00737320 @note "Sorts by SurfaceTileIndex and moves overlapping markers to free cells of the 14-by-7 display grid."
     function GetTotalSurfaceTileCount: Integer; // @addr 0x007376C0
-    function GetUnexploredSurfaceTileCount: Integer; // @addr 0x007376D8 @note "Returns zero unless OwnerId is oiUninhabited."
+    function GetUnexploredSurfaceTileCount: Integer; // @addr 0x007376D8 @note "Returns zero unless OwnerId is owner_uninhabited."
     function AddSurfaceLootEntry(Item: TItem): Boolean; // @addr 0x00737704 @note "Takes item ownership, allocates a 12-byte entry and always returns true on completion. Requires positive surface area; resets exploration if fully explored."
-    function TryResetSurfaceLootAfterLongAbsence: Boolean; // @addr 0x00737888 @note "Requires oiUninhabited, at least 720 days without a player visit, at most 40% of surface tiles unexplored and no deployed player probe here. Clears unavailable flags on loot the player can access and resets exploration if any flag changed."
+    function TryResetSurfaceLootAfterLongAbsence: Boolean; // @addr 0x00737888 @note "Requires owner_uninhabited, at least 720 days without a player visit, at most 40% of surface tiles unexplored and no deployed player probe here. Clears unavailable flags on loot the player can access and resets exploration if any flag changed."
     procedure BoostInventionLevels(Count: Integer); // @addr 0x00737974 @note "Increments the current track, clears its progress and selects the next track after every increment."
-    procedure SelectCurrentInvention; // @addr 0x00737998 @note "Chooses among tracks permitted by ResearchLevelPercent and the piMainTech track; raises if no choice is found."
+    procedure SelectCurrentInvention; // @addr 0x00737998 @note "Chooses among tracks permitted by ResearchLevelPercent and the research_main_technology track; raises if no choice is found."
     procedure AdvanceInventionProgress; // @addr 0x00737AE8 @note "Uses the difficulty multiplier; completion requires progress strictly above 100. Levels cap at 8 and excess progress is discarded."
     function CalculateInventionProgressRate: Single; // @addr 0x00737CC8 @note "Radius factor times economy and race multipliers; excludes the difficulty multiplier."
     function BuildGovernmentGreeting: WideString; // @addr 0x0073BDCC
@@ -153,7 +153,7 @@ type
     function SelectEquipmentOfferSpecialMicroModule(Item: TEquipment): Integer; // @addr 0x00739DC4 @note "Returns a zero-based module index or -1; advances planet RNG."
     function SelectHullOfferSpecialMicroModule(Hull: THull): Integer; // @addr 0x00739FA8 @note "Returns a zero-based module index or -1; advances planet RNG."
     function SelectWeaponOfferSpecialMicroModule(Weapon: TWeapon): Integer; // @addr 0x0073A18C @note "Returns a zero-based module index or -1; advances planet RNG."
-    procedure RefreshEquipmentShopInventory; // @addr 0x0073A370 @note "Weekly replacement/generation gate; disabled by sumDisabled and sumGoodsOnly."
+    procedure RefreshEquipmentShopInventory; // @addr 0x0073A370 @note "Weekly replacement/generation gate; disabled by shop_update_disabled and shop_update_goods."
     function BuildEquipmentOfferBatch(Ship: Pointer; UnusedForceGeneratedOffers: Boolean): TObjectList; // @addr 0x0073B0F0 @note "Returns a new owning list of generated equipment, using the race quota table. Caller forwards ForceGeneratedOffers in CL; this routine saves but never reads it."
     function CalculateEquipmentShopTargetCount: Integer; // @addr 0x0073B1FC @note "Population, economy and deterministic turn jitter adjust race quotas; clamps to 10..20."
     function CountEquipmentShopItemsInBucket(ItemType: TItemType): Integer; // @addr 0x0073B2BC @note "Every weapon subtype 50..68 shares the weapon bucket; other buckets require an exact type."
@@ -182,7 +182,7 @@ var
     (0, 50, 50, 150, 250, 500, 2, 0),
     (0, 50, 100, 200, 250, 400, 10, 0),
     (0, 100, 100, 250, 250, 300, 20, 0),
-    (0, 100, 150, 300, 250, 200, 30, 0)); // @addr 0x0081005C @note "Five 32-byte rows, eight Integer weights in TKlingType order; SpawnWeightedDominatorShip selects row 1..5 from faction control."
+    (0, 100, 150, 300, 250, 200, 30, 0)); // @addr 0x0081005C @note "Five 32-byte rows, eight Integer weights in TDominatorKind order; SpawnWeightedDominatorShip selects row 1..5 from faction control."
   MainPiratePlanet: TPlanet; // @addr 0x0081B904 @note "Script.PlanetPirateClan; borrowed reference, retained after PirateWin(3)."
 
 implementation
@@ -298,7 +298,7 @@ procedure TPlanet.InitGenerated(Star: TStar; TotalPlanetCount, InhabitedCountOrS
 { Self is added to Star.Planets by the caller. }
 var
   OtherPlanet, PreviousPlanet: TPlanet;
-  Invention: TPlanetInvention;
+  Invention: TResearchTrack;
   Good: Byte;
   Quantity, Count, I, Part, LeastOwnerPlanetCount, ExistingRing, ModuleIndex: Integer;
   SavedRandomState: Cardinal;
@@ -332,7 +332,7 @@ begin
   else IsSolar := False;
   if IsSolar then
   begin
-    RaceId := oiHuman;
+    RaceId := owner_human;
     Name := LanguageDataConfig.GetBlock('PlanetName').GetBlock('Solar').GetParamValue(Star.Planets.Count);
     OrbitalVelocity := (NextRandomIntRange(1, 1, RandomState) * 2 - 1) * (4.5 - Star.Planets.Count / 2);
     Orbit.AngleDegrees := NextRandomIntRange(0, 359, RandomState);
@@ -350,26 +350,26 @@ begin
       0:
         begin
           Orbit.Radius := Radius + Star.SystemRadius + 175;
-          OwnerId := oiUninhabited;
-          Government := pgAnarchy;
-          Economy := peAgricultural;
+          OwnerId := owner_uninhabited;
+          Government := government_anarchy;
+          Economy := economy_agricultural;
         end;
       1:
         begin
           PreviousPlanet := TPlanet(Star.Planets[Star.Planets.Count - 1]);
           Orbit.Radius := PreviousPlanet.Orbit.Radius + PreviousPlanet.Radius + Radius + 200;
-          OwnerId := oiHuman;
-          Government := pgDemocracy;
-          Economy := peAgricultural;
+          OwnerId := owner_human;
+          Government := government_democracy;
+          Economy := economy_agricultural;
           Population := CalculateBasePopulation;
         end;
       2:
         begin
           PreviousPlanet := TPlanet(Star.Planets[Star.Planets.Count - 1]);
           Orbit.Radius := PreviousPlanet.Orbit.Radius + PreviousPlanet.Radius + Radius + 200;
-          OwnerId := oiHuman;
-          Government := pgDemocracy;
-          Economy := peIndustrial;
+          OwnerId := owner_human;
+          Government := government_democracy;
+          Economy := economy_industrial;
           Population := 1000000;
           Satellite := TSputnik.Create;
           Satellites.Add(Satellite);
@@ -393,9 +393,9 @@ begin
           PreviousPlanet := TPlanet(Star.Planets[Star.Planets.Count - 1]);
           Orbit.Radius := PreviousPlanet.Orbit.Radius + PreviousPlanet.Radius + Radius + 200 +
             Round(200 - RemapClamped(Star.Planets.Count, 1, 6, 0, 200));
-          OwnerId := oiHuman;
-          Government := pgDictatorship;
-          Economy := peIndustrial;
+          OwnerId := owner_human;
+          Government := government_dictatorship;
+          Economy := economy_industrial;
           Population := 100000;
           SatelliteCount := 2;
           for I := 0 to SatelliteCount - 1 do
@@ -424,9 +424,9 @@ begin
           PreviousPlanet := TPlanet(Star.Planets[Star.Planets.Count - 1]);
           Orbit.Radius := PreviousPlanet.Orbit.Radius + PreviousPlanet.Radius + Radius + 200 +
             Round(200 - RemapClamped(Star.Planets.Count, 1, 6, 0, 200));
-          OwnerId := oiUninhabited;
-          Government := pgAnarchy;
-          Economy := peAgricultural;
+          OwnerId := owner_uninhabited;
+          Government := government_anarchy;
+          Economy := economy_agricultural;
           SatelliteCount := 4;
           for I := 0 to SatelliteCount - 1 do
           begin
@@ -458,9 +458,9 @@ begin
           PreviousPlanet := TPlanet(Star.Planets[Star.Planets.Count - 1]);
           Orbit.Radius := PreviousPlanet.Orbit.Radius + PreviousPlanet.Radius + Radius + 200 +
             Round(200 - RemapClamped(Star.Planets.Count, 1, 6, 0, 200));
-          OwnerId := oiUninhabited;
-          Government := pgRepublic;
-          Economy := peMixed;
+          OwnerId := owner_uninhabited;
+          Government := government_republic;
+          Economy := economy_mixed;
           Population := 120000;
           Graphic.SetRingKind(22);
         end;
@@ -469,9 +469,9 @@ begin
           PreviousPlanet := TPlanet(Star.Planets[Star.Planets.Count - 1]);
           Orbit.Radius := PreviousPlanet.Orbit.Radius + PreviousPlanet.Radius + Radius + 200 +
             Round(200 - RemapClamped(Star.Planets.Count, 1, 6, 0, 200));
-          OwnerId := oiUninhabited;
-          Government := pgAnarchy;
-          Economy := peAgricultural;
+          OwnerId := owner_uninhabited;
+          Government := government_anarchy;
+          Economy := economy_agricultural;
           SatelliteCount := 1;
           for I := 0 to SatelliteCount - 1 do
           begin
@@ -505,17 +505,17 @@ begin
     begin
       if (Star.Planets.Count = 1) and (InhabitedCountOrSpecialMode = 10) then
       begin
-        OwnerId := oiPirate;
-        RaceId := oiHuman;
+        OwnerId := owner_pirate;
+        RaceId := owner_human;
         IsMainPiratePlanet := True;
         MainPiratePlanet := Self;
       end
       else if (InhabitedCountOrSpecialMode = 11) and (Star.Planets.Count < 5) then
       begin
-        OwnerId := oiPirate;
+        OwnerId := owner_pirate;
         RaceId := TOwnerId(Star.Planets.Count);
       end
-      else OwnerId := oiUninhabited;
+      else OwnerId := owner_uninhabited;
     end
     else
     begin
@@ -523,35 +523,35 @@ begin
       for I := 0 to Star.Planets.Count - 1 do
       begin
         PreviousPlanet := TPlanet(Star.Planets[I]);
-        if PreviousPlanet.OwnerId <> oiUninhabited then Inc(Count);
+        if PreviousPlanet.OwnerId <> owner_uninhabited then Inc(Count);
       end;
-      if InhabitedCountOrSpecialMode = Count then OwnerId := oiUninhabited
+      if InhabitedCountOrSpecialMode = Count then OwnerId := owner_uninhabited
       else if (TotalPlanetCount - Star.Planets.Count <= InhabitedCountOrSpecialMode - Count) or
               (NextRandomUnitFloat(RandomState) < 0.7) or
               ((aGalaxy.Galaxy.Stars.IndexOf(Star) < 5) and (Star.Planets.Count = 0)) then
       begin
         case aGalaxy.Galaxy.FindConstellationIndexForStar(CurrentStar) of
-          0, 6: begin OwnerId := oiMaloc; RaceId := oiMaloc; end;
-          1, 5: begin OwnerId := oiPeleng; RaceId := oiPeleng; end;
-          2, 7: begin OwnerId := oiHuman; RaceId := oiHuman; end;
-          3, 8: begin OwnerId := oiFeyan; RaceId := oiFeyan; end;
-          4, 9: begin OwnerId := oiGaal; RaceId := oiGaal; end;
+          0, 6: begin OwnerId := owner_maloc; RaceId := owner_maloc; end;
+          1, 5: begin OwnerId := owner_peleng; RaceId := owner_peleng; end;
+          2, 7: begin OwnerId := owner_human; RaceId := owner_human; end;
+          3, 8: begin OwnerId := owner_feyan; RaceId := owner_feyan; end;
+          4, 9: begin OwnerId := owner_gaal; RaceId := owner_gaal; end;
         else
           case NextRandomIntRange(0, 4, RandomState) of
-            0: begin OwnerId := oiMaloc; RaceId := oiMaloc; end;
-            1: begin OwnerId := oiPeleng; RaceId := oiPeleng; end;
-            2: begin OwnerId := oiHuman; RaceId := oiHuman; end;
-            3: begin OwnerId := oiFeyan; RaceId := oiFeyan; end;
-            4: begin OwnerId := oiGaal; RaceId := oiGaal; end;
+            0: begin OwnerId := owner_maloc; RaceId := owner_maloc; end;
+            1: begin OwnerId := owner_peleng; RaceId := owner_peleng; end;
+            2: begin OwnerId := owner_human; RaceId := owner_human; end;
+            3: begin OwnerId := owner_feyan; RaceId := owner_feyan; end;
+            4: begin OwnerId := owner_gaal; RaceId := owner_gaal; end;
           end;
         end;
         if ((Count > 0) or (aGalaxy.Galaxy.FindConstellationIndexForStar(CurrentStar) > 4)) and
            ((NextRandomUnitFloat(RandomState) < 0.2) or (aGalaxy.Galaxy.FindConstellationIndexForStar(CurrentStar) > 9)) and
            (aGalaxy.Galaxy.Stars.IndexOf(Star) > 4) then
         begin
-          ItemOwner := oiMaloc;
+          ItemOwner := owner_maloc;
           LeastOwnerPlanetCount := 10000;
-          for OwnerLoop := oiMaloc to oiGaal do
+          for OwnerLoop := owner_maloc to owner_gaal do
           begin
             if (CurrentStar.CountDistinctInhabitedPlanetOwners = 2) and
                (CurrentStar.CountPlanetsByOwner(OwnerLoop) = 0) then Continue;
@@ -571,17 +571,17 @@ begin
           RaceId := OwnerToRace(ItemOwner);
         end;
       end
-      else OwnerId := oiUninhabited;
+      else OwnerId := owner_uninhabited;
     end;
     BlockName := OwnerToSys(OwnerId);
-    if OwnerId <> oiPirate then Name := ''
+    if OwnerId <> owner_pirate then Name := ''
     else
     begin
       if InhabitedCountOrSpecialMode = 10 then Quantity := 0
       else Quantity := Star.Planets.Count + 1;
       Name := LanguageDataConfig.GetBlock('PlanetName').GetBlock(BlockName).GetParamValue(Quantity);
     end;
-    if (InhabitedCountOrSpecialMode = 10) and (OwnerId = oiPirate) then
+    if (InhabitedCountOrSpecialMode = 10) and (OwnerId = owner_pirate) then
     begin
       OrbitalVelocity := (NextRandomIntRange(0, 1, RandomState) * 2 - 1) * (4.5 - Star.Planets.Count / 2);
       Orbit.AngleDegrees := NextRandomIntRange(0, 359, RandomState);
@@ -611,7 +611,7 @@ begin
         begin
           if PlanetSpaceTemplates[Quantity].Radius > 80 then Continue;
         end
-        else if (CountPlanetsOfSameRace = 1) and (OwnerId <> oiUninhabited) then
+        else if (CountPlanetsOfSameRace = 1) and (OwnerId <> owner_uninhabited) then
         begin
           if PlanetSpaceTemplates[Quantity].Radius < 100 then Continue;
         end
@@ -652,7 +652,7 @@ begin
       if AllowRing and not IsSolar then
       begin
         if (NextRandomUnitFloat(RandomState) < 0.8) and (GraphicRadius > 90) and
-           not (ExistingRing in [1, 4, 5]) and (OwnerId <> oiUninhabited) then
+           not (ExistingRing in [1, 4, 5]) and (OwnerId <> owner_uninhabited) then
         begin
           I := 0;
           repeat
@@ -665,7 +665,7 @@ begin
         begin
           if not (ExistingRing in [21, 22]) then Graphic.SetRingKind(NextRandomIntRange(21, 22, RandomState));
         end
-        else if (OwnerId <> oiUninhabited) and (GraphicRadius > 70) and (NextRandomUnitFloat(RandomState) < 0.7) then
+        else if (OwnerId <> owner_uninhabited) and (GraphicRadius > 70) and (NextRandomUnitFloat(RandomState) < 0.7) then
         begin
           if not (ExistingRing in [1..9]) then Graphic.SetRingKind(NextRandomIntRange(1, 9, RandomState));
         end
@@ -699,7 +699,7 @@ begin
         if PreviousPlanet.Satellites.Count > 0 then
         begin
           if Graphic.RingKind > 0 then SatelliteCount := 0
-          else if OwnerId = oiUninhabited then SatelliteCount := 0
+          else if OwnerId = owner_uninhabited then SatelliteCount := 0
           else SatelliteCount := Min(SatelliteCount, 1);
         end;
       end;
@@ -738,7 +738,7 @@ begin
     end;
     Government := TPlanetGovernment(NextRandomIntRange(0, 4, RandomState));
     GovernmentRoll := NextRandomIntRange(0, 100, RandomState);
-    for GovernmentCandidate := pgDemocracy downto pgAnarchy do
+    for GovernmentCandidate := government_democracy downto government_anarchy do
       if aConst.PlanetRaceMarket[RaceId].GovernmentRollThresholds[GovernmentCandidate] <= GovernmentRoll then
       begin
         Government := GovernmentCandidate;
@@ -746,14 +746,14 @@ begin
       end;
     EconomyRoll := NextRandomIntRange(1, aGalaxy.Galaxy.GetAgriculturalPlanetWeight +
       aGalaxy.Galaxy.GetMixedPlanetWeight + aGalaxy.Galaxy.GetIndustrialPlanetWeight, RandomState);
-    if EconomyRoll <= aGalaxy.Galaxy.GetAgriculturalPlanetWeight then Economy := peAgricultural
+    if EconomyRoll <= aGalaxy.Galaxy.GetAgriculturalPlanetWeight then Economy := economy_agricultural
     // Native code adds the agricultural weight twice for the second threshold.
-    else if EconomyRoll <= aGalaxy.Galaxy.GetAgriculturalPlanetWeight + aGalaxy.Galaxy.GetAgriculturalPlanetWeight then Economy := peMixed
-    else Economy := peIndustrial;
+    else if EconomyRoll <= aGalaxy.Galaxy.GetAgriculturalPlanetWeight + aGalaxy.Galaxy.GetAgriculturalPlanetWeight then Economy := economy_mixed
+    else Economy := economy_industrial;
     Population := CalculateBasePopulation;
   end;
-  for Invention := Low(TPlanetInvention) to High(TPlanetInvention) do InventionLevels[Invention] := PlanetInventionInfo[Invention].InitialLevel;
-  CurrentInvention := piHull;
+  for Invention := Low(TResearchTrack) to High(TResearchTrack) do InventionLevels[Invention] := PlanetInventionInfo[Invention].InitialLevel;
+  CurrentInvention := research_hull;
   CurrentInventionPoints := 0;
   ResearchLevelPercent := 30;
   BoostInventionLevels(aConst.PlanetRaceMarket[RaceId].InitialInventionBoostCount);
@@ -772,92 +772,92 @@ begin
   Money := Round(RemapClamped(Radius, 60, 100, 10000, 100000));
   HomeRangerCount := 0;
   HomeTransportCount := 0;
-  if OwnerId <> oiUninhabited then
-    for ItemType := t_Hull to WeaponCategoryItemType do
+  if OwnerId <> owner_uninhabited then
+    for ItemType := item_hull to WeaponCategoryItemType do
       case ItemType of
-        t_Hull:
+        item_hull:
           for I := 1 to NextRandomIntRange(1, 5, RandomState) do
           begin
             Item := THull.Create;
             EquipmentShop.Add(Item);
-            HullType := THullType(NextRandomIntRange(Ord(htRanger), Ord(htDiplomat), RandomState));
+            HullType := THullType(NextRandomIntRange(Ord(hull_ranger), Ord(hull_diplomat), RandomState));
             ItemOwner := RaceToOwner(RaceId);
             Series := aGalaxy.Galaxy.SelectHullSeries(ItemOwner, HullType, 1, 100);
             (Item as THull).Init(NextRandomIntRange(Round(HullBaseSize * EquipmentSizeFactors[5]),
               Round(HullBaseSize * EquipmentSizeFactors[4]), RandomState),
-              NextRandomIntRange(1, InventionLevels[piHull], RandomState), ItemOwner, HullType, Series, False);
+              NextRandomIntRange(1, InventionLevels[research_hull], RandomState), ItemOwner, HullType, Series, False);
           end;
-        t_FuelTanks:
+        item_fuel_tanks:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TFuelTanks.Create;
             EquipmentShop.Add(Item);
             (Item as TFuelTanks).Init(NextRandomIntRange(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]),
               Round(FuelTanksBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[piFuelTanks], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[research_fuel_tanks], RandomState), OwnerId);
           end;
-        t_Engine:
+        item_engine:
           for I := 1 to NextRandomIntRange(1, 3, RandomState) do
           begin
             Item := TEngine.Create;
             EquipmentShop.Add(Item);
             (Item as TEngine).Init(NextRandomIntRange(Round(EngineBaseSize * EquipmentSizeFactors[5]),
               Round(EngineBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[piEngine], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[research_engine], RandomState), OwnerId);
           end;
-        t_Radar:
+        item_radar:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TRadar.Create;
             EquipmentShop.Add(Item);
             (Item as TRadar).Init(NextRandomIntRange(Round(RadarBaseSize * EquipmentSizeFactors[5]),
               Round(RadarBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[piRadar], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[research_radar], RandomState), OwnerId);
           end;
-        t_Scaner:
+        item_scanner:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TScaner.Create;
             EquipmentShop.Add(Item);
             (Item as TScaner).Init(NextRandomIntRange(Round(ScannerBaseSize * EquipmentSizeFactors[5]),
               Round(ScannerBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[piScanner], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[research_scanner], RandomState), OwnerId);
           end;
-        t_RepairRobot:
+        item_repair_robot:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TRepairRobot.Create;
             EquipmentShop.Add(Item);
             (Item as TRepairRobot).Init(NextRandomIntRange(Round(RepairRobotBaseSize * EquipmentSizeFactors[5]),
               Round(RepairRobotBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[piRepairRobot], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[research_repair_robot], RandomState), OwnerId);
           end;
-        t_CargoHook:
+        item_cargo_hook:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TCargoHook.Create;
             EquipmentShop.Add(Item);
             (Item as TCargoHook).Init(NextRandomIntRange(Round(CargoHookBaseSize * EquipmentSizeFactors[5]),
               Round(CargoHookBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[piCargoHook], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[research_cargo_hook], RandomState), OwnerId);
           end;
-        t_DefGenerator:
+        item_defense_generator:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TDefGenerator.Create;
             EquipmentShop.Add(Item);
             (Item as TDefGenerator).Init(NextRandomIntRange(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]),
               Round(DefGeneratorBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[piMainTech], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[research_main_technology], RandomState), OwnerId);
           end;
         WeaponCategoryItemType:
-          for I := 1 to NextRandomIntRange(2, InventionLevels[piMainTech] + 2, RandomState) do
+          for I := 1 to NextRandomIntRange(2, InventionLevels[research_main_technology] + 2, RandomState) do
           begin
-            WeaponInfo := aGalaxy.Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [waFree], InventionLevels[piMainTech], 1);
+            WeaponInfo := aGalaxy.Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [availability_unrestricted], InventionLevels[research_main_technology], 1);
             GeneratedWeapon := CreateGeneratedWeapon(WeaponInfo,
               NextRandomIntRange(Round(WeaponInfo.AverageSize * EquipmentSizeFactors[5]),
                 Round(WeaponInfo.AverageSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[piMainTech], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[research_main_technology], RandomState), OwnerId);
             EquipmentShop.Add(GeneratedWeapon);
           end;
       end;
@@ -870,13 +870,13 @@ begin
   ProbeOrbitCount := Round(RemapClamped(Radius, 60, 100, 1, 3));
   if SeededRandomUnitFloat(RandomState) < 0.5 then Inc(ProbeOrbitCount);
   if SeededRandomUnitFloat(RandomState) < 0.8 then Inc(ProbeOrbitCount);
-  if (OwnerId = oiUninhabited) and (GetUnexploredSurfaceTileCount > 50) then
+  if (OwnerId = owner_uninhabited) and (GetUnexploredSurfaceTileCount > 50) then
   begin
     for I := 1 to NextRandomIntRange(1, Round(RemapClamped(Radius, 60, 100, 1, 3)), RandomState) do
     begin
       if SeededRandomUnitFloat(RandomState) < 0.8 then Continue;
       if (I > 1) and (SeededRandomUnitFloat(RandomState) < 0.8) then Continue;
-      Loot := CreateRandomLootItem(ilpTreasure, RaceToOwner(RaceId), 767 + NextRandomIntRange(1, 3000, RandomState));
+      Loot := CreateRandomLootItem(loot_treasure, RaceToOwner(RaceId), 767 + NextRandomIntRange(1, 3000, RandomState));
       if Loot is TArtefactTranclucator then
         TTranclucator(TArtefactTranclucator(Loot).Ship).OwnerShip := nil;
       AddSurfaceLootEntry(Loot);
@@ -918,12 +918,12 @@ begin
         Inc(Count);
         if NextRandomIntRange(1, 130, RandomState) > 70 then
         begin
-          WeaponInfo := aGalaxy.Galaxy.SelectWeaponInfo(RandomState, [waFree],
+          WeaponInfo := aGalaxy.Galaxy.SelectWeaponInfo(RandomState, [availability_unrestricted],
             Min(WeaponTechLevel + 2, 8), Max(1, WeaponTechLevel - 1));
           Weight := NextRandomIntRange(Round(WeaponInfo.AverageSize * MinSizeFactor),
             Round(WeaponInfo.AverageSize * MaxSizeFactor), RandomState);
           Level := NextRandomIntRange(MinLevel, MaxLevel, RandomState);
-          Item := CreateGeneratedWeapon(WeaponInfo, Weight, Level, oiUninhabited);
+          Item := CreateGeneratedWeapon(WeaponInfo, Weight, Level, owner_uninhabited);
         end
         else
         begin
@@ -931,7 +931,7 @@ begin
           Weight := NextRandomIntRange(Round(GetAverageItemSize(ItemType) * MinSizeFactor),
             Round(GetAverageItemSize(ItemType) * MaxSizeFactor), RandomState);
           Level := NextRandomIntRange(MinLevel, MaxLevel, RandomState);
-          Item := CreateGeneratedEquipment(ItemType, Weight, Level, oiUninhabited);
+          Item := CreateGeneratedEquipment(ItemType, Weight, Level, owner_uninhabited);
         end;
         if (Item.Cost < 5000) or ((Item.Cost < 5000 * 1.5) and (Count > 2)) or
            ((Item.Cost < 10000) and (Count > 3)) or (Count > 4) then Break;
@@ -974,11 +974,11 @@ end;
 
 { @routine $72BED8 TPlanet_InitDominatorSpawnProxy }
 procedure TPlanet.InitDominatorSpawnProxy(Star: TStar);
-var Index: TPlanetInvention;
+var Index: TResearchTrack;
 begin
   CurrentStar := Star;
-  OwnerId := oiDominator;
-  for Index := Low(TPlanetInvention) to High(TPlanetInvention) do InventionLevels[Index] := 8;
+  OwnerId := owner_dominator;
+  for Index := Low(TResearchTrack) to High(TResearchTrack) do InventionLevels[Index] := 8;
 end;
 { @end $72BED8 }
 
@@ -989,7 +989,7 @@ procedure TPlanet.InitGeneratedUninhabited(Star: TStar);
   Unused local types are unknown, except UnusedText, which is a managed WideString. }
 var
   UnusedPlanet, PreviousPlanet: TPlanet;
-  Invention: TPlanetInvention;
+  Invention: TResearchTrack;
   Good: Byte;
   Quantity, Count, I, Part, UnusedCount, ExistingRing, ModuleIndex: Integer;
   SavedRandomState: Cardinal;
@@ -1018,8 +1018,8 @@ var
   GeneratedWeapon: TWeapon;
 begin
   CurrentStar := Star;
-  OwnerId := oiUninhabited;
-  RaceId := oiMaloc;
+  OwnerId := owner_uninhabited;
+  RaceId := owner_maloc;
   Name := 'New Planet';
   Count := High(PlanetSpaceTemplates) + 1;
   Quantity := RandomIntRange(0, Count - 1);
@@ -1098,11 +1098,11 @@ begin
       Satellite.Graphic.RotationTimerInterval := 25;
       Satellite.Graphic.SurfaceMapStep := ((I mod 2) * 2 - 1) * 2;
     end;
-  Government := pgAnarchy;
-  Economy := peMixed;
+  Government := government_anarchy;
+  Economy := economy_mixed;
   Population := CalculateBasePopulation;
-  for Invention := Low(TPlanetInvention) to High(TPlanetInvention) do InventionLevels[Invention] := PlanetInventionInfo[Invention].InitialLevel;
-  CurrentInvention := piHull;
+  for Invention := Low(TResearchTrack) to High(TResearchTrack) do InventionLevels[Invention] := PlanetInventionInfo[Invention].InitialLevel;
+  CurrentInvention := research_hull;
   CurrentInventionPoints := 0;
   ResearchLevelPercent := 30;
   BoostInventionLevels(aConst.PlanetRaceMarket[RaceId].InitialInventionBoostCount);
@@ -1122,92 +1122,92 @@ begin
   HomeRangerCount := 0;
   HomeTransportCount := 0;
   // Kept even though OwnerId was assigned 6 above: the original emits this stock-generation branch.
-  if OwnerId <> oiUninhabited then
-    for ItemType := t_Hull to WeaponCategoryItemType do
+  if OwnerId <> owner_uninhabited then
+    for ItemType := item_hull to WeaponCategoryItemType do
       case ItemType of
-        t_Hull:
+        item_hull:
           for I := 1 to NextRandomIntRange(1, 5, RandomState) do
           begin
             Item := THull.Create;
             EquipmentShop.Add(Item);
-            HullType := THullType(NextRandomIntRange(Ord(htRanger), Ord(htDiplomat), RandomState));
+            HullType := THullType(NextRandomIntRange(Ord(hull_ranger), Ord(hull_diplomat), RandomState));
             ItemOwner := RaceToOwner(RaceId);
             Series := aGalaxy.Galaxy.SelectHullSeries(ItemOwner, HullType, 1, 100);
             (Item as THull).Init(NextRandomIntRange(Round(HullBaseSize * EquipmentSizeFactors[5]),
               Round(HullBaseSize * EquipmentSizeFactors[4]), RandomState),
-              NextRandomIntRange(1, InventionLevels[piHull], RandomState), ItemOwner, HullType, Series, False);
+              NextRandomIntRange(1, InventionLevels[research_hull], RandomState), ItemOwner, HullType, Series, False);
           end;
-        t_FuelTanks:
+        item_fuel_tanks:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TFuelTanks.Create;
             EquipmentShop.Add(Item);
             (Item as TFuelTanks).Init(NextRandomIntRange(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]),
               Round(FuelTanksBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[piFuelTanks], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[research_fuel_tanks], RandomState), OwnerId);
           end;
-        t_Engine:
+        item_engine:
           for I := 1 to NextRandomIntRange(1, 3, RandomState) do
           begin
             Item := TEngine.Create;
             EquipmentShop.Add(Item);
             (Item as TEngine).Init(NextRandomIntRange(Round(EngineBaseSize * EquipmentSizeFactors[5]),
               Round(EngineBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[piEngine], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[research_engine], RandomState), OwnerId);
           end;
-        t_Radar:
+        item_radar:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TRadar.Create;
             EquipmentShop.Add(Item);
             (Item as TRadar).Init(NextRandomIntRange(Round(RadarBaseSize * EquipmentSizeFactors[5]),
               Round(RadarBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[piRadar], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[research_radar], RandomState), OwnerId);
           end;
-        t_Scaner:
+        item_scanner:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TScaner.Create;
             EquipmentShop.Add(Item);
             (Item as TScaner).Init(NextRandomIntRange(Round(ScannerBaseSize * EquipmentSizeFactors[5]),
               Round(ScannerBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[piScanner], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[research_scanner], RandomState), OwnerId);
           end;
-        t_RepairRobot:
+        item_repair_robot:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TRepairRobot.Create;
             EquipmentShop.Add(Item);
             (Item as TRepairRobot).Init(NextRandomIntRange(Round(RepairRobotBaseSize * EquipmentSizeFactors[5]),
               Round(RepairRobotBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[piRepairRobot], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[research_repair_robot], RandomState), OwnerId);
           end;
-        t_CargoHook:
+        item_cargo_hook:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TCargoHook.Create;
             EquipmentShop.Add(Item);
             (Item as TCargoHook).Init(NextRandomIntRange(Round(CargoHookBaseSize * EquipmentSizeFactors[5]),
               Round(CargoHookBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[piCargoHook], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[research_cargo_hook], RandomState), OwnerId);
           end;
-        t_DefGenerator:
+        item_defense_generator:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TDefGenerator.Create;
             EquipmentShop.Add(Item);
             (Item as TDefGenerator).Init(NextRandomIntRange(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]),
               Round(DefGeneratorBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[piMainTech], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[research_main_technology], RandomState), OwnerId);
           end;
         WeaponCategoryItemType:
-          for I := 1 to NextRandomIntRange(2, InventionLevels[piMainTech] + 2, RandomState) do
+          for I := 1 to NextRandomIntRange(2, InventionLevels[research_main_technology] + 2, RandomState) do
           begin
-            WeaponInfo := aGalaxy.Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [waFree], InventionLevels[piMainTech], 1);
+            WeaponInfo := aGalaxy.Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [availability_unrestricted], InventionLevels[research_main_technology], 1);
             GeneratedWeapon := CreateGeneratedWeapon(WeaponInfo,
               NextRandomIntRange(Round(WeaponInfo.AverageSize * EquipmentSizeFactors[5]),
                 Round(WeaponInfo.AverageSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[piMainTech], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[research_main_technology], RandomState), OwnerId);
             EquipmentShop.Add(GeneratedWeapon);
           end;
       end;
@@ -1220,13 +1220,13 @@ begin
   ProbeOrbitCount := Round(RemapClamped(Radius, 60, 100, 1, 3));
   if SeededRandomUnitFloat(RandomState) < 0.5 then Inc(ProbeOrbitCount);
   if SeededRandomUnitFloat(RandomState) < 0.8 then Inc(ProbeOrbitCount);
-  if (OwnerId = oiUninhabited) and (GetUnexploredSurfaceTileCount > 50) then
+  if (OwnerId = owner_uninhabited) and (GetUnexploredSurfaceTileCount > 50) then
   begin
     for I := 1 to NextRandomIntRange(1, Round(RemapClamped(Radius, 60, 100, 1, 3)), RandomState) do
     begin
       if SeededRandomUnitFloat(RandomState) < 0.8 then Continue;
       if (I > 1) and (SeededRandomUnitFloat(RandomState) < 0.8) then Continue;
-      Loot := CreateRandomLootItem(ilpTreasure, RaceToOwner(RaceId), 767 + NextRandomIntRange(1, 3000, RandomState));
+      Loot := CreateRandomLootItem(loot_treasure, RaceToOwner(RaceId), 767 + NextRandomIntRange(1, 3000, RandomState));
       if Loot is TArtefactTranclucator then
         TTranclucator(TArtefactTranclucator(Loot).Ship).OwnerShip := nil;
       AddSurfaceLootEntry(Loot);
@@ -1268,12 +1268,12 @@ begin
         Inc(Count);
         if NextRandomIntRange(1, 130, RandomState) > 70 then
         begin
-          WeaponInfo := aGalaxy.Galaxy.SelectWeaponInfo(RandomState, [waFree],
+          WeaponInfo := aGalaxy.Galaxy.SelectWeaponInfo(RandomState, [availability_unrestricted],
             Min(WeaponTechLevel + 2, 8), Max(1, WeaponTechLevel - 1));
           Weight := NextRandomIntRange(Round(WeaponInfo.AverageSize * MinSizeFactor),
             Round(WeaponInfo.AverageSize * MaxSizeFactor), RandomState);
           Level := NextRandomIntRange(MinLevel, MaxLevel, RandomState);
-          Item := CreateGeneratedWeapon(WeaponInfo, Weight, Level, oiUninhabited);
+          Item := CreateGeneratedWeapon(WeaponInfo, Weight, Level, owner_uninhabited);
         end
         else
         begin
@@ -1281,7 +1281,7 @@ begin
           Weight := NextRandomIntRange(Round(GetAverageItemSize(ItemType) * MinSizeFactor),
             Round(GetAverageItemSize(ItemType) * MaxSizeFactor), RandomState);
           Level := NextRandomIntRange(MinLevel, MaxLevel, RandomState);
-          Item := CreateGeneratedEquipment(ItemType, Weight, Level, oiUninhabited);
+          Item := CreateGeneratedEquipment(ItemType, Weight, Level, owner_uninhabited);
         end;
         if (Item.Cost < 5000) or ((Item.Cost < 5000 * 1.5) and (Count > 2)) or
            ((Item.Cost < 10000) and (Count > 3)) or (Count > 4) then Break;
@@ -1326,7 +1326,7 @@ end;
 { @routine $72D84C TPlanet_SaveToBuffer }
 procedure TPlanet.SaveToBuffer(Buffer: TBufEC);
 var
-  Track: TPlanetInvention;
+  Track: TResearchTrack;
   Kind: Byte;
   i, Count: Integer;
   Ship: TShip;
@@ -1352,7 +1352,7 @@ begin
   Buffer.AddIntegerValue(Self.HillExplored);
   Buffer.AddAnsiChar(AnsiChar(Self.ProbeOrbitCount));
   Buffer.AddBoolean(Self.HasPlayerLanded);
-  for Track := Low(TPlanetInvention) to High(TPlanetInvention) do Buffer.AddAnsiChar(AnsiChar(Self.InventionLevels[Track]));
+  for Track := Low(TResearchTrack) to High(TResearchTrack) do Buffer.AddAnsiChar(AnsiChar(Self.InventionLevels[Track]));
   Buffer.AddAnsiChar(AnsiChar(Self.CurrentInvention));
   Buffer.AddSingle(Self.CurrentInventionPoints);
   Buffer.AddAnsiChar(AnsiChar(Self.ResearchLevelPercent));
@@ -1444,7 +1444,7 @@ end;
 { @routine $72DD14 TPlanet_LoadFromBuffer }
 procedure TPlanet.LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy);
 var
-  Track: TPlanetInvention;
+  Track: TResearchTrack;
   Item: TItem;
   Good: Byte;
   i, Count: Integer;
@@ -1476,16 +1476,16 @@ begin
     if GlobalsV.LoadedSaveVersion >= 99 then HasPlayerLanded := Buffer.GetBoolean
     else HasPlayerLanded := False;
     Stage := 1;
-    for Track := Low(TPlanetInvention) to High(TPlanetInvention) do
+    for Track := Low(TResearchTrack) to High(TResearchTrack) do
       if GlobalsV.LoadedSaveVersion <= 90 then
       begin
         Buffer.GetByte;
         InventionLevels[Track] := Buffer.GetByte;
-        if Track >= piIndustrialLaser then InventionLevels[Track] := Min(8, 2 * Integer(InventionLevels[Track]) - 1);
+        if Track >= research_industrial_laser then InventionLevels[Track] := Min(8, 2 * Integer(InventionLevels[Track]) - 1);
       end
       else InventionLevels[Track] := Buffer.GetByte;
-    if GlobalsV.LoadedSaveVersion <= 90 then CurrentInvention := TPlanetInvention(Buffer.GetByte shr 1)
-    else CurrentInvention := TPlanetInvention(Buffer.GetByte);
+    if GlobalsV.LoadedSaveVersion <= 90 then CurrentInvention := TResearchTrack(Buffer.GetByte shr 1)
+    else CurrentInvention := TResearchTrack(Buffer.GetByte);
     CurrentInventionPoints := Buffer.GetSingle;
     ResearchLevelPercent := Buffer.GetByte;
     ResearchLevelStep := Buffer.GetByte;
@@ -1611,9 +1611,9 @@ begin
   Block.AddParam(DecodeTextW('OcrublietyRnakdlipuns'), SysUtils.FloatToStr(Orbit.Radius)); // 'OrbitRadius'
   Block.AddParam(DecodeTextW('OsrabniktuAinegilne'), SysUtils.FloatToStr(Orbit.AngleDegrees)); // 'OrbitAngle'
   Block.AddParam(DecodeTextW('Rpe7lyamtgi4oendThokP4lWasyfeKry'), SysUtils.IntToStr(Byte(RangerRelations[0]))); // 'RelationToPlayer'
-  Block.AddParam(DecodeTextW('IsMraliunaTrepcohaLienvuelle'), SysUtils.IntToStr(InventionLevels[piMainTech])); // 'IMainTechLevel'
-  Text := SysUtils.IntToStr(InventionLevels[piHull]);
-  for i := Ord(piFuelTanks) to Ord(High(TPlanetInvention)) do Text := Text + ',' + SysUtils.IntToStr(InventionLevels[TPlanetInvention(i)]);
+  Block.AddParam(DecodeTextW('IsMraliunaTrepcohaLienvuelle'), SysUtils.IntToStr(InventionLevels[research_main_technology])); // 'IMainTechLevel'
+  Text := SysUtils.IntToStr(InventionLevels[research_hull]);
+  for i := Ord(research_fuel_tanks) to Ord(High(TResearchTrack)) do Text := Text + ',' + SysUtils.IntToStr(InventionLevels[TResearchTrack(i)]);
   Block.AddParam(DecodeTextW('Toe5cfh2LSexvNejlusw'), Text); // 'TechLevels'
   Block.AddParam(DecodeTextW('C2u4rrrTeengtyIwnsvgeEn6tjieodn'), SysUtils.IntToStr(Ord(CurrentInvention))); // 'CurrentInvention'
   Block.AddParam(DecodeTextW('CluurtreewnstQIvnhv6eenwtfijo6ntPwoSirn5tts7'), SysUtils.FloatToStr(CurrentInventionPoints)); // 'CurrentInventionPoints'
@@ -1759,10 +1759,10 @@ begin
     for i := 0 to CountDelimitedPartsW(Text, ',') - 1 do
     begin
       Part := ExtractDelimitedPartW(Text, i, ',');
-      for ItemType := t_Food to t_UselessCountableItem do
+      for ItemType := item_food to item_stackable_misc do
         if aConst.ItemTypeNames[ItemType] = Part then
         begin
-          if ItemType in [t_Hull..t_CustomWeapon] then
+          if ItemType in [item_hull..item_custom_weapon] then
           begin
             Item := CreateDefaultItemByType(ItemType);
             if Item <> nil then
@@ -1793,11 +1793,11 @@ begin
     for i := 0 to CountDelimitedPartsW(Text, ',') - 1 do
     begin
       Part := ExtractDelimitedPartW(Text, i, ',');
-      for ItemType := t_Food to t_UselessCountableItem do
+      for ItemType := item_food to item_stackable_misc do
         if aConst.ItemTypeNames[ItemType] = Part then
         begin
-          if (ItemType in [t_Food..t_Narcotics]) or (ItemType in [t_Hull..t_CustomWeapon]) or
-            (ItemType in [t_ArtefactHull..t_ArtFastRacks]) or (ItemType in [t_Protoplasm..t_Satellite]) then
+          if (ItemType in [item_food..item_narcotics]) or (ItemType in [item_hull..item_custom_weapon]) or
+            (ItemType in [artefact_hull..artefact_extra_missiles]) or (ItemType in [item_nodes..item_satellite]) then
           begin
             Item := CreateDefaultItemByType(ItemType);
             if Item <> nil then
@@ -1815,8 +1815,8 @@ begin
     end;
   end;
   Text := Block.GetParam(DecodeTextW('Toe5cfh2LSexvNejlusw')); // 'TechLevels'
-  for i := Ord(Low(TPlanetInvention)) to Ord(High(TPlanetInvention)) do InventionLevels[TPlanetInvention(i)] := SysUtils.StrToInt(ExtractDelimitedPartW(Text, i, ','));
-  CurrentInvention := TPlanetInvention(SysUtils.StrToInt(Block.GetParam(DecodeTextW('C2u4rrrTeengtyIwnsvgeEn6tjieodn')))); // 'CurrentInvention'
+  for i := Ord(Low(TResearchTrack)) to Ord(High(TResearchTrack)) do InventionLevels[TResearchTrack(i)] := SysUtils.StrToInt(ExtractDelimitedPartW(Text, i, ','));
+  CurrentInvention := TResearchTrack(SysUtils.StrToInt(Block.GetParam(DecodeTextW('C2u4rrrTeengtyIwnsvgeEn6tjieodn')))); // 'CurrentInvention'
   CurrentInventionPoints := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('CluurtreewnstQIvnhv6eenwtfijo6ntPwoSirn5tts7'))); // 'CurrentInventionPoints'
   with Block.GetBlockByPath(DecodeTextW('GlamrirLihsaoln')) do // 'Garrison'
   begin
@@ -1855,11 +1855,11 @@ begin
     for i := 0 to CountDelimitedPartsW(Text, ',') - 1 do
     begin
       Part := ExtractDelimitedPartW(Text, i, ',');
-      for ItemType := t_Food to t_UselessCountableItem do
+      for ItemType := item_food to item_stackable_misc do
         if aConst.ItemTypeNames[ItemType] = Part then
         begin
-          if ItemType in [t_Food..t_Narcotics, t_ArtefactHull..t_Satellite] then
-            if ItemType <> t_Hull then
+          if ItemType in [item_food..item_narcotics, artefact_hull..item_satellite] then
+            if ItemType <> item_hull then
             begin
               Item := CreateDefaultItemByType(ItemType);
               if Item <> nil then
@@ -1882,9 +1882,9 @@ begin
     if CountDelimitedPartsW(Part, '.') > 1 then
     begin
       Part := ExtractDelimitedPartW(Part, 1, '.');
-      for Series := dsBlazer to dsTerron do
+      for Series := series_blazer to series_terron do
         if aConst.DominatorSeriesNames[Series] = Part then CurrentStar.DominatorSeries := Series;
-      for Owner := oiMaloc to oiPirate do
+      for Owner := owner_maloc to owner_pirate do
         if aConst.OwnerInfo[Owner].InternalName = Part then
         begin
           OwnerId := Owner;
@@ -1895,12 +1895,12 @@ begin
       if aConst.ShipTypeNames[ShipType].Name = ShipName then
       begin
         case ShipType of
-          stKling: SpawnWeightedDominatorShip;
-          stRanger: BuyRanger(100);
-          stTransport: SpawnTransport(0, 100);
-          stPirate: BuyPirate(100);
-          stWarrior: BuyWarrior(100);
-          stTranclucator: SpawnTranclucator(True);
+          ship_dominator: SpawnWeightedDominatorShip;
+          ship_ranger: BuyRanger(100);
+          ship_transport: SpawnTransport(0, 100);
+          ship_pirate: BuyPirate(100);
+          ship_warrior: BuyWarrior(100);
+          ship_tranclucator: SpawnTranclucator(True);
         end;
         Break;
       end;
@@ -1931,7 +1931,7 @@ begin
       Item := EquipmentShop[i];
       if (Item is TEquipment) and
         ((Item as TEquipment).SpecialModuleIndex > 0) and
-        (not (rstPirateBase in aConst.MicroModuleTemplates[(Item as TEquipment).SpecialModuleIndex - 1].OfferStationTypes)) then
+        (not (station_pirate_base in aConst.MicroModuleTemplates[(Item as TEquipment).SpecialModuleIndex - 1].OfferStationTypes)) then
       begin
         EquipmentShop.Delete(i);
         Item.Free;
@@ -1961,28 +1961,28 @@ var
   Star: TStar;
 begin
   Result := nil;
-  if CurrentStar.DominatorSeries = dsTerron then
+  if CurrentStar.DominatorSeries = series_terron then
   begin
     if (aKling.TerronShip = nil) or (aGalaxy.Galaxy.TerronGrowLockTurn <> 0) or
       (aGalaxy.Galaxy.TerronToStarTurn >= TerronTransformationFlag) then Exit;
   end
-  else if CurrentStar.DominatorSeries = dsBlazer then
+  else if CurrentStar.DominatorSeries = series_blazer then
     if (aKling.BlazerShip = nil) or (aGalaxy.Galaxy.BlazerLandingPlanetId <> 0) or
       aKling.BlazerShip.DestroyQueued then Exit;
-  Control := aGalaxy.Galaxy.GetFactionControlPercent(sfDominators);
+  Control := aGalaxy.Galaxy.GetFactionControlPercent(faction_dominators);
   SeriesStars := 0;
   for i := 0 to aGalaxy.Galaxy.Stars.Count - 1 do
   begin
     Star := aGalaxy.Galaxy.Stars[i];
-    if (Star.ControlFaction = sfDominators) and (CurrentStar.DominatorSeries = Star.DominatorSeries) and
+    if (Star.ControlFaction = faction_dominators) and (CurrentStar.DominatorSeries = Star.DominatorSeries) and
       (Star.Status.CustomFaction = '') then Inc(SeriesStars);
   end;
   SeriesControl := System.Round(SeriesStars / aGalaxy.Galaxy.Stars.Count * 100);
   MaximumShips := 10;
   case CurrentStar.DominatorSeries of
-    dsKeller: MaximumShips := 15;
-    dsBlazer: MaximumShips := 13;
-    dsTerron: MaximumShips := 11;
+    series_keller: MaximumShips := 15;
+    series_blazer: MaximumShips := 13;
+    series_terron: MaximumShips := 11;
   end;
   Jitter := SeededRandomIntRange(0, 5, GenerationSeed + aGalaxy.Galaxy.CurrentTurn div 500);
   MaximumShips := System.Round(RemapClamped(SeriesControl, 0, 33, MaximumShips, 10)) + Jitter -
@@ -1990,9 +1990,9 @@ begin
     System.Round(RemapClamped(aGalaxy.Galaxy.GetDominatorSeriesControlShare(CurrentStar.DominatorSeries), 0, 1, 3, 0));
   Chance := 0;
   case CurrentStar.DominatorSeries of
-    dsKeller: Chance := 20;
-    dsBlazer: Chance := 40;
-    dsTerron: Chance := 60;
+    series_keller: Chance := 20;
+    series_blazer: Chance := 40;
+    series_terron: Chance := 60;
   end;
   ControlThreshold := System.Round(RemapClamped(aGalaxy.Galaxy.CurrentTurn, GalaxyWarmupTurns, 11250, 40, 80));
   Chance := System.Round(RemapClamped(Control, 0, ControlThreshold, Chance * 0.5, 0) +
@@ -2032,14 +2032,14 @@ begin
   I := 4; // Native diagnostic-era assignment, overwritten by the later loops.
   Orbit.AngleDegrees := WrapHeadingDegrees(Orbit.AngleDegrees);
   if aGalaxy.Galaxy.SpecialSimulationMode <> 0 then Exit;
-  if (OwnerId <> oiUninhabited) and (CurrentStar.Status.CustomFaction <> '') then
+  if (OwnerId <> owner_uninhabited) and (CurrentStar.Status.CustomFaction <> '') then
   begin
     if NextRandomUnitFloat(RandomState) < 0.7 then AdvanceInventionProgress;
     Exit;
   end;
   try
     case OwnerId of
-      oiMaloc..oiGaal:
+      owner_maloc..owner_gaal:
       begin
         // Native growth adds 300 even when already above the radius-based population.
         if Population > CalculateBasePopulation then Inc(Population, 300)
@@ -2051,20 +2051,20 @@ begin
         begin
           if CurrentStar.Constellation.Id <> 20 then
           begin
-            if (aGalaxy.Galaxy.CountEligibleRangers < Min(aGalaxy.Galaxy.CountFactionStars(sfCoalition) * 1.5, 63) +
+            if (aGalaxy.Galaxy.CountEligibleRangers < Min(aGalaxy.Galaxy.CountFactionStars(faction_coalition) * 1.5, 63) +
                 aGalaxy.Galaxy.GetExtraRangerCount) and
                (CurrentStar.CountEligibleRangersInSpace < aGalaxy.Galaxy.GetExtraRangerCount + 1) and
                (NextRandomUnitFloat(RandomState) < 0.04) then BuyRanger(100);
-            if (CurrentStar.ShipTypeCounts[stTransport] < 5) and
-               (aGalaxy.Galaxy.CountFactionStars(sfPirates) * 3 +
-                aGalaxy.Galaxy.CountFactionStars(sfCoalition) * 9 > aGalaxy.Galaxy.TransportCount) and
+            if (CurrentStar.ShipTypeCounts[ship_transport] < 5) and
+               (aGalaxy.Galaxy.CountFactionStars(faction_pirates) * 3 +
+                aGalaxy.Galaxy.CountFactionStars(faction_coalition) * 9 > aGalaxy.Galaxy.TransportCount) and
                (NextRandomUnitFloat(RandomState) < 0.05) and (HomeTransportCount < 2) then SpawnTransport(0, 100);
-            if (CurrentStar.ShipTypeCounts[stPirate] < 2) and
-               (aGalaxy.Galaxy.CountFactionStars(sfCoalition) > aGalaxy.Galaxy.PirateCount) then
+            if (CurrentStar.ShipTypeCounts[ship_pirate] < 2) and
+               (aGalaxy.Galaxy.CountFactionStars(faction_coalition) > aGalaxy.Galaxy.PirateCount) then
               if NextRandomUnitFloat(RandomState) < Sqr(aConst.PlanetRaceMarket[RaceId].PirateRelationFactor / 10) then
                 BuyPirate(100);
           end;
-          if aGalaxy.Galaxy.CountFactionStars(sfCoalition) > 1 then N := 1 else N := 2;
+          if aGalaxy.Galaxy.CountFactionStars(faction_coalition) > 1 then N := 1 else N := 2;
           if NextRandomUnitFloat(RandomState) < 0.01 * N then
             if Warriors.Count < RemapClamped(Radius, 60, 100, 1, 3) * N then
               BuyWarrior(100)
@@ -2110,26 +2110,26 @@ begin
                     Ship.SetMoney(Ship.Money + Max(1000, Min(5000, aGalaxy.Galaxy.MaxRangerWealth div 15)))
                   else
                     Ship.SetMoney(Ship.Money + Max(2000, Min(10000, aGalaxy.Galaxy.MaxRangerWealth div 7)));
-                if (aGalaxy.Galaxy.GetFactionControlPercent(sfCoalition) <= 5) and
+                if (aGalaxy.Galaxy.GetFactionControlPercent(faction_coalition) <= 5) and
                    (Ship.Wealth < aGalaxy.Galaxy.MaxRangerWealth * 0.6) then
                   Ship.SetMoney(Ship.Money + Max(3000, Min(15000, aGalaxy.Galaxy.MaxRangerWealth div 7)));
                 Ship.RestoreEssentialEquipment;
-                if (TWarrior(Ship).WarriorType <> wtFlagship) and
+                if (TWarrior(Ship).WarriorType <> warrior_flagship) and
                    ((Ship.StrengthInBestRanger < 0.2) or (NextRandomUnitFloat(RandomState) < 0.1)) then
                   Ship.GenerateExtraWeapon;
                 if (Ship.StrengthInBestRanger < 0.5) and (NextRandomUnitFloat(RandomState) < 0.2) then
                   Ship.ImproveRandomEquipment(True);
                 if (Ship.StrengthInBestRanger < 0.3) and (NextRandomUnitFloat(RandomState) < 0.1) then
                 begin
-                  Ship.GainExperience(NextRandomIntRange(500, 1500, RandomState), esUnscaled);
+                  Ship.GainExperience(NextRandomIntRange(500, 1500, RandomState), experience_unscaled);
                   (Ship as TWarrior).TrainSkillsAutomatically;
                 end;
                 Ship.RefreshDerivedStats(True);
               end;
             end;
-            if (aGalaxy.Galaxy.GetFactionControlPercent(sfCoalition) <= 5) and (NextRandomUnitFloat(RandomState) < 0.05) then
+            if (aGalaxy.Galaxy.GetFactionControlPercent(faction_coalition) <= 5) and (NextRandomUnitFloat(RandomState) < 0.05) then
               Ship.ImproveRandomEquipment(True);
-            if (aGalaxy.Galaxy.GetFactionControlPercent(sfCoalition) <= 2) and (NextRandomUnitFloat(RandomState) < 0.05) then
+            if (aGalaxy.Galaxy.GetFactionControlPercent(faction_coalition) <= 2) and (NextRandomUnitFloat(RandomState) < 0.05) then
             begin
               Ship.BuyEquipmentAtLocation(False);
               Ship.RestoreEssentialEquipment;
@@ -2141,11 +2141,11 @@ begin
               Ship.BuyEquipmentAtLocation(False);
               CurrentStar.Ships.Add(Ship);
               Ship.OrderTakeoff;
-              if TWarrior(Ship).WarriorType = wtFlagship then TWarrior(Ship).ReassignFlagshipHomePlanet;
+              if TWarrior(Ship).WarriorType = warrior_flagship then TWarrior(Ship).ReassignFlagshipHomePlanet;
             end;
           end;
       end;
-      oiDominator:
+      owner_dominator:
       begin
         for Good := Low(TGoodsIndex) to High(TGoodsIndex) do Goods[Good].Count := 0;
         Money := 0;
@@ -2159,31 +2159,31 @@ begin
             if Ship.CurrentPlanet = Self then Ship.OrderTakeoff;
           end;
       end;
-      oiUninhabited: TryResetSurfaceLootAfterLongAbsence;
-      oiPirate:
+      owner_uninhabited: TryResetSurfaceLootAfterLongAbsence;
+      owner_pirate:
       begin
         if IsMainPiratePlanet and (aGalaxy.Galaxy.PirateWinType <> 3) then
         begin
-          if (aGalaxy.Galaxy.GetFactionControlPercent(sfPirates) > Cardinal(aGalaxy.Galaxy.GetFactionControlPercent(sfCoalition) * 2)) and
-             (aGalaxy.Galaxy.GetFactionControlPercent(sfPirates) > 10) and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
+          if (aGalaxy.Galaxy.GetFactionControlPercent(faction_pirates) > Cardinal(aGalaxy.Galaxy.GetFactionControlPercent(faction_coalition) * 2)) and
+             (aGalaxy.Galaxy.GetFactionControlPercent(faction_pirates) > 10) and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
             for I := 0 to aGalaxy.Galaxy.Rangers.Count - 1 do
             begin
               Ship := TShip(aGalaxy.Galaxy.Rangers[I]);
-              if not TRanger(Ship).ExcludedFromRating and (Ship.OwnerId <> oiPirate) and not Ship.IsInPrison then
+              if not TRanger(Ship).ExcludedFromRating and (Ship.OwnerId <> owner_pirate) and not Ship.IsInPrison then
                 ChangeRelationToRanger(Ship, -1);
             end;
-          if (aGalaxy.Galaxy.GetFactionControlPercent(sfPirates) > Cardinal(aGalaxy.Galaxy.GetFactionControlPercent(sfCoalition) * 4)) and
-             (aGalaxy.Galaxy.GetFactionControlPercent(sfPirates) > 20) and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
+          if (aGalaxy.Galaxy.GetFactionControlPercent(faction_pirates) > Cardinal(aGalaxy.Galaxy.GetFactionControlPercent(faction_coalition) * 4)) and
+             (aGalaxy.Galaxy.GetFactionControlPercent(faction_pirates) > 20) and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
             for I := 0 to aGalaxy.Galaxy.Rangers.Count - 1 do
             begin
               Ship := TShip(aGalaxy.Galaxy.Rangers[I]);
-              if not TRanger(Ship).ExcludedFromRating and (Ship.OwnerId <> oiPirate) and not Ship.IsInPrison then
+              if not TRanger(Ship).ExcludedFromRating and (Ship.OwnerId <> owner_pirate) and not Ship.IsInPrison then
                 ChangeRelationToRanger(Ship, -1);
             end;
           TryDispatchPirateAttacks;
           if not NoRandomEvents then TrySpawnPirateBaseRaid;
-          Government := pgAnarchy;
-          Economy := peIndustrial;
+          Government := government_anarchy;
+          Economy := economy_industrial;
         end;
         // Native growth adds 300 even when already above the radius-based population.
         if Population > CalculateBasePopulation then Inc(Population, 300)
@@ -2194,7 +2194,7 @@ begin
         GarrisonSpawnFactor := 1;
         PirateLimitFactor := 1;
         GarrisonLimitFactor := 1;
-        if aGalaxy.Galaxy.CountFactionStars(sfPirates) > 0 then
+        if aGalaxy.Galaxy.CountFactionStars(faction_pirates) > 0 then
           SystemRatio := aGalaxy.Galaxy.GetCoalitionToPirateSystemRatio
         else SystemRatio := 0;
         case aGalaxy.Galaxy.PirateWinType of
@@ -2266,8 +2266,8 @@ begin
           for I := 1 to Min(10, aGalaxy.Galaxy.Stars.Count - 1) do
           begin
             NearbyStar := TStar(CurrentStar.StarDistances[I].Star);
-            if (NearbyStar.ControlFaction = sfDominators) or (NearbyStar.Status.CustomFaction <> '') then Dec(N)
-            else if NearbyStar.ControlFaction = sfCoalition then Inc(N, 2);
+            if (NearbyStar.ControlFaction = faction_dominators) or (NearbyStar.Status.CustomFaction <> '') then Dec(N)
+            else if NearbyStar.ControlFaction = faction_coalition then Inc(N, 2);
           end;
           PirateSpawnFactor := PirateSpawnFactor * RemapClamped(N, -10, 20, 0.5, 2);
           GarrisonSpawnFactor := GarrisonSpawnFactor * RemapClamped(N, -10, 20, 0.5, 2);
@@ -2281,7 +2281,7 @@ begin
           for I := 0 to CurrentStar.Ships.Count - 1 do
           begin
             Ship := TShip(CurrentStar.Ships[I]);
-            if (Ship.OwnerId <> oiPirate) and (Ship is TNormalShip) then
+            if (Ship.OwnerId <> owner_pirate) and (Ship is TNormalShip) then
               Inc(PirateKills, TNormalShip(Ship).CurrentSystemKills.Pirate);
           end;
           PirateSpawnFactor := PirateSpawnFactor * (1 - PirateKills / 15);
@@ -2301,7 +2301,7 @@ begin
             for I := 0 to CurrentStar.Ships.Count - 1 do
             begin
               Ship := TShip(CurrentStar.Ships[I]);
-              if (Ship.OwnerId = oiDominator) and (Ship.CurrentPlanet = Self) and
+              if (Ship.OwnerId = owner_dominator) and (Ship.CurrentPlanet = Self) and
                  (NextRandomUnitFloat(RandomState) < 0.2) then
                 Government := TPlanetGovernment(NextRandomIntRange(0, 4, RandomState));
             end;
@@ -2315,7 +2315,7 @@ begin
           GarrisonSpawnFactor := GarrisonSpawnFactor / Max(IndependentShips / 21, 1);
           if (ClanShips < 3 * PirateLimitFactor) and
              (aGalaxy.Galaxy.PirateClanCount < (3 * PirateLimitFactor + 6 * GarrisonLimitFactor) *
-               aGalaxy.Galaxy.CountFactionStars(sfPirates)) and
+               aGalaxy.Galaxy.CountFactionStars(faction_pirates)) and
              (NextRandomUnitFloat(RandomState) < 0.02 * PirateSpawnFactor) then
           begin
             Ship := TShip(BuyPirate(Round(Budget)));
@@ -2325,7 +2325,7 @@ begin
               while Boost > 1 do
               begin
                 Ship.ImproveRandomEquipment(True);
-                Ship.GainExperience(Ship.TotalExperience div 7, esUnscaled);
+                Ship.GainExperience(Ship.TotalExperience div 7, experience_unscaled);
                 Ship.SetMoney((Ship.Money div 7) * 8);
                 Boost := Boost * 0.85;
               end;
@@ -2345,7 +2345,7 @@ begin
               while Boost > 1 do
               begin
                 Ship.ImproveRandomEquipment(True);
-                Ship.GainExperience(Ship.TotalExperience div 7, esUnscaled);
+                Ship.GainExperience(Ship.TotalExperience div 7, experience_unscaled);
                 Ship.SetMoney((Ship.Money div 7) * 8);
                 Boost := Boost * 0.85;
               end;
@@ -2358,12 +2358,12 @@ begin
           if (CurrentStar.Constellation.Id <> 20) and
              (CurrentStar.CountPirateForces(False, Strength, True, False) > 0) then
           begin
-            if (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) and (CurrentStar.ShipTypeCounts[stTransport] < 5) and
-               (aGalaxy.Galaxy.CountFactionStars(sfPirates) * 3 +
-                aGalaxy.Galaxy.CountFactionStars(sfCoalition) * 9 > aGalaxy.Galaxy.TransportCount) and
+            if (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) and (CurrentStar.ShipTypeCounts[ship_transport] < 5) and
+               (aGalaxy.Galaxy.CountFactionStars(faction_pirates) * 3 +
+                aGalaxy.Galaxy.CountFactionStars(faction_coalition) * 9 > aGalaxy.Galaxy.TransportCount) and
                (NextRandomUnitFloat(RandomState) < 0.02) and (HomeTransportCount < 1) then SpawnTransport(0, 100);
-            if (aGalaxy.Galaxy.CoalitionDefeatedTurn > 0) and (CurrentStar.ShipTypeCounts[stTransport] < 5) and
-               (aGalaxy.Galaxy.CountFactionStars(sfPirates) * 5 > aGalaxy.Galaxy.TransportCount) and
+            if (aGalaxy.Galaxy.CoalitionDefeatedTurn > 0) and (CurrentStar.ShipTypeCounts[ship_transport] < 5) and
+               (aGalaxy.Galaxy.CountFactionStars(faction_pirates) * 5 > aGalaxy.Galaxy.TransportCount) and
                (NextRandomUnitFloat(RandomState) < 0.05) and (HomeTransportCount < 2) then SpawnTransport(0, 100);
           end;
         end;
@@ -2409,8 +2409,8 @@ var
     for I := 1 to Min(10, aGalaxy.Galaxy.Stars.Count - 1) do
     begin
       Neighbor := TStar(Star.StarDistances[I].Star);
-      if (Neighbor.ControlFaction = sfDominators) or (Neighbor.Status.CustomFaction <> '') then Dec(Score)
-      else if Neighbor.ControlFaction = sfCoalition then Inc(Score, 2);
+      if (Neighbor.ControlFaction = faction_dominators) or (Neighbor.Status.CustomFaction <> '') then Dec(Score)
+      else if Neighbor.ControlFaction = faction_coalition then Inc(Score, 2);
     end;
     Result := RemapClamped(Score, -10, 20, 0.8, 1.2);
   end;
@@ -2420,7 +2420,7 @@ var
   // @nested $733118 SelectAction
   procedure SelectAction; // @addr 0x00733118 @ida "void __cdecl $name(void *ParentFrame);" @note "Writes the captured action. Can replace action 1 with 2; otherwise a failed condition preserves the prior action."
   begin
-    if TargetStar.ControlFaction = sfPirates then
+    if TargetStar.ControlFaction = faction_pirates then
     begin
       if TargetStar.Status.CustomFaction <> '' then
       begin
@@ -2446,7 +2446,7 @@ var
   // @nested $73327C IsShipEligible
   function IsShipEligible: Boolean; // @addr 0x0073327C @ida "bool __cdecl $name(void *ParentFrame);" @note "Current ship must be a TPirate owned by the clan, in normal space, without an absolute order, absolute script order, script binding or partner. Ordinary nonabsolute orders are allowed."
   begin
-    Result := (Ship is TPirate) and (Ship.OwnerId = oiPirate) and not Ship.OrderAbsolute and
+    Result := (Ship is TPirate) and (Ship.OwnerId = owner_pirate) and not Ship.OrderAbsolute and
       (Ship.AbsoluteScriptOrder = 0) and Ship.InNormalSpace and (Ship.ScriptShip = nil) and (Ship.PartnerShip = nil);
   end;
 
@@ -2473,20 +2473,20 @@ var
     Dominion: TRuins;
     Text: WideString;
   begin
-    if (Action = 4) and (SourceStar.Dominion <> nil) and (TargetStar.ControlFaction = sfCoalition) then
+    if (Action = 4) and (SourceStar.Dominion <> nil) and (TargetStar.ControlFaction = faction_coalition) then
     begin
       Dominion := TRuins(SourceStar.Dominion);
-      if Dominion.InNormalSpace and (Dominion.Order = soNone) and (Dominion.ScriptShip = nil) and
+      if Dominion.InNormalSpace and (Dominion.Order = order_none) and (Dominion.ScriptShip = nil) and
          not Dominion.HasScriptControl and (Dominion.FlyToStar = nil) and
          (NextRandomIntRange(0, 100, RandomState) > 70) then
       begin
         Dominion.FlyToStar := TargetStar;
         Dominion.FlyDate := aGalaxy.Galaxy.CurrentTurn + 10;
-        if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and (TargetStar.Status.CustomFaction = '') then
+        if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(artefact_analyzer) > 0) and (TargetStar.Status.CustomFaction = '') then
         begin
           Text := FormatText1(LocalizedText('Artefacts.ArtAnalyzer.AttackPirates'),
             TextHighlightColorTag, '<Star>', TargetStar.Name);
-          if Text <> '' then AddOrUpdatePlayerBubble(pmGalaxyNews, aGalaxy.Galaxy.CurrentTurn, Text, '');
+          if Text <> '' then AddOrUpdatePlayerBubble(message_galaxy_news, aGalaxy.Galaxy.CurrentTurn, Text, '');
         end;
         Exit;
       end;
@@ -2505,18 +2505,18 @@ var
       TPirate(Ship).RaidPressure := TPirate(Ship).RaidPressure + 1;
       Inc(Dispatched);
     end;
-    if (Action = 4) and (Dispatched > 0) and (TargetStar.ControlFaction = sfCoalition) then
-      if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and (TargetStar.Status.CustomFaction = '') then
+    if (Action = 4) and (Dispatched > 0) and (TargetStar.ControlFaction = faction_coalition) then
+      if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(artefact_analyzer) > 0) and (TargetStar.Status.CustomFaction = '') then
       begin
         Text := FormatText1(LocalizedText('Artefacts.ArtAnalyzer.AttackPirates'),
           TextHighlightColorTag, '<Star>', TargetStar.Name);
-        if Text <> '' then AddOrUpdatePlayerBubble(pmGalaxyNews, aGalaxy.Galaxy.CurrentTurn, Text, '');
+        if Text <> '' then AddOrUpdatePlayerBubble(message_galaxy_news, aGalaxy.Galaxy.CurrentTurn, Text, '');
       end;
   end;
 
 begin
   if GetPlayer = nil then Exit;
-  ControlPercent := aGalaxy.Galaxy.GetFactionControlPercent(sfPirates);
+  ControlPercent := aGalaxy.Galaxy.GetFactionControlPercent(faction_pirates);
   BaseChance := Round(aGalaxy.Galaxy.ScaleDifficultyExponentially(aGalaxy.Galaxy.GetPirateAggressionLevel, 5, 2));
   ControlLimit := 15 + Round(aGalaxy.Galaxy.GetPirateAggressionLevel * 5 * 0.125);
   case aGalaxy.Galaxy.PirateWinType of
@@ -2542,7 +2542,7 @@ begin
     end;
   end;
   Chance := Round(RemapClamped(ControlPercent, 1, ControlLimit, BaseChance, 0));
-  Chance := Round(Chance * RemapClamped(aGalaxy.Galaxy.WarDeltaWin[sfPirates], 0, 5, 1, 0.3));
+  Chance := Round(Chance * RemapClamped(aGalaxy.Galaxy.WarDeltaWin[faction_pirates], 0, 5, 1, 0.3));
   if Chance = 0 then Exit;
   MinimumFleet := 5;
   StarIndex := 0;
@@ -2551,18 +2551,18 @@ begin
     SourceStar := TStar(aGalaxy.Galaxy.Stars[StarIndex]);
     if SourceStar.Constellation.Id = 20 then NeighborLimit := 15 else NeighborLimit := 10;
     Inc(StarIndex);
-    if (SourceStar.ControlFaction <> sfPirates) or (SourceStar.Status.CustomFaction <> '') or (SourceStar.Battle <> 0) then Continue;
+    if (SourceStar.ControlFaction <> faction_pirates) or (SourceStar.Status.CustomFaction <> '') or (SourceStar.Battle <> 0) then Continue;
     HasBlocker := False;
     OtherPirates := 0;
     for Attempts := 0 to SourceStar.Ships.Count - 1 do
     begin
       Ship := TShip(SourceStar.Ships[Attempts]);
-      if Ship.CurrentStanding in [ssDominator, ssCoalitionMilitary, ssCoalitionActive] then
+      if Ship.CurrentStanding in [standing_dominator, standing_coalition_military, standing_coalition_active] then
       begin
         HasBlocker := True;
         Break;
       end;
-      if (Ship.CurrentStanding in [ssCoalitionPassive]) and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then Inc(OtherPirates);
+      if (Ship.CurrentStanding in [standing_coalition_passive]) and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then Inc(OtherPirates);
     end;
     if HasBlocker then Continue;
     SourceStar.CountPirateForces(True, SourcePirateStrength, True, True);
@@ -2620,9 +2620,9 @@ var
       if TStar(Star.StarDistances[i].Star).Status.CustomFaction <> '' then Dec(Score)
       else
         case TStar(Star.StarDistances[i].Star).ControlFaction of
-          sfCoalition: Inc(Score, 2);
-          sfPirates: Dec(Score, 2);
-          sfDominators: Dec(Score);
+          faction_coalition: Inc(Score, 2);
+          faction_pirates: Dec(Score, 2);
+          faction_dominators: Dec(Score);
         end;
     Result := RemapClamped(Score, -20, 20, 5, 20);
   end;
@@ -2633,7 +2633,7 @@ begin
   if aGalaxy.Galaxy.CurrentTurn mod (55 - 5 * System.Round(aGalaxy.Galaxy.GetPirateAggressionLevel * 0.125)) <> 0 then Exit;
   Chance := System.Round((aGalaxy.Galaxy.GetPirateAggressionLevel + 4) *
     RemapClamped(aGalaxy.Galaxy.GetCoalitionToPirateSystemRatio, 0.3, 3, 0.1, 1) *
-    RemapClamped(aGalaxy.Galaxy.WarDeltaWin[sfPirates], 0, 5, 1, 0.3));
+    RemapClamped(aGalaxy.Galaxy.WarDeltaWin[faction_pirates], 0, 5, 1, 0.3));
   if NextRandomIntRange(1, 100, RandomState) > Chance then Exit;
   TargetStar := nil;
   TargetBase := nil;
@@ -2641,7 +2641,7 @@ begin
   for i := 0 to aGalaxy.Galaxy.Stars.Count - 1 do
   begin
     Star := aGalaxy.Galaxy.Stars[i];
-    if (Star.ControlFaction <> sfCoalition) or (Star.Status.CustomFaction <> '') or
+    if (Star.ControlFaction <> faction_coalition) or (Star.Status.CustomFaction <> '') or
       (Star.Battle <> 0) or Star.NoComeKling or IsStarProtectedByScript(Star) then Continue;
     if aGalaxy.Galaxy.CurrentTurn <= GalaxyWarmupTurns then
     begin
@@ -2657,11 +2657,11 @@ begin
     for j := 0 to Star.Ships.Count - 1 do
     begin
       Ship := Star.Ships[j];
-      if Ship.CurrentStanding in [ssDominator, ssCustom] then Inc(DominatorCount)
-      else if Ship.OwnerId = oiPirate then Inc(PirateCount)
-      else if Ship.TypeId in [stRanger, stTransport] then Inc(CivilCount)
-      else if Ship.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive] then Inc(CoalitionCount);
-      if (Ship.TypeId = rstPirateBase) and Ship.InNormalSpace and (Ship.ScriptShip = nil) then Base := Ship;
+      if Ship.CurrentStanding in [standing_dominator, standing_custom] then Inc(DominatorCount)
+      else if Ship.OwnerId = owner_pirate then Inc(PirateCount)
+      else if Ship.TypeId in [ship_ranger, ship_transport] then Inc(CivilCount)
+      else if Ship.CurrentStanding in [standing_coalition_military, standing_coalition_active] then Inc(CoalitionCount);
+      if (Ship.TypeId = station_pirate_base) and Ship.InNormalSpace and (Ship.ScriptShip = nil) then Base := Ship;
     end;
     if (Base = nil) or (DominatorCount > 0) or (PirateCount > 0) then Continue;
     Score := NextRandomIntRange(10, 15, RandomState) *
@@ -2678,7 +2678,7 @@ begin
   begin
     SpawnPlanet := TargetStar.SelectRandomInhabitedPlanet;
     OldOwner := SpawnPlanet.OwnerId;
-    SpawnPlanet.OwnerId := oiPirate;
+    SpawnPlanet.OwnerId := owner_pirate;
     Ship := TObject(SpawnPlanet.BuyWarrior(100)) as TShip;
     Ship.Position := TargetBase.Position;
     Ship.CurrentPlanet := nil;
@@ -2687,10 +2687,10 @@ begin
     TNormalShip(Ship).TrainSkillsAutomatically;
     SpawnPlanet.OwnerId := OldOwner;
   end;
-  if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) then
+  if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(artefact_analyzer) > 0) then
   begin
     MessageText := FormatText1(LocalizedText('Artefacts.ArtAnalyzer.AttackPirates'), TextHighlightColorTag, '<Star>', TargetStar.Name);
-    if MessageText <> '' then AddOrUpdatePlayerBubble(pmGalaxyNews, aGalaxy.Galaxy.CurrentTurn, MessageText, '');
+    if MessageText <> '' then AddOrUpdatePlayerBubble(message_galaxy_news, aGalaxy.Galaxy.CurrentTurn, MessageText, '');
   end;
 end;
 { @end $733C58 }
@@ -2893,33 +2893,33 @@ var
 begin
   NewGovernment := Government;
   Attempts := 0;
-  NewsType := gnRevolutionAnarchy;
+  NewsType := news_revolution_anarchy;
   repeat
     Roll := NextRandomIntRange(0, 100, RandomState);
-    for Candidate := pgDemocracy downto pgAnarchy do
+    for Candidate := government_democracy downto government_anarchy do
       if aConst.PlanetRaceMarket[RaceId].GovernmentRollThresholds[Candidate] <= Roll then
       begin
         NewGovernment := Candidate;
         case NewGovernment of
-          pgAnarchy: NewsType := gnRevolutionAnarchy;
-          pgDictatorship: NewsType := gnRevolutionDictatorship;
-          pgMonarchy: NewsType := gnRevolutionMonarchy;
-          pgRepublic: NewsType := gnRevolutionRepublic;
-          pgDemocracy: NewsType := gnRevolutionDemocracy;
+          government_anarchy: NewsType := news_revolution_anarchy;
+          government_dictatorship: NewsType := news_revolution_dictatorship;
+          government_monarchy: NewsType := news_revolution_monarchy;
+          government_republic: NewsType := news_revolution_republic;
+          government_democracy: NewsType := news_revolution_democracy;
         end;
         Break;
       end;
     Inc(Attempts);
     if Attempts > 100 then
-      if Government <> pgAnarchy then
+      if Government <> government_anarchy then
       begin
-        NewGovernment := pgAnarchy;
-        NewsType := gnRevolutionAnarchy;
+        NewGovernment := government_anarchy;
+        NewsType := news_revolution_anarchy;
       end
       else
       begin
-        NewGovernment := pgDemocracy;
-        NewsType := gnRevolutionDemocracy;
+        NewGovernment := government_democracy;
+        NewsType := news_revolution_democracy;
       end;
     // The native news-duplication test has an empty body.
     if CurrentStar.IsConstellationVisible and
@@ -2935,15 +2935,15 @@ begin
   end;
   // Native emits every revolution under the anarchy ID, regardless of NewGovernment.
   if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-    aGalaxy.Galaxy.AddPlanetNews(gnRevolutionAnarchy, FormatText2(
+    aGalaxy.Galaxy.AddPlanetNews(news_revolution_anarchy, FormatText2(
       PickLocalizedTextVariant('GalaxyNews.Planet.Revolution.' + SysUtils.IntToStr(Ord(Government)),
         (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
       TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   // The goods event uses Candidate even when the attempt limit changes NewGovernment.
   case Candidate of
-    pgAnarchy: ForceGoodsScarcity(True, [0, 1, 2, 6]);
-    pgDictatorship: ForceGoodsScarcity(True, [0, 1, 6]);
-    pgMonarchy:
+    government_anarchy: ForceGoodsScarcity(True, [0, 1, 2, 6]);
+    government_dictatorship: ForceGoodsScarcity(True, [0, 1, 6]);
+    government_monarchy:
       begin
         GoodsMask := [0];
         for ItemType := 1 to 7 do
@@ -2951,12 +2951,12 @@ begin
             Include(GoodsMask, ItemType);
         ForceGoodsSurplus(True, GoodsMask);
       end;
-    pgRepublic:
+    government_republic:
       begin
         ForceGoodsScarcity(True, [4]);
         ForceGoodsSurplus(True, [2, 6]);
       end;
-    pgDemocracy:
+    government_democracy:
       begin
         ForceGoodsScarcity(True, [3, 4]);
         ForceGoodsSurplus(True, [2, 6]);
@@ -2971,7 +2971,7 @@ begin
   if IsMainPiratePlanet then Exit;
   if NoRandomEvents then Exit;
   if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.PlanetNews.Count >= MaxPlanetNews) then Exit;
-  if CurrentStar.ShipTypeCounts[stKling] > 0 then Exit;
+  if CurrentStar.ShipTypeCounts[ship_dominator] > 0 then Exit;
   if (aGalaxy.Galaxy.CurrentTurn + Integer(GenerationSeed)) mod 30 <> 0 then Exit;
   if CurrentStar.DaysSincePlayerVisit < 30 then Exit;
   if SeededRandomFloatRange(Integer(GenerationSeed) * aGalaxy.Galaxy.CurrentTurn * 1017, 0, 1) <
@@ -2982,13 +2982,13 @@ begin
   end;
   if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1117) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnMineralDeposit) = 0)) and
-    (Economy in [peMixed, peIndustrial]) then
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(news_mineral_deposit) = 0)) and
+    (Economy in [economy_mixed, economy_industrial]) then
   begin
     ForceGoodsScarcity(True, [2]);
     ForceGoodsSurplus(True, [4]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(gnMineralDeposit, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(news_mineral_deposit, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.MineralDeposit',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
@@ -2996,12 +2996,12 @@ begin
   end;
   if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1127) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnMineralShortage) = 0)) and
-    (Economy in [peIndustrial]) then
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(news_mineral_shortage) = 0)) and
+    (Economy in [economy_industrial]) then
   begin
     ForceGoodsScarcity(True, [4]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(gnMineralShortage, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(news_mineral_shortage, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.NeedMineral',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
@@ -3009,14 +3009,14 @@ begin
   end;
   if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1217) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnArmsSurplus) = 0)) and
-    (Economy in [peMixed, peIndustrial]) and
-    (RaceToOwner(RaceId) in [oiMaloc, oiHuman, oiFeyan]) then
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(news_arms_surplus) = 0)) and
+    (Economy in [economy_mixed, economy_industrial]) and
+    (RaceToOwner(RaceId) in [owner_maloc, owner_human, owner_feyan]) then
   begin
     ForceGoodsScarcity(True, [2]);
     ForceGoodsSurplus(True, [6]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(gnArmsSurplus, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(news_arms_surplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyArms',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
@@ -3024,143 +3024,143 @@ begin
   end;
   if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1227) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnArmsShortage) = 0)) and
-    (Economy in [peMixed]) and
-    (RaceToOwner(RaceId) in [oiMaloc..oiHuman]) then
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(news_arms_shortage) = 0)) and
+    (Economy in [economy_mixed]) and
+    (RaceToOwner(RaceId) in [owner_maloc..owner_human]) then
   begin
     ForceGoodsScarcity(True, [6]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(gnArmsShortage, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(news_arms_shortage, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.NeedArms',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1237) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnArmsShortage) = 0)) and
-    (Economy in [peMixed]) and
-    (RaceToOwner(RaceId) in [oiMaloc..oiFeyan]) and
-    (Government in [pgDemocracy]) then
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(news_arms_shortage) = 0)) and
+    (Economy in [economy_mixed]) and
+    (RaceToOwner(RaceId) in [owner_maloc..owner_feyan]) and
+    (Government in [government_democracy]) then
   begin
     ForceGoodsScarcity(True, [6]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(gnArmsShortage, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(news_arms_shortage, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.NeedArmsForRevolution',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1317) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnTechnicsSurplus) = 0)) and
-    (Economy in [peMixed, peIndustrial]) and
-    (RaceToOwner(RaceId) in [oiHuman..oiGaal]) then
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(news_technical_goods_surplus) = 0)) and
+    (Economy in [economy_mixed, economy_industrial]) and
+    (RaceToOwner(RaceId) in [owner_human..owner_gaal]) then
   begin
     ForceGoodsSurplus(True, [2, 6]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(gnTechnicsSurplus, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(news_technical_goods_surplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyTechnics',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 71417) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnFoodSurplus) = 0)) and
-    (Economy in [peAgricultural, peMixed]) then
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(news_food_surplus) = 0)) and
+    (Economy in [economy_agricultural, economy_mixed]) then
   begin
     ForceGoodsSurplus(True, [0]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(gnFoodSurplus, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(news_food_surplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyFood',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 31427) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnFoodSurplus) = 0)) and
-    (Economy in [peAgricultural]) then
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(news_food_surplus) = 0)) and
+    (Economy in [economy_agricultural]) then
   begin
     ForceGoodsSurplus(True, [0]);
     ForceGoodsScarcity(True, [2]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(gnFoodSurplus, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(news_food_surplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyFoodNeedTechnics',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 21437) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnFoodShortage) = 0)) and
-    (Economy in [peAgricultural, peMixed, peIndustrial]) and
-    (RaceToOwner(RaceId) in [oiMaloc..oiFeyan]) then
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(news_food_shortage) = 0)) and
+    (Economy in [economy_agricultural, economy_mixed, economy_industrial]) and
+    (RaceToOwner(RaceId) in [owner_maloc..owner_feyan]) then
   begin
     ForceGoodsScarcity(True, [0, 1, 7]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(gnFoodShortage, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(news_food_shortage, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.NeedFood',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1517) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnMedicineSurplus) = 0)) and
-    (Economy in [peMixed]) and
-    (RaceToOwner(RaceId) in [oiHuman..oiGaal]) then
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(news_medicine_surplus) = 0)) and
+    (Economy in [economy_mixed]) and
+    (RaceToOwner(RaceId) in [owner_human..owner_gaal]) then
   begin
     ForceGoodsSurplus(True, [1]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(gnMedicineSurplus, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(news_medicine_surplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyMedicine',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1617) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnLuxurySurplus) = 0)) and
-    (Economy in [peAgricultural, peMixed, peIndustrial]) and
-    (RaceToOwner(RaceId) in [oiPeleng..oiGaal]) then
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(news_luxury_surplus) = 0)) and
+    (Economy in [economy_agricultural, economy_mixed, economy_industrial]) and
+    (RaceToOwner(RaceId) in [owner_peleng..owner_gaal]) then
   begin
     ForceGoodsSurplus(True, [3]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(gnLuxurySurplus, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(news_luxury_surplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyLuxury',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1717) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnLuxuryShortage) = 0)) and
-    (Economy in [peAgricultural, peMixed]) and
-    (RaceToOwner(RaceId) in [oiHuman..oiGaal]) then
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(news_luxury_shortage) = 0)) and
+    (Economy in [economy_agricultural, economy_mixed]) and
+    (RaceToOwner(RaceId) in [owner_human..owner_gaal]) then
   begin
     ForceGoodsScarcity(True, [3]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(gnLuxuryShortage, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(news_luxury_shortage, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.NeedLuxury',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1817) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnAlcoholSurplus) = 0)) and
-    (Economy in [peAgricultural, peMixed]) and
-    (RaceToOwner(RaceId) in [oiPeleng..oiHuman]) then
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(news_alcohol_surplus) = 0)) and
+    (Economy in [economy_agricultural, economy_mixed]) and
+    (RaceToOwner(RaceId) in [owner_peleng..owner_human]) then
   begin
     ForceGoodsSurplus(True, [5]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(gnAlcoholSurplus, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(news_alcohol_surplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyAlcohol',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1917) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnAlcoholShortage) = 0)) and
-    (Economy in [peMixed, peIndustrial]) and
-    (RaceToOwner(RaceId) in [oiHuman,oiGaal]) then
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(news_alcohol_shortage) = 0)) and
+    (Economy in [economy_mixed, economy_industrial]) and
+    (RaceToOwner(RaceId) in [owner_human,owner_gaal]) then
   begin
     ForceGoodsScarcity(True, [5]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(gnAlcoholShortage, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(news_alcohol_shortage, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.NeedAlcohol',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
@@ -3252,7 +3252,7 @@ begin
               end;
         end;
         Good := Definition^.Adverts[Definition^.Lists[Index].Indices[ConditionIndex]].Goods;
-        if (Good in [Ord(t_Food)..Ord(t_Narcotics)]) and (Good <> SelectedGood) then
+        if (Good in [Ord(item_food)..Ord(item_narcotics)]) and (Good <> SelectedGood) then
         begin
           Eligible := False;
           Break;
@@ -3319,23 +3319,23 @@ var Text: WideString;
 begin
   if IsMainPiratePlanet then
   begin
-    if OwnerId = oiPirate then Text := LocalizedText('Planet.MainPiratePlanet.Info.TextAboutPlanet')
+    if OwnerId = owner_pirate then Text := LocalizedText('Planet.MainPiratePlanet.Info.TextAboutPlanet')
     else Text := LocalizedText('Planet.MainPiratePlanet.Info.TextAboutPlanetAlt');
   end
-  else if (CustomFaction <> '') and (OwnerId <> oiUninhabited) then
+  else if (CustomFaction <> '') and (OwnerId <> owner_uninhabited) then
     Text := LocalizedText('Planet.' + CustomFaction + '.Info.TextAboutPlanet')
-  else if (CurrentStar.Status.CustomFaction <> '') and (OwnerId <> oiUninhabited) then
+  else if (CurrentStar.Status.CustomFaction <> '') and (OwnerId <> owner_uninhabited) then
     Text := LocalizedText('Planet.' + CurrentStar.Status.CustomFaction + '.Info.TextAboutPlanet')
   else
     case OwnerId of
-      oiMaloc..oiGaal, oiPirate: Text := LocalizedText('Planet.Civil.Info.TextAboutPlanet');
-      oiDominator: Text := LocalizedText('Planet.Kling.Info.TextAboutPlanet');
-      oiUninhabited: Text := LocalizedText('Planet.NotCivil.Info.TextAboutPlanet');
+      owner_maloc..owner_gaal, owner_pirate: Text := LocalizedText('Planet.Civil.Info.TextAboutPlanet');
+      owner_dominator: Text := LocalizedText('Planet.Kling.Info.TextAboutPlanet');
+      owner_uninhabited: Text := LocalizedText('Planet.NotCivil.Info.TextAboutPlanet');
     end;
   if GetPlayer <> nil then
-    if (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and (OwnerId = oiUninhabited) and not ForMap then
+    if (GetPlayer.CountActiveArtefacts(artefact_analyzer) > 0) and (OwnerId = owner_uninhabited) and not ForMap then
       Text := Text + #13#10 + BuildNonCivilTreasureHintText;
-  if ForMap and (OwnerId = oiPirate) and (Galaxy.CoalitionDefeatedTurn = 0) then
+  if ForMap and (OwnerId = owner_pirate) and (Galaxy.CoalitionDefeatedTurn = 0) then
     Text := Text + #13#10 + RedColorTag + LocalizedText('Planet.Civil.Info.TextPlanetControlledByPirates') + EndColorTag;
   if WaterTiles - WaterExplored > 0 then ReplaceTextToken(Text, '<Water>', WideString(IntToStr(WaterTiles - WaterExplored)), TextHighlightColorTag)
   else ReplaceTextToken(Text, '<Water>', '-', '');
@@ -3374,9 +3374,9 @@ function TPlanet.GetFactionResourceName: WideString;
 begin
   if CustomFaction <> '' then Result := CustomFaction
   else if CurrentStar.Status.CustomFaction <> '' then Result := CurrentStar.Status.CustomFaction
-  else if CurrentStar.ControlFaction = sfDominators then Result := aConst.DominatorSeriesNames[CurrentStar.DominatorSeries]
+  else if CurrentStar.ControlFaction = faction_dominators then Result := aConst.DominatorSeriesNames[CurrentStar.DominatorSeries]
   else if IsMainPiratePlanet then Result := aConst.OwnerInfo[OwnerId].InternalName
-  else if OwnerId = oiPirate then Result := aConst.OwnerInfo[oiPirate].InternalName + RaceToSys(RaceId)
+  else if OwnerId = owner_pirate then Result := aConst.OwnerInfo[owner_pirate].InternalName + RaceToSys(RaceId)
   else Result := aConst.OwnerInfo[OwnerId].InternalName;
 end;
 { @end $73709C }
@@ -3398,11 +3398,11 @@ begin
   for i := 0 to aGalaxy.Galaxy.Planets.Count - 1 do
   begin
     Planet := aGalaxy.Galaxy.Planets[i];
-    if OwnerId = oiUninhabited then
+    if OwnerId = owner_uninhabited then
     begin
       if OwnerId = Planet.OwnerId then Inc(Count);
     end
-    else if Planet.OwnerId <> oiUninhabited then
+    else if Planet.OwnerId <> owner_uninhabited then
       if RaceId = Planet.RaceId then Inc(Count);
   end;
   Result := Count;
@@ -3546,7 +3546,7 @@ end;
 { @routine $7376D8 TPlanet_GetUnexploredSurfaceTileCount }
 function TPlanet.GetUnexploredSurfaceTileCount: Integer;
 begin
-  if OwnerId = oiUninhabited then Result := GetTotalSurfaceTileCount - (WaterExplored + LandExplored + HillExplored)
+  if OwnerId = owner_uninhabited then Result := GetTotalSurfaceTileCount - (WaterExplored + LandExplored + HillExplored)
   else Result := 0;
 end;
 { @end $7376D8 }
@@ -3600,7 +3600,7 @@ var
 begin
   Result := False;
   if CurrentStar.DaysSincePlayerVisit < 720 then Exit;
-  if OwnerId <> oiUninhabited then Exit;
+  if OwnerId <> owner_uninhabited then Exit;
   if GetUnexploredSurfaceTileCount > GetTotalSurfaceTileCount * 0.4 then Exit;
   if GetPlayer.HasSatelliteOnPlanet(Self) then Exit;
   if SurfaceLootEntries = nil then Exit;
@@ -3638,7 +3638,7 @@ end;
 { @routine $737998 TPlanet_SelectCurrentInvention }
 procedure TPlanet.SelectCurrentInvention;
 var
-  Track: TPlanetInvention;
+  Track: TResearchTrack;
   Chance: Double;
   Found: Boolean;
   i, Index: Integer;
@@ -3646,14 +3646,14 @@ begin
   Found := False;
   Chance := 0.03;
   repeat
-    Index := NextRandomIntRange(Ord(Low(TPlanetInvention)), Ord(High(TPlanetInvention)), RandomState);
-    for i := Ord(Low(TPlanetInvention)) to Ord(High(TPlanetInvention)) do
+    Index := NextRandomIntRange(Ord(Low(TResearchTrack)), Ord(High(TResearchTrack)), RandomState);
+    for i := Ord(Low(TResearchTrack)) to Ord(High(TResearchTrack)) do
     begin
-      IncrementWrapped(Index, Ord(Low(TPlanetInvention)), Ord(High(TPlanetInvention)));
-      Track := TPlanetInvention(Index);
+      IncrementWrapped(Index, Ord(Low(TResearchTrack)), Ord(High(TResearchTrack)));
+      Track := TResearchTrack(Index);
       if (ResearchLevelPercent > System.Round(InventionLevels[Track] * 12.5)) and
-        (aConst.PlanetInventionInfo[Track].RequiredMainTechLevel <= InventionLevels[piMainTech]) and
-        (InventionLevels[Track] <= InventionLevels[piMainTech]) and
+        (aConst.PlanetInventionInfo[Track].RequiredMainTechLevel <= InventionLevels[research_main_technology]) and
+        (InventionLevels[Track] <= InventionLevels[research_main_technology]) and
         (NextRandomUnitFloat(RandomState) <= Chance) then
       begin
         CurrentInvention := Track;
@@ -3671,13 +3671,13 @@ end;
 { @routine $737AE8 TPlanet_AdvanceInventionProgress }
 procedure TPlanet.AdvanceInventionProgress;
 var
-  Track: TPlanetInvention;
+  Track: TResearchTrack;
   Average, Progress: Double;
   Complete, RaiseCeiling: Boolean;
   Count: Integer;
 begin
   Complete := True;
-  for Track := Low(TPlanetInvention) to High(TPlanetInvention) do
+  for Track := Low(TResearchTrack) to High(TResearchTrack) do
     if InventionLevels[Track] < 8 then Complete := False;
   if Complete then Exit;
   Progress := CalculateInventionProgressRate;
@@ -3688,21 +3688,21 @@ begin
     InventionLevels[CurrentInvention] := Min(8, InventionLevels[CurrentInvention] + 1);
     CurrentInventionPoints := 0;
     Complete := True;
-    for Track := Low(TPlanetInvention) to High(TPlanetInvention) do
+    for Track := Low(TResearchTrack) to High(TResearchTrack) do
       if InventionLevels[Track] < 8 then Complete := False;
     if Complete then Exit;
     RaiseCeiling := True;
     repeat
-      for Track := Low(TPlanetInvention) to High(TPlanetInvention) do
+      for Track := Low(TResearchTrack) to High(TResearchTrack) do
         if (ResearchLevelPercent > System.Round(InventionLevels[Track] * 12.5)) and
-          (aConst.PlanetInventionInfo[Track].RequiredMainTechLevel <= InventionLevels[piMainTech]) and
-          (InventionLevels[Track] <= InventionLevels[piMainTech]) then RaiseCeiling := False;
+          (aConst.PlanetInventionInfo[Track].RequiredMainTechLevel <= InventionLevels[research_main_technology]) and
+          (InventionLevels[Track] <= InventionLevels[research_main_technology]) then RaiseCeiling := False;
       if not RaiseCeiling then
       begin
         Average := 0;
         Count := 0;
-        for Track := Low(TPlanetInvention) to High(TPlanetInvention) do
-          if aConst.PlanetInventionInfo[Track].RequiredMainTechLevel <= InventionLevels[piMainTech] then
+        for Track := Low(TResearchTrack) to High(TResearchTrack) do
+          if aConst.PlanetInventionInfo[Track].RequiredMainTechLevel <= InventionLevels[research_main_technology] then
           begin
             Average := Average + InventionLevels[Track] * 12.5;
             Inc(Count);
@@ -3759,12 +3759,12 @@ begin
   Budget := System.Round(RemapClamped(NextRandomUnitFloat(RandomState), 0, 1, 0.2, 0.4) * aGalaxy.Galaxy.MaxRangerWealth);
   if Budget > 600000 then Budget := 600000;
   Budget := System.Round(Budget * 0.01 * MoneyPercent);
-  if Kind = 0 then Transport.InitGenerated(Self, Budget, ttTransport, True)
+  if Kind = 0 then Transport.InitGenerated(Self, Budget, transport_standard, True)
   else
   begin
-    if Kind = Byte(htTransport) then SubType := ttTransport
-    else if Kind = Byte(htLiner) then SubType := ttLiner
-    else SubType := ttDiplomat;
+    if Kind = Byte(hull_transport) then SubType := transport_standard
+    else if Kind = Byte(hull_liner) then SubType := transport_liner
+    else SubType := transport_diplomat;
     Transport.InitGenerated(Self, Budget, SubType, False);
   end;
   Result := Transport;
@@ -3809,15 +3809,15 @@ var
   Pirate: TPirate;
   Kind: Integer;
 begin
-  if OwnerId = oiPirate then
+  if OwnerId = owner_pirate then
   begin
     Pirate := TPirate.Create;
     Budget := System.Round(RemapClamped(NextRandomUnitFloat(RandomState), 0, 1, 0.3, 0.5) * aGalaxy.Galaxy.MaxRangerWealth);
     if Budget > 800000 then Budget := 800000;
-    Budget := System.Round(RemapClamped(aGalaxy.Galaxy.GetFactionControlPercent(sfDominators) +
-      aGalaxy.Galaxy.GetFactionControlPercent(sfCoalition), 0, 100, Budget * 0.7, Budget * 1.2));
+    Budget := System.Round(RemapClamped(aGalaxy.Galaxy.GetFactionControlPercent(faction_dominators) +
+      aGalaxy.Galaxy.GetFactionControlPercent(faction_coalition), 0, 100, Budget * 0.7, Budget * 1.2));
     if NextRandomUnitFloat(RandomState) > 0.2 then
-      Budget := System.Round(RemapClamped(aGalaxy.Galaxy.WarDeltaWin[sfPirates], -5, 5, Budget * 2, Budget * 0.5));
+      Budget := System.Round(RemapClamped(aGalaxy.Galaxy.WarDeltaWin[faction_pirates], -5, 5, Budget * 2, Budget * 0.5));
     Budget := System.Round(Budget * 0.01 * MoneyPercent);
     Kind := NextRandomIntRange(0, 9, RandomState);
     if Kind <= 3 then Pirate.InitGenerated(Self, Budget, 1)
@@ -3830,11 +3830,11 @@ begin
     Warrior := TWarrior.Create;
     Budget := System.Round(RemapClamped(NextRandomUnitFloat(RandomState), 0, 1, 0.3, 0.5) * aGalaxy.Galaxy.MaxRangerWealth);
     if Budget > 900000 then Budget := 900000;
-    Budget := System.Round(RemapClamped(aGalaxy.Galaxy.GetFactionControlPercent(sfCoalition), 0, 100, Budget * 1.2, Budget * 0.7));
+    Budget := System.Round(RemapClamped(aGalaxy.Galaxy.GetFactionControlPercent(faction_coalition), 0, 100, Budget * 1.2, Budget * 0.7));
     if NextRandomUnitFloat(RandomState) > 0.2 then
-      Budget := System.Round(RemapClamped(aGalaxy.Galaxy.WarDeltaWin[sfCoalition], -5, 5, Budget * 2, Budget * 0.5));
+      Budget := System.Round(RemapClamped(aGalaxy.Galaxy.WarDeltaWin[faction_coalition], -5, 5, Budget * 2, Budget * 0.5));
     Budget := System.Round(Budget * 0.01 * MoneyPercent);
-    Warrior.InitGenerated(Self, Budget, wtRegular);
+    Warrior.InitGenerated(Self, Budget, warrior_regular);
     Result := Warrior;
   end;
   CurrentStar.DaysSinceLastNpcShipSpawn := 0;
@@ -3850,11 +3850,11 @@ begin
     Warrior := TWarrior.Create;
     Budget := System.Round(RemapClamped(NextRandomUnitFloat(RandomState), 0, 1, 0.3, 0.5) * aGalaxy.Galaxy.MaxRangerWealth);
     if Budget > 900000 then Budget := 900000;
-    Budget := System.Round(RemapClamped(aGalaxy.Galaxy.GetFactionControlPercent(sfCoalition), 0, 100, Budget * 1.2, Budget * 0.7));
+    Budget := System.Round(RemapClamped(aGalaxy.Galaxy.GetFactionControlPercent(faction_coalition), 0, 100, Budget * 1.2, Budget * 0.7));
     if NextRandomUnitFloat(RandomState) > 0.2 then
-      Budget := System.Round(RemapClamped(aGalaxy.Galaxy.WarDeltaWin[sfCoalition], -5, 5, Budget * 2, Budget * 0.5));
+      Budget := System.Round(RemapClamped(aGalaxy.Galaxy.WarDeltaWin[faction_coalition], -5, 5, Budget * 2, Budget * 0.5));
     Budget := System.Round(Budget * 0.01 * MoneyPercent);
-    Warrior.InitGenerated(Self, Budget, wtFlagship);
+    Warrior.InitGenerated(Self, Budget, warrior_flagship);
     Result := Warrior;
   CurrentStar.DaysSinceLastNpcShipSpawn := 0;
 end;
@@ -3864,21 +3864,21 @@ end;
 function TPlanet.SpawnWeightedDominatorShip: Pointer;
 var
   Level, Roll, Accumulated: Integer;
-  Kind, LargestKind: TKlingType;
+  Kind, LargestKind: TDominatorKind;
   Total, LargestWeight: Integer;
 begin
-  Level := System.Round(RemapClamped(aGalaxy.Galaxy.CountFactionStars(sfDominators), 0, 100, 5, 1));
+  Level := System.Round(RemapClamped(aGalaxy.Galaxy.CountFactionStars(faction_dominators), 0, 100, 5, 1));
   Total := 0;
-  LargestKind := ktBoss;
+  LargestKind := dominator_boss;
   LargestWeight := 0;
-  for Kind := ktBoss to ktKlig do
+  for Kind := dominator_boss to dominator_klig do
   begin
-    if Kind = ktBoss then Continue;
-    if (Kind = ktBertor) and
+    if Kind = dominator_boss then Continue;
+    if (Kind = dominator_bertor) and
       (CurrentStar.Constellation.HasBertorOfSeries(CurrentStar.DominatorSeries) or
        (aKling.DominatorSpawnPlanet = Self)) then Continue;
     Inc(Total, DominatorSpawnWeights[Level, Kind]);
-    if (DominatorSpawnWeights[Level, Kind] > LargestWeight) or (LargestKind = ktBoss) then
+    if (DominatorSpawnWeights[Level, Kind] > LargestWeight) or (LargestKind = dominator_boss) then
     begin
       LargestWeight := DominatorSpawnWeights[Level, Kind];
       LargestKind := Kind;
@@ -3886,10 +3886,10 @@ begin
   end;
   Accumulated := 0;
   Roll := NextRandomIntRange(0, Total, RandomState);
-  for Kind := ktBoss to ktKlig do
+  for Kind := dominator_boss to dominator_klig do
   begin
-    if Kind = ktBoss then Continue;
-    if (Kind = ktBertor) and
+    if Kind = dominator_boss then Continue;
+    if (Kind = dominator_bertor) and
       (CurrentStar.Constellation.HasBertorOfSeries(CurrentStar.DominatorSeries) or
        (aKling.DominatorSpawnPlanet = Self)) then Continue;
     Inc(Accumulated, DominatorSpawnWeights[Level, Kind]);
@@ -3899,23 +3899,23 @@ begin
       Exit;
     end;
   end;
-  Result := SpawnDominatorShip(ktShtip);
+  Result := SpawnDominatorShip(dominator_shtip);
 end;
 { @end $738540 }
 
 { @routine $73868C TPlanet_SpawnDominatorShip }
-function TPlanet.SpawnDominatorShip(Kind: TKlingType): Pointer;
+function TPlanet.SpawnDominatorShip(Kind: TDominatorKind): Pointer;
 var
   Ship: TKling;
   Series: TDominatorSeries;
 begin
   Ship := TKling.Create;
   Series := CurrentStar.DominatorSeries;
-  if CurrentStar.ControlFaction <> sfDominators then
+  if CurrentStar.ControlFaction <> faction_dominators then
   begin
-    if (Series = dsTerron) and (aKling.TerronShip <> nil) and
-      (aGalaxy.Galaxy.TerronToStarTurn >= TerronTransformationFlag) then Series := dsKeller;
-    if (Series = dsBlazer) and (aGalaxy.Galaxy.BlazerSelfDestructTurn <> 0) then Series := dsKeller;
+    if (Series = series_terron) and (aKling.TerronShip <> nil) and
+      (aGalaxy.Galaxy.TerronToStarTurn >= TerronTransformationFlag) then Series := series_keller;
+    if (Series = series_blazer) and (aGalaxy.Galaxy.BlazerSelfDestructTurn <> 0) then Series := series_keller;
   end;
   Ship.InitGenerated(Kind, Self, Series);
   Result := Ship;
@@ -3930,7 +3930,7 @@ var
   Ship: TShip;
   Owner, SelectedOwner, OldOwner, OldRace: TOwnerId;
   Series, SelectedSeries, OldSeries: TDominatorSeries;
-  Kind, SelectedKind: TKlingType;
+  Kind, SelectedKind: TDominatorKind;
   ShipKind, SelectedShipKind: THullType;
   i, j, Count: Integer;
   Found: Boolean;
@@ -3940,12 +3940,12 @@ begin
   if OwnerId in Rules.OwnerMask then SelectedOwner := OwnerId
   else
   begin
-    SelectedOwner := oiMaloc;
+    SelectedOwner := owner_maloc;
     Count := 0;
-    for Owner := oiMaloc to oiPirate do
+    for Owner := owner_maloc to owner_pirate do
       if Owner in Rules.OwnerMask then Inc(Count);
     Count := NextRandomIntRange(1, Count, RandomState);
-    for Owner := oiMaloc to oiPirate do
+    for Owner := owner_maloc to owner_pirate do
       if Owner in Rules.OwnerMask then
       begin
         Dec(Count);
@@ -3953,17 +3953,17 @@ begin
         if Count <= 0 then Break;
       end;
   end;
-  SelectedShipKind := htRanger;
-  SelectedKind := ktBoss;
-  SelectedSeries := dsBlazer;
+  SelectedShipKind := hull_ranger;
+  SelectedKind := dominator_boss;
+  SelectedSeries := series_blazer;
   Count := 0;
   for ShipKind := Low(THullType) to High(THullType) do
     if ShipKind in Rules.ShipTypeMask then
     begin
-      if ShipKind = htKling then
+      if ShipKind = hull_dominator then
       begin
-        for Kind := ktBoss to ktKlig do
-          for Series := dsBlazer to dsTerron do
+        for Kind := dominator_boss to dominator_klig do
+          for Series := series_blazer to series_terron do
             if Series in Rules.DominatorMasks[Kind] then Inc(Count);
       end
       else Inc(Count);
@@ -3973,11 +3973,11 @@ begin
   for ShipKind := Low(THullType) to High(THullType) do
   begin
     if not (ShipKind in Rules.ShipTypeMask) then Continue;
-    if ShipKind = htKling then
+    if ShipKind = hull_dominator then
     begin
-      for Kind := ktBoss to ktKlig do
+      for Kind := dominator_boss to dominator_klig do
       begin
-        for Series := dsBlazer to dsTerron do
+        for Series := series_blazer to series_terron do
         begin
           if Series in Rules.DominatorMasks[Kind] then
           begin
@@ -4001,11 +4001,11 @@ begin
     if Found then Break;
   end;
   Result := nil;
-  if (SelectedShipKind = htKling) and (SelectedKind = ktBoss) then Exit;
+  if (SelectedShipKind = hull_dominator) and (SelectedKind = dominator_boss) then Exit;
   OldOwner := OwnerId;
   OwnerId := SelectedOwner;
   OldRace := RaceId;
-  if OwnerId in [oiMaloc..oiGaal] then RaceId := OwnerToRace(OwnerId);
+  if OwnerId in [owner_maloc..owner_gaal] then RaceId := OwnerToRace(OwnerId);
   OldSeries := CurrentStar.DominatorSeries;
   CurrentStar.DominatorSeries := SelectedSeries;
   OldTechLevel := aGalaxy.Galaxy.TechLevel;
@@ -4014,17 +4014,17 @@ begin
   while Ship = nil do
   begin
     case SelectedShipKind of
-      htRanger: Ship := TObject(BuyRanger(100)) as TShip;
-      htWarrior: Ship := TObject(BuyWarrior(100)) as TShip;
-      htPirate: Ship := TObject(BuyPirate(100)) as TShip;
-      htTransport..htDiplomat: Ship := TObject(SpawnTransport(Byte(SelectedShipKind), 100)) as TShip;
-      htKling: Ship := TObject(SpawnDominatorShip(SelectedKind)) as TShip;
-      htTranclucator: Ship := TObject(SpawnTranclucator(True)) as TShip;
+      hull_ranger: Ship := TObject(BuyRanger(100)) as TShip;
+      hull_warrior: Ship := TObject(BuyWarrior(100)) as TShip;
+      hull_pirate: Ship := TObject(BuyPirate(100)) as TShip;
+      hull_transport..hull_diplomat: Ship := TObject(SpawnTransport(Byte(SelectedShipKind), 100)) as TShip;
+      hull_dominator: Ship := TObject(SpawnDominatorShip(SelectedKind)) as TShip;
+      hull_tranclucator: Ship := TObject(SpawnTranclucator(True)) as TShip;
     end;
     Inc(i);
     if i mod 50 = 0 then aGalaxy.Galaxy.TechLevel := Min(8, aGalaxy.Galaxy.TechLevel + 1);
     if Rules.MinCargoHookLevel > 0 then
-      if Ship.GetSlotCount(sskCargoHook) < 1 then
+      if Ship.GetSlotCount(slot_cargo_hook) < 1 then
       begin
         Ship.Free;
         Ship := nil;
@@ -4070,23 +4070,23 @@ begin
     if Ship is TRanger then
   begin
     // Complements the Byte before testing the range, rather than negating membership.
-    if (not (Ship as TRanger).CareerStatus[rcTrader]) in [Rules.MinTraderStatus..Rules.MaxTraderStatus] then
+    if (not (Ship as TRanger).CareerStatus[career_trader]) in [Rules.MinTraderStatus..Rules.MaxTraderStatus] then
     begin
-      (Ship as TRanger).CareerStatus[rcTrader] := (Rules.MinTraderStatus + Rules.MaxTraderStatus) div 2;
-      (Ship as TRanger).CareerStatus[rcPirate] := (100 - (Ship as TRanger).CareerStatus[rcTrader]) div 2;
-      (Ship as TRanger).CareerStatus[rcWarrior] := 100 - (Ship as TRanger).CareerStatus[rcTrader] - (Ship as TRanger).CareerStatus[rcPirate];
+      (Ship as TRanger).CareerStatus[career_trader] := (Rules.MinTraderStatus + Rules.MaxTraderStatus) div 2;
+      (Ship as TRanger).CareerStatus[career_pirate] := (100 - (Ship as TRanger).CareerStatus[career_trader]) div 2;
+      (Ship as TRanger).CareerStatus[career_warrior] := 100 - (Ship as TRanger).CareerStatus[career_trader] - (Ship as TRanger).CareerStatus[career_pirate];
     end;
-    if (not (Ship as TRanger).CareerStatus[rcPirate]) in [Rules.MinPirateStatus..Rules.MaxPirateStatus] then
+    if (not (Ship as TRanger).CareerStatus[career_pirate]) in [Rules.MinPirateStatus..Rules.MaxPirateStatus] then
     begin
-      (Ship as TRanger).CareerStatus[rcPirate] := (Rules.MinPirateStatus + Rules.MaxPirateStatus) div 2;
-      (Ship as TRanger).CareerStatus[rcTrader] := (100 - (Ship as TRanger).CareerStatus[rcPirate]) div 2;
-      (Ship as TRanger).CareerStatus[rcWarrior] := 100 - (Ship as TRanger).CareerStatus[rcPirate] - (Ship as TRanger).CareerStatus[rcTrader];
+      (Ship as TRanger).CareerStatus[career_pirate] := (Rules.MinPirateStatus + Rules.MaxPirateStatus) div 2;
+      (Ship as TRanger).CareerStatus[career_trader] := (100 - (Ship as TRanger).CareerStatus[career_pirate]) div 2;
+      (Ship as TRanger).CareerStatus[career_warrior] := 100 - (Ship as TRanger).CareerStatus[career_pirate] - (Ship as TRanger).CareerStatus[career_trader];
     end;
-    if (not (Ship as TRanger).CareerStatus[rcWarrior]) in [Rules.MinWarriorStatus..Rules.MaxWarriorStatus] then
+    if (not (Ship as TRanger).CareerStatus[career_warrior]) in [Rules.MinWarriorStatus..Rules.MaxWarriorStatus] then
     begin
-      (Ship as TRanger).CareerStatus[rcWarrior] := (Rules.MinWarriorStatus + Rules.MaxWarriorStatus) div 2;
-      (Ship as TRanger).CareerStatus[rcTrader] := (100 - (Ship as TRanger).CareerStatus[rcWarrior]) div 2;
-      (Ship as TRanger).CareerStatus[rcPirate] := 100 - (Ship as TRanger).CareerStatus[rcWarrior] - (Ship as TRanger).CareerStatus[rcTrader];
+      (Ship as TRanger).CareerStatus[career_warrior] := (Rules.MinWarriorStatus + Rules.MaxWarriorStatus) div 2;
+      (Ship as TRanger).CareerStatus[career_trader] := (100 - (Ship as TRanger).CareerStatus[career_warrior]) div 2;
+      (Ship as TRanger).CareerStatus[career_pirate] := 100 - (Ship as TRanger).CareerStatus[career_warrior] - (Ship as TRanger).CareerStatus[career_trader];
     end;
   end;
   Ship.RefreshDerivedStats(True);
@@ -4113,9 +4113,9 @@ end;
 function TPlanet.RelationToRanger(RangerIndex: Integer): Integer;
 begin
   try
-    if (OwnerId = oiPirate) and not IsMainPiratePlanet and (MainPiratePlanet <> nil) then
+    if (OwnerId = owner_pirate) and not IsMainPiratePlanet and (MainPiratePlanet <> nil) then
       Result := MainPiratePlanet.RelationToRanger(RangerIndex)
-    else if IsMainPiratePlanet and (OwnerId <> oiPirate) then
+    else if IsMainPiratePlanet and (OwnerId <> owner_pirate) then
       Result := 50
     else
       Result := TPercent(RangerRelations[RangerIndex]);
@@ -4135,11 +4135,11 @@ end;
 procedure TPlanet.SetRelationLevelToRanger(Ranger: Pointer; Level: TRelationLevel);
 begin
   case Level of
-    rlHostile: RangerRelations[aGalaxy.Galaxy.Rangers.IndexOf(TObject(Ranger) as TRanger)] := Pointer(5);
-    rlBad: RangerRelations[aGalaxy.Galaxy.Rangers.IndexOf(TObject(Ranger) as TRanger)] := Pointer(20);
-    rlNormal: RangerRelations[aGalaxy.Galaxy.Rangers.IndexOf(TObject(Ranger) as TRanger)] := Pointer(45);
-    rlGood: RangerRelations[aGalaxy.Galaxy.Rangers.IndexOf(TObject(Ranger) as TRanger)] := Pointer(70);
-    rlExcellent: RangerRelations[aGalaxy.Galaxy.Rangers.IndexOf(TObject(Ranger) as TRanger)] := Pointer(90);
+    relation_level_hostile: RangerRelations[aGalaxy.Galaxy.Rangers.IndexOf(TObject(Ranger) as TRanger)] := Pointer(5);
+    relation_level_bad: RangerRelations[aGalaxy.Galaxy.Rangers.IndexOf(TObject(Ranger) as TRanger)] := Pointer(20);
+    relation_level_normal: RangerRelations[aGalaxy.Galaxy.Rangers.IndexOf(TObject(Ranger) as TRanger)] := Pointer(45);
+    relation_level_good: RangerRelations[aGalaxy.Galaxy.Rangers.IndexOf(TObject(Ranger) as TRanger)] := Pointer(70);
+    relation_level_excellent: RangerRelations[aGalaxy.Galaxy.Rangers.IndexOf(TObject(Ranger) as TRanger)] := Pointer(90);
   else
     RangerRelations[aGalaxy.Galaxy.Rangers.IndexOf(TObject(Ranger) as TRanger)] := Pointer(5);
   end;
@@ -4154,13 +4154,13 @@ var
 begin
   Index := aGalaxy.Galaxy.Rangers.IndexOf(TObject(Ranger) as TRanger);
   Relation := Byte(RangerRelations[Index]);
-  if ((TObject(Ranger) as TRanger).GetEffectiveSkillLevel(psCharisma) > 0) and (Amount > 0) then
-    Inc(Amount, System.Round(((TObject(Ranger) as TRanger).GetEffectiveSkillLevel(psCharisma)) * Amount * 0.2));
+  if ((TObject(Ranger) as TRanger).GetEffectiveSkillLevel(skill_charisma) > 0) and (Amount > 0) then
+    Inc(Amount, System.Round(((TObject(Ranger) as TRanger).GetEffectiveSkillLevel(skill_charisma)) * Amount * 0.2));
   if Relation + Amount in [0..100] then Inc(Relation, Amount)
   else if Relation + Amount > 100 then Relation := 100
   else Relation := 0;
   RangerRelations[Index] := Pointer(Relation);
-  if (GetPlayer = Ranger) and (GetRelationLevelToShip(Ranger) <= rlHostile) then
+  if (GetPlayer = Ranger) and (GetRelationLevelToShip(Ranger) <= relation_level_hostile) then
     GetPlayer.AchievementStats.CheckHaterAchievement;
   if GetPlayer = Ranger then
   begin
@@ -4176,12 +4176,12 @@ function TPlanet.RelationToShip(Ship: TObject): TPercent;
 begin
   if (GetPlayer <> nil) and (GetPlayer = Ship) and
     (GetPlayer.PirateRank = 7) and (CurrentStar.Constellation.Id = 20) and
-    not IsMainPiratePlanet and (OwnerId = oiPirate) then
+    not IsMainPiratePlanet and (OwnerId = owner_pirate) then
   begin
     Result := 100;
     Exit;
   end;
-  if OwnerId = oiUninhabited then
+  if OwnerId = owner_uninhabited then
   begin
     Result := 100;
     Exit;
@@ -4193,49 +4193,49 @@ begin
       if TScriptShip(TShip(Ship).ScriptShip).StateText = CurrentStar.Status.CustomFaction then Result := 100;
     Exit;
   end;
-  if OwnerId in [oiMaloc..oiGaal, oiPirate] then
+  if OwnerId in [owner_maloc..owner_gaal, owner_pirate] then
   begin
     if ((Ship as TShip).CurrentStar = CurrentStar) and
       (not IsMainPiratePlanet or (GetPlayer <> Ship)) then
     begin
       if (OwnerId in aConst.PlanetOwnerMasks.PirateClan) and
-        ((Ship as TShip).CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive]) then Exit;
+        ((Ship as TShip).CurrentStanding in [standing_coalition_military, standing_coalition_active]) then Exit;
       if (OwnerId in aConst.PlanetOwnerMasks.Coalition) and
-        ((Ship as TShip).CurrentStanding in [ssPirateActive, ssPirateMilitary]) then Exit;
+        ((Ship as TShip).CurrentStanding in [standing_pirate_active, standing_pirate_military]) then Exit;
     end;
     case (Ship as TShip).TypeId of
-      stRanger: Result := RelationToRanger(aGalaxy.Galaxy.Rangers.IndexOf(Ship as TRanger));
-      stTransport:
+      ship_ranger: Result := RelationToRanger(aGalaxy.Galaxy.Rangers.IndexOf(Ship as TRanger));
+      ship_transport:
         if OwnerId in aConst.PlanetOwnerMasks.PirateClan then
           Result := Min(50, Integer(aConst.OwnerRelations[OwnerId, (Ship as TTransport).OwnerId]))
         else
           Result := aConst.OwnerRelations[OwnerId, (Ship as TTransport).OwnerId];
-      stPirate:
+      ship_pirate:
         if OwnerId in aConst.PlanetOwnerMasks.PirateClan then
         begin
-          if TShip(Ship).OwnerId = oiPirate then Result := 100
+          if TShip(Ship).OwnerId = owner_pirate then Result := 100
           else Result := aConst.OwnerRelations[OwnerId, TShip(Ship).OwnerId];
         end
         else
           Result := Max(Int64(30), Min(Int64(aConst.PlanetRaceMarket[RaceId].PirateRelationCeiling),
             System.Round(aConst.OwnerRelations[OwnerId, (Ship as TPirate).OwnerId] *
               aConst.PlanetRaceMarket[RaceId].PirateRelationFactor)));
-      stWarrior:
+      ship_warrior:
         if OwnerId in aConst.PlanetOwnerMasks.PirateClan then Result := 0
         else Result := 100;
-      stKling: Result := 0;
-      stTranclucator:
+      ship_dominator: Result := 0;
+      ship_tranclucator:
         if (Ship as TTranclucator).OwnerShip <> nil then
           Result := RelationToShip((Ship as TTranclucator).OwnerShip)
         else Result := 50;
-      rstRangerCenter..rstCustomStation:
+      station_ranger_center..station_custom:
         if (Ship as TShip).CurrentStanding in aConst.FactionStandingMasks[CurrentStar.ControlFaction] then Result := 100
         else Result := 0;
     else Result := 50;
     end;
   end
-  else if OwnerId = oiDominator then
-    if (Ship as TShip).TypeId in [stKling] then Result := 100
+  else if OwnerId = owner_dominator then
+    if (Ship as TShip).TypeId in [ship_dominator] then Result := 100
     else Result := 0;
 end;
 { @end $739578 }
@@ -4244,16 +4244,16 @@ end;
 function TPlanet.GetRelationLevelToShip(Ship: Pointer): TRelationLevel;
 begin
   case RelationToShip(Ship) of
-    0..9: Result := rlHostile;
-    10..29: Result := rlBad;
-    30..59: Result := rlNormal;
-    60..79: Result := rlGood;
-    80..100: Result := rlExcellent;
+    0..9: Result := relation_level_hostile;
+    10..29: Result := relation_level_bad;
+    30..59: Result := relation_level_normal;
+    60..79: Result := relation_level_good;
+    80..100: Result := relation_level_excellent;
   else
-    Result := rlNormal;
+    Result := relation_level_normal;
   end;
-  if IsMainPiratePlanet and (GetPlayer = Ship) and (GetPlayer.CurrentPlanet = Self) and (Result = rlHostile) then
-    Result := rlBad;
+  if IsMainPiratePlanet and (GetPlayer = Ship) and (GetPlayer.CurrentPlanet = Self) and (Result = relation_level_hostile) then
+    Result := relation_level_bad;
 end;
 { @end $739988 }
 
@@ -4277,7 +4277,7 @@ begin
   ReplaceTextToken(Text, '<Economy>', aConst.PlanetEconomyInfo[Economy].DisplayName, TextHighlightColorTag);
   ReplaceTextToken(Text, '<Goverment>', GetGovernmentName, TextHighlightColorTag);
   ReplaceTextToken(Text, '<Relation>', GetRelationLevelTextToShip(GetPlayer), TextHighlightColorTag);
-  if (GetRelationLevelToShip(GetPlayer) <= rlBad) and not IsMainPiratePlanet then
+  if (GetRelationLevelToShip(GetPlayer) <= relation_level_bad) and not IsMainPiratePlanet then
     Text := Text + #13#10 + LocalizedText('Planet.Civil.Info.BadDopInfo');
   Result := Text;
 end;
@@ -4311,7 +4311,7 @@ begin
   Result := -1;
   if not IsMainPiratePlanet then
     if NextRandomIntRange(1, 100, RandomState) > aGalaxy.Galaxy.GetMicroModuleOfferRollThresholdPercent then Exit;
-  Ceiling := System.Round(InventionLevels[piMainTech] * 100 / 8);
+  Ceiling := System.Round(InventionLevels[research_main_technology] * 100 / 8);
   Minimum := 0;
   Maximum := 0;
   Count := 0;
@@ -4321,7 +4321,7 @@ begin
     while True do
     begin
       if not Template.SpecialOnly then Break;
-      if not (not IsMainPiratePlanet or ([rstPirateBase, rstDominion] * Template.OfferStationTypes <> [])) then Break;
+      if not (not IsMainPiratePlanet or ([station_pirate_base, station_dominion] * Template.OfferStationTypes <> [])) then Break;
       if not (IsMainPiratePlanet or Template.OnPlanets) then Break;
       if not IsBonusCompatibleWithEquipment(i, Item) then Break;
       if Template.Priority > Ceiling then Break;
@@ -4370,7 +4370,7 @@ begin
   Result := -1;
   if not IsMainPiratePlanet then
     if NextRandomIntRange(1, 100, RandomState) > aGalaxy.Galaxy.GetMicroModuleOfferRollThresholdPercent then Exit;
-  Ceiling := System.Round(InventionLevels[piMainTech] * 100 / 8);
+  Ceiling := System.Round(InventionLevels[research_main_technology] * 100 / 8);
   Minimum := 0;
   Maximum := 0;
   Count := 0;
@@ -4380,7 +4380,7 @@ begin
     while True do
     begin
       if not Template.SpecialOnly then Break;
-      if not (not IsMainPiratePlanet or ([rstPirateBase, rstDominion] * Template.OfferStationTypes <> [])) then Break;
+      if not (not IsMainPiratePlanet or ([station_pirate_base, station_dominion] * Template.OfferStationTypes <> [])) then Break;
       if not (IsMainPiratePlanet or Template.OnPlanets) then Break;
       if not IsBonusCompatibleWithHull(i, Hull) then Break;
       if Template.Priority > Ceiling then Break;
@@ -4429,7 +4429,7 @@ begin
   Result := -1;
   if not IsMainPiratePlanet then
     if NextRandomIntRange(1, 100, RandomState) > aGalaxy.Galaxy.GetMicroModuleOfferRollThresholdPercent then Exit;
-  Ceiling := System.Round(InventionLevels[piMainTech] * 100 / 8);
+  Ceiling := System.Round(InventionLevels[research_main_technology] * 100 / 8);
   Minimum := 0;
   Maximum := 0;
   Count := 0;
@@ -4439,7 +4439,7 @@ begin
     while True do
     begin
       if not Template.SpecialOnly then Break;
-      if not (not IsMainPiratePlanet or ([rstPirateBase, rstDominion] * Template.OfferStationTypes <> [])) then Break;
+      if not (not IsMainPiratePlanet or ([station_pirate_base, station_dominion] * Template.OfferStationTypes <> [])) then Break;
       if not (IsMainPiratePlanet or Template.OnPlanets) then Break;
       if not IsBonusCompatibleWithWeapon(i, Weapon) then Break;
       if Template.Priority > Ceiling then Break;
@@ -4486,7 +4486,7 @@ var
   Item: TEquipment;
   ItemType: TItemType;
 begin
-  if TShopUpdateMode(ShopUpdateMode) in [sumDisabled, sumGoodsOnly] then Exit;
+  if TShopUpdateMode(ShopUpdateMode) in [shop_update_disabled, shop_update_goods] then Exit;
   if (aGalaxy.Galaxy.CurrentTurn + Integer(GenerationSeed)) mod 7 = 0 then
   begin
     if CalculateEquipmentShopTargetCount <= EquipmentShop.Count then
@@ -4534,26 +4534,26 @@ begin
   Result := nil;
   if (Ship = nil) or not (TObject(Ship) is TShip) then Exit;
   Target := Ship;
-  HullType := htRanger;
+  HullType := hull_ranger;
   Attempts := 0;
   while True do
   begin
     if Attempts > 100 then Break;
     Inc(Attempts);
-    HullType := THullType(NextRandomIntRange(Ord(htRanger), Ord(htDiplomat), RandomState));
-    if (Government = pgAnarchy) and (HullType in [htWarrior, htDiplomat]) then Continue;
-    if (Government = pgDictatorship) and (HullType in [htLiner..htDiplomat]) then Continue;
-    if (Government = pgRepublic) and (OwnerId <> oiPeleng) and
-      (SeededRandomUnitFloat(RandomState) < 0.8) and (HullType in [htPirate]) then Continue;
-    if (Government = pgDemocracy) and (OwnerId <> oiPeleng) and (HullType in [htPirate]) then Continue;
-    if (OwnerId = oiPirate) and (HullType = htWarrior) then Continue;
+    HullType := THullType(NextRandomIntRange(Ord(hull_ranger), Ord(hull_diplomat), RandomState));
+    if (Government = government_anarchy) and (HullType in [hull_warrior, hull_diplomat]) then Continue;
+    if (Government = government_dictatorship) and (HullType in [hull_liner..hull_diplomat]) then Continue;
+    if (Government = government_republic) and (OwnerId <> owner_peleng) and
+      (SeededRandomUnitFloat(RandomState) < 0.8) and (HullType in [hull_pirate]) then Continue;
+    if (Government = government_democracy) and (OwnerId <> owner_peleng) and (HullType in [hull_pirate]) then Continue;
+    if (OwnerId = owner_pirate) and (HullType = hull_warrior) then Continue;
     Break;
   end;
-  Flagship := (Target is TWarrior) and ((Target as TWarrior).WarriorType = wtFlagship);
-  if Flagship then HullType := htFlagship;
-  if (GetPlayer <> Target) and (Target.GetHull.HullType <> htSpecial) and
+  Flagship := (Target is TWarrior) and ((Target as TWarrior).WarriorType = warrior_flagship);
+  if Flagship then HullType := hull_flagship;
+  if (GetPlayer <> Target) and (Target.GetHull.HullType <> hull_special) and
     (Target.GetHull.HullType <> HullType) then Exit;
-  MaxLevel := InventionLevels[aConst.EquipmentInventionIndices[t_Hull]];
+  MaxLevel := InventionLevels[aConst.EquipmentInventionIndices[item_hull]];
   MinLevel := Max(1, MaxLevel div 2 - 1);
   case aGalaxy.Galaxy.GetHullGrowthMod of
     1:
@@ -4561,8 +4561,8 @@ begin
         Size := Target.GetHull.EstimateCapacityWithoutBonuses;
         if Flagship then Size := Size div 2;
         MinSize := Size div 2;
-        if HullType in [htTransport..htLiner] then MaxSize := Size + aGalaxy.Galaxy.TechLevel * 40
-        else if HullType in [htDiplomat] then MaxSize := Size + aGalaxy.Galaxy.TechLevel * 10
+        if HullType in [hull_transport..hull_liner] then MaxSize := Size + aGalaxy.Galaxy.TechLevel * 40
+        else if HullType in [hull_diplomat] then MaxSize := Size + aGalaxy.Galaxy.TechLevel * 10
         else MaxSize := Size + aGalaxy.Galaxy.TechLevel * 25;
         MinSize := Max(Int64(MinSize), System.Round(aConst.HullBaseSize * aConst.EquipmentSizeFactors[5]));
         MaxSize := aGalaxy.Galaxy.ScaleIntByTechLevel(System.Round(aConst.HullBaseSize * aConst.EquipmentSizeFactors[4]), MaxSize);
@@ -4579,8 +4579,8 @@ begin
     Size := Target.GetHull.Weight;
     if Flagship then Size := Size div 2;
     MinSize := Size div 2;
-    if HullType in [htTransport..htLiner] then MaxSize := Size + 300
-    else if HullType in [htDiplomat] then MaxSize := Size + 50
+    if HullType in [hull_transport..hull_liner] then MaxSize := Size + 300
+    else if HullType in [hull_diplomat] then MaxSize := Size + 50
     else MaxSize := Size + 200;
     MinSize := Max(Int64(MinSize), System.Round(aConst.HullBaseSize * aConst.EquipmentSizeFactors[5]));
     MaxSize := Min(Int64(MaxSize), System.Round(aConst.HullBaseSize *
@@ -4595,7 +4595,7 @@ begin
   Series := -1;
   ModuleIndex := -1;
   Result.OwnerId := Owner;
-  Result.PirateBuilt := OwnerId = oiPirate;
+  Result.PirateBuilt := OwnerId = owner_pirate;
   if Target.CanGenerateSpecialHullModule then ModuleIndex := SelectHullOfferSpecialMicroModule(Result);
   if ModuleIndex < 0 then
   begin
@@ -4603,9 +4603,9 @@ begin
     Series := aGalaxy.Galaxy.SelectHullSeries(Owner, HullType, 1, 100);
   end;
   if Flagship then
-    Result.Init(NextRandomIntRange(MinSize * 2, MaxSize * 2, RandomState), NextRandomIntRange(MinLevel, MaxLevel, RandomState), Owner, htFlagship, Series, OwnerId = oiPirate)
+    Result.Init(NextRandomIntRange(MinSize * 2, MaxSize * 2, RandomState), NextRandomIntRange(MinLevel, MaxLevel, RandomState), Owner, hull_flagship, Series, OwnerId = owner_pirate)
   else
-    Result.Init(NextRandomIntRange(MinSize, MaxSize, RandomState), NextRandomIntRange(MinLevel, MaxLevel, RandomState), Owner, HullType, Series, OwnerId = oiPirate);
+    Result.Init(NextRandomIntRange(MinSize, MaxSize, RandomState), NextRandomIntRange(MinLevel, MaxLevel, RandomState), Owner, HullType, Series, OwnerId = owner_pirate);
   if (Target.GetHull.SpecialModuleIndex > 0) and (GetPlayer <> Target) and
     (ModuleIndex < 0) then ModuleIndex := Target.GetHull.SpecialModuleIndex - 1;
   if ModuleIndex >= 0 then ApplySpecialMicroModule(ModuleIndex, Result);
@@ -4625,42 +4625,42 @@ begin
   Result := nil;
   if (Ship = nil) or not (TObject(Ship) is TShip) then Exit;
   Target := Ship;
-  Available := [waFree];
-  if (Target.TypeId = stKling) and (OwnerId in aConst.PlanetOwnerMasks.Dominators) then
-    Available := Available + [waNotSoldAndNodeRepair];
-  if (Target.TypeId in [stRanger..stWarrior]) and (OwnerId in aConst.PlanetOwnerMasks.Coalition) then
-    Available := Available + [waCoalitionOnly] + [aConst.OwnerWeaponAvailability[OwnerId]];
-  if (Target.TypeId in [stRanger, stPirate]) and (OwnerId in aConst.PlanetOwnerMasks.PirateClan) then
+  Available := [availability_unrestricted];
+  if (Target.TypeId = ship_dominator) and (OwnerId in aConst.PlanetOwnerMasks.Dominators) then
+    Available := Available + [availability_not_sold_node_repair];
+  if (Target.TypeId in [ship_ranger..ship_warrior]) and (OwnerId in aConst.PlanetOwnerMasks.Coalition) then
+    Available := Available + [availability_coalition_only] + [aConst.OwnerWeaponAvailability[OwnerId]];
+  if (Target.TypeId in [ship_ranger, ship_pirate]) and (OwnerId in aConst.PlanetOwnerMasks.PirateClan) then
     Available := Available + [aConst.OwnerWeaponAvailability[OwnerId]];
   // This is a single selection pass: Continue reaches the always-true condition.
   Attempts := 0;
   repeat
     if Attempts > 100 then Exit;
     Inc(Attempts);
-    Info := aGalaxy.Galaxy.SelectWeaponInfo(RandomState, Available, InventionLevels[piMainTech], 1);
+    Info := aGalaxy.Galaxy.SelectWeaponInfo(RandomState, Available, InventionLevels[research_main_technology], 1);
     AdvanceRandomSeed(RandomState);
     // The native comparison has no rejecting branch, but both counts are called.
-    if not (Target.TypeId in [stRanger, stPirate]) and (Info.ShotType in [wstTorpedo..wstRocket]) then
+    if not (Target.TypeId in [ship_ranger, ship_pirate]) and (Info.ShotType in [shot_torpedo..shot_rocket]) then
       if Target.CountDirectFireWeapons > Target.CountMissileWeapons then Continue;
   until True;
   MinSize := System.Round(Info.AverageSize * aConst.EquipmentSizeFactors[5]);
   MaxSize := System.Round(Info.AverageSize * aConst.EquipmentSizeFactors[1]);
-  if (Target is TWarrior) and ((Target as TWarrior).WarriorType = wtFlagship) then
+  if (Target is TWarrior) and ((Target as TWarrior).WarriorType = warrior_flagship) then
   begin
     MinSize := MinSize * 2;
     MaxSize := MaxSize * 2;
   end;
   MinLevel := 1;
-  MaxLevel := Min(InventionLevels[piMainTech], InventionLevels[Info.InventionIndex]);
+  MaxLevel := Min(InventionLevels[research_main_technology], InventionLevels[Info.InventionIndex]);
   if CurrentStar.Constellation.Id = 20 then MaxLevel := Max(MaxLevel, Integer(aGalaxy.Galaxy.TechLevel));
   MinLevel := Max(MinLevel, MaxLevel div 2 - 1);
   Owner := RaceToOwner(RaceId);
-  if OwnerId = oiPirate then Owner := oiPirate;
+  if OwnerId = owner_pirate then Owner := owner_pirate;
   Result := CreateGeneratedWeapon(Info, NextRandomIntRange(MinSize, MaxSize, RandomState), NextRandomIntRange(MinLevel, MaxLevel, RandomState), Owner);
-  if (Target is TWarrior) and ((Target as TWarrior).WarriorType = wtFlagship) then
+  if (Target is TWarrior) and ((Target as TWarrior).WarriorType = warrior_flagship) then
   begin
     Result.DetailImprovement := 3;
-    Result.Improve(ikAny);
+    Result.Improve(upgrade_random);
   end
   else if Target.CanGenerateMicroModuleForLoadout then
   begin
@@ -4682,7 +4682,7 @@ begin
   Target := Ship;
   if ItemType in UtilityEquipmentTypes then
   begin
-    if not (ItemType in [t_FuelTanks..t_Engine]) and (Target.GetSlotCountForItemType(ItemType) = 0) and
+    if not (ItemType in [item_fuel_tanks..item_engine]) and (Target.GetSlotCountForItemType(ItemType) = 0) and
       (GetPlayer <> Target) then Exit;
     MinLevel := 1;
     MaxLevel := InventionLevels[aConst.EquipmentInventionIndices[ItemType]];
@@ -4690,13 +4690,13 @@ begin
     MinLevel := Max(MinLevel, MaxLevel div 2 - 1);
     MinSize := System.Round(GetAverageItemSize(ItemType) * aConst.EquipmentSizeFactors[5]);
     MaxSize := System.Round(GetAverageItemSize(ItemType) * aConst.EquipmentSizeFactors[1]);
-    if (Target is TWarrior) and ((Target as TWarrior).WarriorType = wtFlagship) then
+    if (Target is TWarrior) and ((Target as TWarrior).WarriorType = warrior_flagship) then
     begin
       MinSize := MinSize * 2;
       MaxSize := MaxSize * 2;
     end;
     Owner := RaceToOwner(RaceId);
-    if OwnerId = oiPirate then Owner := oiPirate;
+    if OwnerId = owner_pirate then Owner := owner_pirate;
     Result := CreateGeneratedEquipment(ItemType, NextRandomIntRange(MinSize, MaxSize, RandomState), NextRandomIntRange(MinLevel, MaxLevel, RandomState), Owner);
     if Target.CanGenerateMicroModuleForLoadout then
     begin
@@ -4705,12 +4705,12 @@ begin
     end;
   end
   else if ItemType in WeaponItemTypes then Result := GenerateWeaponOffer(Ship)
-  else if ItemType = t_Hull then Result := GenerateHullOffer(Ship);
+  else if ItemType = item_hull then Result := GenerateHullOffer(Ship);
   if Result = nil then Exit;
   if Result.CanImprove then
     case NextRandomIntRange(0, 100, RandomState) of
-      0..5: Result.Improve(ikMinor);
-      6..7: Result.Improve(ikMedium);
+      0..5: Result.Improve(upgrade_minor);
+      6..7: Result.Improve(upgrade_medium);
     end;
   Attempts := 0;
   if IsMainPiratePlanet and (NextRandomIntRange(0, 100, RandomState) > 50) then
@@ -4736,9 +4736,9 @@ var
   Item: TItem;
 begin
   Offers := TObjectList.Create;
-  for j := 1 to aConst.PlanetEquipmentOfferQuotas[RaceId, t_Hull] do
+  for j := 1 to aConst.PlanetEquipmentOfferQuotas[RaceId, item_hull] do
   begin
-    Item := GenerateEquipmentOffer(Ship, t_Hull);
+    Item := GenerateEquipmentOffer(Ship, item_hull);
     if Item <> nil then Offers.Add(Item);
   end;
   for i := 1 to CountItemTypesInMask(UtilityEquipmentTypes) do
@@ -4766,13 +4766,13 @@ var
   ItemType: TItemType;
 begin
   Count := 0;
-  for ItemType := t_Hull to WeaponCategoryItemType do
+  for ItemType := item_hull to WeaponCategoryItemType do
     Count := Count + aConst.PlanetEquipmentOfferQuotas[RaceId][ItemType];
   Result := System.Round(RemapClamped(Population, 100000, 1000000, 0.5, 1.3) * Count) +
     SeededRandomIntRange(-2, 2, (GenerationSeed - aGalaxy.Galaxy.CurrentTurn) * 1011011);
   case Economy of
-    peAgricultural: Dec(Result, 2);
-    peIndustrial: Inc(Result, 2);
+    economy_agricultural: Dec(Result, 2);
+    economy_industrial: Inc(Result, 2);
   end;
   Result := Max(10, Min(Result, 20));
 end;
@@ -4874,7 +4874,7 @@ begin
   begin
     Ship := CurrentStar.Ships[i];
     if (Ship.CurrentPlanet = Self) and
-      ((Ship.ScriptShip = nil) or ((Ship.ScriptShip as TScriptShip).State.StateKind = sskNormalAI)) and
+      ((Ship.ScriptShip = nil) or ((Ship.ScriptShip as TScriptShip).State.StateKind = script_ship_normal_ai)) and
       Ship.IsInPrison and (Ship.GetPrisonTermRemaining > 0) then Inc(Result);
   end;
 end;
@@ -4888,7 +4888,7 @@ begin
   else
   begin
     Result := Result + 'City.' + aConst.OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName;
-    if OwnerId = oiPirate then Result := Result + 'Pirate';
+    if OwnerId = owner_pirate then Result := Result + 'Pirate';
   end;
 end;
 { @end $73B704 }
@@ -4900,7 +4900,7 @@ var
   Score: Double;
   Item: TItem;
 begin
-  if (OwnerId <> oiUninhabited) or (SurfaceLootEntries = nil) or (SurfaceLootEntries.Count = 0) then
+  if (OwnerId <> owner_uninhabited) or (SurfaceLootEntries = nil) or (SurfaceLootEntries.Count = 0) then
   begin
     Result := LocalizedText('Planet.NotCivil.Treasure.Nothing');
     Exit;
@@ -4914,7 +4914,7 @@ begin
     else if Item.ItemType in WeaponItemTypes then
       Score := Score + Item.Cost * GetAverageItemSize(Item.ItemType) / Math.Max(Item.Weight, 1) *
         TEquipment(Item).GetLevel * TWeapon(Item).GetWeaponInfo^.TechLevel * 0.000025
-    else if Item.ItemType in [t_Hull..t_DefGenerator] then
+    else if Item.ItemType in [item_hull..item_defense_generator] then
       Score := Score + Item.Cost * GetAverageItemSize(Item.ItemType) / Math.Max(Item.Weight, 1) *
         Sqr(TEquipment(Item).GetLevel) * 0.000025
     else if Item is TMicroModule then
@@ -5000,23 +5000,23 @@ begin
     if Rules[RuleIndex].Goods <> UnspecifiedGoods then Good := Rules[RuleIndex].Goods;
     Greeting := LocalizedColorText('GovGreetings.' + Rules[RuleIndex].Name + '.Text');
     if (Rules[RuleIndex].CurPlanetRace <> []) and not (RaceId in Rules[RuleIndex].CurPlanetRace) then Continue;
-    if Rules[RuleIndex].CurPlanetPirateClan <> gcAny then
+    if Rules[RuleIndex].CurPlanetPirateClan <> greeting_match_any then
     begin
-      if (Rules[RuleIndex].CurPlanetPirateClan = gcYes) and (OwnerId <> oiPirate) then Continue;
-      if (Rules[RuleIndex].CurPlanetPirateClan = gcNo) and (OwnerId = oiPirate) then Continue;
+      if (Rules[RuleIndex].CurPlanetPirateClan = greeting_match_true) and (OwnerId <> owner_pirate) then Continue;
+      if (Rules[RuleIndex].CurPlanetPirateClan = greeting_match_false) and (OwnerId = owner_pirate) then Continue;
     end;
-    if Rules[RuleIndex].CurPlanetRaceIsPlayerRace <> gcAny then
+    if Rules[RuleIndex].CurPlanetRaceIsPlayerRace <> greeting_match_any then
     begin
-      if (Rules[RuleIndex].CurPlanetRaceIsPlayerRace = gcYes) and (GetPlayer.PilotRace <> RaceId) then Continue;
-      if (Rules[RuleIndex].CurPlanetRaceIsPlayerRace = gcNo) and (GetPlayer.PilotRace = RaceId) then Continue;
+      if (Rules[RuleIndex].CurPlanetRaceIsPlayerRace = greeting_match_true) and (GetPlayer.PilotRace <> RaceId) then Continue;
+      if (Rules[RuleIndex].CurPlanetRaceIsPlayerRace = greeting_match_false) and (GetPlayer.PilotRace = RaceId) then Continue;
     end;
     if (Rules[RuleIndex].CurPlanetRelations <> []) and not (GetRelationLevelToShip(GetPlayer) in Rules[RuleIndex].CurPlanetRelations) then Continue;
     if Good <> NoGreetingGoods then
     begin
-      if Rules[RuleIndex].CurPlanetGoodsPermit <> gcAny then
+      if Rules[RuleIndex].CurPlanetGoodsPermit <> greeting_match_any then
       begin
-        if (Rules[RuleIndex].CurPlanetGoodsPermit = gcYes) and (not GoodsLegalOnPlanet[Good, RaceId, Government]) then Continue;
-        if (Rules[RuleIndex].CurPlanetGoodsPermit = gcNo) and (GoodsLegalOnPlanet[Good, RaceId, Government] = True) then Continue;
+        if (Rules[RuleIndex].CurPlanetGoodsPermit = greeting_match_true) and (not GoodsLegalOnPlanet[Good, RaceId, Government]) then Continue;
+        if (Rules[RuleIndex].CurPlanetGoodsPermit = greeting_match_false) and (GoodsLegalOnPlanet[Good, RaceId, Government] = True) then Continue;
       end;
       if (Rules[RuleIndex].CurPlanetGoodsCnt <> []) and not (aGalaxy.Galaxy.ClassifyGoodsQuantity(Goods[Good].Count, Good) in Rules[RuleIndex].CurPlanetGoodsCnt) then Continue;
       if (Rules[RuleIndex].CurPlanetGoodsSale <> []) and not (aGalaxy.Galaxy.ClassifyGoodsPrice(GetPlayer.ShopGoodsPurchasePrice(Good, nil), Good) in Rules[RuleIndex].CurPlanetGoodsSale) then Continue;
@@ -5025,14 +5025,14 @@ begin
     if (Rules[RuleIndex].CurPlanetEconomy <> []) and not (Economy in Rules[RuleIndex].CurPlanetEconomy) then Continue;
     if (Rules[RuleIndex].CurPlanetGovernment <> []) and not (Government in Rules[RuleIndex].CurPlanetGovernment) then Continue;
     Rejected := False;
-    for ShipType := stKling to stWarrior do
+    for ShipType := ship_dominator to ship_warrior do
     begin
       case ShipType of
-        stKling: CountMask := Rules[RuleIndex].KlingInCurStar;
-        stRanger: CountMask := Rules[RuleIndex].RangerInCurStar;
-        stPirate: CountMask := Rules[RuleIndex].PirateInCurStar;
-        stWarrior: CountMask := Rules[RuleIndex].WarriorInCurStar;
-        stTransport: CountMask := Rules[RuleIndex].TransportInCurStar;
+        ship_dominator: CountMask := Rules[RuleIndex].KlingInCurStar;
+        ship_ranger: CountMask := Rules[RuleIndex].RangerInCurStar;
+        ship_pirate: CountMask := Rules[RuleIndex].PirateInCurStar;
+        ship_warrior: CountMask := Rules[RuleIndex].WarriorInCurStar;
+        ship_transport: CountMask := Rules[RuleIndex].TransportInCurStar;
       else RaiseWideMessage('function TPlanet.GovGreeting:WideString;');
       end;
       if CountMask <> [] then
@@ -5052,25 +5052,25 @@ begin
       end;
     end;
     if Rejected then Continue;
-    if Rules[RuleIndex].CurStarInBattle <> gcAny then
+    if Rules[RuleIndex].CurStarInBattle <> greeting_match_any then
     begin
-      if (Rules[RuleIndex].CurStarInBattle = gcYes) and (not (Boolean(CurrentStar.Battle) and DominatorsPresent)) then Continue;
-      if (Rules[RuleIndex].CurStarInBattle = gcNo) and (Boolean(CurrentStar.Battle) and DominatorsPresent) then Continue;
+      if (Rules[RuleIndex].CurStarInBattle = greeting_match_true) and (not (Boolean(CurrentStar.Battle) and DominatorsPresent)) then Continue;
+      if (Rules[RuleIndex].CurStarInBattle = greeting_match_false) and (Boolean(CurrentStar.Battle) and DominatorsPresent) then Continue;
     end;
-    if Rules[RuleIndex].CurStarInBattlePirates <> gcAny then
+    if Rules[RuleIndex].CurStarInBattlePirates <> greeting_match_any then
     begin
-      if (Rules[RuleIndex].CurStarInBattlePirates = gcYes) and (not (Boolean(CurrentStar.Battle) and PiratesPresent)) then Continue;
-      if (Rules[RuleIndex].CurStarInBattlePirates = gcNo) and (Boolean(CurrentStar.Battle) and PiratesPresent) then Continue;
+      if (Rules[RuleIndex].CurStarInBattlePirates = greeting_match_true) and (not (Boolean(CurrentStar.Battle) and PiratesPresent)) then Continue;
+      if (Rules[RuleIndex].CurStarInBattlePirates = greeting_match_false) and (Boolean(CurrentStar.Battle) and PiratesPresent) then Continue;
     end;
-    if Rules[RuleIndex].CoalitionAlreadyDefeated <> gcAny then
+    if Rules[RuleIndex].CoalitionAlreadyDefeated <> greeting_match_any then
     begin
-      if (Rules[RuleIndex].CoalitionAlreadyDefeated = gcYes) and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then Continue;
-      if (Rules[RuleIndex].CoalitionAlreadyDefeated = gcNo) and (aGalaxy.Galaxy.CoalitionDefeatedTurn <> 0) then Continue;
+      if (Rules[RuleIndex].CoalitionAlreadyDefeated = greeting_match_true) and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then Continue;
+      if (Rules[RuleIndex].CoalitionAlreadyDefeated = greeting_match_false) and (aGalaxy.Galaxy.CoalitionDefeatedTurn <> 0) then Continue;
     end;
-    if Rules[RuleIndex].DominatorsAlreadyDefeated <> gcAny then
+    if Rules[RuleIndex].DominatorsAlreadyDefeated <> greeting_match_any then
     begin
-      if (Rules[RuleIndex].DominatorsAlreadyDefeated = gcYes) and (aGalaxy.Galaxy.HasUnresolvedDominatorSeries([dsBlazer, dsKeller, dsTerron])) then Continue;
-      if (Rules[RuleIndex].DominatorsAlreadyDefeated = gcNo) and (not aGalaxy.Galaxy.HasUnresolvedDominatorSeries([dsBlazer, dsKeller, dsTerron])) then Continue;
+      if (Rules[RuleIndex].DominatorsAlreadyDefeated = greeting_match_true) and (aGalaxy.Galaxy.HasUnresolvedDominatorSeries([series_blazer, series_keller, series_terron])) then Continue;
+      if (Rules[RuleIndex].DominatorsAlreadyDefeated = greeting_match_false) and (not aGalaxy.Galaxy.HasUnresolvedDominatorSeries([series_blazer, series_keller, series_terron])) then Continue;
     end;
     if Rules[RuleIndex].ToPlanetRace <> [] then
     begin
@@ -5081,20 +5081,20 @@ begin
         if not Star.IsConstellationVisible then Continue;
         if Star.Constellation.Id = 20 then Continue;
         if Star.Status.CustomFaction <> '' then Continue;
-        if Rules[RuleIndex].ToPlanetInCurStar <> gcAny then
+        if Rules[RuleIndex].ToPlanetInCurStar <> greeting_match_any then
         begin
-          if (Rules[RuleIndex].ToPlanetInCurStar = gcYes) and (CurrentStar <> Star) then Continue;
-          if (Rules[RuleIndex].ToPlanetInCurStar = gcNo) and (CurrentStar = Star) then Continue;
+          if (Rules[RuleIndex].ToPlanetInCurStar = greeting_match_true) and (CurrentStar <> Star) then Continue;
+          if (Rules[RuleIndex].ToPlanetInCurStar = greeting_match_false) and (CurrentStar = Star) then Continue;
         end;
         Rejected := False;
-        for ShipType := stKling to stWarrior do
+        for ShipType := ship_dominator to ship_warrior do
         begin
           case ShipType of
-            stKling: CountMask := Rules[RuleIndex].KlingInToStar;
-            stRanger: CountMask := Rules[RuleIndex].RangerInToStar;
-            stPirate: CountMask := Rules[RuleIndex].PirateInToStar;
-            stWarrior: CountMask := Rules[RuleIndex].WarriorInToStar;
-            stTransport: CountMask := Rules[RuleIndex].TransportInToStar;
+            ship_dominator: CountMask := Rules[RuleIndex].KlingInToStar;
+            ship_ranger: CountMask := Rules[RuleIndex].RangerInToStar;
+            ship_pirate: CountMask := Rules[RuleIndex].PirateInToStar;
+            ship_warrior: CountMask := Rules[RuleIndex].WarriorInToStar;
+            ship_transport: CountMask := Rules[RuleIndex].TransportInToStar;
           else RaiseWideMessage('function TPlanet.GovGreeting:WideString;');
           end;
           if CountMask <> [] then
@@ -5114,43 +5114,43 @@ begin
           end;
         end;
         if Rejected then Continue;
-        if Rules[RuleIndex].ToStarControlByKling <> gcAny then
+        if Rules[RuleIndex].ToStarControlByKling <> greeting_match_any then
         begin
-          if (Rules[RuleIndex].ToStarControlByKling = gcYes) and (Star.ControlFaction <> sfDominators) then Continue;
-          if (Rules[RuleIndex].ToStarControlByKling = gcNo) and (Star.ControlFaction <> sfCoalition) then Continue;
+          if (Rules[RuleIndex].ToStarControlByKling = greeting_match_true) and (Star.ControlFaction <> faction_dominators) then Continue;
+          if (Rules[RuleIndex].ToStarControlByKling = greeting_match_false) and (Star.ControlFaction <> faction_coalition) then Continue;
         end;
-        if Rules[RuleIndex].ToStarInBattle <> gcAny then
+        if Rules[RuleIndex].ToStarInBattle <> greeting_match_any then
         begin
-          if (Rules[RuleIndex].ToStarInBattle = gcYes) and (not Boolean(Star.Battle)) then Continue;
-          if (Rules[RuleIndex].ToStarInBattle = gcNo) and (Boolean(Star.Battle)) then Continue;
+          if (Rules[RuleIndex].ToStarInBattle = greeting_match_true) and (not Boolean(Star.Battle)) then Continue;
+          if (Rules[RuleIndex].ToStarInBattle = greeting_match_false) and (Boolean(Star.Battle)) then Continue;
         end;
         for I := 0 to Star.Planets.Count - 1 do
         begin
           Planet := Star.Planets[I];
           if Planet = Self then Continue;
-          if not (Planet.OwnerId in [oiMaloc..oiGaal, oiPirate]) then Continue;
+          if not (Planet.OwnerId in [owner_maloc..owner_gaal, owner_pirate]) then Continue;
           if not (Planet.RaceId in Rules[RuleIndex].ToPlanetRace) then Continue;
-          if Rules[RuleIndex].ToPlanetRaceIsPlayerRace <> gcAny then
+          if Rules[RuleIndex].ToPlanetRaceIsPlayerRace <> greeting_match_any then
           begin
-            if (Rules[RuleIndex].ToPlanetRaceIsPlayerRace = gcYes) and (GetPlayer.PilotRace <> Planet.RaceId) then Continue;
-            if (Rules[RuleIndex].ToPlanetRaceIsPlayerRace = gcNo) and (GetPlayer.PilotRace = Planet.RaceId) then Continue;
+            if (Rules[RuleIndex].ToPlanetRaceIsPlayerRace = greeting_match_true) and (GetPlayer.PilotRace <> Planet.RaceId) then Continue;
+            if (Rules[RuleIndex].ToPlanetRaceIsPlayerRace = greeting_match_false) and (GetPlayer.PilotRace = Planet.RaceId) then Continue;
           end;
-          if Rules[RuleIndex].ToPlanetRaceIsCurPlanetRace <> gcAny then
+          if Rules[RuleIndex].ToPlanetRaceIsCurPlanetRace <> greeting_match_any then
           begin
-            if (Rules[RuleIndex].ToPlanetRaceIsCurPlanetRace = gcYes) and (RaceId <> Planet.RaceId) then Continue;
-            if (Rules[RuleIndex].ToPlanetRaceIsCurPlanetRace = gcNo) and (RaceId = Planet.RaceId) then Continue;
+            if (Rules[RuleIndex].ToPlanetRaceIsCurPlanetRace = greeting_match_true) and (RaceId <> Planet.RaceId) then Continue;
+            if (Rules[RuleIndex].ToPlanetRaceIsCurPlanetRace = greeting_match_false) and (RaceId = Planet.RaceId) then Continue;
           end;
           if Rules[RuleIndex].ToPlanetRelations <> [] then
           begin
             if not (Planet.GetRelationLevelToShip(GetPlayer) in Rules[RuleIndex].ToPlanetRelations) or
-               (Planet.OwnerId = oiPirate) then Continue;
+               (Planet.OwnerId = owner_pirate) then Continue;
           end;
           if Good <> NoGreetingGoods then
           begin
-            if Rules[RuleIndex].ToPlanetGoodsPermit <> gcAny then
+            if Rules[RuleIndex].ToPlanetGoodsPermit <> greeting_match_any then
             begin
-              if (Rules[RuleIndex].ToPlanetGoodsPermit = gcYes) and (not GoodsLegalOnPlanet[Good, Planet.RaceId, Planet.Government]) then Continue;
-              if (Rules[RuleIndex].ToPlanetGoodsPermit = gcNo) and (GoodsLegalOnPlanet[Good, Planet.RaceId, Planet.Government] = True) then Continue;
+              if (Rules[RuleIndex].ToPlanetGoodsPermit = greeting_match_true) and (not GoodsLegalOnPlanet[Good, Planet.RaceId, Planet.Government]) then Continue;
+              if (Rules[RuleIndex].ToPlanetGoodsPermit = greeting_match_false) and (GoodsLegalOnPlanet[Good, Planet.RaceId, Planet.Government] = True) then Continue;
             end;
             if (Rules[RuleIndex].ToPlanetGoodsCnt <> []) and not (aGalaxy.Galaxy.ClassifyGoodsQuantity(Planet.Goods[Good].Count, Good) in Rules[RuleIndex].ToPlanetGoodsCnt) then Continue;
             if (Rules[RuleIndex].ToPlanetGoodsSale <> []) and not (aGalaxy.Galaxy.ClassifyGoodsPrice(GetPlayer.ShopGoodsPurchasePrice(Good, Planet), Good) in Rules[RuleIndex].ToPlanetGoodsSale) then Continue;

@@ -3694,14 +3694,14 @@ begin
     end;
     if WParam <> 0 then
     begin
-      if CurrentScreenId = screenPlanetNO then
+      if CurrentScreenId = screen_uninhabited_planet then
         TMessageLoopGI(RegisteredScreens[CurrentScreenId]).UpdateActionCursor(False)
-      else if (CurrentScreenId = screenShip) or (CurrentScreenId = screenStarMap) then
+      else if (CurrentScreenId = screen_ship) or (CurrentScreenId = screen_star_map) then
         TMessageLoopGI(RegisteredScreens[CurrentScreenId]).UpdateActionCursor(True);
-      if (TMessageLoopGI(RegisteredScreens[screenShip]) <> nil) and
-         (TMessageLoopGI(RegisteredScreens[screenShip]).GetActionParentLoop <> nil) and
-         (TMessageLoopGI(RegisteredScreens[screenShip]).GetActionParentLoop = TMessageLoopGI(RegisteredScreens[CurrentScreenId])) then
-        TMessageLoopGI(RegisteredScreens[screenShip]).UpdateActionCursor(True);
+      if (TMessageLoopGI(RegisteredScreens[screen_ship]) <> nil) and
+         (TMessageLoopGI(RegisteredScreens[screen_ship]).GetActionParentLoop <> nil) and
+         (TMessageLoopGI(RegisteredScreens[screen_ship]).GetActionParentLoop = TMessageLoopGI(RegisteredScreens[CurrentScreenId])) then
+        TMessageLoopGI(RegisteredScreens[screen_ship]).UpdateActionCursor(True);
     end;
   end
   else if Message = WM_DESTROY then
@@ -3735,7 +3735,7 @@ begin
   else if Message = WM_KEYDOWN then
   begin
     if (WParam = Ord('R')) and IsVirtualKeyDown(VK_CONTROL) and IsVirtualKeyDown(VK_SHIFT) and
-      IsVirtualKeyDown(VK_MENU) and (CurrentScreenId <> screenNone) then begin end;
+      IsVirtualKeyDown(VK_MENU) and (CurrentScreenId <> screen_none) then begin end;
   end
   else if Message = WM_CLOSE then ExitScreenLoop := True
   else if Message = WM_CANCELMODE then RuntimeActive := False

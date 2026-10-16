@@ -390,7 +390,7 @@ begin
   end;
   IntroFinished := True;
   RequestedScreenId := PostLoadScreenId;
-  PostLoadScreenId := screenNone;
+  PostLoadScreenId := screen_none;
 end;
 { @end $5E92BC }
 

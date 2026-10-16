@@ -136,7 +136,7 @@ begin
   StopButton := GetByName('PF_Stop') as TGraphButtonGI;
   TurnSlider := GetByName('PF_SBTurn') as TScrollBarGI;
   DateLabel := GetByName('PF_Date') as TLabelGI;
-  SpacePanel.ScrollType := pstSimple;
+  SpacePanel.ScrollType := panel_scroll_no_redraw;
   Graph := MapPanel as TGraphBufGI;
   Graph.BindExternalGraphBuf(RenderScratchBuffer);
 end;
@@ -177,7 +177,7 @@ begin
   StopButton.UpCallback := PlayStopClicked;
   TurnSlider.SetRange(0, FilmHistory.GetCount - 1);
   TurnSlider.PositionChangedCallback := TurnSliderChanged;
-  GetByName('MapPanelA').IsActive := (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(heBlindness);
+  GetByName('MapPanelA').IsActive := (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(disease_blindness);
   SelectHistoryEntry(FilmHistory.GetCount - 1, True);
   CopyLiveVisualStateToFilm;
   AdvanceOneStep;
@@ -396,7 +396,7 @@ end;
 procedure TfFilm.ExitClicked(Sender: TObjectGI);
 begin
   CopyFilmVisualStateToLive;
-  RequestedScreenId := screenStarMap;
+  RequestedScreenId := screen_star_map;
   RequestClose(1);
 end;
 { @end $526328 }
@@ -454,7 +454,7 @@ begin
   SpaceProcess.BindMinimap(MapPanel);
   SpaceProcess.Space.MinimapScale := MapPanel.ClientSize.X / CurrentFilm.MapDiameter;
   if GetPlayer <> nil then
-    if GetPlayer.IsHealthEffectActive(heBlindness) then SpaceProcess.Space.AlphaShift := 2;
+    if GetPlayer.IsHealthEffectActive(disease_blindness) then SpaceProcess.Space.AlphaShift := 2;
   SpaceProcess.Space.CreateMinimapViewport;
   StepIndex := 0;
   NextCommand := CurrentFilm.FirstCommand;
@@ -729,7 +729,7 @@ begin
     end;
   end;
   SpaceProcess.Space.AdvanceTimers;
-  if NextCommand.Kind = efcBeginTrailingEffects then
+  if NextCommand.Kind = replay_trailing_effects_marker then
   begin
     if TrailingFilmEffects <> nil then
     begin
@@ -748,7 +748,7 @@ begin
     FrameSlider.SetPositionInternal(StepIndex);
     while NextCommand <> nil do
     begin
-      if NextCommand.Kind = efcBeginTrailingEffects then Break;
+      if NextCommand.Kind = replay_trailing_effects_marker then Break;
       if NextCommand.StepIndex >= StepIndex then Break;
       CurrentFilm.ExecuteCommand(SpaceProcess, NextCommand, True);
       NextCommand := NextCommand.Next;
@@ -798,7 +798,7 @@ begin
   DrawQueuedControlRects;
   if not BeginFramePresentation then
   begin
-    RequestedScreenId := screenNone;
+    RequestedScreenId := screen_none;
     PostLoadScreenId := FormToId(Self);
     RequestClose(1);
   end

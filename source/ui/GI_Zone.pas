@@ -5,7 +5,7 @@ interface
 uses EC_BlockPar, GI_MessageLoop, Types;
 
 type
-  TZoneKindGI = (zkRect = 0, zkCircle = 1); // @size 1
+  TZoneKindGI = (zone_rectangle = 0, zone_circle = 1); // @size 1
   TZoneGI = class(TObjectGI) // @size 0x148
   public
     Kind: TZoneKindGI; // @offset 0x120
@@ -70,8 +70,8 @@ var
   Diameter: Integer;
 begin
   Result := False;
-  if Kind = zkRect then Result := ContainsPoint(Point)
-  else if Kind = zkCircle then
+  if Kind = zone_rectangle then Result := ContainsPoint(Point)
+  else if Kind = zone_circle then
   begin
     if HitTestBounds.Right - HitTestBounds.Left < HitTestBounds.Bottom - HitTestBounds.Top then
       Diameter := HitTestBounds.Right - HitTestBounds.Left
@@ -232,8 +232,8 @@ begin
   if Block.CountParams('Kind') > 0 then
   begin
     Value := Block.GetParam('Kind');
-    if Value = 'Rect' then SetKind(zkRect)
-    else if Value = 'Circle' then SetKind(zkCircle);
+    if Value = 'Rect' then SetKind(zone_rectangle)
+    else if Value = 'Circle' then SetKind(zone_circle);
   end;
 end;
 { @end $4B2724 }

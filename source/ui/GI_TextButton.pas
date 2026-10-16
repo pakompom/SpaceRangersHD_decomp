@@ -6,7 +6,7 @@ interface
 uses Classes, EC_BlockPar, EC_CacheBitmap, EC_CacheFont, GI_MessageLoop, Types;
 
 type
-  TTextButtonKindGI = (tbMomentary, tbToggle); // @size $04
+  TTextButtonKindGI = (text_button_push, text_button_toggle); // @size $04
 
   TTextButtonGI = class(TObjectGI) // @size $158
   public
@@ -53,7 +53,7 @@ begin
   CaptionActiveColor := CurrentPixelFormat.PackRgbBytes(255, 0, 0);
   BorderLightColor := CurrentPixelFormat.PackRgbBytes(255, 255, 255);
   BorderDarkColor := CurrentPixelFormat.PackRgbBytes(55, 55, 55);
-  Kind := tbMomentary;
+  Kind := text_button_push;
 end;
 { @end $4B2920 }
 
@@ -86,7 +86,7 @@ procedure TTextButtonGI.OnActivate;
 begin
   inherited OnActivate;
   if HitTestCursor then Hover := True else Hover := False;
-  if Kind = tbMomentary then Down := False;
+  if Kind = text_button_push then Down := False;
   Invalidate;
 end;
 { @end $4B2AE0 }
@@ -115,12 +115,12 @@ end;
 procedure TTextButtonGI.OnMouseLeave;
 begin
   inherited OnMouseLeave;
-  if Kind = tbMomentary then
+  if Kind = text_button_push then
   begin
     if Down then
     begin
       Down := False;
-      DispatchNamedEvent(nceButtonUp, 0, 0);
+      DispatchNamedEvent(control_event_button_up, 0, 0);
       if Assigned(UpCallback) then UpCallback(Self);
     end;
   end;
@@ -134,22 +134,22 @@ procedure TTextButtonGI.ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint)
 begin
   inherited ProcessLeftButtonDown(KeyState, Point);
   if IsOccludedAtPoint(Point) then Exit;
-  if Kind = tbMomentary then
+  if Kind = text_button_push then
   begin
     Down := True;
-    DispatchNamedEvent(nceButtonDown, Point.X, Point.Y);
+    DispatchNamedEvent(control_event_button_down, Point.X, Point.Y);
     if Assigned(DownCallback) then DownCallback(Self);
   end else
   begin
     if Down then
     begin
       Down := False;
-      DispatchNamedEvent(nceButtonUp, Point.X, Point.Y);
+      DispatchNamedEvent(control_event_button_up, Point.X, Point.Y);
       if Assigned(UpCallback) then UpCallback(Self);
     end else
     begin
       Down := True;
-      DispatchNamedEvent(nceButtonDown, Point.X, Point.Y);
+      DispatchNamedEvent(control_event_button_down, Point.X, Point.Y);
       if Assigned(DownCallback) then DownCallback(Self);
     end;
   end;
@@ -162,10 +162,10 @@ procedure TTextButtonGI.ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonUp(KeyState, Point);
   if IsOccludedAtPoint(Point) then Exit;
-  if Kind <> tbMomentary then Exit;
+  if Kind <> text_button_push then Exit;
   Down := False;
   Invalidate;
-  DispatchNamedEvent(nceButtonUp, Point.X, Point.Y);
+  DispatchNamedEvent(control_event_button_up, Point.X, Point.Y);
   if Assigned(UpCallback) then
     if MessageLoop.ConsumeTimerTickChange then UpCallback(Self);
 end;
@@ -219,7 +219,7 @@ begin
   end;
   if Block.CountParams('Kind') > 0 then
   begin
-    if Block.GetParam('Kind') = 'Normal' then Kind := tbMomentary else Kind := tbToggle;
+    if Block.GetParam('Kind') = 'Normal' then Kind := text_button_push else Kind := text_button_toggle;
   end;
 end;
 { @end $4B2D44 }
@@ -271,7 +271,7 @@ begin
   end;
   if Block.CountParams('Kind') > 0 then
   begin
-    if Block.GetParam('Kind') = 'Normal' then Kind := tbMomentary else Kind := tbToggle;
+    if Block.GetParam('Kind') = 'Normal' then Kind := text_button_push else Kind := text_button_toggle;
   end;
 end;
 { @end $4B3380 }

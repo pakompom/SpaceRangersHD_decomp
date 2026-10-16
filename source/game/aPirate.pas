@@ -63,7 +63,7 @@ type
     function GetGreetingShipCategory: TGreetingShipCategory; override; // @addr $59B834 @slot $30
     function GetHomeStar: TStar; override; // @addr $59B68C @slot $34
     function GetStrengthScaledPirateStatus: TPercent; override; // @addr $59B844 @slot $3C
-    function GetDominantCareer: TRangerCareer; override; // @addr 0x0059B840 @slot 0x38 @note "Always rcPirate."
+    function GetDominantCareer: TRangerCareer; override; // @addr 0x0059B840 @slot 0x38 @note "Always career_pirate."
     function GetName: WideString; override; // @addr 0x0059B694 @slot 0x24
     function GetFullName(const Separator: WideString): WideString; override; // @addr 0x0059B6A8 @slot 0x28
 
@@ -75,9 +75,9 @@ type
   end;
 
 const
-  PirateSkillBonusWeights: array[bonSkill1..bonSkill6] of Integer = (90, 90, 90, 90, 30, 5); // @addr $80EA6C @indexrefs "0x005A1CFD,0x005A1D63,0x005A1DB2,0x005A1E16"
+  PirateSkillBonusWeights: array[bonus_accuracy..bonus_leadership] of Integer = (90, 90, 90, 90, 30, 5); // @addr $80EA6C @indexrefs "0x005A1CFD,0x005A1D63,0x005A1DB2,0x005A1E16"
   // EvaluateStatBonus dispatch bounds the indexed BonusKind to 13..20.
-  PirateSlotBonusWeights: array[bonSlotRadar..bonSlotForsage] of Integer = (100, 150, 150, 400, 150, 100, 20, 100); // @addr $80EA84 @indexrefs "0x005A17F1,0x005A182B,0x005A1862,0x005A188E,0x005A18E0,0x005A1917,0x005A1943,0x005A196D,0x005A19A2,0x005A19CE,0x005A19F8,0x005A1A2D,0x005A1A59,0x005A1A83,0x005A1AB8,0x005A1AFD,0x005A1B2B,0x005A1B9C,0x005A1BEF,0x005A1C1D,0x005A1C80,0x005A1CAB"
+  PirateSlotBonusWeights: array[bonus_radar_slots..bonus_afterburner_slots] of Integer = (100, 150, 150, 400, 150, 100, 20, 100); // @addr $80EA84 @indexrefs "0x005A17F1,0x005A182B,0x005A1862,0x005A188E,0x005A18E0,0x005A1917,0x005A1943,0x005A196D,0x005A19A2,0x005A19CE,0x005A19F8,0x005A1A2D,0x005A1A59,0x005A1A83,0x005A1AB8,0x005A1AFD,0x005A1B2B,0x005A1B9C,0x005A1BEF,0x005A1C1D,0x005A1C80,0x005A1CAB"
 
 implementation
 
@@ -86,7 +86,7 @@ uses aPlayer, Achievements, aGalaxyEvent, aAsteroid, aMissile, aScript, aRuins, 
 { @routine $599388 TPirate_Destroy }
 destructor TPirate.Destroy;
 begin
-  if OwnerId = oiPirate then Dec(Galaxy.PirateClanCount) else Dec(Galaxy.PirateCount);
+  if OwnerId = owner_pirate then Dec(Galaxy.PirateClanCount) else Dec(Galaxy.PirateCount);
   inherited;
 end;
 { @end $599388 }
@@ -115,7 +115,7 @@ var I: Integer; Ranger: TRanger; HasHull: Boolean;
           Star := Galaxy.Stars[I];
           for J := 0 to Star.Ships.Count - 1 do begin
             Ship := Star.Ships[J];
-            if (Self <> Ship) and (Ship.TypeId = stPirate) and ((Ship as TPirate).Name = Name) then begin Duplicate := True; Break; end;
+            if (Self <> Ship) and (Ship.TypeId = ship_pirate) and ((Ship as TPirate).Name = Name) then begin Duplicate := True; Break; end;
           end;
         end;
         if not Duplicate then Break;
@@ -126,23 +126,23 @@ var I: Integer; Ranger: TRanger; HasHull: Boolean;
   end;
 begin
   HasHull := GetHull <> nil;
-  if HasHull or (Planet.OwnerId = oiPirate) then Inc(Galaxy.PirateClanCount) else Inc(Galaxy.PirateCount);
+  if HasHull or (Planet.OwnerId = owner_pirate) then Inc(Galaxy.PirateClanCount) else Inc(Galaxy.PirateCount);
   HomePlanet := Planet;
   if not HasHull then CurrentPlanet := HomePlanet;
   CurrentStar := HomePlanet.CurrentStar;
   CurrentStar.Ships.Add(Self);
   if HasHull then begin
-    OwnerId := oiPirate;
+    OwnerId := owner_pirate;
     if GetHull.OwnerId in PlanetOwnerMasks.Coalition then PilotRace := OwnerToRace(GetHull.OwnerId)
     else if HomePlanet.IsMainPiratePlanet then PilotRace := OwnerToRace(PickRandomEquipmentOwner(HomePlanet.RandomState))
     else PilotRace := HomePlanet.RaceId;
   end else begin
     if HomePlanet.IsMainPiratePlanet then PilotRace := OwnerToRace(PickRandomEquipmentOwner(HomePlanet.RandomState))
     else PilotRace := HomePlanet.RaceId;
-    if HomePlanet.OwnerId = oiPirate then OwnerId := oiPirate else OwnerId := RaceToOwner(PilotRace);
+    if HomePlanet.OwnerId = owner_pirate then OwnerId := owner_pirate else OwnerId := RaceToOwner(PilotRace);
   end;
   SetMoney(InitialMoney);
-  TypeId := stPirate;
+  TypeId := ship_pirate;
   PirateType := Kind;
   Name := '';
   SelectUniqueName(ModShipNameConfig);
@@ -151,8 +151,8 @@ begin
     Rank := NextRandomIntRange(0, GetPlayer.Rank, RandomState);
     if Rank > 3 then Rank := 3;
     AddRankPoints(NextRandomIntRange(0, CoalitionRankPointThresholds[Rank] div 2, RandomState));
-    if not Galaxy.IsZeroStartingExperienceEnabled then GainExperience(Round(RemapClamped(Ord(Rank), 0, 3, TotalSkillTrainingCost div 8, TotalSkillTrainingCost div 2)), esUnscaled);
-    if OwnerId = oiPirate then begin
+    if not Galaxy.IsZeroStartingExperienceEnabled then GainExperience(Round(RemapClamped(Ord(Rank), 0, 3, TotalSkillTrainingCost div 8, TotalSkillTrainingCost div 2)), experience_unscaled);
+    if OwnerId = owner_pirate then begin
       PirateRank := NextRandomIntRange(0, GetPlayer.PirateRank, RandomState);
       if PirateRank > 3 then PirateRank := 3;
       AddPirateRankPoints(NextRandomIntRange(0, PirateRankPointThresholds[PirateRank] div 2, RandomState));
@@ -161,13 +161,13 @@ begin
   ChameleonActive := False;
   GraphDominator := Galaxy.GraphDominatorSurfacesEnabled;
   if not HasHull then begin
-    if OwnerId = oiPirate then CreateAndEquipHull(Round(HullBaseSize * EquipmentSizeFactors[5]), 1, RaceToOwner(PilotRace), SelectRandomHullSeries, True)
+    if OwnerId = owner_pirate then CreateAndEquipHull(Round(HullBaseSize * EquipmentSizeFactors[5]), 1, RaceToOwner(PilotRace), SelectRandomHullSeries, True)
     else CreateAndEquipHull(Round(HullBaseSize * EquipmentSizeFactors[5]), 1, OwnerId, SelectRandomHullSeries, False);
     CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
     CreateAndEquipEngine(Round(EquipmentSizeFactors[NextRandomIntRange(1, 2, RandomState)] * EngineBaseSize), NextRandomIntRange(1, 2, RandomState), OwnerId);
-    if GetSlotCountForItemType(t_CargoHook) > 0 then CreateAndEquipCargoHook(CargoHookBaseSize, NextRandomIntRange(1, 2, RandomState), OwnerId);
-    if GetSlotCount(sskWeapon) > WeaponCount then CreateAndEquipWeapon(t_IndustrialLaser, WeaponInfos[t_IndustrialLaser].AverageSize, 1, OwnerId);
-    if GetSlotCountForItemType(t_Radar) > 0 then CreateAndEquipRadar(Round(EquipmentSizeFactors[NextRandomIntRange(2, 4, RandomState)] * RadarBaseSize), 1, OwnerId);
+    if GetSlotCountForItemType(item_cargo_hook) > 0 then CreateAndEquipCargoHook(CargoHookBaseSize, NextRandomIntRange(1, 2, RandomState), OwnerId);
+    if GetSlotCount(slot_weapon) > WeaponCount then CreateAndEquipWeapon(item_industrial_laser, WeaponInfos[item_industrial_laser].AverageSize, 1, OwnerId);
+    if GetSlotCountForItemType(item_radar) > 0 then CreateAndEquipRadar(Round(EquipmentSizeFactors[NextRandomIntRange(2, 4, RandomState)] * RadarBaseSize), 1, OwnerId);
   end else RefreshGraphic;
   RefreshDerivedStats(True);
   RefreshCurrentStanding;
@@ -238,10 +238,10 @@ var Planet: TPlanet; Station, Ship: TShip; Stage: Integer; ClanShip, Collecting:
 begin
   Stage := 0;
   try
-    ClanShip := (PirateType <> 0) and (OwnerId = oiPirate);
+    ClanShip := (PirateType <> 0) and (OwnerId = owner_pirate);
     if CurrentPlanet <> nil then begin
       Stage := 1;
-      if not (CurrentPlanet.OwnerId in [oiMaloc..oiGaal, oiPirate]) or (ClanShip and not (CurrentPlanet.OwnerId in PlanetOwnerMasks.PirateClan)) then begin OrderTakeoff; Exit; end;
+      if not (CurrentPlanet.OwnerId in [owner_maloc..owner_gaal, owner_pirate]) or (ClanShip and not (CurrentPlanet.OwnerId in PlanetOwnerMasks.PirateClan)) then begin OrderTakeoff; Exit; end;
       Stage := 2;
       if not ClanShip then if ProcessImprisonment then Exit;
       LastDockedPlanet := CurrentPlanet;
@@ -263,7 +263,7 @@ begin
     end;
     if DockedTo <> nil then begin
       Stage := 5;
-      if not (DockedTo.TypeId in [rstRangerCenter..rstCustomStation]) then begin
+      if not (DockedTo.TypeId in [station_ranger_center..station_custom]) then begin
         if DockedTo.InNormalSpace then OrderTakeoff else OrderNone(False);
         Exit;
       end;
@@ -308,31 +308,31 @@ begin
       end;
       Stage := 11;
       if TryRetreatFromSystem then Exit;
-      if InFear and ((CurrentStar.ControlFaction = sfPirates) or not ClanShip) then begin
+      if InFear and ((CurrentStar.ControlFaction = faction_pirates) or not ClanShip) then begin
         Stage := 12;
-        if not (Order in [soLand, soJump]) and not OrderAbsolute then begin
+        if not (Order in [order_land, order_jump]) and not OrderAbsolute then begin
           Stage := 13;
           if ClanShip then begin
             Planet := SelectNearestQueuedPlanet;
             if (Planet <> nil) and (Planet.CurrentStar = CurrentStar) then OrderLanding(Planet, True)
             else begin
-              Station := FindNearestDockableStation(NonTargetableStationStandingMasks[sfPirates]);
+              Station := FindNearestDockableStation(NonTargetableStationStandingMasks[faction_pirates]);
               if Station <> nil then OrderLanding(Station, True) else EngageEnemyShip;
             end;
           end else begin
-            if NextRandomUnitFloat(RandomState) > 0.8 then TryDockAtStation([rstRangerCenter..rstCustomStation]);
-            if Order <> soLand then
+            if NextRandomUnitFloat(RandomState) > 0.8 then TryDockAtStation([station_ranger_center..station_custom]);
+            if Order <> order_land then
               if NextRandomUnitFloat(RandomState) > 0.66 then NavigateToEscapePlanet(True) else NavigateToQueuedPlanet(True);
-            if (Order in [soLand, soJump]) and (EstimateOrderTravelTurns > 4) and (EnemyShip <> nil) and
-              (EnemyShip.OrderTarget = Self) and (EnemyShip.TypeId in [stRanger, stPirate]) and (EnemyShip.EstimateOrderTravelTurns < 3) and
+            if (Order in [order_land, order_jump]) and (EstimateOrderTravelTurns > 4) and (EnemyShip <> nil) and
+              (EnemyShip.OrderTarget = Self) and (EnemyShip.TypeId in [ship_ranger, ship_pirate]) and (EnemyShip.EstimateOrderTravelTurns < 3) and
               (NextRandomUnitFloat(RandomState) < 0.2) and (Integer(Seed + Cardinal(Galaxy.CurrentTurn)) mod 2 = 0) then
               if JettisonCargoGoodsTowardTargetValue(Max(200, Galaxy.ComputeScaledMiniMoney(OwnerId))) then NotifyFearCargoDrop(EnemyShip);
           end;
         end;
         Stage := 14;
-        if Order in [soLand, soJump] then UpdateAfterburnerState
+        if Order in [order_land, order_jump] then UpdateAfterburnerState
         else if ClanShip then EngageEnemyShip
-        else if Order = soNone then begin SelectEnemyShipInStar; EngageEnemyShip; end;
+        else if Order = order_none then begin SelectEnemyShipInStar; EngageEnemyShip; end;
       end else begin
         Stage := 15;
         QueueItemsWithinPickupRange;
@@ -347,32 +347,32 @@ begin
           Stage := 18;
           Collecting := TryCollectBestFloatingItem(50);
           if not Collecting and (GetDesiredCargoFreeSpace > CargoFreeSpace) then
-            if NextRandomUnitFloat(RandomState) > 0.8 then TryDockAtStation([rstRangerCenter..rstCustomStation]) else NavigateToQueuedPlanet(True);
+            if NextRandomUnitFloat(RandomState) > 0.8 then TryDockAtStation([station_ranger_center..station_custom]) else NavigateToQueuedPlanet(True);
           Stage := 19;
           if (EnemyShip <> nil) and (OrderTarget = EnemyShip) and (EnemyShip.CurrentPlanet <> nil) and (NextRandomUnitFloat(RandomState) < 0.2) then OrderNone(False);
           if not OrderAbsolute and not Collecting then begin
             Stage := 20;
             SelectEnemyShipInStar;
             EngageEnemyShip;
-            if (Order = soNone) and not InFear then TryJumpToNearbyBattle(0);
-            if Order = soNone then NavigateToServicePlanet(False);
+            if (Order = order_none) and not InFear then TryJumpToNearbyBattle(0);
+            if Order = order_none then NavigateToServicePlanet(False);
           end;
         end;
       end;
       Stage := 21;
       if ClanShip then begin
-        if (Order = soNone) and HasHullDamageOrBrokenEquippedItems then NavigateToServicePlanet(False);
+        if (Order = order_none) and HasHullDamageOrBrokenEquippedItems then NavigateToServicePlanet(False);
         Stage := 22;
-        if (Order = soNone) and not TryCollectBestFloatingItem(50) and
+        if (Order = order_none) and not TryCollectBestFloatingItem(50) and
           ((GetDesiredCargoFreeSpace > CargoFreeSpace) or (NextRandomIntRange(1, 10, RandomState) <= 2)) then NavigateToQueuedPlanet(True);
-        if (Order = soMove) and (PickupTargets = nil) and (NextRandomIntRange(1, 10, RandomState) <= 3) then TryCollectBestFloatingItem(50);
+        if (Order = order_move) and (PickupTargets = nil) and (NextRandomIntRange(1, 10, RandomState) <= 3) then TryCollectBestFloatingItem(50);
         Stage := 23;
-        if (Order = soNone) and (NextRandomIntRange(1, 10, RandomState) <= 2) then begin
-          Station := FindNearestDockableStation(NonTargetableStationStandingMasks[sfPirates]);
+        if (Order = order_none) and (NextRandomIntRange(1, 10, RandomState) <= 2) then begin
+          Station := FindNearestDockableStation(NonTargetableStationStandingMasks[faction_pirates]);
           if Station <> nil then OrderLanding(Station, True);
         end;
         Stage := 24;
-        if Order = soNone then SelectIncidentalEnemy;
+        if Order = order_none then SelectIncidentalEnemy;
       end;
       Stage := 25;
       if (CurrentStar.Dominion <> nil) and TShip(CurrentStar.Dominion).CanDock(Self) and
@@ -380,7 +380,7 @@ begin
         Count := 0;
         for I := 0 to CurrentStar.Ships.Count - 1 do begin
           Ship := CurrentStar.Ships[I];
-          if not Ship.InHyperspace and (Ship is TPirate) and (Ship.OwnerId = oiPirate) and (Ship.PartnerShip = nil) and
+          if not Ship.InHyperspace and (Ship is TPirate) and (Ship.OwnerId = owner_pirate) and (Ship.PartnerShip = nil) and
             not Ship.HasScriptControl and (Ship <> Self) and (Ship.DockedTo <> CurrentStar.Dominion) then Inc(Count);
         end;
         Stage := 26;
@@ -390,7 +390,7 @@ begin
         end;
       end;
       Stage := 27;
-      if (CurrentStar.Dominion <> nil) and TShip(CurrentStar.Dominion).InNormalSpace and (Order in [soNone, soMove]) then
+      if (CurrentStar.Dominion <> nil) and TShip(CurrentStar.Dominion).InNormalSpace and (Order in [order_none, order_move]) then
         for I := 0 to CurrentStar.Ships.Count - 1 do begin
           Ship := CurrentStar.Ships[I];
           if Ship.InHyperspace then if Ship.AbductedByPirateClan then begin
@@ -399,7 +399,7 @@ begin
             end;
         end;
       Stage := 28;
-      if Order = soNone then
+      if Order = order_none then
         if ClanShip then MoveToRandomPlanetOrbit else OrderRandomFreeFlightMove;
       Exit;
     end;
@@ -472,7 +472,7 @@ begin
       if Star.Status.CustomFaction <> '' then Exit;
       for J := 0 to Star.Planets.Count - 1 do begin
         Planet := Star.Planets[J];
-        if (Planet.OwnerId in [oiMaloc..oiGaal, oiPirate]) and CanQueueReachablePlanet(Planet) then PlanetQueue.Add(Planet);
+        if (Planet.OwnerId in [owner_maloc..owner_gaal, owner_pirate]) and CanQueueReachablePlanet(Planet) then PlanetQueue.Add(Planet);
       end;
     end;
 end;
@@ -481,7 +481,7 @@ end;
 { @routine $59AF24 TPirate_CanQueueReachablePlanet }
 function TPirate.CanQueueReachablePlanet(Planet: TPlanet): Boolean;
 begin
-  Result := (Planet.OwnerId <> oiDominator) and ((PirateType = 0) or (Planet.OwnerId = OwnerId));
+  Result := (Planet.OwnerId <> owner_dominator) and ((PirateType = 0) or (Planet.OwnerId = OwnerId));
 end;
 { @end $59AF24 }
 
@@ -493,8 +493,8 @@ begin
   for I := 1 to Galaxy.Stars.Count - 1 do begin
     if CurrentStar.StarDistances[I].Distance > JumpRange then Break;
     Star := CurrentStar.StarDistances[I].Star as TStar;
-    if (Star.Battle <> 0) and ((Star.ControlFaction = sfCoalition) or (GetFuelTanks.Fuel div 2 > CurrentStar.StarDistances[I].Distance)) and
-      (Star.Ships.Count - 3 >= Star.ShipTypeCounts[stKling]) and (Star.Ships.Count < 13) then begin
+    if (Star.Battle <> 0) and ((Star.ControlFaction = faction_coalition) or (GetFuelTanks.Fuel div 2 > CurrentStar.StarDistances[I].Distance)) and
+      (Star.Ships.Count - 3 >= Star.ShipTypeCounts[ship_dominator]) and (Star.Ships.Count < 13) then begin
       OrderJump(Star, False);
       Exit;
     end;
@@ -524,40 +524,40 @@ var I: Integer; Star: TStar; Planet: TPlanet; Ship: TShip; Turns, CandidateTurns
 begin
   if PartnerShip <> nil then begin
     if PartnerShip.CurrentStar = CurrentStar then begin
-      if (Order = soLand) and (PartnerShip.OrderTarget = OrderTarget) then Exit;
-      if PartnerShip.Order = soLand then begin
+      if (Order = order_land) and (PartnerShip.OrderTarget = OrderTarget) then Exit;
+      if PartnerShip.Order = order_land then begin
         if CanRefuel or (HasCargoGoods and (GetDesiredCargoFreeSpace > CargoFreeSpace)) or (PartnerShip.OrderTarget is TRuins) or
           (GetHull.Weight - GetDesiredCargoFreeSpace < GetCarriedItemWeight) or (GetHullIntegrityPercent < 70) or HasHullDamageOrBrokenEquippedItems then begin
           if not (PartnerShip.OrderTarget is TRuins) or (PartnerShip.OrderTarget as TRuins).CanDock(Self) then OrderLanding(PartnerShip.OrderTarget, True);
           Exit;
         end;
-      end else if PartnerShip.Order = soJump then begin
+      end else if PartnerShip.Order = order_jump then begin
         Star := PartnerShip.OrderTarget as TStar;
-        if (Star.ControlFaction = sfCoalition) and (Star.Status.CustomFaction = '') then begin OrderJump(Star, False); Exit; end;
+        if (Star.ControlFaction = faction_coalition) and (Star.Status.CustomFaction = '') then begin OrderJump(Star, False); Exit; end;
       end;
-    end else if (PartnerShip.Order = soJump) and (PartnerShip.OrderTarget is TStar) and (PartnerShip.OrderTarget <> CurrentStar) then begin
+    end else if (PartnerShip.Order = order_jump) and (PartnerShip.OrderTarget is TStar) and (PartnerShip.OrderTarget <> CurrentStar) then begin
       Star := PartnerShip.OrderTarget as TStar;
-      if (Star.ControlFaction = sfCoalition) and (Star.Status.CustomFaction = '') then begin OrderJump(Star, True); Exit; end;
+      if (Star.ControlFaction = faction_coalition) and (Star.Status.CustomFaction = '') then begin OrderJump(Star, True); Exit; end;
     end else begin
       Star := PartnerShip.CurrentStar;
-      if (Star.ControlFaction = sfCoalition) and (Star.Status.CustomFaction = '') then begin OrderJump(Star, True); Exit; end;
+      if (Star.ControlFaction = faction_coalition) and (Star.Status.CustomFaction = '') then begin OrderJump(Star, True); Exit; end;
     end;
   end;
-  if Order in [soLand, soJump, soJumpHole] then begin
+  if Order in [order_land, order_jump, order_black_hole] then begin
     Turns := EstimateOrderTravelTurns;
     Target := OrderTarget;
     BestTurns := Turns;
   end else begin Turns := 1000; Target := nil; BestTurns := Turns; end;
   for I := 0 to CurrentStar.Planets.Count - 1 do begin
     Planet := CurrentStar.Planets[I];
-    if CanQueueReachablePlanet(Planet) and (Planet.OwnerId in [oiMaloc..oiGaal, oiPirate]) then begin
+    if CanQueueReachablePlanet(Planet) and (Planet.OwnerId in [owner_maloc..owner_gaal, owner_pirate]) then begin
       CandidateTurns := EstimateTravelTurnsToObject(Planet);
       if BestTurns > CandidateTurns then begin BestTurns := CandidateTurns; Target := Planet; end;
     end;
   end;
   for I := 0 to CurrentStar.Ships.Count - 1 do begin
     Ship := CurrentStar.Ships[I];
-    if not (Ship.TypeId in [rstRangerCenter..rstCustomStation]) or not Ship.CanDock(Self) or (Ship.EnemyShip = Self) or (EnemyShip = Ship) then Continue;
+    if not (Ship.TypeId in [station_ranger_center..station_custom]) or not Ship.CanDock(Self) or (Ship.EnemyShip = Self) or (EnemyShip = Ship) then Continue;
     CandidateTurns := EstimateTravelTurnsToObject(Ship);
     if BestTurns > CandidateTurns then begin BestTurns := CandidateTurns; Target := Ship; end;
   end;
@@ -565,7 +565,7 @@ begin
     for I := 1 to Galaxy.Stars.Count - 1 do begin
       if CurrentStar.StarDistances[I].Distance > JumpRange then Break;
       Star := CurrentStar.StarDistances[I].Star as TStar;
-      if (Star.ControlFaction <> sfDominators) and (Star.Status.CustomFaction = '') then begin
+      if (Star.ControlFaction <> faction_dominators) and (Star.Status.CustomFaction = '') then begin
         CandidateTurns := EstimateTravelTurnsToObject(Star);
         if BestTurns > CandidateTurns then begin BestTurns := CandidateTurns; Target := Star; end;
       end;
@@ -594,7 +594,7 @@ begin
   if PirateType <> 0 then begin
     for I := 1 to Inventory.Count - 1 do begin
       Equipment := Inventory[I];
-      if (not (Equipment is TWeapon) or (TWeapon(Equipment).GetWeaponInfo.Availability <> waNotSoldAndNodeRepair)) and CanRepairEquipmentTech(Equipment) and
+      if (not (Equipment is TWeapon) or (TWeapon(Equipment).GetWeaponInfo.Availability <> availability_not_sold_node_repair)) and CanRepairEquipmentTech(Equipment) and
         ((Equipment.BrokenFlag <> 0) or (Equipment.ConditionPercent < 30)) and (Equipment.EquippedFlag <> 0) then Equipment.Repair;
     end;
     if CanRepairArtefactsAtLocation then
@@ -606,7 +606,7 @@ begin
   end else begin
     for I := Inventory.Count - 1 downto 0 do begin
       Equipment := Inventory[I];
-      if (not (Equipment is TWeapon) or (TWeapon(Equipment).GetWeaponInfo.Availability <> waNotSoldAndNodeRepair)) and CanRepairEquipmentTech(Equipment) and
+      if (not (Equipment is TWeapon) or (TWeapon(Equipment).GetWeaponInfo.Availability <> availability_not_sold_node_repair)) and CanRepairEquipmentTech(Equipment) and
         ((Equipment.BrokenFlag <> 0) or (Equipment.ConditionPercent < 50)) and (Equipment.EquippedFlag <> 0) then begin
         Cost := Equipment.CalculateRepairCost;
         if Money > Cost then SetMoney(Money - Cost);
@@ -660,14 +660,14 @@ end;
 { @routine $59B834 TPirate_GetGreetingShipCategory }
 function TPirate.GetGreetingShipCategory: TGreetingShipCategory;
 begin
-  if OwnerId = oiPirate then Result := gscPirateClan else Result := gscPirate;
+  if OwnerId = owner_pirate then Result := greeting_ship_clan_pirate else Result := greeting_ship_pirate;
 end;
 { @end $59B834 }
 
 { @routine $59B840 TPirate_GetDominantCareer }
 function TPirate.GetDominantCareer: TRangerCareer;
 begin
-  Result := rcPirate;
+  Result := career_pirate;
 end;
 { @end $59B840 }
 
@@ -700,19 +700,19 @@ procedure TPirate.ProcessUnseenProgression;
 var Award: Byte; ProgressFactor, StrengthFactor: Double;
 begin
   if (DaysSincePlayerSeen >= 60) and (GetPlayer <> nil) then
-    if (OwnerId = oiPirate) and (PirateType <> 0) then begin
+    if (OwnerId = owner_pirate) and (PirateType <> 0) then begin
       ProgressFactor := Ord(Galaxy.DifficultyLevels[0]) * 0.2 + 0.6;
-      ProgressFactor := RemapClamped(Galaxy.WarDeltaWin[sfPirates], -10, 10, 1.3, 0.7) * ProgressFactor;
+      ProgressFactor := RemapClamped(Galaxy.WarDeltaWin[faction_pirates], -10, 10, 1.3, 0.7) * ProgressFactor;
       StrengthFactor := Ord(Galaxy.DifficultyLevels[0]) * 0.1 + 0.6;
       if (0.1 * ProgressFactor > NextRandomUnitFloat(RandomState)) and
         ((0.4 * StrengthFactor > StrengthInBestRanger) or (NextRandomUnitFloat(RandomState) < 0.1)) then
         if (NextRandomFloatRange(0, 0.7, RandomState) > WealthInBestRanger) and (Money < 25000) then
-          SetMoney(Money + Galaxy.ComputeScaledBigMoney(oiHuman))
+          SetMoney(Money + Galaxy.ComputeScaledBigMoney(owner_human))
         else ImproveRandomEquipment(True);
       if (0.05 * ProgressFactor > NextRandomUnitFloat(RandomState)) and
         ((0.3 * StrengthFactor > StrengthInBestRanger) or (0.7 * StrengthFactor > StrengthInAverageRanger) or
         (0.001 * ProgressFactor > NextRandomUnitFloat(RandomState))) then GenerateExtraWeapon;
-      if 0.05 * ProgressFactor > NextRandomUnitFloat(RandomState) then GainExperience(SeededRandomIntRange(100, 500, RandomState), esUnscaled);
+      if 0.05 * ProgressFactor > NextRandomUnitFloat(RandomState) then GainExperience(SeededRandomIntRange(100, 500, RandomState), experience_unscaled);
       if (GetPlayer.PirateRank > PirateRank) and (NextRandomUnitFloat(RandomState) < 0.01) and (PirateRank < 4) then begin
         // Native adds Coalition rank points before attempting a pirate promotion.
         AddRankPoints(NextRandomIntRange(16, 32, RandomState));
@@ -720,19 +720,19 @@ begin
       end;
       if (NextRandomUnitFloat(RandomState) < 0.02) and (CurrentPlanet <> nil) and
         ((AwardIds = nil) or (2 * (Rank + 1) > AwardIds.Count)) then begin
-        Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atSecretMission, atPerfidy], [stKling..rstCustomStation]);
+        Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [award_accomplishment, award_secret_mission, award_perfidy], [ship_dominator..station_custom]);
         if Award <> AwardNotFound then AddAward(Award);
       end;
     end else begin
       if (NextRandomUnitFloat(RandomState) < 0.2) and
         ((StrengthInBestRanger < 0.7) or (NextRandomUnitFloat(RandomState) < 0.3)) then
         if (NextRandomFloatRange(0, 0.7, RandomState) > WealthInBestRanger) and (Money < 25000) then
-          SetMoney(Money + Galaxy.ComputeScaledBigMoney(oiHuman))
+          SetMoney(Money + Galaxy.ComputeScaledBigMoney(owner_human))
         else ImproveRandomEquipment(True);
       if (NextRandomUnitFloat(RandomState) < 0.05) and ((StrengthInBestRanger < 0.5) or (StrengthInAverageRanger < 1) or
         (NextRandomUnitFloat(RandomState) < 0.001)) then GenerateExtraWeapon;
-      if NextRandomUnitFloat(RandomState) < 0.2 then GainExperience(NextRandomIntRange(250, 1000, RandomState), esUnscaled);
-      if (OwnerId = oiPirate) and (GetPlayer.PirateRank > PirateRank) and (NextRandomUnitFloat(RandomState) < 0.01) and (PirateRank < 4) then begin
+      if NextRandomUnitFloat(RandomState) < 0.2 then GainExperience(NextRandomIntRange(250, 1000, RandomState), experience_unscaled);
+      if (OwnerId = owner_pirate) and (GetPlayer.PirateRank > PirateRank) and (NextRandomUnitFloat(RandomState) < 0.01) and (PirateRank < 4) then begin
         AddRankPoints(NextRandomIntRange(16, 32, RandomState));
         TryPromotePirateRank;
       end;
@@ -742,7 +742,7 @@ begin
       end;
       if (NextRandomUnitFloat(RandomState) < 0.03) and (CurrentPlanet <> nil) and
         ((AwardIds = nil) or (2 * (Rank + 1) > AwardIds.Count)) then begin
-        Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment..atPerfidy], [stKling..rstCustomStation]);
+        Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [award_accomplishment..award_perfidy], [ship_dominator..station_custom]);
         if Award <> AwardNotFound then AddAward(Award);
       end;
     end;
@@ -752,28 +752,28 @@ end;
 { @routine $59BF1C TPirate_RelationToNonRanger }
 function TPirate.RelationToNonRanger(Ship: TShip): Byte;
 begin
-  if CurrentStanding = ssPirateMilitary then
+  if CurrentStanding = standing_pirate_military then
     case Ship.TypeId of
-      stTransport: if (CurrentStar.ControlFaction = sfCoalition) and (CurrentStar.Status.CustomFaction = '') and
+      ship_transport: if (CurrentStar.ControlFaction = faction_coalition) and (CurrentStar.Status.CustomFaction = '') and
         (CurrentStar = Ship.CurrentStar) and (TruceShip <> Ship) and (Ship.TruceShip <> Self) and
         not IsHullDestroyed and not AcceptsRansomDemandFrom(Ship) then Result := 0
         else Result := Min(50, Max(20, OwnerRelations[OwnerId, Ship.OwnerId] - 20));
-      stPirate: if Ship.OwnerId = oiPirate then Result := Min(100, 100 + SeededRandomIntRange(-20, 20, Seed + Ship.Seed))
+      ship_pirate: if Ship.OwnerId = owner_pirate then Result := Min(100, 100 + SeededRandomIntRange(-20, 20, Seed + Ship.Seed))
         else Result := Max(50, OwnerRelations[OwnerId, Ship.OwnerId]);
-      stWarrior: Result := Min(50, Max(10, OwnerRelations[RaceToOwner(PilotRace), RaceToOwner(Ship.PilotRace)] - 30));
-      stKling, stTranclucator: Result := 50;
-      rstRangerCenter..rstCustomStation: if Ship.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive] then Result := 30 else Result := 100;
+      ship_warrior: Result := Min(50, Max(10, OwnerRelations[RaceToOwner(PilotRace), RaceToOwner(Ship.PilotRace)] - 30));
+      ship_dominator, ship_tranclucator: Result := 50;
+      station_ranger_center..station_custom: if Ship.CurrentStanding in [standing_coalition_military, standing_coalition_active] then Result := 30 else Result := 100;
     else Result := 0;
     end
   else begin
-    if (CurrentStanding = ssPirateActive) and (Ship.CurrentStar.ControlFaction = sfPirates) and
-      (Ship.CurrentStar.Status.CustomFaction = '') and (Ship.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive]) then begin Result := 0; Exit; end;
+    if (CurrentStanding = standing_pirate_active) and (Ship.CurrentStar.ControlFaction = faction_pirates) and
+      (Ship.CurrentStar.Status.CustomFaction = '') and (Ship.CurrentStanding in [standing_coalition_military, standing_coalition_active]) then begin Result := 0; Exit; end;
     case Ship.TypeId of
-      stTransport: Result := Min(50, Max(20, OwnerRelations[RaceToOwner(PilotRace), RaceToOwner(Ship.PilotRace)] - 20));
-      stPirate: Result := Max(60, OwnerRelations[RaceToOwner(PilotRace), RaceToOwner(Ship.PilotRace)]);
-      stWarrior: Result := Min(50, Max(10, OwnerRelations[RaceToOwner(PilotRace), RaceToOwner(Ship.PilotRace)] - 30));
-      stKling, stTranclucator: Result := 50;
-      rstRangerCenter..rstCustomStation: if (Ship.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive]) and (OwnerId = oiPirate) then Result := 30 else Result := 100;
+      ship_transport: Result := Min(50, Max(20, OwnerRelations[RaceToOwner(PilotRace), RaceToOwner(Ship.PilotRace)] - 20));
+      ship_pirate: Result := Max(60, OwnerRelations[RaceToOwner(PilotRace), RaceToOwner(Ship.PilotRace)]);
+      ship_warrior: Result := Min(50, Max(10, OwnerRelations[RaceToOwner(PilotRace), RaceToOwner(Ship.PilotRace)] - 30));
+      ship_dominator, ship_tranclucator: Result := 50;
+      station_ranger_center..station_custom: if (Ship.CurrentStanding in [standing_coalition_military, standing_coalition_active]) and (OwnerId = owner_pirate) then Result := 30 else Result := 100;
     else Result := 50;
     end;
   end;
@@ -785,7 +785,7 @@ function TPirate.RelationToRanger(Ranger: Pointer): Byte;
 begin
   Result := Byte(RangerRelations[Galaxy.Rangers.IndexOf(Ranger)]);
   if PirateType <> 0 then
-    if (MainPiratePlanet <> nil) and (MainPiratePlanet.OwnerId = oiPirate) then
+    if (MainPiratePlanet <> nil) and (MainPiratePlanet.OwnerId = owner_pirate) then
       Result := Min(Result, MainPiratePlanet.RelationToRanger(Galaxy.Rangers.IndexOf(Ranger)))
     else Result := 0;
 end;
@@ -797,8 +797,8 @@ var Relation: Byte; Value, Index: Integer;
 begin
   Index := Galaxy.Rangers.IndexOf(TObject(Ranger) as TRanger);
   Relation := Byte(RangerRelations[Index]);
-  if (TShip(Ranger).GetEffectiveSkillLevel(psCharisma) > 0) and (Amount > 0) then
-    Inc(Amount, Round(Amount * (TShip(Ranger).GetEffectiveSkillLevel(psCharisma)) * 0.2));
+  if (TShip(Ranger).GetEffectiveSkillLevel(skill_charisma) > 0) and (Amount > 0) then
+    Inc(Amount, Round(Amount * (TShip(Ranger).GetEffectiveSkillLevel(skill_charisma)) * 0.2));
   Value := Max(0, Min(100, Amount + Relation));
   Relation := Value;
   RangerRelations[Index] := Pointer(Relation);
@@ -815,22 +815,22 @@ procedure TPirate.ReactToAttack(Attacker: TShip);
 var Index, Value: Integer;
 begin
   if (Attacker is TTranclucator) and (TTranclucator(Attacker).OwnerShip <> nil) and
-    (TTranclucator(Attacker).OwnerShip.TypeId = stRanger) then ReactToAttack(TTranclucator(Attacker).OwnerShip);
+    (TTranclucator(Attacker).OwnerShip.TypeId = ship_ranger) then ReactToAttack(TTranclucator(Attacker).OwnerShip);
   EnemyShip := Attacker;
   if Attacker is TRanger then begin
     ChangeRelationToRanger(Attacker, -10);
-    if (CurrentStanding in [ssPirateActive, ssPirateMilitary]) and (Attacker.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive]) and
-      (MainPiratePlanet <> nil) and (MainPiratePlanet.OwnerId = oiPirate) then begin
+    if (CurrentStanding in [standing_pirate_active, standing_pirate_military]) and (Attacker.CurrentStanding in [standing_coalition_military, standing_coalition_active]) and
+      (MainPiratePlanet <> nil) and (MainPiratePlanet.OwnerId = owner_pirate) then begin
       Index := Galaxy.Rangers.IndexOf(Attacker);
       Value := Max(0, Integer(MainPiratePlanet.RangerRelations[Index]) - 3);
       MainPiratePlanet.RangerRelations[Index] := Pointer(Value);
     end;
   end;
   if Attacker.PartnerShip <> nil then
-    if Attacker.PartnerShip.TypeId = stRanger then begin
+    if Attacker.PartnerShip.TypeId = ship_ranger then begin
       ChangeRelationToRanger(Attacker.PartnerShip, -5);
-      if (CurrentStanding in [ssPirateActive, ssPirateMilitary]) and (Attacker.PartnerShip.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive]) and
-        (MainPiratePlanet <> nil) and (MainPiratePlanet.OwnerId = oiPirate) then begin
+      if (CurrentStanding in [standing_pirate_active, standing_pirate_military]) and (Attacker.PartnerShip.CurrentStanding in [standing_coalition_military, standing_coalition_active]) and
+        (MainPiratePlanet <> nil) and (MainPiratePlanet.OwnerId = owner_pirate) then begin
         Index := Galaxy.Rangers.IndexOf(Attacker.PartnerShip);
         Value := Max(0, Integer(MainPiratePlanet.RangerRelations[Index]) - 1);
       MainPiratePlanet.RangerRelations[Index] := Pointer(Value);
@@ -848,7 +848,7 @@ begin
     InFear := True;
     Exit;
   end;
-  if (OwnerId = oiPirate) and (PirateType <> 0) then
+  if (OwnerId = owner_pirate) and (PirateType <> 0) then
     Result := ((GetHull.HullPoints < GetHull.Weight * 0.15) and (GetHull.HullPoints < 100)) or (GetHull.HullPoints < 65) or
       ((GetHull.Weight * 0.25 * OwnerInfo[OwnerId].FearThresholdScale > GetHull.HullPoints) and (EnemyShip <> nil) and
       (EnemyShip.OrderTarget = Self) and (ChanceToWin(EnemyShip) - OwnerInfo[OwnerId].FearThresholdScale / 2 < 0))
@@ -890,7 +890,7 @@ begin
   if InNormalSpace then
     if (EnemyShip <> nil) and (EnemyShip.OrderTarget = Self) and (EnemyShip.TruceShip <> Self) and
       (Money > 100) and not CanEscapePursuer(EnemyShip) and not (EnemyShip.TypeId in NonNegotiatingShipTypes) and
-      not NoTalk and not EnemyShip.NoTalk and ((OwnerId <> oiPirate) or (PirateType = 0) or not (EnemyShip.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive])) then
+      not NoTalk and not EnemyShip.NoTalk and ((OwnerId <> owner_pirate) or (PirateType = 0) or not (EnemyShip.CurrentStanding in [standing_coalition_military, standing_coalition_active])) then
       if (EnemyShip.GetMaxWeaponRange * EnemyShip.GetMaxWeaponRange >= PointDistanceSquared(Position, EnemyShip.Position)) and
         (((Galaxy.CurrentTurn * Integer(EnemyShip.Id) mod 3 = 0) and (NextRandomUnitFloat(RandomState) > 0.2)) or (GetHullIntegrityPercent < 20)) then begin
         LowOffer := Min(Money, GetWealthScaledAmount(1));
@@ -953,13 +953,13 @@ var I: Integer; Ship: TShip;
     ReplaceTextToken(Text, '<Name>', GetName, TextHighlightColorTag);
     ReplaceTextToken(Text, '<FullName>', GetFullName(' '), TextHighlightColorTag);
     if (GetPlayer.CurrentStar = CurrentStar) and GetPlayer.InNormalSpace and (Galaxy.CoalitionDefeatedTurn = 0) then
-      AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
+      AddOrUpdatePlayerBubble(message_galaxy_news, Galaxy.CurrentTurn, Text, '');
   end;
 begin
   Result := False;
   if CurrentPlanet = nil then Exit;
   if PrisonTermRemaining > 0 then begin
-    if ((CurrentStar.Battle <> 0) and (CurrentStar.LastDominatorPresenceTurn >= Galaxy.CurrentTurn - 1)) or (CurrentPlanet.OwnerId = oiPirate) then begin
+    if ((CurrentStar.Battle <> 0) and (CurrentStar.LastDominatorPresenceTurn >= Galaxy.CurrentTurn - 1)) or (CurrentPlanet.OwnerId = owner_pirate) then begin
       PrisonTermRemaining := 0;
       RefreshCurrentStanding;
       Result := False;
@@ -970,7 +970,7 @@ begin
       Result := False;
       RefreshCurrentStanding;
     end else Result := True;
-  end else if (CurrentPlanet.OwnerId <> oiPirate) and ((CurrentStar.Battle = 0) or (CurrentStar.LastDominatorPresenceTurn < Galaxy.CurrentTurn - 1)) then begin
+  end else if (CurrentPlanet.OwnerId <> owner_pirate) and ((CurrentStar.Battle = 0) or (CurrentStar.LastDominatorPresenceTurn < Galaxy.CurrentTurn - 1)) then begin
     for I := 0 to CurrentPlanet.Warriors.Count - 1 do begin
       Ship := CurrentPlanet.Warriors[I];
       if Ship.EnemyShip = Self then begin
@@ -979,7 +979,7 @@ begin
         Exit;
       end;
     end;
-    if (NextRandomUnitFloat(RandomState) < 0.01) or (CurrentPlanet.GetRelationLevelToShip(Self) = rlHostile) then begin
+    if (NextRandomUnitFloat(RandomState) < 0.01) or (CurrentPlanet.GetRelationLevelToShip(Self) = relation_level_hostile) then begin
       Imprison;
       RefreshCurrentStanding;
     end;
@@ -990,8 +990,8 @@ end;
 { @routine $59D248 TPirate_AssignWeaponTargetsInStar }
 procedure TPirate.AssignWeaponTargetsInStar;
 const
-  MissileShotTypes = [wstTorpedo..wstRocket];
-  AreaOrMissileShotTypes = [wstAreaDamage..wstRocket];
+  MissileShotTypes = [shot_torpedo..shot_rocket];
+  AreaOrMissileShotTypes = [shot_area_damage..shot_rocket];
 var I, J, Assigned: Integer; Ship: TShip; Weapon: TWeapon; Item: TItem; Asteroid: TAsteroid; Distance: Single; Missile: TMissile;
 begin
   for I := 1 to WeaponCount do begin Weapon := Weapons[I]; Weapon.Target := nil; end;
@@ -999,7 +999,7 @@ begin
   if CurrentStar.Battle <> 0 then
     for I := 0 to CurrentStar.Ships.Count - 1 do begin
       Ship := CurrentStar.Ships[I];
-      if (Ship.OwnerId = oiDominator) and Ship.InNormalSpace then
+      if (Ship.OwnerId = owner_dominator) and Ship.InNormalSpace then
         for J := 1 to WeaponCount do begin
           Weapon := Weapons[J];
           if ((Weapon.GetWeaponInfo^.ShotType in MissileShotTypes) and (Weapon.Ammo = 0)) or (Weapon.Target <> nil) or
@@ -1065,10 +1065,10 @@ begin
   if CurrentStar.Items.Count > Galaxy.GetAIJunkToleranceLevel then
     for I := 0 to CurrentStar.Items.Count - 1 do begin
       Item := CurrentStar.Items[I];
-      if (Item.ItemType <> t_Minerals) and (Item.ItemType in [t_Food..t_Narcotics]) then Continue;
-      if ((Item.ItemType = t_Minerals) and IsRecentlyDroppedItem(Item)) or
+      if (Item.ItemType <> item_minerals) and (Item.ItemType in [item_food..item_narcotics]) then Continue;
+      if ((Item.ItemType = item_minerals) and IsRecentlyDroppedItem(Item)) or
         ((Item.ScriptItem <> nil) and (TScriptItem(Item.ScriptItem).Name <> '')) or CanCargoHookHandleItem(Item, Self) then Continue;
-      if not ((GetPlayer.CurrentStar <> CurrentStar) or (GetRelationLevelToShip(GetPlayer) <= rlBad) or
+      if not ((GetPlayer.CurrentStar <> CurrentStar) or (GetRelationLevelToShip(GetPlayer) <= relation_level_bad) or
         (PointDistance(GetPlayer.Position, Item.Position) >= 600) or
         ((NextRandomUnitFloat(RandomState) <= 0.2) and (PointDistance(GetPlayer.Position, Item.Position) >= 200))) then Continue;
       if not CanSafelyDetonateItem(Item) then Continue;
@@ -1110,15 +1110,15 @@ begin
       if PriorityTargetFound and (Ship.TargetingRestriction <> 6) then Continue;
       if (Ship.TargetingRestriction in [1..3, 5]) or (Ship = Self) or not Ship.InNormalSpace or (TruceShip = Ship) or (Ship.TruceShip = Self) or
         ((GetPlayer = Ship) and (GetPlayer.TruceShip = Self)) or (Ship.LiberationGroup <> nil) or (GetPlayer.QuestTargetKillShip = Ship) then Continue;
-      if Ship.TypeId in [rstRangerCenter..rstCustomStation] then begin
-        if OwnerId <> oiPirate then Continue;
+      if Ship.TypeId in [station_ranger_center..station_custom] then begin
+        if OwnerId <> owner_pirate then Continue;
         if CurrentStar.Battle = 0 then Continue;
-        if Ship.CurrentStanding in [ssNeutral..ssPirateMilitary] then Continue;
+        if Ship.CurrentStanding in [standing_neutral..standing_pirate_military] then Continue;
       end;
-      if Ship.TypeId = stTranclucator then Continue;
-      if (CurrentStar.ControlFaction = sfDominators) or (CurrentStar.Status.CustomFaction <> '') or
-        ((CurrentStar.ControlFaction = sfPirates) and (OwnerId = oiPirate) and (Galaxy.CoalitionDefeatedTurn = 0)) then begin
-        if not (Ship is TNormalShip) or ((OwnerId = oiPirate) and (Ship.OwnerId <> oiPirate)) then begin
+      if Ship.TypeId = ship_tranclucator then Continue;
+      if (CurrentStar.ControlFaction = faction_dominators) or (CurrentStar.Status.CustomFaction <> '') or
+        ((CurrentStar.ControlFaction = faction_pirates) and (OwnerId = owner_pirate) and (Galaxy.CoalitionDefeatedTurn = 0)) then begin
+        if not (Ship is TNormalShip) or ((OwnerId = owner_pirate) and (Ship.OwnerId <> owner_pirate)) then begin
           EnemyShip := Ship;
           if ChanceToWin(Ship) > 0.5 then Exit;
         end;
@@ -1136,9 +1136,9 @@ begin
             Chance := Chance * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor;
           end else if GetPlayer.QuestTargetDefendShip = Ship then Chance := Chance * 5;
           if (Chance < 0.3) and (StrengthInAverageRanger < 0.7) then Continue;
-          if (Chance < 1.5) and (Ship.TypeId = stRanger) and (Ship.GetDominantCareer <> rcPirate) then Continue;
-          if (Chance < 3.5) and (Ship.TypeId = stRanger) and (Ship.GetDominantCareer = rcPirate) then Continue;
-          if (Chance < 3.5) and (Ship.TypeId = stPirate) then Continue;
+          if (Chance < 1.5) and (Ship.TypeId = ship_ranger) and (Ship.GetDominantCareer <> career_pirate) then Continue;
+          if (Chance < 3.5) and (Ship.TypeId = ship_ranger) and (Ship.GetDominantCareer = career_pirate) then Continue;
+          if (Chance < 3.5) and (Ship.TypeId = ship_pirate) then Continue;
           if not IsTargetStillPursuable(Ship) and (GetPlayer <> Ship) and (GetPlayer.QuestTargetDefendShip <> Ship) then Continue;
           if Chance > BestChance then begin
             EnemyShip := Ship;
@@ -1159,7 +1159,7 @@ begin
     for I := 0 to CurrentStar.Ships.Count - 1 do begin
       Ship := CurrentStar.Ships[I];
       if Ship.InNormalSpace and (TruceShip <> Ship) and (Ship.TruceShip <> Self) and
-        (not (Ship.TypeId in [rstRangerCenter..rstCustomStation]) or not (Ship.CurrentStanding in [ssNeutral..ssPirateMilitary])) and
+        (not (Ship.TypeId in [station_ranger_center..station_custom]) or not (Ship.CurrentStanding in [standing_neutral..standing_pirate_military])) and
         ((RelationToShip(Ship) < RelationBadMin) or Ship.AbductedByPirateClan) then begin
         Distance := PointDistance(Position, Ship.Position);
         if NextRandomFloatRange(0.3, 3, RandomState) * BestDistance > Distance then begin EnemyShip := Ship; BestDistance := Distance; end;
@@ -1181,8 +1181,8 @@ begin
     Ship := CurrentStar.Ships[I];
     if not Ship.InNormalSpace then Continue;
     if TruceShip = Ship then Continue;
-    if Ship.TypeId in [rstRangerCenter..rstCustomStation] then Continue;
-    if Ship.TypeId = stTranclucator then Continue;
+    if Ship.TypeId in [station_ranger_center..station_custom] then Continue;
+    if Ship.TypeId = ship_tranclucator then Continue;
     if Ship = Self then Continue;
     if Ship.TargetingRestriction in [1..3, 5] then Continue;
     if AcceptsRansomDemandFrom(Ship) then Continue;
@@ -1190,8 +1190,8 @@ begin
     if (RelationToShip(Ship) >= RelationGoodMin) and (NextRandomIntRange(1, 100, RandomState) > Aggression + 33) then Continue;
     if (RelationToShip(Ship) >= RelationNormalMin) and (NextRandomIntRange(1, 100, RandomState) > Aggression + 66) then Continue;
     if (RelationToShip(Ship) >= RelationBadMin) and (NextRandomIntRange(1, 100, RandomState) > Aggression + 100) then Continue;
-    if not ((not (Ship is TPirate) and (GetPlayer <> Ship) and ((Ship.OwnerId <> oiPirate) or not (Ship is TNormalShip))) or
-      (((Ship.OwnerId <> oiPirate) or (Ship.PilotRace <> PilotRace) or (NextRandomIntRange(1, 100, RandomState) <= 50)) and
+    if not ((not (Ship is TPirate) and (GetPlayer <> Ship) and ((Ship.OwnerId <> owner_pirate) or not (Ship is TNormalShip))) or
+      (((Ship.OwnerId <> owner_pirate) or (Ship.PilotRace <> PilotRace) or (NextRandomIntRange(1, 100, RandomState) <= 50)) and
       (((Ship as TNormalShip).PirateRank <= Ord(PirateRank)) or (NextRandomIntRange(1, 100, RandomState) <= 70)) and
       (((Ship as TNormalShip).PirateRank <= Integer(PirateRank) + 1) or (NextRandomIntRange(1, 100, RandomState) <= 70)) and
       (((Ship as TNormalShip).PirateRank <= Integer(PirateRank) + 2) or (NextRandomIntRange(1, 100, RandomState) <= 70)) and
@@ -1206,10 +1206,10 @@ end;
 { @routine $59E3EC TPirate_EngageEnemyShip }
 procedure TPirate.EngageEnemyShip;
 begin
-  if Order = soFollowShip then OrderNone(False);
+  if Order = order_follow_ship then OrderNone(False);
   if (EnemyShip <> nil) and (EnemyShip.CurrentStar = CurrentStar) then
     if EnemyShip.InNormalSpace then begin
-      OrderFollowShip(EnemyShip, fmMinWeaponRange, False);
+      OrderFollowShip(EnemyShip, follow_min_weapon_range, False);
       if ChanceToWin(EnemyShip) < 0.8 then RequestAlliesAttackShip(EnemyShip);
     end else if (ChanceToWin(EnemyShip) > 2) and (GetHullIntegrityPercent > 70) and (EnemyShip.GetHullIntegrityPercent > 70) then
       if EnemyShip.CurrentPlanet <> nil then begin
@@ -1231,7 +1231,7 @@ begin
     not AcceptsRansomDemandFrom(EnemyShip) then TryExtortShip(EnemyShip);
   if (EnemyShip <> nil) and (OrderTarget = EnemyShip) and (Integer(Seed + Cardinal(Galaxy.CurrentTurn)) mod 4 = 0) and
     (((ChanceToWin(EnemyShip) < 1.1) and (GetHullIntegrityPercent > 30)) or
-    ((OwnerId = oiPirate) and (CurrentStar.ControlFaction = sfPirates) and (CurrentStar.Status.CustomFaction = '') and (ChanceToWin(EnemyShip) < 2))) then
+    ((OwnerId = owner_pirate) and (CurrentStar.ControlFaction = faction_pirates) and (CurrentStar.Status.CustomFaction = '') and (ChanceToWin(EnemyShip) < 2))) then
     RequestAlliesAttackShip(EnemyShip);
 end;
 { @end $59E57C }
@@ -1328,7 +1328,7 @@ var Forced: Boolean; NextDemandTurn: Integer;
   end;
 begin
   Result := False;
-  Forced := (GetPlayer = OtherShip) and OtherShip.IsHealthEffectActive(heOneEyedKhamas);
+  Forced := (GetPlayer = OtherShip) and OtherShip.IsHealthEffectActive(stimulant_one_eyed_khamas);
   NextDemandTurn := LastPlayerExtortionTurn + 30;
   if OtherShip is TRanger then ReactToExtortionDemand(OtherShip);
   if (GetPlayer <> OtherShip) and ((EnemyShip = nil) or (CurrentStar <> EnemyShip.CurrentStar)) then EnemyShip := OtherShip;
@@ -1355,16 +1355,16 @@ var NextDemandTurn: Integer;
   var I: Integer; Ship: TShip;
   begin
     OtherShip.AbductedByPirateClan := False;
-    if (OwnerId = oiPirate) and (CurrentStar.ControlFaction = sfPirates) and (CurrentStar.Status.CustomFaction = '') and (OtherShip is TNormalShip) and
+    if (OwnerId = owner_pirate) and (CurrentStar.ControlFaction = faction_pirates) and (CurrentStar.Status.CustomFaction = '') and (OtherShip is TNormalShip) and
       (TNormalShip(OtherShip).CurrentSystemKills.Pirate > 0) then begin
         TNormalShip(OtherShip).CurrentSystemKills.Pirate := 0;
         for I := 0 to CurrentStar.Ships.Count - 1 do begin
           Ship := CurrentStar.Ships[I];
-          if (Ship is TNormalShip) and (Ship.OwnerId = oiPirate) then Ship.TruceWithShip(OtherShip);
+          if (Ship is TNormalShip) and (Ship.OwnerId = owner_pirate) then Ship.TruceWithShip(OtherShip);
         end;
       end;
     if OtherShip is TRanger then begin
-      if (MainPiratePlanet <> nil) and (MainPiratePlanet.OwnerId = oiPirate) then MainPiratePlanet.ChangeRelationToRanger(OtherShip, 10);
+      if (MainPiratePlanet <> nil) and (MainPiratePlanet.OwnerId = owner_pirate) then MainPiratePlanet.ChangeRelationToRanger(OtherShip, 10);
       (OtherShip as TRanger).AddTraderCareerActivity(1);
     end;
     OtherShip.SetMoney(OtherShip.Money - OfferedAmount);
@@ -1389,8 +1389,8 @@ begin
   if OtherShip.TruceShip = Self then Response := LookupVisibleTalkText('Talk.Truce.WeAlreadyHavePact', OtherShip)
   else if (GetPlayer = OtherShip) and PlayerExtortionPactActive then Response := LookupVisibleTalkText('Talk.Truce.WeAlreadyHavePact', OtherShip)
   else if (GetPlayer = OtherShip) and (Galaxy.CurrentTurn < NextDemandTurn) then Response := LookupVisibleTalkText('Talk.Truce.WeAlreadyHavePact', OtherShip)
-  else if (OwnerId = oiPirate) and (OtherShip is TNormalShip) and (OtherShip.OwnerId <> oiPirate) and
-    (OtherShip.CurrentStar.ControlFaction = sfPirates) and (OtherShip.CurrentStar.Status.CustomFaction = '') and
+  else if (OwnerId = owner_pirate) and (OtherShip is TNormalShip) and (OtherShip.OwnerId <> owner_pirate) and
+    (OtherShip.CurrentStar.ControlFaction = faction_pirates) and (OtherShip.CurrentStar.Status.CustomFaction = '') and
     (TNormalShip(OtherShip).CurrentSystemKills.Pirate > 0) then begin
     if 2 * Wealth * (1 / 15) < OfferedAmount then begin
       Response := LookupVisibleTalkText('Talk.Truce.' + GetTypeNameKey + 'Ok', OtherShip);
@@ -1425,11 +1425,11 @@ function TPirate.BuildAttackRequestResponse(Requester: TShip; var Response: Wide
 begin
   Result := False;
   if Requester is TRanger then begin
-    if Target.TypeId in [stRanger..stPirate] then Target.ChangeRelationToRanger(Requester, -20);
-    if (Target.OwnerId = oiDominator) or (Target.TypeId = stPirate) then (Requester as TRanger).AddWarriorCareerActivity(1)
+    if Target.TypeId in [ship_ranger..ship_pirate] then Target.ChangeRelationToRanger(Requester, -20);
+    if (Target.OwnerId = owner_dominator) or (Target.TypeId = ship_pirate) then (Requester as TRanger).AddWarriorCareerActivity(1)
     else (Requester as TRanger).AddPirateCareerActivity(1);
   end;
-  if (OrderTarget = Target) and (GetRelationLevelToShip(Target) = rlHostile) then AcceptRequest
+  if (OrderTarget = Target) and (GetRelationLevelToShip(Target) = relation_level_hostile) then AcceptRequest
   else if TruceShip = Target then Response := FormatText1(LookupVisibleTalkText('Talk.Attack.WeAlreadyHavePact', Requester), TextHighlightColorTag, '<Target>', Target.GetName)
   else if (RelationToShip(Target) >= RelationGoodMin) and FriendsPreferred then begin
     if not (Target is TTranclucator) then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'WeFriends', Requester)
@@ -1468,8 +1468,8 @@ begin
   if RelationToShip(OtherShip) < 45 then Response := LookupVisibleTalkText('Talk.Pirate.Suspect', OtherShip)
   else if PartnerShip <> nil then Response := FormatText1(LookupVisibleTalkText('Talk.Pirate.AlreadyHavePartner', OtherShip), TextHighlightColorTag, '<Partner>', (PartnerShip as TRanger).Name)
   else if ((OtherShip is TPlayer) and (TPlayer(OtherShip).GetMaxPiratePartners <= TPlayer(OtherShip).PiratePartners.Count)) or
-    ((OwnerId = oiPirate) and (GetPlayer.PirateRank < PirateRank)) then Response := LookupVisibleTalkText('Talk.Pirate.NeedPirate', OtherShip)
-  else if (OtherShip is TRanger) and (OtherShip.GetEffectiveSkillLevel(psLeadership) <= (OtherShip as TRanger).CountWingmen) then
+    ((OwnerId = owner_pirate) and (GetPlayer.PirateRank < PirateRank)) then Response := LookupVisibleTalkText('Talk.Pirate.NeedPirate', OtherShip)
+  else if (OtherShip is TRanger) and (OtherShip.GetEffectiveSkillLevel(skill_leadership) <= (OtherShip as TRanger).CountWingmen) then
     Response := LookupVisibleTalkText('Talk.Partner.NeedLeadership', OtherShip)
   else if CalculatePartnershipMonths(PaymentAmount, OtherShip) = 0 then Response := LookupVisibleTalkText('Talk.Pirate.SmallMoney', OtherShip)
   else Result := True;
@@ -1508,7 +1508,7 @@ begin
     if PartnershipDaysRemaining < 1 then begin
       if CanNotifyPartner then begin
         Leader := PartnerShip;
-        if (Order = soFollowShip) and (OrderTarget = PartnerShip) then OrderNone(False);
+        if (Order = order_follow_ship) and (OrderTarget = PartnerShip) then OrderNone(False);
         GetPlayer.PiratePartners.Remove(Self);
         PartnerShip := nil;
         NotifyPiratePartnershipExpired(Leader);
@@ -1516,7 +1516,7 @@ begin
     end else if RelationToShip(PartnerShip) < RelationNormalMin then begin
       if CanNotifyPartner then begin
         Leader := PartnerShip;
-        if (Order = soFollowShip) and (OrderTarget = PartnerShip) then OrderNone(False);
+        if (Order = order_follow_ship) and (OrderTarget = PartnerShip) then OrderNone(False);
         GetPlayer.PiratePartners.Remove(Self);
         PartnerShip := nil;
         NotifyPiratePartnerRelationBreak(Leader);
@@ -1524,7 +1524,7 @@ begin
     end else if (EnemyShip <> nil) and (EnemyShip.PartnerShip <> nil) and (EnemyShip.PartnerShip = PartnerShip) then begin
       if CanNotifyPartner then begin
         Leader := PartnerShip;
-        if (Order = soFollowShip) and (OrderTarget = PartnerShip) then OrderNone(False);
+        if (Order = order_follow_ship) and (OrderTarget = PartnerShip) then OrderNone(False);
         GetPlayer.PiratePartners.Remove(Self);
         PartnerShip := nil;
         NotifyPiratePartnerRebellion(Leader);
@@ -1536,7 +1536,7 @@ begin
           if TShip(GetPlayer.PiratePartners[I]).PartnershipDaysRemaining > Longest then Longest := TShip(GetPlayer.PiratePartners[I]).PartnershipDaysRemaining;
         if Longest >= PartnershipDaysRemaining then begin
           Leader := PartnerShip;
-          if (Order = soFollowShip) and (OrderTarget = PartnerShip) then OrderNone(False);
+          if (Order = order_follow_ship) and (OrderTarget = PartnerShip) then OrderNone(False);
           GetPlayer.PiratePartners.Remove(Self);
           PartnerShip := nil;
           NotifyPiratePartnerRatingBreak(Leader);
@@ -1561,9 +1561,9 @@ function TPirate.RefusesFactionNegotiation(OtherShip: TShip): Boolean;
 begin
   Result := False;
   if (PirateType <> 0) then
-    if (OtherShip.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive]) then
-    if ((CurrentStar.ControlFaction <> sfPirates) or (CurrentStar.Status.CustomFaction <> '') or
-    (MainPiratePlanet = nil) or (MainPiratePlanet.OwnerId <> oiPirate) or (TShip(Pointer(OtherShip)).CurrentStar = MainPiratePlanet.CurrentStar)) then Result := True;
+    if (OtherShip.CurrentStanding in [standing_coalition_military, standing_coalition_active]) then
+    if ((CurrentStar.ControlFaction <> faction_pirates) or (CurrentStar.Status.CustomFaction <> '') or
+    (MainPiratePlanet = nil) or (MainPiratePlanet.OwnerId <> owner_pirate) or (TShip(Pointer(OtherShip)).CurrentStar = MainPiratePlanet.CurrentStar)) then Result := True;
 end;
 { @end $5A0890 }
 
@@ -1576,14 +1576,14 @@ var I: Integer; Ship: TShip;
 begin
   Result := False;
   if CurrentStar.Constellation.Id = 20 then Exit;
-  PirateSystem := (CurrentStar.ControlFaction = sfPirates) and (CurrentStar.Status.CustomFaction = '');
-  HostileSystem := (CurrentStar.ControlFaction = sfDominators) or (CurrentStar.Status.CustomFaction <> '');
+  PirateSystem := (CurrentStar.ControlFaction = faction_pirates) and (CurrentStar.Status.CustomFaction = '');
+  HostileSystem := (CurrentStar.ControlFaction = faction_dominators) or (CurrentStar.Status.CustomFaction <> '');
   Station := nil;
   if not PirateSystem then
     for I := 0 to CurrentStar.Ships.Count - 1 do begin
       Ship := CurrentStar.Ships[I];
       if not (Ship is TRuins) then Continue;
-      if Ship.TypeId <> rstDominion then Continue;
+      if Ship.TypeId <> station_dominion then Continue;
       if CurrentStar.Dominion = Ship then Continue;
       if not Ship.InNormalSpace then Continue;
       if not Ship.CanDock(Self) then Continue;
@@ -1593,21 +1593,21 @@ begin
   if (EnemyShip = nil) or (EnemyShip.OrderTarget <> Self) or (EnemyShip.EstimateOrderTravelTurns > 2) then RetreatFactor := RetreatFactor * 0.5;
   if Station = nil then RetreatFactor := RemapClamped(RaidPressure, 0, 15, 1, 0.1) * RetreatFactor;
   if InFear and not PirateSystem then RetreatFactor := 1.4 * RetreatFactor;
-  if (OwnerId <> oiPirate) and (not HostileSystem or (Station = nil)) then Exit;
-  if (OwnerId = oiPirate) and not PirateSystem then RetreatFactor := RetreatFactor * 0.25;
-  DominatorAndCustomStrength := CurrentStar.GetCachedFactionStrength(sfDominators);
-  CoalitionStrength := CurrentStar.GetCachedFactionStrength(sfCoalition);
-  PirateStrength := CurrentStar.GetCachedFactionStrength(sfPirates);
+  if (OwnerId <> owner_pirate) and (not HostileSystem or (Station = nil)) then Exit;
+  if (OwnerId = owner_pirate) and not PirateSystem then RetreatFactor := RetreatFactor * 0.25;
+  DominatorAndCustomStrength := CurrentStar.GetCachedFactionStrength(faction_dominators);
+  CoalitionStrength := CurrentStar.GetCachedFactionStrength(faction_coalition);
+  PirateStrength := CurrentStar.GetCachedFactionStrength(faction_pirates);
   StrengthScale := 1 / Max(1, Galaxy.AverageRangerStrength);
   if TransitOriginStar <> nil then
     for I := 0 to CurrentStar.Ships.Count - 1 do begin
       Ship := CurrentStar.Ships[I];
-      if (Ship.CurrentStanding in [ssPirateActive, ssPirateMilitary]) and (Ship.OrderTarget = CurrentStar) then
+      if (Ship.CurrentStanding in [standing_pirate_active, standing_pirate_military]) and (Ship.OrderTarget = CurrentStar) then
         PirateStrength := Min(10, Max(0.1, Ship.Strength * StrengthScale)) * 0.75 + PirateStrength;
     end;
   if (Abs(CoalitionStrength - 2.5 * DominatorAndCustomStrength) * RetreatFactor >= PirateStrength) or (HasNoUsableWeapons and not PirateSystem) then begin
     Urgent := InFear and (EnemyShip <> nil) and (EnemyShip.OrderTarget = Self) and (EnemyShip.EstimateOrderTravelTurns <= 2);
-    if Order = soJump then begin
+    if Order = order_jump then begin
       if Urgent then UpdateAfterburnerState;
       Result := True;
       Exit;
@@ -1628,7 +1628,7 @@ begin
         Angle := PointBearingDegrees(CurrentStar.Position, Star.Position) - PointBearingDegrees(MakeFloatPoint(0, 0), Position);
         Angle := WrapSignedHeadingDegrees(Angle);
         if (AnyStar = nil) or (Abs(Angle) < AnyAngle) then begin AnyStar := Star; AnyAngle := Abs(Angle); end;
-        if (Star.ControlFaction = sfPirates) and (Star.Status.CustomFaction = '') and ((PirateStar = nil) or (Abs(Angle) < PirateAngle)) then begin
+        if (Star.ControlFaction = faction_pirates) and (Star.Status.CustomFaction = '') and ((PirateStar = nil) or (Abs(Angle) < PirateAngle)) then begin
           PirateStar := Star;
           PirateAngle := Abs(Angle);
         end;
@@ -1661,7 +1661,7 @@ begin
     3: begin FragilityScale := 1.2; HullValueScale := 0.5; end;
   else FragilityScale := 1; HullValueScale := 1;
   end;
-  if Item.ItemType in [t_FuelTanks, t_Radar, t_Scaner] then FragilityScale := FragilityScale * 0.5;
+  if Item.ItemType in [item_fuel_tanks, item_radar, item_scanner] then FragilityScale := FragilityScale * 0.5;
   DesiredMoneyFraction := 0.1;
   DesiredFreeFraction := Max(0.01, Min(0.99, GetDesiredCargoFreeSpace / Max(100, GetHull.Weight)));
   MoneyPenalty := Sqr((1 / Max(0.01, SmoothedMoneyFraction) - 1) / (1 / DesiredMoneyFraction - 1)) /
@@ -1674,7 +1674,7 @@ begin
   WeightPenalty := WeightPenalty * 0.01 * (100 + SeededRandomIntRange(-25, 25, Seed + 5 * Id));
   case PriceMode of
     4: Price := Item.Cost;
-    3: Price := Item.CalculateResaleValue(GetEffectiveSkillLevel(psTrading));
+    3: Price := Item.CalculateResaleValue(GetEffectiveSkillLevel(skill_trading));
     1: Price := -Item.Cost;
     2: Price := 0;
     0: begin
@@ -1686,7 +1686,7 @@ begin
     Price := 0;
     WeightPenalty := 0;
   end;
-  if Item.ItemType <> t_Hull then
+  if Item.ItemType <> item_hull then
     Result := Effectiveness * EffectivenessScale * (1 + (2 - TEquipment(Item).GetFragilityFactor(NoFlags)) * FragilityScale) -
       Item.Weight * WeightPenalty - Price * MoneyPenalty
   else
@@ -1698,67 +1698,67 @@ end;
 { @routine $5A13F4 TPirate_EvaluateStatBonus }
 function TPirate.EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single;
 const
-  ScannerFlags = [dkScanBonus..dkDroidBlock];
+  ScannerFlags = [damage_flag_scanner_bonus..damage_flag_droid_block];
   NoFlags = [];
 begin
   Result := 0;
   if Value = 0 then Exit;
   case BonusKind of
-    bonHull: Result := Value * 150;
-    bonFuel: Result := Value * 2;
-    bonSpeed: Result := Value * 1.2;
-    bonJump: Result := Value * 20;
-    bonRadar: Result := Value * 0.05;
-    bonScan: Result := Value * 10 + Value * 35 * CountWeaponsByDamageFlags(ScannerFlags);
-    bonDroid: Result := Value * 10 / Max(0.1, GetHull.GetFragilityFactor(NoFlags));
-    bonHook: Result := (Min(Value, HullBaseSize * EquipmentSizeFactors[5]) + Value * 0.1) * 1.3;
-    bonDef: Result := Value * 5 * 100 / Max(5, 100 - Value) * 45 / Max(5, 45 - Value);
-    bonWEnergy: Result := Value * 12;
-    bonWSplinter: Result := Value * 12;
-    bonWMissile: Result := Value * 12 * (0.1 + ShortInt(GetRadarRange > 0) * 0.9);
-    bonWRadius: Result := Value * Sqr(Max(100, SmoothedEnemySpeed) / Max(100, SmoothedSpeed));
-    bonHookRadius: Result := Value * 0.1;
-    bonMass: Result := RemapClamped(Value + GetHull.Weight * 0.1, HullMassEvaluationStart, HullMassEvaluationEnd, 1, 0.333) * 6000;
-    bonSlotRadar:
-      if (GetSlotCount(sskRadar) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[BonusKind] * 0.3
-      else if (GetRadar <> nil) and (Value < 0) then Result := -PirateSlotBonusWeights[BonusKind] - PirateSlotBonusWeights[bonSlotWeapon] * CountMissileWeapons
-      else if (GetSlotCount(sskRadar) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[BonusKind] * -0.3;
-    bonSlotScaner:
-      if (GetSlotCount(sskScanner) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[BonusKind] * 0.3
-      else if (GetScanner <> nil) and (Value < 0) then Result := -PirateSlotBonusWeights[BonusKind] - CountWeaponsByDamageFlags(ScannerFlags) * 0.1 * PirateSlotBonusWeights[bonSlotWeapon]
-      else if (GetSlotCount(sskScanner) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[BonusKind] * -0.3;
-    bonSlotDroid:
-      if (GetSlotCount(sskRepairRobot) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[BonusKind] * 0.3
+    bonus_armor: Result := Value * 150;
+    bonus_fuel_capacity: Result := Value * 2;
+    bonus_speed: Result := Value * 1.2;
+    bonus_jump_range: Result := Value * 20;
+    bonus_radar_range: Result := Value * 0.05;
+    bonus_scanner_power: Result := Value * 10 + Value * 35 * CountWeaponsByDamageFlags(ScannerFlags);
+    bonus_repair_points: Result := Value * 10 / Max(0.1, GetHull.GetFragilityFactor(NoFlags));
+    bonus_hook_power: Result := (Min(Value, HullBaseSize * EquipmentSizeFactors[5]) + Value * 0.1) * 1.3;
+    bonus_defense: Result := Value * 5 * 100 / Max(5, 100 - Value) * 45 / Max(5, 45 - Value);
+    bonus_energy_damage: Result := Value * 12;
+    bonus_splinter_damage: Result := Value * 12;
+    bonus_missile_damage: Result := Value * 12 * (0.1 + ShortInt(GetRadarRange > 0) * 0.9);
+    bonus_weapon_range: Result := Value * Sqr(Max(100, SmoothedEnemySpeed) / Max(100, SmoothedSpeed));
+    bonus_hook_range: Result := Value * 0.1;
+    bonus_mass: Result := RemapClamped(Value + GetHull.Weight * 0.1, HullMassEvaluationStart, HullMassEvaluationEnd, 1, 0.333) * 6000;
+    bonus_radar_slots:
+      if (GetSlotCount(slot_radar) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[BonusKind] * 0.3
+      else if (GetRadar <> nil) and (Value < 0) then Result := -PirateSlotBonusWeights[BonusKind] - PirateSlotBonusWeights[bonus_weapon_slots] * CountMissileWeapons
+      else if (GetSlotCount(slot_radar) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[BonusKind] * -0.3;
+    bonus_scanner_slots:
+      if (GetSlotCount(slot_scanner) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[BonusKind] * 0.3
+      else if (GetScanner <> nil) and (Value < 0) then Result := -PirateSlotBonusWeights[BonusKind] - CountWeaponsByDamageFlags(ScannerFlags) * 0.1 * PirateSlotBonusWeights[bonus_weapon_slots]
+      else if (GetSlotCount(slot_scanner) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[BonusKind] * -0.3;
+    bonus_repair_robot_slots:
+      if (GetSlotCount(slot_repair_robot) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[BonusKind] * 0.3
       else if (GetRepairRobot <> nil) and (Value < 0) then Result := -PirateSlotBonusWeights[BonusKind]
-      else if (GetSlotCount(sskRepairRobot) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[BonusKind] * -0.3;
-    bonSlotHook:
-      if (GetSlotCount(sskCargoHook) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[BonusKind] * 0.3
+      else if (GetSlotCount(slot_repair_robot) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[BonusKind] * -0.3;
+    bonus_cargo_hook_slots:
+      if (GetSlotCount(slot_cargo_hook) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[BonusKind] * 0.3
       else if (GetCargoHook <> nil) and (Value < 0) then Result := -PirateSlotBonusWeights[BonusKind]
-      else if (GetSlotCount(sskCargoHook) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[BonusKind] * -0.3;
-    bonSlotDef:
-      if (GetSlotCount(sskDefGenerator) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[BonusKind] * 0.3
+      else if (GetSlotCount(slot_cargo_hook) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[BonusKind] * -0.3;
+    bonus_defense_slots:
+      if (GetSlotCount(slot_defense_generator) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[BonusKind] * 0.3
       else if (GetDefGenerator <> nil) and (Value < 0) then Result := -PirateSlotBonusWeights[BonusKind]
-      else if (GetSlotCount(sskDefGenerator) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[BonusKind] * -0.3;
-    bonSlotWeapon:
+      else if (GetSlotCount(slot_defense_generator) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[BonusKind] * -0.3;
+    bonus_weapon_slots:
       begin
-        if (GetSlotCount(sskWeapon) < 5) and (Value > 0) then
-          Result := Min(Value, 5 - GetSlotCount(sskWeapon)) * PirateSlotBonusWeights[BonusKind];
-        if Value < 0 then Result := Max(Value, -GetSlotCount(sskWeapon)) * PirateSlotBonusWeights[BonusKind];
-        if CountEquippedWeapons > Max(Value + GetSlotCount(sskWeapon), 1) then
-          Result := Result - (PirateSlotBonusWeights[BonusKind] * 0.6) * (CountEquippedWeapons - Max(1, Value + GetSlotCount(sskWeapon)));
+        if (GetSlotCount(slot_weapon) < 5) and (Value > 0) then
+          Result := Min(Value, 5 - GetSlotCount(slot_weapon)) * PirateSlotBonusWeights[BonusKind];
+        if Value < 0 then Result := Max(Value, -GetSlotCount(slot_weapon)) * PirateSlotBonusWeights[BonusKind];
+        if CountEquippedWeapons > Max(Value + GetSlotCount(slot_weapon), 1) then
+          Result := Result - (PirateSlotBonusWeights[BonusKind] * 0.6) * (CountEquippedWeapons - Max(1, Value + GetSlotCount(slot_weapon)));
       end;
-    bonSlotArt:
+    bonus_artefact_slots:
       begin
-        if (GetSlotCount(sskArtefact) < DefaultHullSlotCounts[sskArtefact]) and (Value > 0) then
-          Result := Min(Value, DefaultHullSlotCounts[sskArtefact] - GetSlotCount(sskArtefact)) * PirateSlotBonusWeights[BonusKind];
-        if Value < 0 then Result := Max(Value, -GetSlotCount(sskArtefact)) * PirateSlotBonusWeights[BonusKind];
+        if (GetSlotCount(slot_artefact) < DefaultHullSlotCounts[slot_artefact]) and (Value > 0) then
+          Result := Min(Value, DefaultHullSlotCounts[slot_artefact] - GetSlotCount(slot_artefact)) * PirateSlotBonusWeights[BonusKind];
+        if Value < 0 then Result := Max(Value, -GetSlotCount(slot_artefact)) * PirateSlotBonusWeights[BonusKind];
         if Artefacts <> nil then
-          if Artefacts.Count > Max(Value + GetSlotCount(sskArtefact), 0) then Result := -1000;
+          if Artefacts.Count > Max(Value + GetSlotCount(slot_artefact), 0) then Result := -1000;
       end;
-    bonSlotForsage:
-      if (GetSlotCount(sskAfterburner) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[BonusKind]
-      else if (GetSlotCount(sskAfterburner) = 1) and (Value < 0) then Result := -PirateSlotBonusWeights[BonusKind];
-    bonSkill1..bonSkill6:
+    bonus_afterburner_slots:
+      if (GetSlotCount(slot_afterburner) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[BonusKind]
+      else if (GetSlotCount(slot_afterburner) = 1) and (Value < 0) then Result := -PirateSlotBonusWeights[BonusKind];
+    bonus_accuracy..bonus_leadership:
       begin
         if Value > 0 then
           Result := Min(6 - GetEffectiveSkillLevel(EquipmentBonusSkills[BonusKind]), Value) * PirateSkillBonusWeights[BonusKind];
@@ -1771,13 +1771,13 @@ begin
       end;
   else Result := 0;
   end;
-  if (PirateType = 0) and (BonusKind in [bonSlotForsage, bonMass]) then Result := Result * 1.3;
-  if (PirateType = 0) and (BonusKind in [bonSpeed]) then Result := Result * 1.2 * Max(100, SmoothedEnemySpeed) / Max(100, SmoothedSpeed);
-  if (PirateType = 1) and (BonusKind in [bonHull, bonSpeed, bonDroid, bonDef..bonWMissile]) then Result := Result * 1.3;
-  if (PirateType = 2) and (BonusKind in [bonScan, bonWEnergy..bonWRadius]) then Result := Result * 1.3;
-  if (PirateType = 3) and (BonusKind in [bonSpeed, bonRadar, bonDroid, bonWRadius, bonMass]) then Result := Result * 1.3;
-  if (PirateType = 3) and (BonusKind in [bonWEnergy..bonWMissile]) then Result := Result * 0.7;
-  if BonusKind in [bonSkill1..bonSkill6] then Result := Result * 0.01 * (100 + SeededRandomIntRange(-75, 75, Seed + 131 * Ord(BonusKind))) * RaceSkillEvaluationFactors[PilotRace, EquipmentBonusSkills[BonusKind]]
+  if (PirateType = 0) and (BonusKind in [bonus_afterburner_slots, bonus_mass]) then Result := Result * 1.3;
+  if (PirateType = 0) and (BonusKind in [bonus_speed]) then Result := Result * 1.2 * Max(100, SmoothedEnemySpeed) / Max(100, SmoothedSpeed);
+  if (PirateType = 1) and (BonusKind in [bonus_armor, bonus_speed, bonus_repair_points, bonus_defense..bonus_missile_damage]) then Result := Result * 1.3;
+  if (PirateType = 2) and (BonusKind in [bonus_scanner_power, bonus_energy_damage..bonus_weapon_range]) then Result := Result * 1.3;
+  if (PirateType = 3) and (BonusKind in [bonus_speed, bonus_radar_range, bonus_repair_points, bonus_weapon_range, bonus_mass]) then Result := Result * 1.3;
+  if (PirateType = 3) and (BonusKind in [bonus_energy_damage..bonus_missile_damage]) then Result := Result * 0.7;
+  if BonusKind in [bonus_accuracy..bonus_leadership] then Result := Result * 0.01 * (100 + SeededRandomIntRange(-75, 75, Seed + 131 * Ord(BonusKind))) * RaceSkillEvaluationFactors[PilotRace, EquipmentBonusSkills[BonusKind]]
   else Result := Result * 0.01 * (100 + SeededRandomIntRange(-25, 25, Seed + 131 * Ord(BonusKind)));
 end;
 { @end $5A13F4 }
@@ -1785,10 +1785,10 @@ end;
 { @routine $5A2078 TPirate_EvaluateWeaponDamage }
 function TPirate.EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single;
 const
-  ScannerFlags = [dkScanBonus..dkDroidBlock];
-  ShockFlags = [dkShock];
-  AcidFlags = [dkAcid];
-  DisablingFlags = [dkDecelerate, dkDestruct, dkMagnetic];
+  ScannerFlags = [damage_flag_scanner_bonus..damage_flag_droid_block];
+  ShockFlags = [damage_flag_shock];
+  AcidFlags = [damage_flag_acid];
+  DisablingFlags = [damage_flag_engine_slow, damage_flag_equipment_wear, damage_flag_magnetic];
 var
   ScannerFactor, StatusFactor: Single;
   Flags: TDamageFlagSet;
@@ -1800,30 +1800,30 @@ begin
     ScannerFactor := RemapClamped(GetScannerPower - DefenseDamageFactorToPercent(GetGeneratedDefenseDamageFactor(Galaxy.TechLevel)) + 1, -5, 10, 0.1, 2)
   else ScannerFactor := 0;
   Result := BaseDamage * GetWeaponArtefactDamageFactor(Weapon);
-  if dkDrain in Flags then
+  if damage_flag_life_steal in Flags then
     case PirateType of 1: Result := Result * 1.7; else Result := Result * 1.5; end;
-  if dkShock in Flags then
+  if damage_flag_shock in Flags then
     case PirateType of 2: Result := Result * (1.3 + CountWeaponsByDamageFlags(ShockFlags) * 0.15);
     else Result := Result * (1.2 + CountWeaponsByDamageFlags(ShockFlags) * 0.05); end;
-  if dkMagnetic in Flags then
+  if damage_flag_magnetic in Flags then
     case PirateType of
       2: Result := Result * 1.8;
       3: Result := Result * 3;
     else Result := Result * 1.4;
     end;
-  if dkDestruct in Flags then SlowFactor := 1 else SlowFactor := 0;
-  if dkReduceEngine in Flags then SlowFactor := 1 + 2 * SlowFactor;
+  if damage_flag_equipment_wear in Flags then SlowFactor := 1 else SlowFactor := 0;
+  if damage_flag_engine_wear in Flags then SlowFactor := 1 + 2 * SlowFactor;
   DisruptionFactor := 0;
-  if dkDecelerate in Flags then DisruptionFactor := DisruptionFactor + 1;
+  if damage_flag_engine_slow in Flags then DisruptionFactor := DisruptionFactor + 1;
   // Base + Base * boost, as in TRanger (base 2) and TShip (base 5); pirates use base 1.
-  if (CountActiveArtefacts(t_ArtDecelerate) > 0) and (dkSplinter in Flags) then
-    DisruptionFactor := DisruptionFactor + (1 + 1 * Ord(CanBoostArtefact(t_ArtDecelerate, Weapon, False))) * CountActiveArtefacts(t_ArtDecelerate);
+  if (CountActiveArtefacts(artefact_decelerate) > 0) and (damage_flag_splinter in Flags) then
+    DisruptionFactor := DisruptionFactor + (1 + 1 * Ord(CanBoostArtefact(artefact_decelerate, Weapon, False))) * CountActiveArtefacts(artefact_decelerate);
   TotalDisruption := DisruptionFactor;
   for I := 1 to CountEquippedWeapons do begin
-    if dkDecelerate in Weapons[I].GetDamageFlags then TotalDisruption := TotalDisruption + 1;
-    if (CountActiveArtefacts(t_ArtDecelerate) > 0) and (dkSplinter in Weapons[I].GetDamageFlags) then
+    if damage_flag_engine_slow in Weapons[I].GetDamageFlags then TotalDisruption := TotalDisruption + 1;
+    if (CountActiveArtefacts(artefact_decelerate) > 0) and (damage_flag_splinter in Weapons[I].GetDamageFlags) then
       // The native loop tests each equipped weapon but boosts the candidate.
-      TotalDisruption := TotalDisruption + (1 + 1 * Ord(CanBoostArtefact(t_ArtDecelerate, Weapon, False))) * CountActiveArtefacts(t_ArtDecelerate);
+      TotalDisruption := TotalDisruption + (1 + 1 * Ord(CanBoostArtefact(artefact_decelerate, Weapon, False))) * CountActiveArtefacts(artefact_decelerate);
   end;
   DisruptionFactor := DisruptionFactor / Max(TotalDisruption, 1) * RemapClamped(TotalDisruption, 1, 3, 1, 2);
   if SlowFactor > 0.01 then
@@ -1833,8 +1833,8 @@ begin
     else Result := Result * (1 + SlowFactor * 0.05);
     end;
   StatusFactor := 1;
-  if dkScanBonus in Flags then StatusFactor := StatusFactor * (1 + ScannerFactor * 0.1);
-  if dkBonusToDamaged in Flags then StatusFactor := StatusFactor * (1 + ScannerFactor * 0.2);
+  if damage_flag_scanner_bonus in Flags then StatusFactor := StatusFactor * (1 + ScannerFactor * 0.1);
+  if damage_flag_bonus_to_damaged_hull in Flags then StatusFactor := StatusFactor * (1 + ScannerFactor * 0.2);
   StatusFactor := StatusFactor - 1;
   if PirateType = 3 then Result := (300 + Result) * 0.5;
   if IncludeAdditiveBonuses then
@@ -1852,31 +1852,31 @@ begin
       else Result := Result + 1 * SlowFactor;
       end;
     Result := Result + Integer(CountWeaponsByDamageFlags(AcidFlags)) * Weapon.GetShotCount;
-    if dkAcid in Flags then
+    if damage_flag_acid in Flags then
     begin
       ShotTotal := 1;
       for I := 1 to CountEquippedWeapons do Inc(ShotTotal, Weapons[I].GetShotCount);
       case PirateType of 1: Result := Result + ShotTotal * 5; else Result := Result + ShotTotal * 3; end;
     end;
-    if dkMoreDrop in Flags then Result := Result + ScannerFactor * 15;
-    if dkDropCargo in Flags then Result := Result + ScannerFactor * 15;
-    if dkBlockWeapon in Flags then Result := Result + ScannerFactor * 5;
-    if dkDroidBlock in Flags then Result := Result + ScannerFactor * 5;
+    if damage_flag_extra_loot in Flags then Result := Result + ScannerFactor * 15;
+    if damage_flag_force_cargo_drop in Flags then Result := Result + ScannerFactor * 15;
+    if damage_flag_weapon_block in Flags then Result := Result + ScannerFactor * 5;
+    if damage_flag_droid_block in Flags then Result := Result + ScannerFactor * 5;
   end;
   SpeedFactor := Max(100, SmoothedEnemySpeed) * GetHull.Weight / (HullBaseSize * Max(100, SmoothedSpeed * EquipmentSizeFactors[1]));
   case Weapon.GetWeaponInfo.ShotType of
-    wstRocket: Result := Result * 0.9 * Weapon.GetShotCount * (1 + StatusFactor);
-    wstMissile: Result := Result * (0.9 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.2 * 0.01 + StatusFactor) * Weapon.GetShotCount;
-    wstTorpedo: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.2 * 0.01 + StatusFactor);
-    wstChain: Result := Result * (1.3 + (Weapon.GetShotCount - 1) * 0.1) * (1 + StatusFactor);
-    wstSplash: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.4 * 0.01 * SpeedFactor + StatusFactor);
-    wstAreaDamage: Result := Result * (1 + Weapon.Range * 0.3 * 0.01 * SpeedFactor + StatusFactor);
+    shot_rocket: Result := Result * 0.9 * Weapon.GetShotCount * (1 + StatusFactor);
+    shot_missile: Result := Result * (0.9 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.2 * 0.01 + StatusFactor) * Weapon.GetShotCount;
+    shot_torpedo: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.2 * 0.01 + StatusFactor);
+    shot_chain: Result := Result * (1.3 + (Weapon.GetShotCount - 1) * 0.1) * (1 + StatusFactor);
+    shot_splash: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.4 * 0.01 * SpeedFactor + StatusFactor);
+    shot_area_damage: Result := Result * (1 + Weapon.Range * 0.3 * 0.01 * SpeedFactor + StatusFactor);
   else Result := Result * (1 + StatusFactor);
   end;
   Result := Result * Weapon.GetAttackCount;
   Result := Result * 0.01 * (100 + SeededRandomIntRange(-20, 20, Seed + Weapon.GetWeaponInfo.TypeHash));
   if (PirateType = 3) and (Flags * DisablingFlags <> []) and (CountWeaponsByDamageFlags(Flags * DisablingFlags) = 0) then Result := Result * 4
-  else if dkMissile in Flags then Result := Result * 1.2;
+  else if damage_flag_missile in Flags then Result := Result * 1.2;
 end;
 { @end $5A2078 }
 
@@ -1889,23 +1889,23 @@ begin Result := True; end;
 function TPirate.AcceptPickupDistance(Item: TItem; Distance: Double): Boolean;
 begin
   if Speed < 1 then begin Result := False; Exit; end;
-  Result := (Item.ItemType in [t_Technics, t_Luxury, t_Alcohol..t_Narcotics]) or (2 * Speed >= Distance) or
+  Result := (Item.ItemType in [item_technical_goods, item_luxury, item_alcohol..item_narcotics]) or (2 * Speed >= Distance) or
     (Item.Cost >= RemapClamped(Distance / Speed, 1, 10, 0.01, 0.05) * Wealth);
 end;
 { @end $5A2984 }
 
 { @routine $5A2A18 TPirate_RefreshCurrentStanding }
 procedure TPirate.RefreshCurrentStanding;
-var Owner: TOwnerId; StandingMode: TScriptStandingOverrideMode;
+var Owner: TOwnerId; StandingMode: TStandingOverride;
 begin
   StandingMode := GetScriptStandingOverrideMode;
-  if StandingMode = ssmCustomFaction then CurrentStanding := ssCustom
-  else if StandingMode <> ssmFixed then begin
+  if StandingMode = override_custom_faction then CurrentStanding := standing_custom
+  else if StandingMode <> override_fixed then begin
     if (GetPlayer <> nil) and (GetPlayer = PartnerShip) then Owner := GetPlayer.OwnerId else Owner := OwnerId;
-    if IsInPrison or ((PirateType = 0) and (Owner <> oiPirate)) then CurrentStanding := ssNeutral
-    else if (Owner = oiPirate) and (PirateType <> 0) then CurrentStanding := ssPirateMilitary
-    else if (Owner = oiPirate) and ((CurrentSystemKills.Normal > 0) or (CurrentStar.ControlFaction = sfPirates)) then CurrentStanding := ssPirateActive
-    else CurrentStanding := ssPiratePassive;
+    if IsInPrison or ((PirateType = 0) and (Owner <> owner_pirate)) then CurrentStanding := standing_neutral
+    else if (Owner = owner_pirate) and (PirateType <> 0) then CurrentStanding := standing_pirate_military
+    else if (Owner = owner_pirate) and ((CurrentSystemKills.Normal > 0) or (CurrentStar.ControlFaction = faction_pirates)) then CurrentStanding := standing_pirate_active
+    else CurrentStanding := standing_pirate_passive;
   end;
 end;
 { @end $5A2A18 }

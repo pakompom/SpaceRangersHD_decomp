@@ -83,8 +83,8 @@ begin
   with GetByName('ItemImage') as TImageGI do
   begin
     ImageSourcePath := Self.ImagePath;
-    KindX := ikxCenter;
-    KindY := ikyCenter;
+    KindX := image_x_center;
+    KindY := image_y_center;
     SetActive(True);
   end;
   (GetByName('Caption') as TLabelGI).Text := Caption;

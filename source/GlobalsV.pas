@@ -7,9 +7,9 @@ uses Classes;
 const
   // SF_EndGame also accepts arbitrary script-defined integers. Values above four
   // select FormGameEnd.WinPirateN; keep GameEndReason as Integer.
-  gerDefault = 0; // Ordinary end-of-film death or CustomWin/CustomLose event.
-  gerPlayerDeath = 2; // Explicit death detected on a planet or during takeoff.
-  gerTerronConversion = 4; // Script exit_end; FormGameEnd.LossConvertToTerron variants.
+  game_end_default = 0; // Ordinary end-of-film death or CustomWin/CustomLose event.
+  game_end_player_death = 2; // Explicit death detected on a planet or during takeoff.
+  game_end_terron_conversion = 4; // Script exit_end; FormGameEnd.LossConvertToTerron variants.
 
 type
   // Keep the registry independent of UI/cache implementation units. Consumers
@@ -31,51 +31,51 @@ type
   TStarFieldImageTemplates = array of TStarFieldImageTemplate;
 
   TGameScreenId = (
-    screenNone=0,
-    screenMainMenu=1,
-    screenIntroduction=3,
-    screenHangar=4,
-    screenPlanet=5,
-    screenPlanetNO=6,
-    screenPlanetQuest=7,
-    screenEquipmentShop=8,
-    screenShip=10,
-    screenTalk=11,
-    screenScanner=12,
-    screenGovernment=15,
-    screenStarMap=16,
-    screenFilm=17,
-    screenGalaxy=18,
-    screenJump=19,
-    screenRuinsTalk=20,
-    screenArcadeBattle=21,
-    screenLoad=22,
-    screenSaveManager=23,
-    screenGameLoad=24,
-    screenGameMenu=25,
-    screenSettings=26,
-    screenGameEnd=27,
-    screenInfo=28,
-    screenRewards=30,
-    screenAbout=31,
-    screenScores=32,
-    screenNewGame=33,
-    screenGoodsShop=34,
-    screenRating=35,
-    screenSelectFace=36,
-    screenJournal=37,
-    screenLoadRobot=38,
-    screenLoadQuest=39,
-    screenLoadArcade=40,
-    screenAchievements=41
+    screen_none=0,
+    screen_main_menu=1,
+    screen_introduction=3,
+    screen_hangar=4,
+    screen_planet=5,
+    screen_uninhabited_planet=6,
+    screen_text_quest=7,
+    screen_equipment_shop=8,
+    screen_ship=10,
+    screen_talk=11,
+    screen_scanner=12,
+    screen_government=15,
+    screen_star_map=16,
+    screen_turn_replay=17,
+    screen_galaxy_map=18,
+    screen_jump=19,
+    screen_ruins_talk=20,
+    screen_arcade_battle=21,
+    screen_asset_loading=22,
+    screen_save_manager=23,
+    screen_save_loading=24,
+    screen_game_menu=25,
+    screen_settings=26,
+    screen_game_end=27,
+    screen_info=28,
+    screen_rewards=30,
+    screen_about=31,
+    screen_scores=32,
+    screen_new_game=33,
+    screen_goods_shop=34,
+    screen_ranger_ranking=35,
+    screen_portrait_selection=36,
+    screen_journal=37,
+    screen_planet_battle_selection=38,
+    screen_quest_selection=39,
+    screen_arcade_selection=40,
+    screen_achievements=41
   ); // @size 0x01
   TGalaxyMapFontChoice = (
-    gmfRanger=1,
-    gmfMini=2,
-    gmfSmall=3,
-    gmfSmallBold=4,
-    gmfNormal=5,
-    gmfNormalBold=6
+    map_font_ranger=1,
+    map_font_mini=2,
+    map_font_small=3,
+    map_font_small_bold=4,
+    map_font_normal=5,
+    map_font_normal_bold=6
   ); // @size 0x04
   TGameScreenTable = array[TGameScreenId] of TObject;
 
@@ -166,7 +166,7 @@ var
   DoNotChangeMusicInBattle: Boolean = False; // @addr $80A8B0
   ViewFollowShip: Boolean = True; // @addr $80A8B4
   ActionDoubleClick: Boolean = True; // @addr $80A8B8
-  GalaxyMapFontChoice: TGalaxyMapFontChoice = gmfNormalBold; // @addr 0x0080A8BC @note "FontGalaxy setting; default gmfNormalBold. Out-of-range values also use the normal-bold font."
+  GalaxyMapFontChoice: TGalaxyMapFontChoice = map_font_normal_bold; // @addr 0x0080A8BC @note "FontGalaxy setting; default map_font_normal_bold. Out-of-range values also use the normal-bold font."
   FontQuest: Integer = 0; // @addr $80A8C0
   FontDialog: Integer = 0; // @addr $80A8C4
   FontSmoothingEnabled: Boolean = False; // @addr 0x0080A8C8 @note "FontSmooth setting."
@@ -197,20 +197,20 @@ var
   ConstellationLineDepth: Single = 21.0; // @addr $80A92C
   ConstellationColorDepth: Single = 22.0; // @addr $80A930
   MemorySnapshotActive: Boolean = False; // @addr 0x0080A934
-  PreviousScreenId: TGameScreenId = screenNone; // @addr 0x0080A938
-  CurrentScreenId: TGameScreenId = screenNone; // @addr 0x0080A93C
-  RequestedScreenId: TGameScreenId = screenNone; // @addr 0x0080A940
-  PostLoadScreenId: TGameScreenId = screenNone; // @addr 0x0080A944
-  ShipReturnScreenId: TGameScreenId = screenNone; // @addr $80A948
-  TalkReturnScreenId: TGameScreenId = screenNone; // @addr $80A94C
-  ScannerReturnScreenId: TGameScreenId = screenNone; // @addr $80A950
-  QuestReturnScreenId: TGameScreenId = screenNone; // @addr $80A954 @note "Quest selector or campaign screen that launched the active text quest."
-  Screen13ReturnScreenId: TGameScreenId = screenNone; // @addr $80A958 @note "Return screen for native screen ID 13; its purpose remains unresolved."
-  GalaxyReturnScreenId: TGameScreenId = screenNone; // @addr $80A95C Set by the star-map/ruins caller; consumed by galaxy-map Back.
-  SaveManagerReturnScreenId: TGameScreenId = screenNone; // @addr 0x0080A960
-  GameMenuReturnScreenId: TGameScreenId = screenNone; // @addr $80A964
-  SettingsReturnScreenId: TGameScreenId = screenNone; // @addr 0x0080A968
-  AchievementsReturnScreenId: TGameScreenId = screenNone; // @addr $80A96C
+  PreviousScreenId: TGameScreenId = screen_none; // @addr 0x0080A938
+  CurrentScreenId: TGameScreenId = screen_none; // @addr 0x0080A93C
+  RequestedScreenId: TGameScreenId = screen_none; // @addr 0x0080A940
+  PostLoadScreenId: TGameScreenId = screen_none; // @addr 0x0080A944
+  ShipReturnScreenId: TGameScreenId = screen_none; // @addr $80A948
+  TalkReturnScreenId: TGameScreenId = screen_none; // @addr $80A94C
+  ScannerReturnScreenId: TGameScreenId = screen_none; // @addr $80A950
+  QuestReturnScreenId: TGameScreenId = screen_none; // @addr $80A954 @note "Quest selector or campaign screen that launched the active text quest."
+  Screen13ReturnScreenId: TGameScreenId = screen_none; // @addr $80A958 @note "Return screen for native screen ID 13; its purpose remains unresolved."
+  GalaxyReturnScreenId: TGameScreenId = screen_none; // @addr $80A95C Set by the star-map/ruins caller; consumed by galaxy-map Back.
+  SaveManagerReturnScreenId: TGameScreenId = screen_none; // @addr 0x0080A960
+  GameMenuReturnScreenId: TGameScreenId = screen_none; // @addr $80A964
+  SettingsReturnScreenId: TGameScreenId = screen_none; // @addr 0x0080A968
+  AchievementsReturnScreenId: TGameScreenId = screen_none; // @addr $80A96C
   LoadedSaveVersion: Integer = 0; // @addr 0x0080A970
   LoadingFilmCount: Integer = -1; // @addr 0x0080A974 @note "-1 outside the film-loading phase."
   BackgroundShade: Boolean = False; // @addr $80A978
@@ -268,8 +268,8 @@ end;
 { @routine $45E8C4 IsSpaceBackdropScreen }
 function IsSpaceBackdropScreen(ScreenId: TGameScreenId): Boolean;
 begin
-  Result := (ScreenId = screenStarMap) or (ScreenId = screenGalaxy) or
-    (ScreenId = screenFilm) or (ScreenId = screenTalk);
+  Result := (ScreenId = screen_star_map) or (ScreenId = screen_galaxy_map) or
+    (ScreenId = screen_turn_replay) or (ScreenId = screen_talk);
 end;
 { @end $45E8C4 }
 
@@ -282,17 +282,17 @@ begin
     Result := True;
     Exit;
   end;
-  if (ScreenId = screenLoad) and IsSpaceBackdropScreen(PostLoadScreenId) then
+  if (ScreenId = screen_asset_loading) and IsSpaceBackdropScreen(PostLoadScreenId) then
   begin
     Result := True;
     Exit;
   end;
-  if (ScreenId = screenShip) and IsSpaceBackdropScreen(ShipReturnScreenId) then
+  if (ScreenId = screen_ship) and IsSpaceBackdropScreen(ShipReturnScreenId) then
   begin
     Result := True;
     Exit;
   end;
-  if (ScreenId = screenScanner) and IsSpaceBackdropScreen(ScannerReturnScreenId) then
+  if (ScreenId = screen_scanner) and IsSpaceBackdropScreen(ScannerReturnScreenId) then
   begin
     Result := True;
     Exit;
@@ -302,22 +302,22 @@ begin
     Result := True;
     Exit;
   end;
-  if (ScreenId = screenSaveManager) and IsSpaceBackdropScreen(SaveManagerReturnScreenId) then
+  if (ScreenId = screen_save_manager) and IsSpaceBackdropScreen(SaveManagerReturnScreenId) then
   begin
     Result := True;
     Exit;
   end;
-  if (ScreenId = screenGameMenu) and IsSpaceBackdropScreen(GameMenuReturnScreenId) then
+  if (ScreenId = screen_game_menu) and IsSpaceBackdropScreen(GameMenuReturnScreenId) then
   begin
     Result := True;
     Exit;
   end;
-  if (ScreenId = screenSettings) and IsSpaceBackdropScreen(SettingsReturnScreenId) then
+  if (ScreenId = screen_settings) and IsSpaceBackdropScreen(SettingsReturnScreenId) then
   begin
     Result := True;
     Exit;
   end;
-  if (ScreenId = screenSettings) and (SettingsReturnScreenId = screenGameMenu) and
+  if (ScreenId = screen_settings) and (SettingsReturnScreenId = screen_game_menu) and
     IsSpaceBackdropScreen(GameMenuReturnScreenId) then Result := True;
 end;
 { @end $45E8DC }

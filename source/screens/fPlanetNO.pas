@@ -211,7 +211,7 @@ begin
   RefreshTextQuestPrompt;
   CloseResearchPanel;
   DispatchPendingScriptRequests;
-  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnEnteringForm,nil,nil,0);
+  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(event_enter_form,nil,nil,0);
   Galaxy.PrimeIntegrityChecksum(111);
 end;
 { @end $506428 }
@@ -219,8 +219,8 @@ end;
 { @routine $506590 TfPlanetNO_OnClose }
 procedure TfPlanetNO.OnClose;
 begin
-  if RequestedScreenId <> screenLoad then Galaxy.CheckIntegrityChecksum(112);
-  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnLeavingForm,nil,nil,0);
+  if RequestedScreenId <> screen_asset_loading then Galaxy.CheckIntegrityChecksum(112);
+  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(event_leave_form,nil,nil,0);
   CloseResearchPanel;
   MainPanel.OnClose;
   LoadPanel.OnClose;
@@ -234,7 +234,7 @@ end;
 procedure TfPlanetNO.TakeoffClicked(Sender: TObjectGI);
 var I: Integer;
 begin
-  if (TurnCalculationPhase = tcpGalaxyRunning) or (TurnCalculationPhase = tcpPlayerStarRunning) or HasPendingScriptRequests then Exit;
+  if (TurnCalculationPhase = turn_galaxy_running) or (TurnCalculationPhase = turn_player_star_running) or HasPendingScriptRequests then Exit;
   Galaxy.CheckIntegrityChecksum(129);
   GetPlayer.RefreshDerivedStats(True);
   Galaxy.PrimeIntegrityChecksum(129);
@@ -269,24 +269,24 @@ begin
   StarMapScreen.SetMapCenterManually(TruncatePointF(GetPlayer.Position));
   PlayerStar.RefreshSpaceObjectPositions;
   RunGlobalScriptsForContext(GetPlayer.CurrentStar,1);
-  if (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(heHolyFanaticism) then Galaxy.EnableDominatorSurfaces
+  if (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(disease_holy_fanaticism) then Galaxy.EnableDominatorSurfaces
   else Galaxy.DisableDominatorSurfaces;
   CalculatePlayerStarTurnAndWait;
   if not ExitScreenLoop then
   begin
     if GetPlayer = nil then
     begin
-      RequestedScreenId := screenGameEnd;
+      RequestedScreenId := screen_game_end;
       RequestClose(1);
     end
     else
     begin
       CalculateGalaxyTurnAndWait;
       StarMapWeaponPanelOpen := False;
-      StarMapScreen.ResumeMode := smrTurnFilm;
+      StarMapScreen.ResumeMode := map_resume_playback;
       ScreenLoadMode := 2;
-      PostLoadScreenId := screenStarMap;
-      RequestedScreenId := screenLoad;
+      PostLoadScreenId := screen_star_map;
+      RequestedScreenId := screen_asset_loading;
       LoadPanel.SelectBackgroundStyle(0);
       LoadPanel.RefreshBackgroundImages;
       LoadPanel.StartClosingShutters;
@@ -308,7 +308,7 @@ begin
   SaveGameToFile(SaveManagerScreen.GetAutoSavePath,'as');
   StandaloneQuestMode := False;
   QuestReturnScreenId := FormToId(Self);
-  RequestedScreenId := screenPlanetQuest;
+  RequestedScreenId := screen_text_quest;
   RequestClose(1);
 end;
 { @end $506AE0 }
@@ -335,8 +335,8 @@ begin
     if GraphBuf.Width >= GraphBuf.Height then
       GraphBuf.RescaleRgba(ClientSize.X,Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height),5)
     else GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width),ClientSize.Y,5);
-    SetImageKindX(ikxCenter);
-    SetImageKindY(ikyCenter);
+    SetImageKindX(image_x_center);
+    SetImageKindY(image_y_center);
   end;
   ShipScreen.LayoutItemInfo(Window,GetByName('PanelInfo_Name') as TLabelGI,GetByName('PanelInfo_Text') as TLabelGI,True,True,0);
   with GetByName('PanelInfo_Name') as TLabelGI do
@@ -362,7 +362,7 @@ begin
       for I := 0 to GetPlayer.Quests.Count - 1 do
       begin
         Quest := GetPlayer.Quests[I];
-        if Quest.QuestType = qtPlanetQuest then
+        if Quest.QuestType = quest_kind_text_adventure then
           if Quest.ObjectiveTarget is TPlanet then
             if GetPlayer.CurrentPlanet = (Quest.ObjectiveTarget as TPlanet) then
               if LanguageDataConfig.GetBlockByPath('PlanetQuest.PlanetQuest').CountParams(IntToStr(Quest.QuestNumber)) > 0 then
@@ -795,9 +795,9 @@ begin
     begin
       Entry := GetPlayer.CurrentPlanet.SurfaceLootEntries[I];
       if (Entry.GridX = Cell.X) and (Entry.GridY = Cell.Y) and
-        (((Entry.TerrainKind = ptWater) and (GetPlayer.CurrentPlanet.WaterExplored >= Entry.SurfaceTileIndex)) or
-        ((Entry.TerrainKind = ptLand) and (GetPlayer.CurrentPlanet.LandExplored >= Entry.SurfaceTileIndex)) or
-        ((Entry.TerrainKind = ptHill) and (GetPlayer.CurrentPlanet.HillExplored >= Entry.SurfaceTileIndex))) and not Entry.Unavailable then
+        (((Entry.TerrainKind = terrain_water) and (GetPlayer.CurrentPlanet.WaterExplored >= Entry.SurfaceTileIndex)) or
+        ((Entry.TerrainKind = terrain_land) and (GetPlayer.CurrentPlanet.LandExplored >= Entry.SurfaceTileIndex)) or
+        ((Entry.TerrainKind = terrain_hills) and (GetPlayer.CurrentPlanet.HillExplored >= Entry.SurfaceTileIndex))) and not Entry.Unavailable then
       begin
         UpdateItemInfoPopup(Entry.Item);
         HoveringSurfaceLoot := True;
@@ -903,14 +903,14 @@ begin
     begin
       Entry := GetPlayer.CurrentPlanet.SurfaceLootEntries[I];
       Undiscovered := False;
-      if ((((Entry.TerrainKind = ptWater) and (GetPlayer.CurrentPlanet.WaterExplored >= Entry.SurfaceTileIndex)) or
-        ((Entry.TerrainKind = ptLand) and (GetPlayer.CurrentPlanet.LandExplored >= Entry.SurfaceTileIndex)) or
-        ((Entry.TerrainKind = ptHill) and (GetPlayer.CurrentPlanet.HillExplored >= Entry.SurfaceTileIndex))) and not Entry.Unavailable) or
-        ((GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and ((Entry.Item is TEquipmentWithActCode) and TEquipmentWithActCode(Entry.Item).DisplayAsArtefact)) then
+      if ((((Entry.TerrainKind = terrain_water) and (GetPlayer.CurrentPlanet.WaterExplored >= Entry.SurfaceTileIndex)) or
+        ((Entry.TerrainKind = terrain_land) and (GetPlayer.CurrentPlanet.LandExplored >= Entry.SurfaceTileIndex)) or
+        ((Entry.TerrainKind = terrain_hills) and (GetPlayer.CurrentPlanet.HillExplored >= Entry.SurfaceTileIndex))) and not Entry.Unavailable) or
+        ((GetPlayer.CountActiveArtefacts(artefact_analyzer) > 0) and ((Entry.Item is TEquipmentWithActCode) and TEquipmentWithActCode(Entry.Item).DisplayAsArtefact)) then
       begin
-        if not (((Entry.TerrainKind = ptWater) and (GetPlayer.CurrentPlanet.WaterExplored >= Entry.SurfaceTileIndex)) or
-          ((Entry.TerrainKind = ptLand) and (GetPlayer.CurrentPlanet.LandExplored >= Entry.SurfaceTileIndex)) or
-          ((Entry.TerrainKind = ptHill) and (GetPlayer.CurrentPlanet.HillExplored >= Entry.SurfaceTileIndex))) then Undiscovered := True;
+        if not (((Entry.TerrainKind = terrain_water) and (GetPlayer.CurrentPlanet.WaterExplored >= Entry.SurfaceTileIndex)) or
+          ((Entry.TerrainKind = terrain_land) and (GetPlayer.CurrentPlanet.LandExplored >= Entry.SurfaceTileIndex)) or
+          ((Entry.TerrainKind = terrain_hills) and (GetPlayer.CurrentPlanet.HillExplored >= Entry.SurfaceTileIndex))) then Undiscovered := True;
         Child := TImageGI(Panel.FirstChild);
         while Child <> nil do
         begin
@@ -1013,8 +1013,8 @@ begin
       else
       begin
         SetImagePath('GI,' + InventorySatellite.GetBitmapResourceName + 's');
-        SetImageKindX(ikxCenter);
-        SetImageKindY(ikyCenter);
+        SetImageKindX(image_x_center);
+        SetImageKindY(image_y_center);
       end;
   end;
   (GetByName('ButLeft') as TGraphButtonGI).SetDisabled(SatelliteInventoryPageStart <= 0);
@@ -1177,9 +1177,9 @@ begin
     for I := 0 to GetPlayer.CurrentPlanet.SurfaceLootEntries.Count - 1 do
     begin
       Entry := GetPlayer.CurrentPlanet.SurfaceLootEntries[I];
-      if ((Entry.TerrainKind = ptWater) and (GetPlayer.CurrentPlanet.WaterExplored >= Entry.SurfaceTileIndex)) or
-        ((Entry.TerrainKind = ptLand) and (GetPlayer.CurrentPlanet.LandExplored >= Entry.SurfaceTileIndex)) or
-        ((Entry.TerrainKind = ptHill) and (GetPlayer.CurrentPlanet.HillExplored >= Entry.SurfaceTileIndex)) then
+      if ((Entry.TerrainKind = terrain_water) and (GetPlayer.CurrentPlanet.WaterExplored >= Entry.SurfaceTileIndex)) or
+        ((Entry.TerrainKind = terrain_land) and (GetPlayer.CurrentPlanet.LandExplored >= Entry.SurfaceTileIndex)) or
+        ((Entry.TerrainKind = terrain_hills) and (GetPlayer.CurrentPlanet.HillExplored >= Entry.SurfaceTileIndex)) then
         if not Entry.Unavailable then
         begin
           Cell := GetByName('PanelItems').ToLocalPoint(Point);
@@ -1384,7 +1384,7 @@ end;
 { @routine $50B718 TfPlanetNO_UpdateItemInfoPopup }
 procedure TfPlanetNO.UpdateItemInfoPopup(Item: TItem);
 const
-  DurableTypes = [Low(TItemType)..High(TItemType)] - [t_Food..t_Narcotics, t_Artefact2, t_ArtefactTransmitter..t_ArtefactTranclucator, t_ArtBlackHole..t_ArtArtefactor, t_Hull, t_Protoplasm..t_Cistern, t_TreasureMap..t_UselessCountableItem];
+  DurableTypes = [Low(TItemType)..High(TItemType)] - [item_food..item_narcotics, item_custom_artefact_no_wear, artefact_transmitter..artefact_tranclucator, artefact_black_hole..artefact_artefactor, item_hull, item_nodes..item_fuel_container, item_treasure_map..item_stackable_misc];
 label
   LayoutInfo, ShowEquipment, ScheduleHide;
 var
@@ -1416,16 +1416,16 @@ begin
   if Galaxy = nil then goto ShowEquipment;
   if Galaxy.Destroying then goto ShowEquipment;
   if GetPlayer = nil then goto ShowEquipment;
-  if Item.ScriptItem <> nil then TScriptItem(Item.ScriptItem).RunActionCode(satOnShowingItemInfo,nil,GetPlayer.CurrentPlanet,nil,0);
-  if Item is TEquipmentWithActCode then RunItemConfigActionCode(Item, satOnShowingItemInfo,nil,GetPlayer.CurrentPlanet,nil,0);
+  if Item.ScriptItem <> nil then TScriptItem(Item.ScriptItem).RunActionCode(event_show_item_info,nil,GetPlayer.CurrentPlanet,nil,0);
+  if Item is TEquipmentWithActCode then RunItemConfigActionCode(Item, event_show_item_info,nil,GetPlayer.CurrentPlanet,nil,0);
 ShowEquipment:
   Equipment := Item as TEquipment;
   ItemInfoWindow.SetActive(True);
   with ItemInfoImage do
   begin
     SetImagePath('GI,' + Equipment.GetBitmapResourceName + 's');
-    SetImageKindX(ikxCenter);
-    SetImageKindY(ikyCenter);
+    SetImageKindX(image_x_center);
+    SetImageKindY(image_y_center);
     SetPosition(SubtractPoints(ShipScreen.ItemImageCenter,GetVisualCenter));
   end;
   ItemInfoNameLabel.SetText(WrapTextInColor(Equipment.GetDisplayName,InfoNameColorTag));
@@ -1435,10 +1435,10 @@ ShowEquipment:
   with ItemInfoRaceIcon do
   begin
     SetImagePath(GetFactionEmblemPath(Equipment.GetOwnerConfigName));
-    SetImageKindX(ikxCenter);
-    SetImageKindY(ikyCenter);
+    SetImageKindX(image_x_center);
+    SetImageKindY(image_y_center);
   end;
-  if not (Equipment.ItemType in DurableTypes) and (Equipment.ItemType <> t_Hull) then
+  if not (Equipment.ItemType in DurableTypes) and (Equipment.ItemType <> item_hull) then
   begin
     with GetByName('InfoDurable') as TImageGI do Parent.Parent.SetActive(False);
     MinimumWidth := 0;
@@ -1457,7 +1457,7 @@ ShowEquipment:
     Parent.Parent.SetActive(True);
     Parent.Parent.SetSize(Classes.Point(2 * CapWidth + BarWidth,Parent.Parent.ClientSize.Y));
     Parent.SetSize(Classes.Point(BarWidth + 2,Parent.Parent.ClientSize.Y));
-    if Equipment.ItemType = t_Hull then
+    if Equipment.ItemType = item_hull then
       SetPosition(Classes.Point(Round((Equipment as THull).HullPoints / (Equipment as THull).Weight * BarWidth) - (GetContentSize.X - 5),LocalPosition.Y))
     else SetPosition(Classes.Point(Round(BarWidth * (Equipment.ConditionPercent / 100)) - (GetContentSize.X - 5),LocalPosition.Y));
   end;
@@ -1487,8 +1487,8 @@ begin
   with GetByName('InfoImage') as TImageGI do
   begin
     ImageSourcePath := 'GI,' + GetItemTypeBitmapPath(Item.ItemType);
-    KindX := ikxCenter;
-    KindY := ikyCenter;
+    KindX := image_x_center;
+    KindY := image_y_center;
     SetPosition(SubtractPoints(ShipScreen.ItemImageCenter,GetVisualCenter));
   end;
   (GetByName('InfoName') as TLabelGI).Text := WrapTextInColor(GoodsMarket[Ord(Item.ItemType)].DisplayName,InfoNameColorTag);
@@ -1498,8 +1498,8 @@ begin
   with GetByName('EmRace') as TImageGI do
   begin
     ImageSourcePath := GetFactionEmblemPath(OwnerInfo[RaceToOwner(GetPlayer.PilotRace)].InternalName);
-    KindX := ikxCenter;
-    KindY := ikyCenter;
+    KindX := image_x_center;
+    KindY := image_y_center;
   end;
   GetByName('InfoDurable').Parent.Parent.SetActive(False);
   ShipScreen.LayoutItemInfo(ItemInfoWindow,ItemInfoNameLabel,ItemInfoTextLabel,True,True,0);
@@ -1565,7 +1565,7 @@ end;
 procedure TfPlanetNO.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
   if not MainPanel.NavigationLocked and not ExitScreenLoop and
-    (TurnCalculationPhase in [tcpIdle,tcpGalaxyFinished,tcpPlayerStarFinished,tcpPlayerStarPrepared]) then
+    (TurnCalculationPhase in [turn_idle,turn_galaxy_finished,turn_player_star_finished,turn_player_star_prepared]) then
   begin
     Galaxy.CheckIntegrityChecksum(10003);
     ExecuteGameplayUiCode(Block,Key);
@@ -1585,7 +1585,7 @@ begin
   end;
   if GetPlayer.CurrentPlanet <> nil then
   begin
-    if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
+    if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
     begin
       if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
         MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')

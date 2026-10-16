@@ -95,11 +95,11 @@ procedure TfPanelPlanet.HangarClicked(Sender: TObjectGI);
 begin
   if Screen.ExitCode <> 0 then Exit;
   if (ActiveLoadPanel <> nil) and ActiveLoadPanel.IsAnimatingShutters then Exit;
-  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = rlHostile) and
+  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = relation_level_hostile) and
      (GovernmentScreen = Screen) then Exit;
   if (GetPlayer.PendingDockDialogue > 1) and (GovernmentScreen = Screen) then Exit;
   if HasPendingScriptRequests then Exit;
-  RequestedScreenId := screenHangar;
+  RequestedScreenId := screen_hangar;
   Screen.RequestClose(1);
 end;
 { @end $58B060 }
@@ -109,14 +109,14 @@ procedure TfPanelPlanet.EquipmentShopClicked(Sender: TObjectGI);
 begin
   if Screen.ExitCode <> 0 then Exit;
   if (ActiveLoadPanel <> nil) and ActiveLoadPanel.IsAnimatingShutters then Exit;
-  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = rlHostile) and
+  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = relation_level_hostile) and
      (GovernmentScreen = Screen) then Exit;
   if (GetPlayer.PendingDockDialogue > 1) and (GovernmentScreen = Screen) then Exit;
   if HasPendingScriptRequests then Exit;
-  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) <= rlBad) and
+  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) <= relation_level_bad) and
      not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
   begin
-    if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
+    if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
       ShowMessageBoxGI(Screen, ReplaceColoredToken(
         LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),
         '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), mbgCancel or mbgWarning)
@@ -127,7 +127,7 @@ begin
   end
   else
   begin
-    RequestedScreenId := screenEquipmentShop;
+    RequestedScreenId := screen_equipment_shop;
     Screen.RequestClose(1);
   end;
 end;
@@ -138,14 +138,14 @@ procedure TfPanelPlanet.GoodsShopClicked(Sender: TObjectGI);
 begin
   if Screen.ExitCode <> 0 then Exit;
   if (ActiveLoadPanel <> nil) and ActiveLoadPanel.IsAnimatingShutters then Exit;
-  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = rlHostile) and
+  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = relation_level_hostile) and
      (GovernmentScreen = Screen) then Exit;
   if (GetPlayer.PendingDockDialogue > 1) and (GovernmentScreen = Screen) then Exit;
   if HasPendingScriptRequests then Exit;
-  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) <= rlBad) and
+  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) <= relation_level_bad) and
      not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
   begin
-    if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
+    if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
       ShowMessageBoxGI(Screen, ReplaceColoredToken(
         LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),
         '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), mbgCancel or mbgWarning)
@@ -156,7 +156,7 @@ begin
   end
   else
   begin
-    RequestedScreenId := screenGoodsShop;
+    RequestedScreenId := screen_goods_shop;
     Screen.RequestClose(1);
   end;
 end;
@@ -167,11 +167,11 @@ procedure TfPanelPlanet.GovernmentClicked(Sender: TObjectGI);
 begin
   if Screen.ExitCode <> 0 then Exit;
   if (ActiveLoadPanel <> nil) and ActiveLoadPanel.IsAnimatingShutters then Exit;
-  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = rlHostile) and
+  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = relation_level_hostile) and
      (GovernmentScreen = Screen) then Exit;
   if (GetPlayer.PendingDockDialogue > 1) and (GovernmentScreen = Screen) then Exit;
   if HasPendingScriptRequests then Exit;
-  RequestedScreenId := screenGovernment;
+  RequestedScreenId := screen_government;
   Screen.RequestClose(1);
 end;
 { @end $58B638 }
@@ -181,14 +181,14 @@ procedure TfPanelPlanet.InformationClicked(Sender: TObjectGI);
 begin
   if Screen.ExitCode <> 0 then Exit;
   if (ActiveLoadPanel <> nil) and ActiveLoadPanel.IsAnimatingShutters then Exit;
-  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = rlHostile) and
+  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = relation_level_hostile) and
      (GovernmentScreen = Screen) then Exit;
   if (GetPlayer.PendingDockDialogue > 1) and (GovernmentScreen = Screen) then Exit;
   if HasPendingScriptRequests then Exit;
-  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) <= rlBad) and
+  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) <= relation_level_bad) and
      not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
   begin
-    if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
+    if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
       ShowMessageBoxGI(Screen, ReplaceColoredToken(
         LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),
         '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), mbgCancel or mbgWarning)
@@ -199,7 +199,7 @@ begin
   end
   else
   begin
-    RequestedScreenId := screenInfo;
+    RequestedScreenId := screen_info;
     Screen.RequestClose(1);
   end;
 end;
@@ -210,11 +210,11 @@ procedure TfPanelPlanet.PlanetClicked(Sender: TObjectGI);
 begin
   if Screen.ExitCode <> 0 then Exit;
   if (ActiveLoadPanel <> nil) and ActiveLoadPanel.IsAnimatingShutters then Exit;
-  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = rlHostile) and
+  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = relation_level_hostile) and
      (GovernmentScreen = Screen) then Exit;
   if (GetPlayer.PendingDockDialogue > 1) and (GovernmentScreen = Screen) then Exit;
   if HasPendingScriptRequests then Exit;
-  RequestedScreenId := screenPlanet;
+  RequestedScreenId := screen_planet;
   Screen.RequestClose(1);
 end;
 { @end $58B968 }

@@ -5,17 +5,17 @@ interface
 uses EC_BlockPar, GI_MessageLoop, Types;
 
 type
-  TPanelScrollTypeGI = (pstSimple = 0, pstAll = 1, pstObj = 2, pstView = 3); // @size 1
-  TPanelScrollAxisGI = (psaHorizontal = 0, psaVertical = 1, psaBoth = 2); // @size 1
+  TPanelScrollModeGI = (panel_scroll_no_redraw = 0, panel_scroll_redraw_panel = 1, panel_scroll_redraw_children = 2, panel_scroll_copy_pixels = 3); // @size 1
+  TPanelDragAxisGI = (panel_drag_horizontal = 0, panel_drag_vertical = 1, panel_drag_both = 2); // @size 1
 
   TPanelGI = class(TObjectGI) // @size 0x13C
   public
     DragScrollingEnabled: Boolean; // @offset 0x120
-    ScrollType: TPanelScrollTypeGI; // @offset 0x121
+    ScrollType: TPanelScrollModeGI; // @offset 0x121
     Dragging: Boolean; // @offset 0x122
     LastDragPoint: TPoint; // @offset 0x123
     ScrollChangedCallback: TObjectNotifyEventGI; // @offset $130
-    ScrollAxis: TPanelScrollAxisGI; // @offset 0x138
+    ScrollAxis: TPanelDragAxisGI; // @offset 0x138
 
     constructor Create(Owner: TObjectGI); // @addr 0x004BE528
     destructor Destroy; override; // @addr 0x004BE574
@@ -48,7 +48,7 @@ begin
   inherited Create(Owner);
   SkipOwnQueuedDraw := 1;
   DragScrollingEnabled := False;
-  ScrollType := pstAll;
+  ScrollType := panel_scroll_redraw_panel;
 end;
 { @end $4BE528 }
 
@@ -67,8 +67,8 @@ begin
   ScrollOffset.Y := 0;
   Dragging := False;
   DragScrollingEnabled := False;
-  ScrollType := pstAll;
-  ScrollAxis := psaBoth;
+  ScrollType := panel_scroll_redraw_panel;
+  ScrollAxis := panel_drag_both;
 end;
 { @end $4BE59C }
 
@@ -120,20 +120,20 @@ procedure TPanelGI.SetScrollOffset(Offset: TPoint);
 var Child: TObjectGI; Delta: TPoint; DestRect, SourceRect: TRect;
 begin
   if (ScrollOffset.X = Offset.X) and (ScrollOffset.Y = Offset.Y) then Exit;
-  if ScrollType = pstSimple then
+  if ScrollType = panel_scroll_no_redraw then
   begin
     ScrollOffset := Offset;
     UpdateAbsolutePosition;
     UpdateSubtreeHitBounds;
   end
-  else if ScrollType = pstAll then
+  else if ScrollType = panel_scroll_redraw_panel then
   begin
     ScrollOffset := Offset;
     UpdateAbsolutePosition;
     UpdateSubtreeHitBounds;
     Invalidate;
   end
-  else if ScrollType = pstObj then
+  else if ScrollType = panel_scroll_redraw_children then
   begin
     MessageLoop.RegionDrawPending := True;
     MessageLoop.InvalidateMouseViewControls;
@@ -153,7 +153,7 @@ begin
       Child := Child.NextSibling;
     end;
   end
-  else if ScrollType = pstView then
+  else if ScrollType = panel_scroll_copy_pixels then
   begin
     Delta.X := ScrollOffset.X - Offset.X;
     Delta.Y := ScrollOffset.Y - Offset.Y;
@@ -264,9 +264,9 @@ begin
   if Dragging <> True then Exit;
   if (Point.X = LastDragPoint.X) and (Point.Y = LastDragPoint.Y) then Exit;
   if MessageLoop.IsCursorImageSelected('Main') then MessageLoop.SetCursorByName('Scroll');
-  if (ScrollAxis = psaHorizontal) or (ScrollAxis = psaBoth) then X := ScrollOffset.X + LastDragPoint.X - Point.X
+  if (ScrollAxis = panel_drag_horizontal) or (ScrollAxis = panel_drag_both) then X := ScrollOffset.X + LastDragPoint.X - Point.X
   else X := ScrollOffset.X;
-  if (ScrollAxis = psaVertical) or (ScrollAxis = psaBoth) then Y := ScrollOffset.Y + LastDragPoint.Y - Point.Y
+  if (ScrollAxis = panel_drag_vertical) or (ScrollAxis = panel_drag_both) then Y := ScrollOffset.Y + LastDragPoint.Y - Point.Y
   else Y := ScrollOffset.Y;
   SetScrollOffset(Classes.Point(X, Y));
   LastDragPoint := Point;
@@ -345,10 +345,10 @@ begin
   if Block.CountParams('TypeScroll') > 0 then
   begin
     Text := Block.GetParam('TypeScroll');
-    if Text = 'Simple' then ScrollType := pstSimple
-    else if Text = 'All' then ScrollType := pstAll
-    else if Text = 'Obj' then ScrollType := pstObj
-    else if Text = 'View' then ScrollType := pstView;
+    if Text = 'Simple' then ScrollType := panel_scroll_no_redraw
+    else if Text = 'All' then ScrollType := panel_scroll_redraw_panel
+    else if Text = 'Obj' then ScrollType := panel_scroll_redraw_children
+    else if Text = 'View' then ScrollType := panel_scroll_copy_pixels;
   end;
 end;
 { @end $4BEE70 }

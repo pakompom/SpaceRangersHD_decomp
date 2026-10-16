@@ -347,7 +347,7 @@ procedure TfMainForm.QuitClicked(Sender: TObjectGI);
 begin
   if ShowMessageBoxGI(Self, LanguageDataConfig.GetParamByPathOrMarker('FormMain.MsgExit'), mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
   begin
-    RequestedScreenId := screenNone;
+    RequestedScreenId := screen_none;
     RequestClose(1);
   end;
 end;
@@ -356,9 +356,9 @@ end;
 { @routine $53090C TfMainForm_NewGameClicked }
 procedure TfMainForm.NewGameClicked(Sender: TObjectGI);
 begin
-  ShipScreen.SelectedHoldKind := phkEmpty;
+  ShipScreen.SelectedHoldKind := hold_empty;
   ShipScreen.SelectedHoldItem := nil;
-  RequestedScreenId := screenNewGame;
+  RequestedScreenId := screen_new_game;
   RequestClose(1);
 end;
 { @end $53090C }
@@ -371,7 +371,7 @@ begin
   CaptureScreenBackground(True, 0);
   Self.ShowCursor := True;
   AchievementsReturnScreenId := FormToId(Self);
-  RequestedScreenId := screenAchievements;
+  RequestedScreenId := screen_achievements;
   RequestClose(1);
 end;
 { @end $530940 }
@@ -384,8 +384,8 @@ begin
   CaptureScreenBackground(True, 0);
   Self.ShowCursor := True;
   SaveManagerReturnScreenId := FormToId(Self);
-  SaveManagerMode := smmLoad;
-  RequestedScreenId := screenSaveManager;
+  SaveManagerMode := save_dialog_load;
+  RequestedScreenId := screen_save_manager;
   RequestClose(1);
 end;
 { @end $53098C }
@@ -398,7 +398,7 @@ begin
   CaptureScreenBackground(True, 0);
   Self.ShowCursor := True;
   SettingsReturnScreenId := FormToId(Self);
-  RequestedScreenId := screenSettings;
+  RequestedScreenId := screen_settings;
   RequestClose(1);
 end;
 { @end $5309E0 }
@@ -406,7 +406,7 @@ end;
 { @routine $530A2C TfMainForm_ScoresClicked }
 procedure TfMainForm.ScoresClicked(Sender: TObjectGI);
 begin
-  RequestedScreenId := screenScores;
+  RequestedScreenId := screen_scores;
   RequestClose(1);
 end;
 { @end $530A2C }
@@ -415,7 +415,7 @@ end;
 procedure TfMainForm.AboutClicked(Sender: TObjectGI);
 begin
   AboutScreen.ReturnToScores := False;
-  RequestedScreenId := screenAbout;
+  RequestedScreenId := screen_about;
   RequestClose(1);
 end;
 { @end $530A40 }
@@ -452,8 +452,8 @@ begin
   begin
     TGraphButtonGI(GetByName('Load')).ExecuteOnPressCode;
     SaveManagerReturnScreenId := FormToId(Self);
-    SaveManagerMode := smmLoad;
-    RequestedScreenId := screenSaveManager;
+    SaveManagerMode := save_dialog_load;
+    RequestedScreenId := screen_save_manager;
     RequestClose(1);
   end
   else if Key = VK_ESCAPE then
@@ -564,7 +564,7 @@ begin
   Present;
   CaptureScreenBackground(True, 0);
   Self.ShowCursor := True;
-  RequestedScreenId := screenLoadRobot;
+  RequestedScreenId := screen_planet_battle_selection;
   RequestClose(1);
 end;
 { @end $531124 }
@@ -576,7 +576,7 @@ begin
   Present;
   CaptureScreenBackground(True, 0);
   Self.ShowCursor := True;
-  RequestedScreenId := screenLoadQuest;
+  RequestedScreenId := screen_quest_selection;
   RequestClose(1);
 end;
 { @end $531160 }
@@ -588,7 +588,7 @@ begin
   Present;
   CaptureScreenBackground(True, 0);
   Self.ShowCursor := True;
-  RequestedScreenId := screenLoadArcade;
+  RequestedScreenId := screen_arcade_selection;
   RequestClose(1);
 end;
 { @end $53119C }
@@ -602,8 +602,8 @@ begin
   ShowModsManager(Self);
   if ReloadModsRequested then
   begin
-    RequestedScreenId := screenNone;
-    PostLoadScreenId := screenMainMenu;
+    RequestedScreenId := screen_none;
+    PostLoadScreenId := screen_main_menu;
     RequestClose(1);
   end;
 end;

@@ -90,8 +90,8 @@ begin
     with GetByName('ItemImage') as TImageGI do
     begin
       ImageSourcePath := Self.ImagePath;
-      KindX := ikxCenter;
-      KindY := ikyCenter;
+      KindX := image_x_center;
+      KindY := image_y_center;
       SetActive(True);
     end
   else with GetByName('ItemImage') as TImageGI do SetActive(False);
@@ -103,8 +103,8 @@ begin
       if GraphBuf.Width >= GraphBuf.Height then
         GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
       else GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      SetImageKindX(image_x_center);
+      SetImageKindY(image_y_center);
       SetActive(True);
     end
   else with GetByName('ItemBuf') as TGraphBufGI do SetActive(False);

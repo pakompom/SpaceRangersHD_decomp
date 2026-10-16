@@ -15,7 +15,7 @@ type
     PlayerRace: TOwnerId; // @offset 0xDC
     CharacterPreset: Integer; // @offset 0xE0
     CaptainPortraitIndex: Integer; // @offset 0xE4
-    LastPortraitByRace: array[oiMaloc..oiGaal] of Integer; // @offset 0xE8
+    LastPortraitByRace: array[owner_maloc..owner_gaal] of Integer; // @offset 0xE8
     StartingSkills: array[0..1] of TPilotSkill; // @offset 0xFC
     SelectedSkillSlot: Integer; // @offset 0x100
     StartingItemChoices: array[0..1] of Integer; // @offset 0x104 // Choice values are 1..12; ItemTypeByChoice is zero-based.
@@ -107,7 +107,7 @@ var I, J: Integer; Text: WideString; Race: TOwnerId; Unused: Integer; // Unused 
 begin
   inherited InitializeLayout;
   AppendLogTextThreadSafe('fGameSettings2... ');
-  for Race := oiMaloc to oiGaal do
+  for Race := owner_maloc to owner_gaal do
   begin
     I := -1;
     repeat
@@ -250,7 +250,7 @@ begin
     end;
   for I := Low(ItemTypeByChoice) to High(ItemTypeByChoice) do ItemTypeByChoice[I] := I + 43;
   for I := Low(ItemTypeByChoice) to High(ItemTypeByChoice) do
-    if ItemTypeByChoice[I] in [Ord(t_IndustrialLaser)..Ord(t_Lirecron)] then
+    if ItemTypeByChoice[I] in [Ord(item_industrial_laser)..Ord(item_lirecron)] then
       (GetByName('ItemI' + IntToStr(I + 1)) as TImageGI).ImageSourcePath := 'GI,Bm.Items.' + GiResourceSuffix + ItemTypeNames[TItemType(ItemTypeByChoice[I])] + 's'
     else
       (GetByName('ItemI' + IntToStr(I + 1)) as TImageGI).ImageSourcePath := 'GI,Bm.Items.' + GiResourceSuffix + ItemTypeNames[TItemType(ItemTypeByChoice[I])] + IntToStr(1) + 's';
@@ -368,33 +368,33 @@ begin
     Text := NewGameSettingsConfig.GetParamByPathOrMarker('Race');
     if Text = 'Maloc' then
     begin
-      PlayerRace := oiMaloc;
+      PlayerRace := owner_maloc;
       RaceClicked(GetByName('RaceMaloc'));
     end
     else if Text = 'Peleng' then
     begin
-      PlayerRace := oiPeleng;
+      PlayerRace := owner_peleng;
       RaceClicked(GetByName('RacePeleng'));
     end
     else if Text = 'Fei' then
     begin
-      PlayerRace := oiFeyan;
+      PlayerRace := owner_feyan;
       RaceClicked(GetByName('RaceFei'));
     end
     else if Text = 'Gaal' then
     begin
-      PlayerRace := oiGaal;
+      PlayerRace := owner_gaal;
       RaceClicked(GetByName('RaceGaal'));
     end
     else
     begin
-      PlayerRace := oiHuman;
+      PlayerRace := owner_human;
       RaceClicked(GetByName('RacePeople'));
     end;
   end
   else
   begin
-    PlayerRace := oiHuman;
+    PlayerRace := owner_human;
     RaceClicked(GetByName('RacePeople'));
   end;
   if (NewGameSettingsConfig.CountParamsByPath('Name') > 0) and (NewGameSettingsConfig.GetParamByPathOrMarker('Name') <> '') then
@@ -428,8 +428,8 @@ begin
   end
   else
   begin
-    StartingSkills[0] := psAccuracy;
-    StartingSkills[1] := psTrading;
+    StartingSkills[0] := skill_accuracy;
+    StartingSkills[1] := skill_trading;
   end;
   RefreshStartingSkills;
   SelectedItemSlot := 0;
@@ -702,7 +702,7 @@ begin
     else SetImagePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchD');
     SetPosition(Classes.Point(X, Y));
     SetSize(GetContentSize);
-    SetImageKindY(ikyCenter);
+    SetImageKindY(image_y_center);
     HelpText := Help;
     if not Disabled then
     begin
@@ -721,8 +721,8 @@ begin
     SetPositionModeW(False);
     SetPosition(Classes.Point(X + IronWillImage.GetContentSize.X + 2, Y + GiScalePixelsEx(2, 1)));
     SetSize(Classes.Point(Width, 1));
-    SetTextAlignX(taxAuto);
-    SetTextAlignY(tayAuto);
+    SetTextAlignX(text_x_fit_or_justify);
+    SetTextAlignY(text_y_fit_height);
     HelpText := Help;
     SetText(Caption);
     if Disabled then SetTextColor(CurrentPixelFormat.PackRgbBytes(127,127,127))
@@ -863,11 +863,11 @@ end;
 procedure TfGameSettings2.RaceClicked(Sender: TObjectGI);
 begin
   PlayerRace := TOwnerId(Sender.UserValue);
-  (GetByName('RaceMaloc') as TGraphButtonGI).SetDown(PlayerRace = oiMaloc);
-  (GetByName('RacePeleng') as TGraphButtonGI).SetDown(PlayerRace = oiPeleng);
-  (GetByName('RacePeople') as TGraphButtonGI).SetDown(PlayerRace = oiHuman);
-  (GetByName('RaceFei') as TGraphButtonGI).SetDown(PlayerRace = oiFeyan);
-  (GetByName('RaceGaal') as TGraphButtonGI).SetDown(PlayerRace = oiGaal);
+  (GetByName('RaceMaloc') as TGraphButtonGI).SetDown(PlayerRace = owner_maloc);
+  (GetByName('RacePeleng') as TGraphButtonGI).SetDown(PlayerRace = owner_peleng);
+  (GetByName('RacePeople') as TGraphButtonGI).SetDown(PlayerRace = owner_human);
+  (GetByName('RaceFei') as TGraphButtonGI).SetDown(PlayerRace = owner_feyan);
+  (GetByName('RaceGaal') as TGraphButtonGI).SetDown(PlayerRace = owner_gaal);
   CaptainPortraitIndex := 0;
   RefreshPortrait;
   if not PlayerNameEdited then GeneratePlayerName;
@@ -900,8 +900,8 @@ begin
     if LastPortraitByRace[PlayerRace] >= 0 then
     begin
       ImageSourcePath := 'GI,Bm.Captain.' + GiResourceSuffix + OwnerInfo[RaceToOwner(PlayerRace)].InternalName + IntToStr(CaptainPortraitIndex) + 'i';
-      KindX := ikxCenter;
-      KindY := ikyCenter;
+      KindX := image_x_center;
+      KindY := image_y_center;
       SetActive(True);
     end
     else SetActive(False);
@@ -914,8 +914,8 @@ begin
       SetImagePath('Bm.Captain.' + GiResourceSuffix + OwnerInfo[RaceToOwner(PlayerRace)].InternalName + IntToStr(CaptainPortraitIndex) + 'a');
       SequenceIndex := 0;
       UpdateAutoGeometry;
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      SetImageKindX(image_x_center);
+      SetImageKindY(image_y_center);
       SetActive(True);
       RestartPlayback;
     end
@@ -1270,7 +1270,7 @@ begin
   NewGameGenerationThread := TThreadCreateNewGame.Create;
   NewGameGenerationThread.PlayerName := TrimWideString((GetByName('PlayerName') as TEditGI).Text);
   StartNewGameGeneration;
-  RequestedScreenId := screenIntroduction;
+  RequestedScreenId := screen_introduction;
   RequestClose(1);
 end;
 { @end $5C87B8 }
@@ -1281,7 +1281,7 @@ begin
   if GetByName('PanelExtended').Active then ToggleExtendedSettings(nil)
   else
   begin
-    RequestedScreenId := screenMainMenu;
+    RequestedScreenId := screen_main_menu;
     RequestClose(1);
   end;
 end;
@@ -1506,7 +1506,7 @@ begin
       ImageSourcePath := 'GI,Bm.FormOptions2.2Line';
       SetPosition(Classes.Point(0, ExtendedGroupNextY[BuildExtendedGroup]));
       SetSize(Classes.Point(ExtendedGroupPanels[BuildExtendedGroup].ClientSize.X, GetContentSize.Y + 2));
-      KindX := ikxLeftFill;
+      KindX := image_x_tile_left;
       ExtendedGroupNextY[BuildExtendedGroup] := ExtendedGroupNextY[BuildExtendedGroup] + ClientSize.Y;
     end;
   Result := TLabelGI.Create(ExtendedGroupPanels[BuildExtendedGroup]);
@@ -1514,12 +1514,12 @@ begin
   Result.SetPositionModeW(False);
   Result.SetPosition(Classes.Point(0, ExtendedGroupNextY[BuildExtendedGroup]));
   Result.SetSize(Classes.Point(ExtendedGroupPanels[BuildExtendedGroup].ClientSize.X, 1));
-  Result.SetTextAlignX(taxLeft);
-  Result.SetTextAlignY(tayAuto);
+  Result.SetTextAlignX(text_x_left);
+  Result.SetTextAlignY(text_y_fit_height);
   Result.SetTextColor(CurrentPixelFormat.PackRgbBytes(205,205,205));
   Result.SetText(Caption);
   Result.HelpText := Caption;
-  Result.SetTextAlignY(tayTop);
+  Result.SetTextAlignY(text_y_top);
   Result.SetSize(Classes.Point(Result.ClientSize.X, Result.ClientSize.Y + 1));
   Inc(ExtendedGroupNextY[BuildExtendedGroup], 2);
 end;
@@ -1535,8 +1535,8 @@ begin
   CaptionLabel.SetPositionModeW(False);
   CaptionLabel.SetPosition(Classes.Point(0, ExtendedGroupNextY[BuildExtendedGroup]));
   CaptionLabel.SetSize(Classes.Point(ExtendedGroupPanels[BuildExtendedGroup].ClientSize.X - Indent, 1));
-  CaptionLabel.SetTextAlignX(taxRight);
-  CaptionLabel.SetTextAlignY(tayAuto);
+  CaptionLabel.SetTextAlignX(text_x_right);
+  CaptionLabel.SetTextAlignY(text_y_fit_height);
   if Selected then CaptionLabel.SetTextColor(CurrentPixelFormat.PackRgbBytes(255,234,118))
   else CaptionLabel.SetTextColor(CurrentPixelFormat.PackRgbBytes(205,205,205));
   CaptionLabel.SetText(Caption);
@@ -1546,14 +1546,14 @@ begin
     CaptionLabel.MouseEnterCallback := IronWillMouseEnter;
     CaptionLabel.MouseLeaveCallback := IronWillMouseLeave;
   end;
-  CaptionLabel.SetTextAlignY(tayCenterEx);
+  CaptionLabel.SetTextAlignY(text_y_font_center);
   ChoiceImage := TImageGI.Create(ExtendedGroupPanels[BuildExtendedGroup]);
   if Disabled then ChoiceImage.SetImagePath('GI,Bm.FormOptions2.2SwitchH')
   else if not Selected then ChoiceImage.SetImagePath('GI,Bm.FormOptions2.2SwitchN')
   else ChoiceImage.SetImagePath('GI,Bm.FormOptions2.2SwitchD');
   ChoiceImage.SetPosition(Classes.Point(ExtendedGroupPanels[BuildExtendedGroup].ClientSize.X - ChoiceImage.GetContentSize.X - Indent, ExtendedGroupNextY[BuildExtendedGroup]));
   ChoiceImage.SetSize(ChoiceImage.GetContentSize);
-  ChoiceImage.SetImageKindY(ikyCenter);
+  ChoiceImage.SetImageKindY(image_y_center);
   if not Disabled then
   begin
     ChoiceImage.LeftButtonDownCallback := ExtendedChoiceMouseDown;
@@ -1597,7 +1597,7 @@ begin
   Slider.SetPositionModeW(False);
   Slider.SetSize(Classes.Point(199,20));
   Slider.Pos := Classes.Point(ExtendedGroupPanels[BuildExtendedGroup].ClientSize.X - Slider.ClientSize.X, ExtendedGroupNextY[BuildExtendedGroup]);
-  Slider.DecreaseButton.SetKind(gbkDisable);
+  Slider.DecreaseButton.SetKind(button_push_can_disable);
   Slider.DecreaseButton.SetImageNormalPath('GI,Bm.FormOptions2.2TrackLeftN');
   Slider.DecreaseButton.SetImageNormalActivePath('GI,Bm.FormOptions2.2TrackLeftA');
   Slider.DecreaseButton.SetImageDownPath('GI,Bm.FormOptions2.2TrackLeftD');
@@ -1605,7 +1605,7 @@ begin
   Slider.DecreaseButton.EnterSound := 'Sound.ButtonEnter';
   Slider.DecreaseButton.LeaveSound := 'Sound.ButtonLeave';
   Slider.DecreaseButton.ClickSound := 'Sound.ButtonClick';
-  Slider.IncreaseButton.SetKind(gbkDisable);
+  Slider.IncreaseButton.SetKind(button_push_can_disable);
   Slider.IncreaseButton.SetImageNormalPath('GI,Bm.FormOptions2.2TrackRightN');
   Slider.IncreaseButton.SetImageNormalActivePath('GI,Bm.FormOptions2.2TrackRightA');
   Slider.IncreaseButton.SetImageDownPath('GI,Bm.FormOptions2.2TrackRightD');

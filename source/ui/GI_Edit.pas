@@ -67,7 +67,7 @@ begin
   BorderDarkColor := CurrentPixelFormat.PackRgbBytes(55, 55, 55);
   CaretColor := CurrentPixelFormat.PackRgbBytes(255, 0, 0);
   BorderEnabled := False;
-  TextAlignX := taxLeft;
+  TextAlignX := text_x_left;
   MaxLength := 256;
   ClearFocusOnEnter := True;
 end;
@@ -170,7 +170,7 @@ end;
 { @routine $4B04F0 TEditGI_SetTextAlignX }
 procedure TEditGI.SetTextAlignX(Value: TTextAlignXGI);
 begin
-  if (Value <> taxLeft) and (Value <> taxCenter) then raise Exception.Create('Error TEditGI. This align not support.');
+  if (Value <> text_x_left) and (Value <> text_x_center) then raise Exception.Create('Error TEditGI. This align not support.');
   if TextAlignX <> Value then
   begin
     TextAlignX := Value;
@@ -237,7 +237,7 @@ begin
       SetLength(Text, TextLength - 1);
       Dec(CaretPosition);
       Invalidate;
-      DispatchNamedEvent(nceTextChanged, 0, 0);
+      DispatchNamedEvent(control_event_text_changed, 0, 0);
       if Assigned(ChangedCallback) then ChangedCallback(Self);
     end;
   end
@@ -246,7 +246,7 @@ begin
     Text := '';
     CaretPosition := 0;
     Invalidate;
-    DispatchNamedEvent(nceTextChanged, 0, 0);
+    DispatchNamedEvent(control_event_text_changed, 0, 0);
     if Assigned(ChangedCallback) then ChangedCallback(Self);
   end
   else if Key = VK_DELETE then
@@ -262,7 +262,7 @@ begin
       end;
       SetLength(Text, TextLength - 1);
       Invalidate;
-      DispatchNamedEvent(nceTextChanged, 0, 0);
+      DispatchNamedEvent(control_event_text_changed, 0, 0);
       if Assigned(ChangedCallback) then ChangedCallback(Self);
     end;
   end
@@ -343,7 +343,7 @@ begin
         Text[CaretPosition + 1] := Character;
         Inc(CaretPosition);
         Invalidate;
-        DispatchNamedEvent(nceTextChanged, 0, 0);
+        DispatchNamedEvent(control_event_text_changed, 0, 0);
         if Assigned(ChangedCallback) then ChangedCallback(Self);
       end;
     end;
@@ -519,7 +519,7 @@ begin
     end;
     X := HitTestBounds.Left + 2;
     with Font.MeasureTaggedTextBounds(Text, 0, 0, nil) do
-      if TextAlignX = taxCenter then X := HitTestBounds.Left + (HitTestBounds.Right - HitTestBounds.Left) div 2 - (Right - Left) div 2;
+      if TextAlignX = text_x_center then X := HitTestBounds.Left + (HitTestBounds.Right - HitTestBounds.Left) div 2 - (Right - Left) div 2;
     Y := (HitTestBounds.Top + HitTestBounds.Bottom) div 2 - (Font.AboveBaseline + Font.BelowBaseline) div 2 + Font.AboveBaseline;
     N := Length(Text);
     FirstCharacter := 0;

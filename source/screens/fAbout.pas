@@ -163,12 +163,12 @@ begin
   LabelControl.SetFontName(AuthorsFontName);
   LabelControl.SetWordWrapEnabled(False);
   LabelControl.SetPositionModeW(False);
-  LabelControl.SetTextAlignX(taxCenter);
-  LabelControl.SetTextAlignY(tayAuto);
+  LabelControl.SetTextAlignX(text_x_center);
+  LabelControl.SetTextAlignY(text_y_fit_height);
   LabelControl.SetText(Text);
   LabelControl.SetTextColor(CurrentPixelFormat.PackRgbBytes(Red, Green, Blue));
-  LabelControl.SetTextAlignX(taxCenter);
-  LabelControl.SetTextAlignY(tayCenter);
+  LabelControl.SetTextAlignX(text_x_center);
+  LabelControl.SetTextAlignY(text_y_center);
   LabelControl.SetSize(Classes.Point(LabelControl.ClientSize.X, LabelControl.ClientSize.Y + 4));
   CreditsHeight := CreditsHeight + LabelControl.ClientSize.Y;
 end;
@@ -184,8 +184,8 @@ begin
   Image.SetPosition(Classes.Point(0, CreditsHeight));
   Image.SetSize(Classes.Point(ViewportPanel.ClientSize.X, Image.GetContentSize.Y + 4));
   Image.SetPositionModeW(False);
-  Image.SetImageKindX(ikxCenter);
-  Image.SetImageKindY(ikyCenter);
+  Image.SetImageKindX(image_x_center);
+  Image.SetImageKindY(image_y_center);
   CreditsHeight := CreditsHeight + Image.ClientSize.Y;
 end;
 { @end $5BBB18 }
@@ -209,8 +209,8 @@ end;
 { @routine $5BBCA0 TfAbout_CloseMouseDown }
 procedure TfAbout.CloseMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
-  if ReturnToScores then RequestedScreenId := screenScores
-  else RequestedScreenId := screenMainMenu;
+  if ReturnToScores then RequestedScreenId := screen_scores
+  else RequestedScreenId := screen_main_menu;
   RequestClose(1);
 end;
 { @end $5BBCA0 }
@@ -218,8 +218,8 @@ end;
 { @routine $5BBCE0 TfAbout_CloseKeyDown }
 procedure TfAbout.CloseKeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
-  if ReturnToScores then RequestedScreenId := screenScores
-  else RequestedScreenId := screenMainMenu;
+  if ReturnToScores then RequestedScreenId := screen_scores
+  else RequestedScreenId := screen_main_menu;
   RequestClose(1);
 end;
 { @end $5BBCE0 }

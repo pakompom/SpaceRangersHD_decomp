@@ -9,15 +9,15 @@ const
   QuestNumericLimit = 2000000000;
 
 type
-  TCPValueKind = (cpvkRange = 0, cpvkFloat = 1,
-    cpvkInteger = 2); // @size 0x01
+  TQuestNumberKind = (number_ranges = 0, number_float = 1,
+    number_integer = 2); // @size 0x01
 
   TCPVariant = class(TObjectEx) // @size 0x1C
   public
     Range: TCPDiapazone; // @offset 0x04  Owned for every ValueKind.
     FloatValue: Extended; // @offset 0x08
     IntValue: Integer; // @offset 0x14
-    ValueKind: TCPValueKind; // @offset 0x18
+    ValueKind: TQuestNumberKind; // @offset 0x18
 
     constructor Create; // @addr 0x004DC4A8
     destructor Destroy; override; // @addr 0x004DC4F4
@@ -60,7 +60,7 @@ begin
   FloatValue := 0;
   IntValue := 0;
   Range.Clear;
-  ValueKind := cpvkInteger;
+  ValueKind := number_integer;
 end;
 { @end $4DC530 }
 
@@ -87,7 +87,7 @@ begin
   begin
     if HasIntegerChars(Text, Count) then
     begin
-      ValueKind := cpvkInteger;
+      ValueKind := number_integer;
       Range.Clear;
       IntValue := ExtractDigitsToIntW(Text);
       FloatValue := 0;
@@ -95,7 +95,7 @@ begin
     end
     else
     begin
-      ValueKind := cpvkFloat;
+      ValueKind := number_float;
       Range.Clear;
       FloatValue := ExtractDecimalToSingleW(Text);
       IntValue := 0;
@@ -109,7 +109,7 @@ begin
         '0'..'9', '[', ']', 'h', ';', '-': ;
       else Exit;
       end;
-    ValueKind := cpvkRange;
+    ValueKind := number_ranges;
     Range.LoadFromText(Text);
     FloatValue := 0;
     IntValue := 0;
@@ -146,9 +146,9 @@ end;
 function TCPVariant.AsExtended: Extended;
 begin
   Result := 0;
-  if ValueKind = cpvkRange then Result := Range.GetRandomValue
-  else if ValueKind = cpvkFloat then Result := FloatValue
-  else if ValueKind = cpvkInteger then Result := IntValue;
+  if ValueKind = number_ranges then Result := Range.GetRandomValue
+  else if ValueKind = number_float then Result := FloatValue
+  else if ValueKind = number_integer then Result := IntValue;
 end;
 { @end $4DC764 }
 
@@ -156,14 +156,14 @@ end;
 function TCPVariant.AsInteger: Integer;
 begin
   Result := 0;
-  if ValueKind = cpvkRange then Result := Range.GetRandomValue
-  else if ValueKind = cpvkFloat then
+  if ValueKind = number_ranges then Result := Range.GetRandomValue
+  else if ValueKind = number_float then
   begin
     if FloatValue < -QuestNumericLimit then Result := -QuestNumericLimit
     else if FloatValue > QuestNumericLimit then Result := QuestNumericLimit
     else Result := System.Round(FloatValue + 1E-11);
   end
-  else if ValueKind = cpvkInteger then Result := IntValue;
+  else if ValueKind = number_integer then Result := IntValue;
 end;
 { @end $4DC7C8 }
 

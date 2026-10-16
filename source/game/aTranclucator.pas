@@ -6,10 +6,10 @@ uses EC_Buf, aGalaxy, aGalaxyStruct, aPlanet, aShip;
 
 type
   TTranclucatorCollectionKind = (
-    tckOther = 0, tckArtefact = 1, tckMicroModule = 2, tckEquipment = 3,
-    tckUseless = 4, tckGoods = 5, tckCountable = 6
+    collect_other = 0, collect_artefacts = 1, collect_micromodules = 2, collect_equipment = 3,
+    collect_misc_items = 4, collect_goods = 5, collect_stackables = 6
   ); // @size 0x1
-  TTranclucatorStorageKind = (tskPlanet = 1, tskStation = 2); // @size 0x4
+  TTranclucatorStorageKind = (storage_planet = 1, storage_station = 2); // @size 0x4
 
   TTranclucator = class(TShip) // @size 0x4EC
   public
@@ -61,7 +61,7 @@ type
     procedure AssignWeaponTargetsInStar; override; // @addr $5B9E14 @slot 0x20
     function EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single; override; // @addr $5BA66C @slot 0x54
 
-    function GetDominantCareer: TRangerCareer; override; // @addr 0x005B921C @slot 0x38 @note "Always rcWarrior."
+    function GetDominantCareer: TRangerCareer; override; // @addr 0x005B921C @slot 0x38 @note "Always career_warrior."
     function GetName: WideString; override; // @addr 0x005B9004 @slot 0x24
     function GetFullName(const Separator: WideString): WideString; override; // @addr 0x005B9024 @slot 0x28
 
@@ -85,8 +85,8 @@ type
   end;
 
 var
-  TranclucatorSkillBonusWeights: array[bonSkill1..bonSkill6] of Integer = (100, 100, 80, 80, 60, 60); // @addr $80F520
-  TranclucatorSlotBonusWeights: array[bonSlotRadar..bonSlotForsage] of Integer = (100, 100, 200, 100, 200, 75, 10, 30); // @addr $80F538 @indexrefs "0x005BAA01,0x005BAA3B,0x005BAA72,0x005BAA9E,0x005BAAF0,0x005BAB27,0x005BAB53,0x005BAB7D,0x005BABB2,0x005BABDE,0x005BAC08,0x005BAC3D,0x005BAC69,0x005BAC93,0x005BACC8,0x005BAD0D,0x005BAD3B,0x005BADAC,0x005BADFF,0x005BAE2D,0x005BAE90,0x005BAEBB"
+  TranclucatorSkillBonusWeights: array[bonus_accuracy..bonus_leadership] of Integer = (100, 100, 80, 80, 60, 60); // @addr $80F520
+  TranclucatorSlotBonusWeights: array[bonus_radar_slots..bonus_afterburner_slots] of Integer = (100, 100, 200, 100, 200, 75, 10, 30); // @addr $80F538 @indexrefs "0x005BAA01,0x005BAA3B,0x005BAA72,0x005BAA9E,0x005BAAF0,0x005BAB27,0x005BAB53,0x005BAB7D,0x005BABB2,0x005BABDE,0x005BAC08,0x005BAC3D,0x005BAC69,0x005BAC93,0x005BACC8,0x005BAD0D,0x005BAD3B,0x005BADAC,0x005BADFF,0x005BAE2D,0x005BAE90,0x005BAEBB"
 
 implementation
 
@@ -139,7 +139,7 @@ procedure TTranclucator.ResetStoragePermissions;
 var Kind: TTranclucatorStorageKind;
 begin
   for Kind := Low(TTranclucatorStorageKind) to High(TTranclucatorStorageKind) do StoragePermissions[Kind] := False;
-  SetStoragePermission(tskPlanet, True);
+  SetStoragePermission(storage_planet, True);
 end;
 { @end $5B82C4 }
 
@@ -147,8 +147,8 @@ end;
 procedure TTranclucator.SetStoragePermission(Kind: TTranclucatorStorageKind; Enabled: Boolean);
 begin
   case Kind of
-    tskPlanet: StoragePermissions[tskPlanet] := Enabled;
-    tskStation: StoragePermissions[tskStation] := Enabled;
+    storage_planet: StoragePermissions[storage_planet] := Enabled;
+    storage_station: StoragePermissions[storage_station] := Enabled;
   end;
 end;
 { @end $5B82E4 }
@@ -158,8 +158,8 @@ function TTranclucator.GetStoragePermission(Kind: TTranclucatorStorageKind): Boo
 begin
   Result := False;
   case Kind of
-    tskPlanet: Result := StoragePermissions[tskPlanet];
-    tskStation: Result := StoragePermissions[tskStation];
+    storage_planet: Result := StoragePermissions[storage_planet];
+    storage_station: Result := StoragePermissions[storage_station];
   end;
 end;
 { @end $5B82FC }
@@ -190,7 +190,7 @@ var
   end;
 
 begin
-  TypeId := stTranclucator;
+  TypeId := ship_tranclucator;
   if AOwnerShip <> nil then
   begin
     OwnerShip := AOwnerShip;
@@ -215,7 +215,7 @@ begin
     CreateAndEquipHull(Round(NextRandomIntRange(200, 300, RandomState) * HullCapacityScale), 1, OwnerId, -1, False);
     CreateAndEquipFuelTanks(10, 1, OwnerId);
     CreateAndEquipEngine(RandomEquipmentSize(EngineBaseSize), 2, OwnerId);
-    WeaponType := TItemType(NextRandomIntRange(0, 2, RandomState) + Ord(t_IndustrialLaser));
+    WeaponType := TItemType(NextRandomIntRange(0, 2, RandomState) + Ord(item_industrial_laser));
     CreateAndEquipWeapon(WeaponType, RandomEquipmentSize(WeaponInfos[WeaponType].AverageSize), 1, OwnerId);
   end
   else
@@ -227,11 +227,11 @@ begin
     CreateAndEquipDefGenerator(RandomEquipmentSize(DefGeneratorBaseSize), RandomEquipmentLevel, OwnerId);
     CreateAndEquipRepairRobot(RandomEquipmentSize(RepairRobotBaseSize), RandomEquipmentLevel, OwnerId);
     CreateAndEquipCargoHook(RandomEquipmentSize(CargoHookBaseSize), RandomEquipmentLevel, OwnerId);
-    WeaponType := TItemType(NextRandomIntRange(0, 2, RandomState) + Ord(t_IndustrialLaser));
+    WeaponType := TItemType(NextRandomIntRange(0, 2, RandomState) + Ord(item_industrial_laser));
     CreateAndEquipWeapon(WeaponType, RandomEquipmentSize(WeaponInfos[WeaponType].AverageSize), 1, OwnerId);
-    BaseSkills[psAccuracy] := NextRandomIntRange(0, Round(RemapClamped(Galaxy.TechLevel, 3, 8, 0, 6)), RandomState);
-    BaseSkills[psManeuverability] := NextRandomIntRange(0, Round(RemapClamped(Galaxy.TechLevel, 3, 8, 0, 6)), RandomState);
-    BaseSkills[psTechnical] := NextRandomIntRange(0, Round(RemapClamped(Galaxy.TechLevel, 3, 8, 0, 6)), RandomState);
+    BaseSkills[skill_accuracy] := NextRandomIntRange(0, Round(RemapClamped(Galaxy.TechLevel, 3, 8, 0, 6)), RandomState);
+    BaseSkills[skill_maneuverability] := NextRandomIntRange(0, Round(RemapClamped(Galaxy.TechLevel, 3, 8, 0, 6)), RandomState);
+    BaseSkills[skill_technical] := NextRandomIntRange(0, Round(RemapClamped(Galaxy.TechLevel, 3, 8, 0, 6)), RandomState);
   end;
   TechKnowledge := 8;
   if GetCargoFreeSpace < 0 then GetHull.Weight := GetHull.Weight + Abs(GetCargoFreeSpace);
@@ -278,12 +278,12 @@ var
   begin
     Enabled := Buffer.GetBoolean;
     case ItemType of
-      t_Food: CollectionPermissions[tckGoods] := Enabled;
-      t_Artefact: CollectionPermissions[tckArtefact] := Enabled;
-      t_FuelTanks: CollectionPermissions[tckEquipment] := Enabled;
-      t_Protoplasm: CollectionPermissions[tckCountable] := Enabled;
-      t_UselessItem: CollectionPermissions[tckUseless] := Enabled;
-      t_MicroModule: CollectionPermissions[tckMicroModule] := Enabled;
+      item_food: CollectionPermissions[collect_goods] := Enabled;
+      item_custom_artefact: CollectionPermissions[collect_artefacts] := Enabled;
+      item_fuel_tanks: CollectionPermissions[collect_equipment] := Enabled;
+      item_nodes: CollectionPermissions[collect_stackables] := Enabled;
+      item_misc: CollectionPermissions[collect_misc_items] := Enabled;
+      item_micro_module: CollectionPermissions[collect_micromodules] := Enabled;
     end;
   end;
 
@@ -394,7 +394,7 @@ begin
           if FollowOwner and (OwnerShip <> nil) then
           begin
             Stage := 12;
-            OrderFollowShip(OwnerShip, fmFollowNear, False);
+            OrderFollowShip(OwnerShip, follow_close, False);
           end
           else
           begin
@@ -428,7 +428,7 @@ begin
   if TypeNameOverrideKey = '' then Result := DisplayName
   else
   begin
-    Path := 'ShipType.' + ShipTypeNames[stTranclucator].Name + '.' + TypeNameOverrideKey;
+    Path := 'ShipType.' + ShipTypeNames[ship_tranclucator].Name + '.' + TypeNameOverrideKey;
     if LanguageDataConfig.CountParamsByPath(Path) > 0 then TypeName := LocalizedText(Path)
     else TypeName := LocalizedText('ShipType.TypeName.' + TypeNameOverrideKey);
     if TypeName <> '' then Result := TypeName + Separator + Name
@@ -440,14 +440,14 @@ end;
 { @routine $5B9218 TTranclucator_GetGreetingShipCategory }
 function TTranclucator.GetGreetingShipCategory: TGreetingShipCategory;
 begin
-  Result := gscTransport; // Native default category, also used for transports.
+  Result := greeting_ship_transport; // Native default category, also used for transports.
 end;
 { @end $5B9218 }
 
 { @routine $5B921C TTranclucator_GetDominantCareer }
 function TTranclucator.GetDominantCareer: TRangerCareer;
 begin
-  Result := rcWarrior;
+  Result := career_warrior;
 end;
 { @end $5B921C }
 
@@ -556,7 +556,7 @@ var Good: Byte;
     Item: TEquipment;
     Artefact: TArtefact;
 begin
-  if not (Location is TPlanet) or ((Location as TPlanet).OwnerId in [oiMaloc..oiGaal, oiPirate]) then
+  if not (Location is TPlanet) or ((Location as TPlanet).OwnerId in [owner_maloc..owner_gaal, owner_pirate]) then
   begin
     for I := Inventory.Count - 1 downto 0 do
     begin
@@ -625,11 +625,11 @@ begin
   if not HasLooseNonScriptItemsOrGoods then Exit;
   BestDistance := 10000;
   Location := nil;
-  if GetStoragePermission(tskPlanet) then
+  if GetStoragePermission(storage_planet) then
     for I := 0 to CurrentStar.Planets.Count - 1 do
     begin
       Planet := CurrentStar.Planets[I];
-      if not (Planet.OwnerId in [oiMaloc..oiGaal, oiPirate]) or (Planet.GetRelationLevelToShip(GetPlayer) < rlNormal) then Continue;
+      if not (Planet.OwnerId in [owner_maloc..owner_gaal, owner_pirate]) or (Planet.GetRelationLevelToShip(GetPlayer) < relation_level_normal) then Continue;
       Distance := PointDistance(Position, Planet.GetPosition);
       if BestDistance >= Distance then
       begin
@@ -637,11 +637,11 @@ begin
         BestDistance := Distance;
       end;
     end;
-  if GetStoragePermission(tskStation) then
+  if GetStoragePermission(storage_station) then
     for I := 0 to CurrentStar.Ships.Count - 1 do
     begin
       Ship := CurrentStar.Ships[I];
-      if not (Ship is TRuins) or (Ship.GetRelationLevelToShip(GetPlayer) < rlNormal) or not Ship.CanDock(Self) then Continue;
+      if not (Ship is TRuins) or (Ship.GetRelationLevelToShip(GetPlayer) < relation_level_normal) or not Ship.CanDock(Self) then Continue;
       Distance := PointDistance(Position, Ship.Position);
       if BestDistance >= Distance then
       begin
@@ -670,7 +670,7 @@ begin
   if IsOnPlanet then Location := CurrentPlanet
   else if IsDockedToShip then Location := DockedTo
   else Exit;
-  if (OwnerShip <> nil) and (not (Location is TPlanet) or ((Location as TPlanet).OwnerId in [oiMaloc..oiGaal, oiPirate])) then
+  if (OwnerShip <> nil) and (not (Location is TPlanet) or ((Location as TPlanet).OwnerId in [owner_maloc..owner_gaal, owner_pirate])) then
   begin
     EnemyShip := nil;
     TruceShip := nil;
@@ -694,8 +694,8 @@ begin
     OwnerShip.AddItemToPlayerStorage(Artefact, Location, -1);
     GetPlayer.RefreshStorageBubbles;
     OwnerShip.RefreshDerivedStats(True);
-    ScriptItemsAct(satOnTrancPacking, Artefact, Location, 0);
-    GetPlayer.ScriptItemsAct(satOnTrancPacking, Artefact, Location, 0);
+    ScriptItemsAct(event_pack_tranclucator, Artefact, Location, 0);
+    GetPlayer.ScriptItemsAct(event_pack_tranclucator, Artefact, Location, 0);
     Result := True;
   end;
 end;
@@ -705,13 +705,13 @@ end;
 procedure TTranclucator.UpdateFreeFlightOrder;
 begin
   if (EnemyShip <> nil) and (EnemyShip.CurrentStar = CurrentStar) and EnemyShip.InNormalSpace then
-    OrderFollowShip(EnemyShip, fmMinWeaponRange, False)
+    OrderFollowShip(EnemyShip, follow_min_weapon_range, False)
   else if (OwnerShip <> nil) and (OwnerShip.CurrentStar = CurrentStar) and OwnerShip.InNormalSpace then
   begin
     with OwnerShip do
-      if (Order = soFollowShip) and (EnemyShip = OrderTarget) and (EnemyShip <> Self) then
-        Self.OrderFollowShip(EnemyShip, fmMinWeaponRange, False)
-      else Self.OrderFollowShip(Self.OwnerShip, fmFollowNear, False);
+      if (Order = order_follow_ship) and (EnemyShip = OrderTarget) and (EnemyShip <> Self) then
+        Self.OrderFollowShip(EnemyShip, follow_min_weapon_range, False)
+      else Self.OrderFollowShip(Self.OwnerShip, follow_close, False);
   end
   else if (OwnerShip <> nil) and (OwnerShip.CurrentStar = CurrentStar) and (OwnerShip.CurrentPlanet <> nil) then
     OrderMove(OwnerShip.CurrentPlanet.GetPosition, False)
@@ -755,29 +755,29 @@ begin
       begin
         if Item is TGoods then
         begin
-          if not CollectionPermissions[tckGoods] then Continue;
+          if not CollectionPermissions[collect_goods] then Continue;
         end
         else if Item is TArtefact then
         begin
-          if not CollectionPermissions[tckArtefact] then Continue;
+          if not CollectionPermissions[collect_artefacts] then Continue;
         end
         else if Item is TMicroModule then
         begin
-          if not CollectionPermissions[tckMicroModule] then Continue;
+          if not CollectionPermissions[collect_micromodules] then Continue;
         end
         else if Item is TCountableItem then
         begin
-          if not CollectionPermissions[tckCountable] then Continue;
+          if not CollectionPermissions[collect_stackables] then Continue;
         end
         else if Item is TUselessItem then
         begin
-          if not CollectionPermissions[tckUseless] then Continue;
+          if not CollectionPermissions[collect_misc_items] then Continue;
         end
-        else if Item.ItemType in [t_FuelTanks..t_CustomWeapon] then
+        else if Item.ItemType in [item_fuel_tanks..item_custom_weapon] then
         begin
-          if not CollectionPermissions[tckEquipment] then Continue;
+          if not CollectionPermissions[collect_equipment] then Continue;
         end
-        else if not CollectionPermissions[tckOther] then Continue;
+        else if not CollectionPermissions[collect_other] then Continue;
         if (CountOtherShipsTargetingItem(Item) <= 0) and (CargoFreeSpace - GetReservedPickupWeight >= Item.Weight) then
         begin
           if IsItemInPickupRange(Item) then AddPickupTarget(Item, False)
@@ -795,8 +795,8 @@ begin
       end;
     end;
     if TargetItem <> nil then OrderMove(GetPickupApproachPosition(TargetItem.Position), True);
-    if not HaveTarget and (Order = soMove) then OrderNone(False);
-    if Order = soMove then Result := True;
+    if not HaveTarget and (Order = order_move) then OrderNone(False);
+    if Order = order_move then Result := True;
   end;
 end;
 { @end $5B9A74 }
@@ -810,14 +810,14 @@ begin
   begin
     Item := Inventory[I];
     case Item.ItemType of
-      t_FuelTanks:
+      item_fuel_tanks:
         if GetFuelTanks = nil then EquipItem(Item as TFuelTanks)
         else if GetFuelTanks.Weight > Item.Weight then
         begin
           UnequipSlot(GetFuelTanks.ItemType, 0);
           EquipItem(Item as TFuelTanks);
         end;
-      t_Engine:
+      item_engine:
         if GetEngine = nil then EquipItem(Item as TEngine)
         else if CalculateItemEffectiveness(Item) > CalculateItemEffectiveness(GetEngine) then
         begin
@@ -876,7 +876,7 @@ begin
       for I := 0 to CurrentStar.Ships.Count - 1 do
       begin
         Ship := CurrentStar.Ships[I];
-        if (Ship.OwnerId = oiDominator) and Ship.InNormalSpace then
+        if (Ship.OwnerId = owner_dominator) and Ship.InNormalSpace then
         begin
           Distance := PointDistance(Position, Ship.Position);
           for J := 1 to WeaponCount do
@@ -920,7 +920,7 @@ begin
           for J := 1 to WeaponCount do
           begin
             Weapon := Weapons[J];
-            if not (Weapon.GetWeaponInfo^.ShotType in [wstAreaDamage..wstRocket]) and
+            if not (Weapon.GetWeaponInfo^.ShotType in [shot_area_damage..shot_rocket]) and
               (Weapon.Target = nil) and IsEquipmentUsable(Weapon) and (Sqr(GetWeaponRange(Weapon)) >= Distance) then
             begin
               Weapon.Target := Asteroid;
@@ -951,7 +951,7 @@ end;
 { @routine $5BA2DC TTranclucator_RelationToNonRanger }
 function TTranclucator.RelationToNonRanger(Ship: TShip): Byte;
 begin
-  if Ship.TypeId in [stKling, stTranclucator] then Result := 50 else Result := 100;
+  if Ship.TypeId in [ship_dominator, ship_tranclucator] then Result := 50 else Result := 100;
 end;
 { @end $5BA2DC }
 
@@ -1075,34 +1075,34 @@ end;
 
 { @routine $5BA584 TTranclucator_RefreshCurrentStanding }
 procedure TTranclucator.RefreshCurrentStanding;
-var StandingMode: TScriptStandingOverrideMode;
+var StandingMode: TStandingOverride;
 begin
   StandingMode := GetScriptStandingOverrideMode;
-  if StandingMode = ssmCustomFaction then
+  if StandingMode = override_custom_faction then
   begin
-    CurrentStanding := ssCustom;
+    CurrentStanding := standing_custom;
     Exit;
   end;
-  if StandingMode = ssmFixed then Exit;
+  if StandingMode = override_fixed then Exit;
   if OwnerShip = nil then
   begin
-    CurrentStanding := ssUnaligned;
+    CurrentStanding := standing_unaligned;
     Exit;
   end;
   OwnerShip.RefreshCurrentStanding;
-  if (OwnerShip.CurrentStar = CurrentStar) or (OwnerShip.CurrentStanding in [ssCoalitionMilitary, ssPirateMilitary]) then
+  if (OwnerShip.CurrentStar = CurrentStar) or (OwnerShip.CurrentStanding in [standing_coalition_military, standing_pirate_military]) then
   begin
     CurrentStanding := OwnerShip.CurrentStanding;
     Exit;
   end;
-  if OwnerShip.CurrentStanding in [ssCoalitionActive, ssCoalitionPassive] then
+  if OwnerShip.CurrentStanding in [standing_coalition_active, standing_coalition_passive] then
   begin
-    if CurrentStar.ControlFaction in [sfCoalition, sfDominators] then CurrentStanding := ssCoalitionActive else CurrentStanding := ssNeutral;
+    if CurrentStar.ControlFaction in [faction_coalition, faction_dominators] then CurrentStanding := standing_coalition_active else CurrentStanding := standing_neutral;
     Exit;
   end;
-  if OwnerShip.CurrentStanding in [ssPiratePassive, ssPirateActive] then
+  if OwnerShip.CurrentStanding in [standing_pirate_passive, standing_pirate_active] then
   begin
-    if CurrentStar.ControlFaction in [sfDominators, sfPirates] then CurrentStanding := ssPirateActive else CurrentStanding := ssNeutral;
+    if CurrentStar.ControlFaction in [faction_dominators, faction_pirates] then CurrentStanding := standing_pirate_active else CurrentStanding := standing_neutral;
     Exit;
   end;
   CurrentStanding := OwnerShip.CurrentStanding;
@@ -1111,82 +1111,82 @@ end;
 
 { @routine $5BA66C TTranclucator_EvaluateStatBonus }
 function TTranclucator.EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single;
-const ScannableDamageFlags = [dkScanBonus..dkDroidBlock];
+const ScannableDamageFlags = [damage_flag_scanner_bonus..damage_flag_droid_block];
 begin
   Result := 0;
   if Value = 0 then Exit;
   case BonusKind of
-    bonHull: Result := Value * 200;
-    bonFuel: Result := 0;
-    bonSpeed: Result := Value;
-    bonJump: Result := 0;
-    bonRadar: Result := 0;
-    bonScan: Result := Value * 20 * CountWeaponsByDamageFlags(ScannableDamageFlags);
-    bonDroid: Result := Value * 10 / Math.Max(0.1, GetHull.GetFragilityFactor([]));
-    bonHook: Result := (Value * 0.1 + Math.Min(Value, HullBaseSize * EquipmentSizeFactors[5])) * 1.0;
-    bonDef: Result := Value * 5 * 100 / Math.Max(5, 100 - Value) * 45 / Math.Max(5, 45 - Value);
-    bonWEnergy: Result := Value * 10;
-    bonWSplinter: Result := Value * 10;
-    bonWMissile: Result := (Ord(GetRadarRange > 0) * 0.9 + 0.1) * (Value * 10);
-    bonWRadius: Result := Sqr(Math.Max(100, SmoothedEnemySpeed) / Math.Max(100, SmoothedSpeed)) * Value;
-    bonHookRadius: Result := Value * 0.1;
-    bonMass: Result := RemapClamped(Value, HullMassEvaluationStart, HullMassEvaluationEnd, 1, 0.333) * 5000;
-    bonSlotRadar:
-      if (GetSlotCount(sskRadar) = 0) and (Value > 0) then
+    bonus_armor: Result := Value * 200;
+    bonus_fuel_capacity: Result := 0;
+    bonus_speed: Result := Value;
+    bonus_jump_range: Result := 0;
+    bonus_radar_range: Result := 0;
+    bonus_scanner_power: Result := Value * 20 * CountWeaponsByDamageFlags(ScannableDamageFlags);
+    bonus_repair_points: Result := Value * 10 / Math.Max(0.1, GetHull.GetFragilityFactor([]));
+    bonus_hook_power: Result := (Value * 0.1 + Math.Min(Value, HullBaseSize * EquipmentSizeFactors[5])) * 1.0;
+    bonus_defense: Result := Value * 5 * 100 / Math.Max(5, 100 - Value) * 45 / Math.Max(5, 45 - Value);
+    bonus_energy_damage: Result := Value * 10;
+    bonus_splinter_damage: Result := Value * 10;
+    bonus_missile_damage: Result := (Ord(GetRadarRange > 0) * 0.9 + 0.1) * (Value * 10);
+    bonus_weapon_range: Result := Sqr(Math.Max(100, SmoothedEnemySpeed) / Math.Max(100, SmoothedSpeed)) * Value;
+    bonus_hook_range: Result := Value * 0.1;
+    bonus_mass: Result := RemapClamped(Value, HullMassEvaluationStart, HullMassEvaluationEnd, 1, 0.333) * 5000;
+    bonus_radar_slots:
+      if (GetSlotCount(slot_radar) = 0) and (Value > 0) then
         Result := TranclucatorSlotBonusWeights[BonusKind] * 0.3
       else if (GetRadar <> nil) and (Value < 0) then
-        Result := -TranclucatorSlotBonusWeights[BonusKind] - TranclucatorSlotBonusWeights[bonSlotWeapon] * CountMissileWeapons
-      else if (GetSlotCount(sskRadar) = 1) and (Value < 0) then
+        Result := -TranclucatorSlotBonusWeights[BonusKind] - TranclucatorSlotBonusWeights[bonus_weapon_slots] * CountMissileWeapons
+      else if (GetSlotCount(slot_radar) = 1) and (Value < 0) then
         Result := TranclucatorSlotBonusWeights[BonusKind] * -0.3;
-    bonSlotScaner:
-      if (GetSlotCount(sskScanner) = 0) and (Value > 0) then
+    bonus_scanner_slots:
+      if (GetSlotCount(slot_scanner) = 0) and (Value > 0) then
         Result := TranclucatorSlotBonusWeights[BonusKind] * 0.3
       else if (GetScanner <> nil) and (Value < 0) then
-        Result := -TranclucatorSlotBonusWeights[BonusKind] - CountWeaponsByDamageFlags(ScannableDamageFlags) * 0.1 * TranclucatorSlotBonusWeights[bonSlotWeapon]
-      else if (GetSlotCount(sskScanner) = 1) and (Value < 0) then
+        Result := -TranclucatorSlotBonusWeights[BonusKind] - CountWeaponsByDamageFlags(ScannableDamageFlags) * 0.1 * TranclucatorSlotBonusWeights[bonus_weapon_slots]
+      else if (GetSlotCount(slot_scanner) = 1) and (Value < 0) then
         Result := TranclucatorSlotBonusWeights[BonusKind] * -0.3;
-    bonSlotDroid:
-      if (GetSlotCount(sskRepairRobot) = 0) and (Value > 0) then
+    bonus_repair_robot_slots:
+      if (GetSlotCount(slot_repair_robot) = 0) and (Value > 0) then
         Result := TranclucatorSlotBonusWeights[BonusKind] * 0.3
       else if (GetRepairRobot <> nil) and (Value < 0) then
         Result := -TranclucatorSlotBonusWeights[BonusKind]
-      else if (GetSlotCount(sskRepairRobot) = 1) and (Value < 0) then
+      else if (GetSlotCount(slot_repair_robot) = 1) and (Value < 0) then
         Result := TranclucatorSlotBonusWeights[BonusKind] * -0.3;
-    bonSlotHook:
-      if (GetSlotCount(sskCargoHook) = 0) and (Value > 0) then
+    bonus_cargo_hook_slots:
+      if (GetSlotCount(slot_cargo_hook) = 0) and (Value > 0) then
         Result := TranclucatorSlotBonusWeights[BonusKind] * 0.3
       else if (GetCargoHook <> nil) and (Value < 0) then
         Result := -TranclucatorSlotBonusWeights[BonusKind]
-      else if (GetSlotCount(sskCargoHook) = 1) and (Value < 0) then
+      else if (GetSlotCount(slot_cargo_hook) = 1) and (Value < 0) then
         Result := TranclucatorSlotBonusWeights[BonusKind] * -0.3;
-    bonSlotDef:
-      if (GetSlotCount(sskDefGenerator) = 0) and (Value > 0) then
+    bonus_defense_slots:
+      if (GetSlotCount(slot_defense_generator) = 0) and (Value > 0) then
         Result := TranclucatorSlotBonusWeights[BonusKind] * 0.3
       else if (GetDefGenerator <> nil) and (Value < 0) then
         Result := -TranclucatorSlotBonusWeights[BonusKind]
-      else if (GetSlotCount(sskDefGenerator) = 1) and (Value < 0) then
+      else if (GetSlotCount(slot_defense_generator) = 1) and (Value < 0) then
         Result := TranclucatorSlotBonusWeights[BonusKind] * -0.3;
-    bonSlotWeapon:
+    bonus_weapon_slots:
       begin
-        if (GetSlotCount(sskWeapon) < 5) and (Value > 0) then
-          Result := Math.Min(Value, 5 - GetSlotCount(sskWeapon)) * TranclucatorSlotBonusWeights[BonusKind];
+        if (GetSlotCount(slot_weapon) < 5) and (Value > 0) then
+          Result := Math.Min(Value, 5 - GetSlotCount(slot_weapon)) * TranclucatorSlotBonusWeights[BonusKind];
         if Value < 0 then
-          Result := Math.Max(Value, -GetSlotCount(sskWeapon)) * TranclucatorSlotBonusWeights[BonusKind];
-        if CountEquippedWeapons > Math.Max(Value + GetSlotCount(sskWeapon), 1) then
-          Result := Result - (CountEquippedWeapons - Math.Max(1, Value + GetSlotCount(sskWeapon))) * (TranclucatorSlotBonusWeights[BonusKind] * 0.6);
+          Result := Math.Max(Value, -GetSlotCount(slot_weapon)) * TranclucatorSlotBonusWeights[BonusKind];
+        if CountEquippedWeapons > Math.Max(Value + GetSlotCount(slot_weapon), 1) then
+          Result := Result - (CountEquippedWeapons - Math.Max(1, Value + GetSlotCount(slot_weapon))) * (TranclucatorSlotBonusWeights[BonusKind] * 0.6);
       end;
-    bonSlotArt:
+    bonus_artefact_slots:
       begin
-        if (GetSlotCount(sskArtefact) < DefaultHullSlotCounts[sskArtefact]) and (Value > 0) then
-          Result := Math.Min(Value, DefaultHullSlotCounts[sskArtefact] - GetSlotCount(sskArtefact)) * TranclucatorSlotBonusWeights[BonusKind];
+        if (GetSlotCount(slot_artefact) < DefaultHullSlotCounts[slot_artefact]) and (Value > 0) then
+          Result := Math.Min(Value, DefaultHullSlotCounts[slot_artefact] - GetSlotCount(slot_artefact)) * TranclucatorSlotBonusWeights[BonusKind];
         if Value < 0 then
-          Result := Math.Max(Value, -GetSlotCount(sskArtefact)) * TranclucatorSlotBonusWeights[BonusKind];
-        if (Artefacts <> nil) and (Artefacts.Count > Math.Max(Value + GetSlotCount(sskArtefact), 0)) then Result := -1000;
+          Result := Math.Max(Value, -GetSlotCount(slot_artefact)) * TranclucatorSlotBonusWeights[BonusKind];
+        if (Artefacts <> nil) and (Artefacts.Count > Math.Max(Value + GetSlotCount(slot_artefact), 0)) then Result := -1000;
       end;
-    bonSlotForsage:
-      if (GetSlotCount(sskAfterburner) = 0) and (Value > 0) then Result := TranclucatorSlotBonusWeights[BonusKind]
-      else if (GetSlotCount(sskAfterburner) = 1) and (Value < 0) then Result := -TranclucatorSlotBonusWeights[BonusKind];
-    bonSkill1..bonSkill6:
+    bonus_afterburner_slots:
+      if (GetSlotCount(slot_afterburner) = 0) and (Value > 0) then Result := TranclucatorSlotBonusWeights[BonusKind]
+      else if (GetSlotCount(slot_afterburner) = 1) and (Value < 0) then Result := -TranclucatorSlotBonusWeights[BonusKind];
+    bonus_accuracy..bonus_leadership:
       begin
         if Value > 0 then
           Result := Math.Min(6 - GetEffectiveSkillLevel(EquipmentBonusSkills[BonusKind]), Value) * TranclucatorSkillBonusWeights[BonusKind];

@@ -97,7 +97,7 @@ var
       Image.SetImagePath('GI,Bm.FormOptions2.2Line');
       Image.SetPosition(Point(0, TabHeights[Tab]));
       Image.SetSize(Point(TabPanels[Tab].ClientSize.X, Image.GetContentSize.Y + 2));
-      Image.SetImageKindX(ikxLeftFill);
+      Image.SetImageKindX(image_x_tile_left);
       Inc(TabHeights[Tab], Image.ClientSize.Y);
     end
     else Inc(TabHeights[Tab], 10);
@@ -107,11 +107,11 @@ var
     LabelControl.SetWordWrapEnabled(False);
     LabelControl.SetPosition(Point(0, TabHeights[Tab]));
     LabelControl.SetSize(Point(TabPanels[Tab].ClientSize.X, 1));
-    LabelControl.SetTextAlignX(taxLeft);
-    LabelControl.SetTextAlignY(tayAuto);
+    LabelControl.SetTextAlignX(text_x_left);
+    LabelControl.SetTextAlignY(text_y_fit_height);
     LabelControl.SetTextColor(ModTabColor);
     LabelControl.SetText(Text);
-    LabelControl.SetTextAlignY(tayTop);
+    LabelControl.SetTextAlignY(text_y_top);
     LabelControl.SetSize(Point(LabelControl.ClientSize.X, LabelControl.ClientSize.Y + 1));
     TabHeights[Tab] := TabHeights[Tab] + AlignModRowHeight(LabelControl.ClientSize.Y, 10) + 2;
   end;
@@ -128,7 +128,7 @@ var
       Line.SetImagePath('GI,Bm.FormOptions2.2Line');
       Line.SetPosition(Point(0, TabHeights[Tab]));
       Line.SetSize(Point(TabPanels[Tab].ClientSize.X, Line.GetContentSize.Y + 2));
-      Line.SetImageKindX(ikxLeftFill);
+      Line.SetImageKindX(image_x_tile_left);
       Inc(TabHeights[Tab], Line.ClientSize.Y);
     end
     else Inc(TabHeights[Tab], 10);
@@ -139,7 +139,7 @@ var
     Switch.SetSize(Switch.GetContentSize);
     ButtonWidth := Switch.ClientSize.X;
     Switch.SetPosition(Point(TabPanels[Tab].ClientSize.X - ButtonWidth - 0, TabHeights[Tab] + 10));
-    Switch.SetImageKindY(ikyCenter);
+    Switch.SetImageKindY(image_y_center);
     Switch.LeftButtonDownCallback := SwitchMouseDown;
     Switch.MouseEnterCallback := SwitchMouseEnter;
     Switch.MouseLeaveCallback := SwitchMouseLeave;
@@ -173,10 +173,10 @@ var
       SetWordWrapEnabled(True);
       SetPosition(Point(0, TabHeights[Tab]));
       SetSize(Point(TabPanels[Tab].ClientSize.X - ButtonWidth, 1));
-      SetTextAlignX(taxLeft);
-      SetTextAlignY(tayAuto);
+      SetTextAlignX(text_x_left);
+      SetTextAlignY(text_y_fit_height);
       SetText(Info.GetDisplayName);
-      SetTextAlignY(tayTop);
+      SetTextAlignY(text_y_top);
       SetSize(Point(ClientSize.X, ClientSize.Y + 1));
       TabHeights[Tab] := TabHeights[Tab] + AlignModRowHeight(ClientSize.Y, 20) + 2;
     end;
@@ -187,13 +187,13 @@ var
       SetWordWrapEnabled(True);
       SetPosition(Point(0, TabHeights[Tab]));
       SetSize(Point(TabPanels[Tab].ClientSize.X - ButtonWidth, 1));
-      SetTextAlignX(taxLeft);
-      SetTextAlignY(tayAuto);
+      SetTextAlignX(text_x_left);
+      SetTextAlignY(text_y_fit_height);
       SetTextColor(CurrentPixelFormat.PackRgbBytes(205, 205, 205));
       if Info.SmallDescription <> '' then Text := Info.SmallDescription
       else if Info.FullDescription <> '' then Text := Info.FullDescription
       else Text := LocalizedText('FormMods.NoDescription');
-      SetTextAlignY(tayTop);
+      SetTextAlignY(text_y_top);
       SetSize(Point(ClientSize.X, ClientSize.Y + 1));
       TabHeights[Tab] := TabHeights[Tab] + AlignModRowHeight(ClientSize.Y, 20) + 5;
     end;

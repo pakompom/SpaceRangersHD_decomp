@@ -387,7 +387,7 @@ begin
   ArcadeSpaceProcess.OpenSpace(WorldPanel, Self);
   ArcadeSpaceProcess.Space.AlphaShift := 0;
   if GetPlayer <> nil then
-    if GetPlayer.IsHealthEffectActive(heBlindness) then ArcadeSpaceProcess.Space.AlphaShift := 2;
+    if GetPlayer.IsHealthEffectActive(disease_blindness) then ArcadeSpaceProcess.Space.AlphaShift := 2;
   SkipSavedPixelRestore := True;
   StarField.Stars.Clear;
   StarField.BackgroundScale := 8;
@@ -435,7 +435,7 @@ begin
       Ship.CreateShipVisual(GetPlayer.Graphic.GraphKey, GetPlayer.Graphic.Size.X)
     else
       Ship.CreateShipVisual(GetPlayer.Graphic.GraphKey, Round((GetPlayer.Graphic.Size.X shl 10) / 800));
-    GetPlayer.ScriptItemsAct(satOnStartAB, Ship, nil, 0);
+    GetPlayer.ScriptItemsAct(event_arcade_start, Ship, nil, 0);
   end;
   Ship.MaxSpeed := 11;
   Ship.TurnSpeed := PlayerInitialTurnSpeed;
@@ -445,15 +445,15 @@ begin
     Ship.MaxHealth := 1000;
     Ship.Health := 1000;
     Ship.WeaponCount := 5;
-    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([item_industrial_laser..item_lirecron]));
     Ship.Weapons[0].SlotData := 0;
-    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([item_industrial_laser..item_lirecron]));
     Ship.Weapons[1].SlotData := 1;
-    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([item_industrial_laser..item_lirecron]));
     Ship.Weapons[2].SlotData := 2;
-    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([item_industrial_laser..item_lirecron]));
     Ship.Weapons[3].SlotData := 3 or EquipmentSecondaryFireFlag;
-    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([item_industrial_laser..item_lirecron]));
     Ship.Weapons[4].SlotData := 4 or EquipmentSecondaryFireFlag;
     Ship.PrimaryWeapon := -1;
     Ship.SecondaryWeapon := -1;
@@ -481,11 +481,11 @@ begin
     Ship.Health := 500;
     Ship.MaxHealth := 500;
     Ship.WeaponCount := 5;
-    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
-    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
-    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
-    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
-    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([item_industrial_laser..item_lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([item_industrial_laser..item_lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([item_industrial_laser..item_lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([item_industrial_laser..item_lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([item_industrial_laser..item_lirecron]));
     Ship.PrimaryWeapon := 0;
     ShipX0 := Ship;
     Ship := TabShipAI.Create;
@@ -497,11 +497,11 @@ begin
     Ship.Health := 500;
     Ship.MaxHealth := 500;
     Ship.WeaponCount := 5;
-    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
-    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
-    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
-    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
-    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([item_industrial_laser..item_lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([item_industrial_laser..item_lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([item_industrial_laser..item_lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([item_industrial_laser..item_lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([item_industrial_laser..item_lirecron]));
     Ship.PrimaryWeapon := 0;
     ShipX1 := Ship;
     Ship := TabShipAI.Create;
@@ -513,11 +513,11 @@ begin
     Ship.Health := 500;
     Ship.MaxHealth := 500;
     Ship.WeaponCount := 5;
-    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
-    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
-    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
-    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
-    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([item_industrial_laser..item_lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([item_industrial_laser..item_lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([item_industrial_laser..item_lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([item_industrial_laser..item_lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([item_industrial_laser..item_lirecron]));
     Ship.PrimaryWeapon := 0;
     for Index := 0 to 3 do
     begin
@@ -538,7 +538,7 @@ begin
     ABSpaceBuild(RandomIntRange(3, 8), HeadingDegreesToRadians(RandomRange(0, 355)))
   else if ActiveArcadeRequest <> nil then
     ABSpaceBuild(1, HeadingDegreesToRadians(RandomRange(0, 355)))
-  else if GetPlayer.Order = soJumpHole then
+  else if GetPlayer.Order = order_black_hole then
   begin
     if GetPlayer.TransitOriginStar <> nil then
       ABSpaceBuild(1, HeadingDegreesToRadians(PointBearingDegrees(GetPlayer.TransitOriginStar.Position, GetPlayer.CurrentStar.Position)))
@@ -575,7 +575,7 @@ begin
     Galaxy.PrimeIntegrityChecksum1(607);
     Galaxy.PrimeIntegrityChecksum2(608);
   end;
-  if (GetPlayer = nil) or (GetPlayer.Order = soJumpHole) or (ActiveArcadeRequest <> nil) or
+  if (GetPlayer = nil) or (GetPlayer.Order = order_black_hole) or (ActiveArcadeRequest <> nil) or
     ((Galaxy <> nil) and not Galaxy.IsOldHyperspaceEnabled) then
   begin
     CurrentArcadeSpace := NextArcadeSpace;
@@ -668,10 +668,10 @@ begin
     if (Galaxy <> nil) and not Galaxy.Destroying then Galaxy.Free;
     Galaxy := nil;
     ScreenLoadMode := 4;
-    PostLoadScreenId := screenMainMenu;
-    if Standalone then PostLoadScreenId := screenLoadArcade
-    else PostLoadScreenId := screenMainMenu;
-    RequestedScreenId := screenLoad;
+    PostLoadScreenId := screen_main_menu;
+    if Standalone then PostLoadScreenId := screen_arcade_selection
+    else PostLoadScreenId := screen_main_menu;
+    RequestedScreenId := screen_asset_loading;
     ClearPendingScriptRequests;
     ActiveArcadeRequest := nil;
     ActiveArcadeRequestShips := nil;
@@ -702,15 +702,15 @@ begin
     begin
       if ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormAB.QueryExit'), mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
       begin
-        if (GetPlayer.Order = soJumpHole) or (ActiveArcadeRequest <> nil) then BeginBattleExit
+        if (GetPlayer.Order = order_black_hole) or (ActiveArcadeRequest <> nil) then BeginBattleExit
         else BeginMapTransition;
       end;
     end
     else if Galaxy = nil then
     begin
       ScreenLoadMode := 4;
-      PostLoadScreenId := screenLoadArcade;
-      RequestedScreenId := screenLoad;
+      PostLoadScreenId := screen_arcade_selection;
+      RequestedScreenId := screen_asset_loading;
       RequestClose(1);
     end
     else CloseVictory(nil, 0);
@@ -1153,9 +1153,9 @@ begin
       Button.SetImageDownPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'BD');
     end;
     Button.SetImageDisabledPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'H');
-    Button.ImageNormal.KindY := ikyBottom;
-    Button.ImageNormalActive.KindY := ikyBottom;
-    Button.ImageDown.KindY := ikyBottom;
+    Button.ImageNormal.KindY := image_y_bottom;
+    Button.ImageNormalActive.KindY := image_y_bottom;
+    Button.ImageDown.KindY := image_y_bottom;
     Button.UserValue := -1;
     Button.UserIndex := Cardinal(-1);
     Button.UserData := Value;
@@ -1172,7 +1172,7 @@ begin
     if GetPlayer <> nil then
     begin
       Item := GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, Value - 1) as TWeapon;
-      if GetPlayer.GetSlotCount(sskWeapon) <= Value - 1 then
+      if GetPlayer.GetSlotCount(slot_weapon) <= Value - 1 then
         Button.SetImageDisabledPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'H')
       else if Item = nil then
         Button.SetImageDisabledPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'E')
@@ -1195,8 +1195,8 @@ begin
         ImageSourcePath := 'GI,Bm.Items.' + GiResourceSuffix + ItemTypeNames[TItemType(PlayerArcadeShip.Weapons[Button.UserIndex].ItemType)] + 's';
       end
       else WeaponIcons[Value - 1].IsActive := False;
-      KindX := ikxCenter;
-      KindY := ikyCenter;
+      KindX := image_x_center;
+      KindY := image_y_center;
     end;
   end;
   Value := 0;
@@ -1260,7 +1260,7 @@ begin
       Image.ImageSourcePath := 'GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Sender.UserData) + 'OA'
     else
       Image.ImageSourcePath := 'GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Sender.UserData) + 'ON';
-    Image.KindY := ikyTop;
+    Image.KindY := image_y_top;
     Image.ObjectSize := Classes.Point(Button.ClientSize.X, Button.ClientSize.Y - Round(Button.ClientSize.Y * Charge));
     Button.ImageNormal.Pos := Classes.Point(Button.ImageNormal.LocalPosition.X, Button.ClientSize.Y - Round(Button.ClientSize.Y * Charge));
     Button.ImageNormal.ObjectSize := Classes.Point(Button.ImageNormal.ClientSize.X, Round(Button.ClientSize.Y * Charge));
@@ -1865,7 +1865,7 @@ begin
     Space.Danger := 0;
   end;
   Other := nil;
-  if (GetPlayer <> nil) and (GetPlayer.Order = soJumpHole) and
+  if (GetPlayer <> nil) and (GetPlayer.Order = order_black_hole) and
     ((GetPlayer.OrderTarget as THole).HoleType = 4) and (Galaxy.KellerLeaveTurn = 0) and
     (KellerShip <> nil) and KellerShip.InHyperspace and (Galaxy.KellerMissionState in [4, 5]) then
   begin
@@ -1891,7 +1891,7 @@ begin
       Space.Color2C := (ArcadeMapPalette[Space.AppearanceIndex * 6 + 4] and $FFFFFF) or $80000000;
       Space.Color34 := (ArcadeMapPalette[Space.AppearanceIndex * 6 + 5] and $FFFFFF) or $80000000;
       if Space = Other then Space.PopulateKellerEncounter
-      else if (GetPlayer <> nil) and (GetPlayer.Order = soJumpHole) and (ActiveArcadeRequest = nil) then Space.PopulateHoleEncounter
+      else if (GetPlayer <> nil) and (GetPlayer.Order = order_black_hole) and (ActiveArcadeRequest = nil) then Space.PopulateHoleEncounter
       else if (GetPlayer <> nil) and (ActiveArcadeRequest <> nil) then Space.PopulateScriptedEncounter
       else Space.PopulateObjects;
     end;
@@ -2227,7 +2227,7 @@ begin
     Dec(Remaining, PInteger(Integer(ColorData) + 12)^);
     ColorData := Pointer(PInteger(Integer(ColorData) + 12)^ + Integer(ColorData));
   end;
-  ArcadeKellerEncounter := (GetPlayer <> nil) and (GetPlayer.Order = soJumpHole) and
+  ArcadeKellerEncounter := (GetPlayer <> nil) and (GetPlayer.Order = order_black_hole) and
     ((GetPlayer.OrderTarget as THole).HoleType = 4) and (Galaxy.KellerLeaveTurn = 0) and
     (KellerShip <> nil) and (Galaxy.KellerMissionState in [4, 5]);
   if GetPlayer <> nil then
@@ -2304,7 +2304,7 @@ begin
         Wall.MaxHealth := 1000000;
         Wall.CollisionRadius := 0;
       end
-      else if (GetPlayer <> nil) and (GetPlayer.Order = soJumpHole) then
+      else if (GetPlayer <> nil) and (GetPlayer.Order = order_black_hole) then
         Wall.MaxHealth := Zone.BarrierHealth
       else Wall.MaxHealth := Zone.BarrierHealth;
       Wall.Health := Wall.MaxHealth;
@@ -2459,7 +2459,7 @@ begin
       begin
         if GetPlayer <> nil then Galaxy.ScoreScreenDismissed := 1;
         while GetPlayer <> nil do SysUtils.Sleep(1);
-        RequestedScreenId := screenGameEnd;
+        RequestedScreenId := screen_game_end;
         if UpdateTimer <> 0 then
         begin
           CancelCallbackTimer(UpdateTimer);
@@ -2489,7 +2489,7 @@ begin
         ScoreScreen.RecordPlayerResult(False);
         GetPlayer.Free;
         GameEndReason := 3;
-        RequestedScreenId := screenGameEnd;
+        RequestedScreenId := screen_game_end;
         ClearPendingScriptRequests;
         ActiveArcadeRequest := nil;
         ActiveArcadeRequestShips := nil;
@@ -2521,8 +2521,8 @@ begin
         LabelControl.SetFontName(NormalFontName);
         LabelControl.Pos := Classes.Point(0, GiScalePixels(30));
         LabelControl.ObjectSize := Classes.Point(Owner.ClientSize.X, 1);
-        LabelControl.SetTextAlignX(taxCenter);
-        LabelControl.SetTextAlignY(tayAuto);
+        LabelControl.SetTextAlignX(text_x_center);
+        LabelControl.SetTextAlignY(text_y_fit_height);
         LabelControl.Text := LocalizedColorText('FormAB.TextExit');
         LabelControl.SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 255, 255));
         Owner.ObjectSize := Classes.Point(Owner.ClientSize.X, GiScalePixels(30) + Owner.ClientSize.Y + LabelControl.ClientSize.Y);
@@ -2536,8 +2536,8 @@ begin
       if DefeatCountdownTicks <= -500 then
       begin
         ScreenLoadMode := 4;
-        PostLoadScreenId := screenLoadArcade;
-        RequestedScreenId := screenLoad;
+        PostLoadScreenId := screen_arcade_selection;
+        RequestedScreenId := screen_asset_loading;
         if UpdateTimer <> 0 then
         begin
           CancelCallbackTimer(UpdateTimer);
@@ -2765,7 +2765,7 @@ begin
         TabShipAI(PlayerArcadeShip).InsideCurrentZone and (TabShipAI(PlayerArcadeShip).CurrentZone.Kind in [2..4]) then
       begin
         NextArcadeSpace := nil;
-        if GetPlayer.Order = soJumpHole then BeginBattleExit
+        if GetPlayer.Order = order_black_hole then BeginBattleExit
         else
         begin
           ArcadePaused := False;
@@ -2933,7 +2933,7 @@ begin
   begin
     if GetPlayer <> nil then Galaxy.ScoreScreenDismissed := 1;
     while GetPlayer <> nil do SysUtils.Sleep(1);
-    RequestedScreenId := screenGameEnd;
+    RequestedScreenId := screen_game_end;
     RequestClose(1);
   end
   else if (ArcadeViewMode = 2) and (NextArcadeSpace = nil) then
@@ -2980,20 +2980,20 @@ begin
     end;
     if GetPlayer <> nil then Galaxy.ScoreScreenDismissed := 1;
     while GetPlayer <> nil do SysUtils.Sleep(1);
-    RequestedScreenId := screenGameEnd;
+    RequestedScreenId := screen_game_end;
     RequestClose(1);
   end
   else
   begin
-    if RequestedScreenId <> screenStarMap then CampaignTransitionStarted := True
-    else if not IsTurnCalculationRunningUI and not (TurnCalculationPhase in [tcpGalaxyRunning, tcpPlayerStarRunning]) then
+    if RequestedScreenId <> screen_star_map then CampaignTransitionStarted := True
+    else if not IsTurnCalculationRunningUI and not (TurnCalculationPhase in [turn_galaxy_running, turn_player_star_running]) then
     begin
-      if TurnCalculationPhase = tcpGalaxyFinished then QueuePlayerStarTurnCalculation
-      else if ((GetPlayer.Order <> soJump) and (GetPlayer.Order <> soJumpHole)) or
-        ((GetPlayer.Order = soJumpHole) and (GetPlayer.OrderStateData = HoleExitOrderState)) then
+      if TurnCalculationPhase = turn_galaxy_finished then QueuePlayerStarTurnCalculation
+      else if ((GetPlayer.Order <> order_jump) and (GetPlayer.Order <> order_black_hole)) or
+        ((GetPlayer.Order = order_black_hole) and (GetPlayer.OrderStateData = HoleExitOrderState)) then
       begin
         StarMapScreen.SetMapCenterManually(TruncatePointF(GetPlayer.Position));
-        StarMapScreen.ResumeMode := smrTurnFilm;
+        StarMapScreen.ResumeMode := map_resume_playback;
         CampaignTransitionStarted := True;
         QueueGalaxyTurnCalculation;
       end
@@ -3053,7 +3053,7 @@ begin
       Obj := Obj.Next;
       if (Ship.Visual <> nil) and Ship.Visual.IsAttachedToSpace and
          (Ship.Visual.GetDepth = ShipFrontDepth) and Ship.HealthBarVisible and
-         ((Ship.BonusTicks[abkInvisibility] <= 0) or (Ship.RevealTicks > 0) or (PlayerArcadeShip = Ship)) then
+         ((Ship.BonusTicks[arcade_effect_invisibility] <= 0) or (Ship.RevealTicks > 0) or (PlayerArcadeShip = Ship)) then
       begin
         CenterX := Round(Ship.Visual.Position.X) + WorldCenterX;
         CenterY := Round(Ship.Visual.Position.Y) + WorldCenterY;
@@ -3174,7 +3174,7 @@ var
   Ship: TabShipAI;
   Item: TItem;
 begin
-  if (PlayerArcadeShip = nil) or ((GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactScaner) <= 0)) or
+  if (PlayerArcadeShip = nil) or ((GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(artefact_scanner) <= 0)) or
     (ExitCode <> 0) or (ArcadeViewMode = 5) then
   begin
     for Index := Low(EnemyIcons) to High(EnemyIcons) do ClearEnemyStatus(Index);
@@ -3232,7 +3232,7 @@ begin
               SetDepth(1);
             end;
           end;
-          if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) <= 0) then
+          if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(artefact_analyzer) <= 0) then
             if EnemyRewardIcons[Index] <> nil then
             begin
               EnemyRewardIcons[Index].Free;
@@ -3241,7 +3241,7 @@ begin
               EnemyRewardBackdrops[Index] := nil;
             end;
           if GetPlayer <> nil then
-            if (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and (EnemyRewardIcons[Index] = nil) then
+            if (GetPlayer.CountActiveArtefacts(artefact_analyzer) > 0) and (EnemyRewardIcons[Index] = nil) then
           begin
             EnemyRewardBackdrops[Index] := TImageGI.Create(MapPanel);
             with EnemyRewardBackdrops[Index] as TImageGI do
@@ -3351,7 +3351,7 @@ begin
         begin
           with EnemyRewardIcons[Index] as TImageGI do
           begin
-            if GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) <= 0 then
+            if GetPlayer.CountActiveArtefacts(artefact_analyzer) <= 0 then
             begin
               EnemyRewardIcons[Index].Free;
               EnemyRewardIcons[Index] := nil;
@@ -3468,7 +3468,7 @@ begin
   DrawQueuedControlRects;
   if not BeginFramePresentation then
   begin
-    RequestedScreenId := screenNone;
+    RequestedScreenId := screen_none;
     PostLoadScreenId := FormToId(Self);
     ArcadeKellerDefeats := 0;
     if ArcadeKellerReward <> nil then
@@ -3824,7 +3824,7 @@ begin
     if GetPlayer <> nil then
     begin
       GetPlayer.GetHull.HullPoints := PlayerArcadeShip.Health;
-      if not (GetPlayer.Order in [soJump, soJumpHole]) then GetPlayer.InHyperspace := False;
+      if not (GetPlayer.Order in [order_jump, order_black_hole]) then GetPlayer.InHyperspace := False;
     end;
     if ActiveArcadeRequest <> nil then
     begin
@@ -3834,7 +3834,7 @@ begin
       CompleteQueuedArcadeBattle(2);
       RequestedScreenId := TGameScreenId(ScriptArcadeReturnScreenId);
     end
-    else RequestedScreenId := screenStarMap;
+    else RequestedScreenId := screen_star_map;
     ArcadeKellerDefeats := 0;
     if ArcadeKellerReward <> nil then
     begin
@@ -3886,8 +3886,8 @@ begin
           GraphBuf.RescaleBilinearRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height))
         else
           GraphBuf.RescaleBilinearRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y);
-        SetImageKindX(ikxCenter);
-        SetImageKindY(ikyCenter);
+        SetImageKindX(image_x_center);
+        SetImageKindY(image_y_center);
       end;
       Owner := GetByName('InfoStarPanel') as TPanelGI;
       Owner.FreeOwnedChildren;
@@ -3919,8 +3919,8 @@ begin
           ObjectSize := Classes.Point(Owner.ClientSize.X div 2 + 15, RowHeight);
           Pos := Classes.Point(0, RowHeight * Index);
           SetWordWrapEnabled(False);
-          SetTextAlignX(taxRight);
-          SetTextAlignY(tayCenterEx);
+          SetTextAlignX(text_x_right);
+          SetTextAlignY(text_y_font_center);
           if TObject(Objects[Index]) is TPlanet then Text := TPlanet(Objects[Index]).Name
           else Text := TShip(Objects[Index]).Name;
         end;
@@ -3945,12 +3945,12 @@ begin
             else
               GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
           end;
-          SetImageKindX(ikxCenter);
-          SetImageKindY(ikyCenter);
+          SetImageKindX(image_x_center);
+          SetImageKindY(image_y_center);
         end;
         if TObject(Objects[Index]) is TPlanet then OwnerId := TPlanet(Objects[Index]).OwnerId
         else OwnerId := TShip(Objects[Index]).OwnerId;
-        if OwnerId <> oiUninhabited then
+        if OwnerId <> owner_uninhabited then
         begin
           with TGraphBufGI.Create(Owner, False) do
           begin
@@ -3965,8 +3965,8 @@ begin
               GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
             else
               GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
-            SetImageKindX(ikxCenter);
-            SetImageKindY(ikyCenter);
+            SetImageKindX(image_x_center);
+            SetImageKindY(image_y_center);
           end;
         end;
       end;
@@ -3992,7 +3992,7 @@ begin
       Obj := Space.Objects[Index];
       if Obj is TabShipAI then Inc(ShipCount);
     end;
-    if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) then Text := IntToStr(ShipCount)
+    if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(artefact_analyzer) > 0) then Text := IntToStr(ShipCount)
     else Text := LocalizedColorText('FormAB.Unknow');
     (GetByName('InfoPirate') as TLabelGI).Text := Text;
     with GetByName('InfoPlanetImage') as TGraphBufGI do
@@ -4064,16 +4064,16 @@ begin
     Instance := Item.Item;
     if (Galaxy <> nil) and not Galaxy.Destroying and (GetPlayer <> nil) then
     begin
-      if Instance.ScriptItem <> nil then TScriptItem(Instance.ScriptItem).RunActionCode(satOnShowingItemInfo, nil, nil, nil, 0);
-      if Instance is TEquipmentWithActCode then RunItemConfigActionCode(Instance, satOnShowingItemInfo, nil, nil, nil, 0);
+      if Instance.ScriptItem <> nil then TScriptItem(Instance.ScriptItem).RunActionCode(event_show_item_info, nil, nil, nil, 0);
+      if Instance is TEquipmentWithActCode then RunItemConfigActionCode(Instance, event_show_item_info, nil, nil, nil, 0);
     end;
     ItemInfoWindow.IsActive := True;
     with GetByName('InfoItemImage') as TImageGI do
     begin
       if Instance is TGoods then ImageSourcePath := 'GI,' + GetItemTypeBitmapPath(Instance.ItemType)
       else ImageSourcePath := 'GI,' + Instance.GetBitmapResourceName + 's';
-      KindX := ikxCenter;
-      KindY := ikyCenter;
+      KindX := image_x_center;
+      KindY := image_y_center;
       Pos := SubtractPoints(ShipScreen.ItemImageCenter, GetVisualCenter);
     end;
     if Instance is TGoods then
@@ -4091,14 +4091,14 @@ begin
     (GetByName('InfoItemPrice') as TLabelGI).Text := IntToStr(Instance.Cost);
     with GetByName('InfoItemEmRace') as TImageGI do
     begin
-      if Instance is TGoods then ImageSourcePath := GetFactionEmblemPath(OwnerInfo[oiUninhabited].InternalName)
+      if Instance is TGoods then ImageSourcePath := GetFactionEmblemPath(OwnerInfo[owner_uninhabited].InternalName)
       else ImageSourcePath := GetFactionEmblemPath(Instance.GetOwnerConfigName);
-      KindX := ikxCenter;
-      KindY := ikyCenter;
+      KindX := image_x_center;
+      KindY := image_y_center;
     end;
     if not ((Instance.ItemType in ([Low(TItemType)..High(TItemType)] -
-      [t_Food..t_Narcotics, t_Artefact2, t_ArtefactTransmitter..t_ArtefactTranclucator,
-       t_ArtBlackHole..t_ArtArtefactor, t_Hull, t_Protoplasm..t_Cistern, t_TreasureMap..t_UselessCountableItem])) or (Instance.ItemType = t_Hull)) then
+      [item_food..item_narcotics, item_custom_artefact_no_wear, artefact_transmitter..artefact_tranclucator,
+       artefact_black_hole..artefact_artefactor, item_hull, item_nodes..item_fuel_container, item_treasure_map..item_stackable_misc])) or (Instance.ItemType = item_hull)) then
     begin
       with GetByName('InfoDurable') as TImageGI do Parent.Parent.IsActive := False;
       MinimumWidth := 0;
@@ -4118,7 +4118,7 @@ begin
         Parent.Parent.IsActive := True;
         Parent.Parent.ObjectSize := Classes.Point(LeftWidth * 2 + Width, Parent.Parent.ClientSize.Y);
         Parent.ObjectSize := Classes.Point(Width + 2, Parent.Parent.ClientSize.Y);
-        if Instance.ItemType = t_Hull then
+        if Instance.ItemType = item_hull then
           Pos := Classes.Point(Round((Instance as THull).HullPoints / (Instance as THull).Weight * Width) - (GetContentSize.X - 5), LocalPosition.Y)
         else
           Pos := Classes.Point(Round((Instance as TEquipment).ConditionPercent / 100 * Width) - (GetContentSize.X - 5), LocalPosition.Y);
@@ -4235,7 +4235,7 @@ begin
   if PlayerArcadeShip = nil then Exit;
   SaveWeaponInventory;
   PlayerArcadeShip.WeaponCount := 0;
-  SlotCount := GetPlayer.GetSlotCount(sskWeapon);
+  SlotCount := GetPlayer.GetSlotCount(slot_weapon);
   for SlotIndex := 0 to SlotCount - 1 do
   begin
     Item := GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, SlotIndex) as TWeapon;
@@ -4382,8 +4382,8 @@ begin
     Heading.SetFontName(NormalFontName);
     Heading.Pos := Classes.Point(0, 0 * GiScalePixels(20));
     Heading.ObjectSize := Classes.Point(ItemsPanel.ClientSize.X, GiScalePixels(20));
-    Heading.SetTextAlignX(taxCenter);
-    Heading.SetTextAlignY(tayCenterEx);
+    Heading.SetTextAlignX(text_x_center);
+    Heading.SetTextAlignY(text_y_font_center);
     Heading.Text := LocalizedColorText('FormAB.WinItems');
     Heading.SetTextColor(CurrentPixelFormat.PackRgbBytes(219, 218, 156));
     while ListedObjects.Count > Index do
@@ -4392,8 +4392,8 @@ begin
       ItemLabel.SetFontName(NormalFontName);
       ItemLabel.Pos := Classes.Point(0, (Index + 1) * GiScalePixels(20) + 5);
       ItemLabel.ObjectSize := Classes.Point(ItemsPanel.ClientSize.X, GiScalePixels(20));
-      ItemLabel.SetTextAlignX(taxCenter);
-      ItemLabel.SetTextAlignY(tayCenterEx);
+      ItemLabel.SetTextAlignX(text_x_center);
+      ItemLabel.SetTextAlignY(text_y_font_center);
       ItemLabel.Text := TEquipment(ListedObjects[Index]).GetDisplayName;
       ItemLabel.SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 255, 255));
       Inc(Index);
@@ -4403,8 +4403,8 @@ begin
   Footer.SetFontName(NormalFontName);
   Footer.Pos := Classes.Point(0, (Index + 1) * GiScalePixels(30));
   Footer.ObjectSize := Classes.Point(ItemsPanel.ClientSize.X, 1);
-  Footer.SetTextAlignX(taxCenter);
-  Footer.SetTextAlignY(tayAuto);
+  Footer.SetTextAlignX(text_x_center);
+  Footer.SetTextAlignY(text_y_fit_height);
   Footer.Text := LocalizedColorText('FormAB.TextExit');
   Footer.SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 255, 255));
   ItemsPanel.ObjectSize := Classes.Point(ItemsPanel.ClientSize.X, GiScalePixels(30) + ItemsPanel.ClientSize.Y + Footer.ClientSize.Y);

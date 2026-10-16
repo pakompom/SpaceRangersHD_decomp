@@ -74,7 +74,7 @@ begin
   (GetByName('BGBuf') as TGraphBufGI).BindExternalGraphBuf(AuxRenderBuffer);
   with GetByName('PTable') as TPanelScrollBarGI do
   begin
-    ScrollAxis := psaVertical;
+    ScrollAxis := panel_drag_vertical;
     VerticalScrollBar.SetSmallChange(Round(ClientSize.Y / 50));
     VerticalScrollBar.SetLargeChange(ClientSize.Y);
     VerticalScrollBar.SetPageSize(ClientSize.Y);
@@ -111,8 +111,8 @@ end;
 { @routine $5D0770 TfRewards_CloseClicked }
 procedure TfRewards.CloseClicked(Sender: TObjectGI);
 begin
-  if GetPlayer = Ship then RequestedScreenId := screenShip
-  else RequestedScreenId := screenScanner;
+  if GetPlayer = Ship then RequestedScreenId := screen_ship
+  else RequestedScreenId := screen_scanner;
   RequestClose(1);
 end;
 { @end $5D0770 }
@@ -369,7 +369,7 @@ begin
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
     else
-    if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
+    if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
     begin
       if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
         MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
@@ -381,7 +381,7 @@ begin
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
     else
-    if GetPlayer.DockedTo.TypeId in [rstPirateBase, rstDominion] then
+    if GetPlayer.DockedTo.TypeId in [station_pirate_base, station_dominion] then
       MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
   end

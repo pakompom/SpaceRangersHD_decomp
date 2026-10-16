@@ -347,8 +347,8 @@ begin
     if HitDamage >= 0 then DamageLabel.Text := IntToStr(HitDamage)
     else DamageLabel.Text := '+' + IntToStr(-HitDamage);
     DamageLabel.SetWordWrapEnabled(False);
-    DamageLabel.SetTextAlignX(taxAuto);
-    DamageLabel.SetTextAlignY(tayAuto);
+    DamageLabel.SetTextAlignX(text_x_fit_or_justify);
+    DamageLabel.SetTextAlignY(text_y_fit_height);
     DamageLabel.World := True;
     DamageLabel.SetMouseViewUpdates(True);
     DamageLabel.SetTextColor(HitColor);

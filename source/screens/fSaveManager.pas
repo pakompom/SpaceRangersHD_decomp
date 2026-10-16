@@ -21,7 +21,7 @@ type
     LocalWriteTime: TFileTime; // @offset 0x18
   end;
 
-  TSaveManagerMode = (smmLoad=0, smmSave=1); // @size 0x01
+  TSaveManagerMode = (save_dialog_load=0, save_dialog_save=1); // @size 0x01
 
   TfSaveManager = class(TMessageLoopGI) // @size 0xE4 @methodorder source
   public
@@ -137,17 +137,17 @@ begin
   (GetByName('BGBuf') as TGraphBufGI).BindExternalGraphBuf(AuxRenderBuffer);
   with GetByName('Anim') as TgaiGI do RestartPlayback;
   SelectedSlot := -1;
-  if SaveManagerMode = smmSave then SelectedSlot := 0;
+  if SaveManagerMode = save_dialog_save then SelectedSlot := 0;
   (GetByName('ButClose') as TGraphButtonGI).UpCallback := CloseClicked;
   (GetByName('ButCancel') as TGraphButtonGI).UpCallback := CloseClicked;
   with GetByName('ButLoad') as TGraphButtonGI do
   begin
-    SetActive(SaveManagerMode = smmLoad);
+    SetActive(SaveManagerMode = save_dialog_load);
     UpCallback := LoadClicked;
   end;
   with GetByName('ButSave') as TGraphButtonGI do
   begin
-    SetActive(SaveManagerMode = smmSave);
+    SetActive(SaveManagerMode = save_dialog_save);
     UpCallback := SaveClicked;
   end;
   with GetByName('ButDelete') as TGraphButtonGI do
@@ -166,8 +166,8 @@ begin
     GraphBuf.Clear;
     Invalidate;
   end;
-  GetByName('CaptionLoad').SetActive(SaveManagerMode = smmLoad);
-  GetByName('CaptionSave').SetActive(SaveManagerMode = smmSave);
+  GetByName('CaptionLoad').SetActive(SaveManagerMode = save_dialog_load);
+  GetByName('CaptionSave').SetActive(SaveManagerMode = save_dialog_save);
   if (SaveWriter <> nil) and SaveWriter.IsRunning then SaveWriter.WaitForIdle(INFINITE);
   RebuildSlotControls;
   if Slots.Count <= 0 then PreviewSound.SetVolume(1);
@@ -215,7 +215,7 @@ var
 begin
   ScanSaveFiles;
   if SelectedSlot < 0 then SelectedSlot := FindNewestSlot;
-  if (FindAutoSaveSlot = SelectedSlot) and (SaveManagerMode <> smmLoad) then SelectedSlot := 0;
+  if (FindAutoSaveSlot = SelectedSlot) and (SaveManagerMode <> save_dialog_load) then SelectedSlot := 0;
   if Slots.Count <= SelectedSlot then SelectedSlot := Slots.Count - 1;
   ScrollPanel := GetByName('PanelSlot') as TPanelScrollBarGI;
   ScrollPanel.KeyDownCallback := SlotKeyDown;
@@ -269,7 +269,7 @@ begin
   Panel.MouseEnterCallback := SlotMouseEnter;
   Panel.MouseLeaveCallback := SlotMouseLeave;
   Panel.LeftButtonDownCallback := SlotMouseDown;
-  if (SaveManagerMode = smmLoad) or (FindAutoSaveSlot <> Panel.UserValue) then
+  if (SaveManagerMode = save_dialog_load) or (FindAutoSaveSlot <> Panel.UserValue) then
     Panel.LeftButtonDoubleClickCallback := SlotDoubleClick;
   with TImageGI.Create(Panel) do
   begin
@@ -305,7 +305,7 @@ begin
     SetDepth(9);
     Name := 'Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Emblem';
   end;
-  if (SaveManagerMode = smmLoad) or (FindAutoSaveSlot = Panel.UserValue) then
+  if (SaveManagerMode = save_dialog_load) or (FindAutoSaveSlot = Panel.UserValue) then
   begin
     with TLabelGI.Create(Panel) do
     begin
@@ -316,8 +316,8 @@ begin
       else if FontDialog = 1 then SetFontName(SmoothBigFontName)
       else if FontDialog = 2 then SetFontName(SmoothHugeFontName)
       else if FontDialog >= 3 then SetFontName(SmoothIntroFontName);
-      SetTextAlignX(taxLeft);
-      SetTextAlignY(tayCenterEx);
+      SetTextAlignX(text_x_left);
+      SetTextAlignY(text_y_font_center);
       Name := 'Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Edit';
       if Self.IsSlotEmpty(Panel.UserValue) then Text := ''
       else Text := PSMSlot(Self.Slots[Panel.UserValue]).DisplayName;
@@ -349,8 +349,8 @@ begin
     SetSize(Classes.Point(130,17));
     SetDepth(8);
     SetFontName(RangerFontName);
-    SetTextAlignX(taxCenter);
-    SetTextAlignY(tayCenterEx);
+    SetTextAlignX(text_x_center);
+    SetTextAlignY(text_y_font_center);
     Name := 'Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Captain';
   end;
   with TLabelGI.Create(Panel) do
@@ -360,8 +360,8 @@ begin
     SetDepth(8);
     SetFontName(RangerFontName);
     SetTextColor(CurrentPixelFormat.PackRgbBytes(227,227,227));
-    SetTextAlignX(taxCenter);
-    SetTextAlignY(tayCenterEx);
+    SetTextAlignX(text_x_center);
+    SetTextAlignY(text_y_font_center);
     Name := 'Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Turn';
   end;
   with TLabelGI.Create(Panel) do
@@ -371,8 +371,8 @@ begin
     SetDepth(8);
     SetFontName(RangerFontName);
     SetTextColor(CurrentPixelFormat.PackRgbBytes(227,227,227));
-    SetTextAlignX(taxCenter);
-    SetTextAlignY(tayCenterEx);
+    SetTextAlignX(text_x_center);
+    SetTextAlignY(text_y_font_center);
     Name := 'Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Money';
   end;
   with TLabelGI.Create(Panel) do
@@ -382,8 +382,8 @@ begin
     SetDepth(8);
     SetFontName(MiniFontName);
     SetTextColor(CurrentPixelFormat.PackRgbBytes(227,227,227));
-    SetTextAlignX(taxRight);
-    SetTextAlignY(tayCenterEx);
+    SetTextAlignX(text_x_right);
+    SetTextAlignY(text_y_font_center);
     Name := 'Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Date';
   end;
 
@@ -404,8 +404,8 @@ begin
     with GetByName('Slot' + IntToStr(SlotIndex) + 'Emblem') as TImageGI do
     begin
       ImageSourcePath := 'GI,Bm.FormSave2.2' + PSMSlot(Slots[SlotIndex]).RaceName + State;
-      KindX := ikxCenter;
-      KindY := ikyCenter;
+      KindX := image_x_center;
+      KindY := image_y_center;
       SetActive(True);
     end;
     with GetByName('Slot' + IntToStr(SlotIndex) + 'Date') as TLabelGI do
@@ -416,7 +416,7 @@ begin
         FileTimeToSystemTime(PSMSlot(Slots[SlotIndex]).LocalWriteTime,Time);
         Text := FormatDateTime(AnsiString(LocalizedText('FormSaveManager.DateFormatStr')),SystemTimeToDateTime(Time));
       end;
-      if (SaveManagerMode = smmSave) and (SlotIndex = 0) then
+      if (SaveManagerMode = save_dialog_save) and (SlotIndex = 0) then
       begin
         if SelectedSlot = SlotIndex then SetTextColor(NewSaveSelectedColor)
         else SetTextColor(NewSaveNormalColor);
@@ -504,9 +504,9 @@ begin
         EditableSaveBlock.LoadFromTextFileWithEncodingProbe(PWideChar(EditableSaveFileName),True);
         ApplyEditableSaveOnLoad := True;
       end;
-    ShipScreen.SelectedHoldKind := phkEmpty;
+    ShipScreen.SelectedHoldKind := hold_empty;
     ShipScreen.SelectedHoldItem := nil;
-    RequestedScreenId := screenGameLoad;
+    RequestedScreenId := screen_save_loading;
     RequestClose(1);
   end;
 end;
@@ -552,7 +552,7 @@ begin
   if SelectedSlot < 0 then Exit;
   if IsSlotEmpty(SelectedSlot) then Exit;
   if ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormSaveManager.QueryDelete'),mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
-  if (SelectedSlot = FindAutoSaveSlot) and (SaveManagerMode = smmLoad) then WasAutoSave := True else WasAutoSave := False;
+  if (SelectedSlot = FindAutoSaveSlot) and (SaveManagerMode = save_dialog_load) then WasAutoSave := True else WasAutoSave := False;
   SysUtils.DeleteFile(AnsiString(PSMSlot(Slots[SelectedSlot]).FileName));
   if SysUtils.FileExists(GetSaveConfigPath(PSMSlot(Slots[SelectedSlot]).FileName)) then
     SysUtils.DeleteFile(AnsiString(GetSaveConfigPath(PSMSlot(Slots[SelectedSlot]).FileName)));
@@ -564,7 +564,7 @@ end;
 { @routine $757834 TfSaveManager_SlotMouseDown }
 procedure TfSaveManager.SlotMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
-  if not Closing and ((SaveManagerMode = smmLoad) or (FindAutoSaveSlot <> Sender.UserValue)) then
+  if not Closing and ((SaveManagerMode = save_dialog_load) or (FindAutoSaveSlot <> Sender.UserValue)) then
   begin
     SoundManager.PlaySound('Sound.ButtonClick');
     SelectSlot(Sender.UserValue);
@@ -575,7 +575,7 @@ end;
 { @routine $7578BC TfSaveManager_SlotDoubleClick }
 procedure TfSaveManager.SlotDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
-  if SaveManagerMode = smmSave then SaveClicked(Sender) else LoadClicked(Sender);
+  if SaveManagerMode = save_dialog_save then SaveClicked(Sender) else LoadClicked(Sender);
 end;
 { @end $7578BC }
 
@@ -585,8 +585,8 @@ begin
   if Key = VK_DOWN then
   begin
     if SelectedSlot < 0 then SelectSlot(0)
-    else if ((SaveManagerMode = smmLoad) or (FindAutoSaveSlot < 0)) and (Slots.Count - 1 <= SelectedSlot) then SelectSlot(0)
-    else if (SaveManagerMode <> smmLoad) and (FindAutoSaveSlot >= 0) and (Slots.Count - 2 <= SelectedSlot) then SelectSlot(0)
+    else if ((SaveManagerMode = save_dialog_load) or (FindAutoSaveSlot < 0)) and (Slots.Count - 1 <= SelectedSlot) then SelectSlot(0)
+    else if (SaveManagerMode <> save_dialog_load) and (FindAutoSaveSlot >= 0) and (Slots.Count - 2 <= SelectedSlot) then SelectSlot(0)
     else SelectSlot(SelectedSlot + 1);
   end
   else if Key = VK_UP then
@@ -594,7 +594,7 @@ begin
     if SelectedSlot < 0 then SelectSlot(Slots.Count - 1)
     else if SelectedSlot = 0 then
     begin
-      if (SaveManagerMode = smmLoad) or (FindAutoSaveSlot < 0) then
+      if (SaveManagerMode = save_dialog_load) or (FindAutoSaveSlot < 0) then
       begin
         if Slots.Count - 1 <> SelectedSlot then SelectSlot(Slots.Count - 1);
       end
@@ -608,7 +608,7 @@ begin
   end
   else if Key = VK_NEXT then
   begin
-    if (SaveManagerMode = smmLoad) or (FindAutoSaveSlot < 0) then
+    if (SaveManagerMode = save_dialog_load) or (FindAutoSaveSlot < 0) then
     begin
       if Slots.Count - 1 <> SelectedSlot then SelectSlot(Slots.Count - 1);
     end
@@ -618,7 +618,7 @@ begin
   else if Key = VK_ESCAPE then CloseClicked(Sender)
   else if Key = VK_RETURN then
   begin
-    if SaveManagerMode = smmSave then SaveClicked(Sender) else LoadClicked(Sender);
+    if SaveManagerMode = save_dialog_save then SaveClicked(Sender) else LoadClicked(Sender);
   end;
 end;
 { @end $7578EC }
@@ -656,7 +656,7 @@ begin
   if FindAutoSaveSlot <> SlotIndex then
     with GetByName('Slot' + IntToStr(SlotIndex)) as TPanelGI do
       ScrollPanel.ScrollRectIntoView(GetLocalBounds);
-  RefreshSlot(SlotIndex,SaveManagerMode = smmSave);
+  RefreshSlot(SlotIndex,SaveManagerMode = save_dialog_save);
   if GetByName('Slot' + IntToStr(SlotIndex) + 'Edit') is TEditGI then
   begin
     if IsSlotEmpty(SlotIndex) then
@@ -672,7 +672,7 @@ begin
     end;
     LoadSavePreviews(PSMSlot(Slots[SlotIndex]).FileName);
   end
-  else if (SelectedSlot = 0) and (SaveManagerMode = smmSave) then
+  else if (SelectedSlot = 0) and (SaveManagerMode = save_dialog_save) then
   begin
     with GetByName('GameImage') as TGraphBufGI do
     begin
@@ -905,7 +905,7 @@ end;
 { @routine $758DDC TfSaveManager_SlotMouseEnter }
 procedure TfSaveManager.SlotMouseEnter(Sender: TObjectGI);
 begin
-  GetByName('Slot' + IntToStr(Cardinal(Sender.UserValue)) + 'onmouse').SetActive((FindAutoSaveSlot <> Sender.UserValue) or (SaveManagerMode <> smmSave));
+  GetByName('Slot' + IntToStr(Cardinal(Sender.UserValue)) + 'onmouse').SetActive((FindAutoSaveSlot <> Sender.UserValue) or (SaveManagerMode <> save_dialog_save));
   SoundManager.PlaySound('Sound.ButtonEnter');
 end;
 { @end $758DDC }
@@ -992,11 +992,11 @@ begin
     Dispose(Slot);
   end;
   Slots.Clear;
-  if SaveManagerMode = smmSave then
+  if SaveManagerMode = save_dialog_save then
   begin
     New(NewSlot);
-    if GetPlayer.OwnerId = oiPirate then
-      NewSlot.RaceName := OwnerInfo[oiPirate].InternalName + OwnerInfo[RaceToOwner(GetPlayer.PilotRace)].InternalName
+    if GetPlayer.OwnerId = owner_pirate then
+      NewSlot.RaceName := OwnerInfo[owner_pirate].InternalName + OwnerInfo[RaceToOwner(GetPlayer.PilotRace)].InternalName
     else NewSlot.RaceName := OwnerInfo[GetPlayer.OwnerId].InternalName;
   end;
   try
@@ -1182,7 +1182,7 @@ begin
     CancelCallbackTimer(PreviewTimer);
     PreviewTimer := 0;
   end;
-  if not IsSlotEmpty(SelectedSlot) or ((SelectedSlot = 0) and (SaveManagerMode = smmSave)) then
+  if not IsSlotEmpty(SelectedSlot) or ((SelectedSlot = 0) and (SaveManagerMode = save_dialog_save)) then
   begin
     GetByName('GameImage').SetActive(True);
     GetByName('GameImage2').SetActive(True);

@@ -5,7 +5,7 @@ interface
 uses GR_Rect, Classes, EC_BlockPar, EC_Str, EC_Struct, Types;
 
 type
-  TNamedControlEventGI = (nceButtonDown = 1, nceButtonUp, nceMouseMove, nceTextChanged); // @size $04
+  TNamedControlEventGI = (control_event_button_down = 1, control_event_button_up, control_event_mouse_move, control_event_text_changed); // @size $04
 
   TDialogChoiceEventGI = procedure(Value: Cardinal) of object;
   TObjectNotifyEventGI = procedure(Sender: TObjectGI) of object;
@@ -835,7 +835,7 @@ begin
     begin
       if Child.MouseInside = False then Child.OnMouseEnter;
       Child.ProcessMouseMove(KeyState, Point);
-      DispatchNamedEvent(nceMouseMove, Point.X, Point.Y);
+      DispatchNamedEvent(control_event_mouse_move, Point.X, Point.Y);
     end;
     Child := Child.NextSibling;
   end;
@@ -1801,7 +1801,7 @@ begin
         end;
         if not BeginFramePresentation then
         begin
-          RequestedScreenId := screenNone;
+          RequestedScreenId := screen_none;
           PostLoadScreenId := FormToId(Self);
           Break;
         end;
@@ -2084,7 +2084,7 @@ begin
     DrawQueuedUpdateRects;
     if not BeginFramePresentation then
     begin
-      RequestedScreenId := screenNone;
+      RequestedScreenId := screen_none;
       PostLoadScreenId := FormToId(Self);
       Exit;
     end;
@@ -2940,8 +2940,8 @@ begin
   LabelControl.SetDepth(-1E29);
   LabelControl.Pos := Classes.Point(5, 5);
   LabelControl.ObjectSize := Classes.Point(400, 20);
-  LabelControl.SetTextAlignX(taxLeft);
-  LabelControl.SetTextAlignY(tayCenterEx);
+  LabelControl.SetTextAlignX(text_x_left);
+  LabelControl.SetTextAlignY(text_y_font_center);
   CursorControl := TCursorGI.Create(OverlayPanel);
   CursorControl.SetDepth(-1E30);
 end;

@@ -33,7 +33,7 @@ interface
 uses SysUtils;
 
 type
-  TCompare = (Lt, St, Eq, Er); // @size 1
+  TCompare = (compare_greater, compare_less, compare_equal, compare_error); // @size 1
   TSign = (negative, positive); // @size 1
   TFGInt = record // @size $08
     Sign: TSign; // @offset $00
@@ -371,18 +371,18 @@ function FGIntCompareAbs(const FGInt1, FGInt2 : TFGInt) : TCompare;
 var
   size1, size2, i : LongWord;
 begin
-  FGIntCompareAbs := Er;
+  FGIntCompareAbs := compare_error;
   size1 := FGInt1.Number[0];
   size2 := FGInt2.Number[0];
-  if size1 > size2 then FGIntCompareAbs := Lt
-  else if size1 < size2 then FGIntCompareAbs := St
+  if size1 > size2 then FGIntCompareAbs := compare_greater
+  else if size1 < size2 then FGIntCompareAbs := compare_less
   else
   begin
     i := size2;
     while (FGInt1.Number[i] = FGInt2.Number[i]) and (i > 1) do i := i - 1;
-    if FGInt1.Number[i] = FGInt2.Number[i] then FGIntCompareAbs := Eq
-    else if FGInt1.Number[i] < FGInt2.Number[i] then FGIntCompareAbs := St
-    else if FGInt1.Number[i] > FGInt2.Number[i] then FGIntCompareAbs := Lt;
+    if FGInt1.Number[i] = FGInt2.Number[i] then FGIntCompareAbs := compare_equal
+    else if FGInt1.Number[i] < FGInt2.Number[i] then FGIntCompareAbs := compare_less
+    else if FGInt1.Number[i] > FGInt2.Number[i] then FGIntCompareAbs := compare_greater;
   end;
 end;
 { @end $6973EC }
@@ -427,7 +427,7 @@ begin
     end
     else
     begin
-      if FGIntCompareAbs(FGInt2, FGInt1) = Lt then
+      if FGIntCompareAbs(FGInt2, FGInt1) = compare_greater then
         FGIntAdd(FGInt2, FGInt1, Sum)
       else
       begin
@@ -729,7 +729,7 @@ begin
   FGIntCopy(FGInt1, MFGInt);
   FGIntCopy(FGInt2, temp1);
 
-  if FGIntCompareAbs(FGInt1, FGInt2) <> St then
+  if FGIntCompareAbs(FGInt1, FGInt2) <> compare_less then
   begin
     s := FGInt1.Number[0] - FGInt2.Number[0];
     SetLength(QFGInt.Number, (s + 2));
@@ -741,9 +741,9 @@ begin
     end;
     j := s + 1;
     QFGInt.Number[j] := 0;
-    while FGIntCompareAbs(MFGInt, FGInt2) <> St do
+    while FGIntCompareAbs(MFGInt, FGInt2) <> compare_less do
     begin
-      while FGIntCompareAbs(MFGInt, temp1) <> St do
+      while FGIntCompareAbs(MFGInt, temp1) <> compare_less do
       begin
         if MFGInt.Number[0] > temp1.Number[0] then
         begin
@@ -760,7 +760,7 @@ begin
           FGIntMulByIntbis(temp2, i);
           FGIntSubBis(MFGInt, temp2);
           QFGInt.Number[j] := QFGInt.Number[j] + i;
-          if FGIntCompareAbs(MFGInt, temp2) <> St then
+          if FGIntCompareAbs(MFGInt, temp2) <> compare_less then
           begin
             QFGInt.Number[j] := QFGInt.Number[j] + i;
             FGIntSubBis(MFGInt, temp2);
@@ -774,7 +774,7 @@ begin
         end;
       end;
       if MFGInt.Number[0] <= temp1.Number[0] then
-        if FGIntCompareAbs(temp1, FGInt2) <> Eq then
+        if FGIntCompareAbs(temp1, FGInt2) <> compare_equal then
         begin
           FGIntShiftRightBy31(temp1);
           j := j - 1;
@@ -798,7 +798,7 @@ begin
   Base10StringToFGInt('1', one);
   if s1 = negative then
   begin
-    if FGIntCompareAbs(MFGInt, zero) <> Eq then
+    if FGIntCompareAbs(MFGInt, zero) <> compare_equal then
     begin
       FGIntadd(QFGInt, one, temp1);
       FGIntClear(QFGInt);
@@ -836,14 +836,14 @@ begin
   FGIntCopy(FGInt1, MFGInt);
   FGIntCopy(FGInt2, temp1);
 
-  if FGIntCompareAbs(FGInt1, FGInt2) <> St then
+  if FGIntCompareAbs(FGInt1, FGInt2) <> compare_less then
   begin
     s := FGInt1.Number[0] - FGInt2.Number[0];
     for t := 1 to s do
       FGIntShiftLeftBy31(temp1);
-    while FGIntCompareAbs(MFGInt, FGInt2) <> St do
+    while FGIntCompareAbs(MFGInt, FGInt2) <> compare_less do
     begin
-      while FGIntCompareAbs(MFGInt, temp1) <> St do
+      while FGIntCompareAbs(MFGInt, temp1) <> compare_less do
       begin
         if MFGInt.Number[0] > temp1.Number[0] then
         begin
@@ -859,7 +859,7 @@ begin
           FGIntCopy(temp1, temp2);
           FGIntMulByIntbis(temp2, i);
           FGIntSubBis(MFGInt, temp2);
-          if FGIntCompareAbs(MFGInt, temp2) <> St then
+          if FGIntCompareAbs(MFGInt, temp2) <> compare_less then
             FGIntSubBis(MFGInt, temp2);
           FGIntClear(temp2);
         end
@@ -867,7 +867,7 @@ begin
           FGIntSubBis(MFGInt, temp1);
       end;
       if MFGInt.Number[0] <= temp1.Number[0] then
-        if FGIntCompareAbs(temp1, FGInt2) <> Eq then FGIntShiftRightBy31(temp1);
+        if FGIntCompareAbs(temp1, FGInt2) <> compare_equal then FGIntShiftRightBy31(temp1);
     end;
   end;
 
@@ -876,7 +876,7 @@ begin
   Base10StringToFGInt('1', one);
   if s1 = negative then
   begin
-    if FGIntCompareAbs(MFGInt, zero) <> Eq then
+    if FGIntCompareAbs(MFGInt, zero) <> compare_equal then
     begin
       FGIntSub(FGInt2, MFGInt, temp1);
       FGIntClear(MFGInt);
@@ -989,7 +989,7 @@ begin
   FGIntClear(temp);
   if (head shr FGIntLimbHighBit) = 0 then FGIntDivByIntBis(MGInt, head + 1, r)
   else FGIntShiftRightBy31(MGInt);
-  if FGIntCompareAbs(MGInt, base) <> St then FGIntSubBis(MGInt, base);
+  if FGIntCompareAbs(MGInt, base) <> compare_less then FGIntSubBis(MGInt, base);
   FGIntClear(temp);
   FGIntClear(m);
 end;
@@ -1004,7 +1004,7 @@ var
 begin
   Base2StringToFGInt('0', zero);
   FGIntMod(FGInt, modb, res);
-  if FGIntCompareAbs(res, zero) = Eq then
+  if FGIntCompareAbs(res, zero) = compare_equal then
   begin
     FGIntClear(zero);
     exit;
@@ -1085,8 +1085,8 @@ var
   zero, temp1, temp2, temp3 : TFGInt;
 begin
   k := FGIntCompareAbs(FGInt1, FGInt2);
-  if (k = Eq) then FGIntCopy(FGInt1, GCD)
-  else if (k = St) then FGIntGCD(FGInt2, FGInt1, GCD)
+  if (k = compare_equal) then FGIntCopy(FGInt1, GCD)
+  else if (k = compare_less) then FGIntGCD(FGInt2, FGInt1, GCD)
   else
   begin
     Base10StringToFGInt('0', zero);
@@ -1113,7 +1113,7 @@ var
 begin
   Base10StringToFGInt('1', one);
   FGIntGCD(FGInt1, base, gcd);
-  if FGIntCompareAbs(one, gcd) = Eq then
+  if FGIntCompareAbs(one, gcd) = compare_equal then
   begin
     FGIntcopy(base, r1);
     FGIntcopy(FGInt1, r2);
@@ -1135,7 +1135,7 @@ begin
       FGIntCopy(temp2, tb);
 
       FGIntClear(temp);
-    until FGIntCompareAbs(r3, zero) = Eq;
+    until FGIntCompareAbs(r3, zero) = compare_equal;
 
     if inverse.Sign = negative then
     begin

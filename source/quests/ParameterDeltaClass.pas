@@ -5,8 +5,8 @@ interface
 uses Classes, EC_Buf, EC_Struct, EventClass, TextFieldClass, ValueListClass;
 
 type
-  TParameterVisibilityChange = (pvcUnchanged = 0, pvcShow = 1,
-    pvcHide = 2); // @size 0x04
+  TParameterVisibilityChange = (parameter_keep_visibility = 0, parameter_show = 1,
+    parameter_hide = 2); // @size 0x04
   TParameterDelta = class(TObjectEx) // @size 0x30
   public
     ParameterIndex: Integer; // @offset 0x04
@@ -98,7 +98,7 @@ end;
 procedure TParameterDelta.ClearChange;
 begin
   ChangeValue := 0;
-  VisibilityChange := pvcUnchanged;
+  VisibilityChange := parameter_keep_visibility;
   CriticalEvent.ClearTextFields;
   LegacyFlag := False;
   ChangeByPercent := False;
@@ -135,7 +135,7 @@ begin
   end;
 
   Result := False;
-  if VisibilityChange <> pvcUnchanged then Exit;
+  if VisibilityChange <> parameter_keep_visibility then Exit;
   if UseExpression then
   begin
     if TrimWideString(ExpressionText.Text) <> '' then Exit;
@@ -182,13 +182,13 @@ begin
   else if ChangeByPercent then NewValue := System.Round(Parameter.Value * 0.01 * ChangeValue) + Parameter.Value
   else NewValue := Parameter.Value + ChangeValue;
   Parameter.SetValue(NewValue);
-  if Parameter.CriticalOutcome <> qoNone then
+  if Parameter.CriticalOutcome <> quest_outcome_none then
   begin
     if TrimWideString(CriticalEvent.Text.Text) <> '' then Parameter.CriticalEventOverride := CriticalEvent
     else Parameter.CriticalEventOverride := nil;
   end;
-  if VisibilityChange = pvcShow then Parameter.Hidden := False
-  else if VisibilityChange = pvcHide then Parameter.Hidden := True;
+  if VisibilityChange = parameter_show then Parameter.Hidden := False
+  else if VisibilityChange = parameter_hide then Parameter.Hidden := True;
 end;
 { @end $4E13B4 }
 

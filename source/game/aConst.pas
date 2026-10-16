@@ -10,51 +10,51 @@ type
   TOwnerWeaponAvailabilityTable = array[TOwnerId] of TWeaponAvailability;
   POwnerWeaponAvailabilityTable = ^TOwnerWeaponAvailabilityTable;
 
-  // Names and ordinals from the native bon* configuration/script table.
+  // Ordinals follow the native bon* configuration/script table; its keys stay unchanged.
   TEquipmentBonusKind = (
-    bonHull = 0,
-    bonFuel = 1,
-    bonSpeed = 2,
-    bonJump = 3,
-    bonRadar = 4,
-    bonScan = 5,
-    bonDroid = 6,
-    bonHook = 7,
-    bonDef = 8,
-    bonWEnergy = 9,
-    bonWSplinter = 10,
-    bonWMissile = 11,
-    bonWRadius = 12,
-    bonSlotRadar = 13,
-    bonSlotScaner = 14,
-    bonSlotDroid = 15,
-    bonSlotHook = 16,
-    bonSlotDef = 17,
-    bonSlotWeapon = 18,
-    bonSlotArt = 19,
-    bonSlotForsage = 20,
-    bonHookRadius = 21,
-    bonSkill1 = 22,
-    bonSkill2 = 23,
-    bonSkill3 = 24,
-    bonSkill4 = 25,
-    bonSkill5 = 26,
-    bonSkill6 = 27,
-    bonMass = 28,
-    bonExtraAkrinEff = 29,
-    bonExtraAkrinPenalty = 30,
-    bonAmmo = 31,
-    bonShots = 32,
-    bonMissileSpeed = 33,
-    bonShotSpeed = 34,
-    bonHookMaxSpeed = 35,
-    bonHookMinSpeed = 36,
-    bonStimCapacity = 37,
-    bonZonds = 38,
-    bonAttacks = 39,
-    bonResistAsteroid = 40,
-    bonAIValue = 41,
-    bonNull = 42
+    bonus_armor = 0,
+    bonus_fuel_capacity = 1,
+    bonus_speed = 2,
+    bonus_jump_range = 3,
+    bonus_radar_range = 4,
+    bonus_scanner_power = 5,
+    bonus_repair_points = 6,
+    bonus_hook_power = 7,
+    bonus_defense = 8,
+    bonus_energy_damage = 9,
+    bonus_splinter_damage = 10,
+    bonus_missile_damage = 11,
+    bonus_weapon_range = 12,
+    bonus_radar_slots = 13,
+    bonus_scanner_slots = 14,
+    bonus_repair_robot_slots = 15,
+    bonus_cargo_hook_slots = 16,
+    bonus_defense_slots = 17,
+    bonus_weapon_slots = 18,
+    bonus_artefact_slots = 19,
+    bonus_afterburner_slots = 20,
+    bonus_hook_range = 21,
+    bonus_accuracy = 22,
+    bonus_maneuverability = 23,
+    bonus_technical = 24,
+    bonus_trading = 25,
+    bonus_charisma = 26,
+    bonus_leadership = 27,
+    bonus_mass = 28,
+    bonus_acryn_effect = 29,
+    bonus_acryn_penalty = 30,
+    bonus_ammo_capacity = 31,
+    bonus_shot_count = 32,
+    bonus_missile_speed = 33,
+    bonus_shot_delay_reduction = 34,
+    bonus_hook_max_speed = 35,
+    bonus_hook_min_speed = 36,
+    bonus_stimulant_capacity = 37,
+    bonus_satellite_limit = 38,
+    bonus_attack_count = 39,
+    bonus_asteroid_resistance = 40,
+    bonus_ai_item_value = 41,
+    bonus_none = 42
   ); // @size 0x1
 
   TEquipmentBonuses = array[TEquipmentBonusKind] of Integer;
@@ -64,17 +64,17 @@ type
   PEquipmentBonusNameTable = ^TEquipmentBonusNameTable;
 
   TShipSlotKind = (
-    sskFuelTanks = 0,
-    sskEngine = 1,
-    sskRadar = 2,
-    sskScanner = 3,
-    sskRepairRobot = 4,
-    sskCargoHook = 5,
-    sskDefGenerator = 6,
-    sskWeapon = 7,
-    sskArtefact = 8,
-    sskAfterburner = 9,
-    sskUnsupported = 10
+    slot_fuel_tanks = 0,
+    slot_engine = 1,
+    slot_radar = 2,
+    slot_scanner = 3,
+    slot_repair_robot = 4,
+    slot_cargo_hook = 5,
+    slot_defense_generator = 6,
+    slot_weapon = 7,
+    slot_artefact = 8,
+    slot_afterburner = 9,
+    slot_unsupported = 10
   ); // @size 0x1
 
   TEquipmentSizeFactorTable = array[1..5] of Single;
@@ -82,12 +82,12 @@ type
   PEquipmentSizeFactorTable = ^TEquipmentSizeFactorTable;
 
   TWeaponRangeLevelFactors = array[1..8] of Single;
-  TScriptActionTypeNames = array[TScriptActionType] of WideString;
-  TGoodsLegalityTable = array[TGoodsIndex, oiMaloc..oiGaal, TPlanetGovernment] of Boolean;
+  TScriptActionTypeNames = array[TScriptEventKind] of WideString;
+  TGoodsLegalityTable = array[TGoodsIndex, owner_maloc..owner_gaal, TPlanetGovernment] of Boolean;
 
   TProgramNameTable = array[TProgramIndex] of WideString;
   TProgramDurationTable = array[TProgramIndex] of Integer;
-  TWeaponDamageClass = (wdcEnergy = 0, wdcSplinter = 1, wdcMissile = 2); // @size $01
+  TWeaponDamageClass = (damage_class_energy = 0, damage_class_splinter = 1, damage_class_missile = 2); // @size $01
 
   THullLevelStats = record // @size $10
     Armor: Byte; // @offset $00
@@ -96,7 +96,7 @@ type
   THullLevelStatsTable = array[1..8] of THullLevelStats;
 
   TTransportTypeNameTable = array[TTransportType] of WideString;
-  THullShipTypeMask = set of THullType; // @size $02 ht* hull-category bits, distinct from TShip.TypeId.
+  THullShipTypeMask = set of THullType; // @size $02 hull_* category bits, distinct from TShip.TypeId.
 
 procedure IncrementWordSaturating(var Value: Word); // @addr $798758
 function OwnerToSys(OwnerId: TOwnerId): WideString; // @addr $78F974
@@ -375,9 +375,9 @@ type
   TCareerTuningTable = array[TRangerCareer] of TStatusInfo;
 
 var
-  StationDefaultStandings: array[TStationType] of TShipStanding = (ssCoalitionMilitary, ssPiratePassive, ssCoalitionMilitary, ssCoalitionActive, ssCoalitionActive, ssNeutral, ssPirateMilitary, ssUnaligned); // @addr $8104B0 Standing used to gate station spawning by faction, including the custom station.
-  NonTargetableStationStandingMasks: TFactionStandingMasks = ([ssCoalitionMilitary..ssNeutral], [ssDominator], [ssPiratePassive..ssPirateMilitary]); // @addr $8104B8 Standing masks used by TPlayer.CanSelectShipTarget.
-  FactionStandingMasks: TFactionStandingMasks = ([ssCoalitionMilitary..ssPiratePassive], [ssDominator], [ssCoalitionPassive..ssPirateMilitary]); // @addr $8104C0
+  StationDefaultStandings: array[TStationType] of TShipStanding = (standing_coalition_military, standing_pirate_passive, standing_coalition_military, standing_coalition_active, standing_coalition_active, standing_neutral, standing_pirate_military, standing_unaligned); // @addr $8104B0 Standing used to gate station spawning by faction, including the custom station.
+  NonTargetableStationStandingMasks: TFactionStandingMasks = ([standing_coalition_military..standing_neutral], [standing_dominator], [standing_pirate_passive..standing_pirate_military]); // @addr $8104B8 Standing masks used by TPlayer.CanSelectShipTarget.
+  FactionStandingMasks: TFactionStandingMasks = ([standing_coalition_military..standing_pirate_passive], [standing_dominator], [standing_coalition_passive..standing_pirate_military]); // @addr $8104C0
   CareerTuning: array[TRangerCareer] of TStatusInfo = (
     (Name: 'Trader'; MinimumWealthToAverageRatio: 1.5; MinimumWealthToBestRatio: 0.4; MinimumStrengthToAverageRatio: 0.9; MinimumStrengthToBestRatio: 0.3),
     (Name: 'Pirate'; MinimumWealthToAverageRatio: 0.9; MinimumWealthToBestRatio: 0.35; MinimumStrengthToAverageRatio: 1.1; MinimumStrengthToBestRatio: 0.5),
@@ -399,13 +399,13 @@ type
     FactionStrengthWeight: Double; // @offset $30 Multiplies Dominator strength in TStar.GetCachedFactionStrength ($7F3A90).
   end;
   TDominatorDisplayIndex = 0..7; // @size $01 Position in DominatorDisplayOrder, not a ship type ID.
-  TDominatorShipDefinitions = array[TKlingType] of TKlingTypeInfo;
+  TDominatorShipDefinitions = array[TDominatorKind] of TKlingTypeInfo;
 
 const
-  DominatorDisplayOrder: array[TDominatorDisplayIndex] of TKlingType = (ktBoss, ktBertor, ktEquantor, ktUrgant, ktSmersh, ktMenoc, ktShtip, ktKlig); // @addr $81054C
+  DominatorDisplayOrder: array[TDominatorDisplayIndex] of TDominatorKind = (dominator_boss, dominator_bertor, dominator_equantor, dominator_urgant, dominator_smersh, dominator_menoc, dominator_shtip, dominator_klig); // @addr $81054C
 var
-  DominatorShipTypeKeys: array[TKlingType] of WideString = ('K0', 'K1', 'K2', 'K3', 'K4', 'K5', 'K6', 'K7'); // @addr $810554 Military-base rank-dialog keys, not display names.
-  DominatorShipDefinitions: array[TKlingType] of TKlingTypeInfo = (
+  DominatorShipTypeKeys: array[TDominatorKind] of WideString = ('K0', 'K1', 'K2', 'K3', 'K4', 'K5', 'K6', 'K7'); // @addr $810554 Military-base rank-dialog keys, not display names.
+  DominatorShipDefinitions: array[TDominatorKind] of TKlingTypeInfo = (
     (DisplayNames: ('Blazer', 'Keller', 'Terron'); MinimumHullSize: 0; MaximumHullSize: 0; InitialWealthScale: 10; BaseNodeReserve: 500; KillExperience: 5000; RankPoints: 250; PirateRankPoints: 0; RankImageIndex: 7; FactionStrengthWeight: 10),
     (DisplayNames: ('Blazer', 'Keller', 'Terron'); MinimumHullSize: 900; MaximumHullSize: 1400; InitialWealthScale: 0.7; BaseNodeReserve: 100; KillExperience: 1000; RankPoints: 48; PirateRankPoints: 16; RankImageIndex: 5; FactionStrengthWeight: 5),
     (DisplayNames: ('Blazer', 'Keller', 'Terron'); MinimumHullSize: 700; MaximumHullSize: 900; InitialWealthScale: 0.6; BaseNodeReserve: 50; KillExperience: 500; RankPoints: 24; PirateRankPoints: 8; RankImageIndex: 4; FactionStrengthWeight: 3.5),
@@ -414,7 +414,7 @@ var
     (DisplayNames: ('Blazer', 'Keller', 'Terron'); MinimumHullSize: 250; MaximumHullSize: 350; InitialWealthScale: 0.2; BaseNodeReserve: 10; KillExperience: 100; RankPoints: 3; PirateRankPoints: 1; RankImageIndex: 1; FactionStrengthWeight: 1),
     (DisplayNames: ('Blazer', 'Keller', 'Terron'); MinimumHullSize: 1250; MaximumHullSize: 2000; InitialWealthScale: 2; BaseNodeReserve: 200; KillExperience: 2000; RankPoints: 60; PirateRankPoints: 24; RankImageIndex: 7; FactionStrengthWeight: 7.5),
     (DisplayNames: ('Blazer', 'Keller', 'Terron'); MinimumHullSize: 150; MaximumHullSize: 250; InitialWealthScale: 0.15; BaseNodeReserve: 5; KillExperience: 50; RankPoints: 1; PirateRankPoints: 1; RankImageIndex: 1; FactionStrengthWeight: 0)
-  ); // @addr $810574 TKlingType order.
+  ); // @addr $810574 TDominatorKind order.
 var
   DominatorRetreatStrengthByTier: array[0..3] of Double = (2, 2.2, 2.6, 3); // @addr $810734 Minimum reinforced-system strength by constellation distance tier.
   DominatorSeriesNames: array[TDominatorSeries] of WideString = ('Blazer', 'Keller', 'Terron'); // @addr $810754
@@ -422,7 +422,7 @@ var
   DominatorResearchRateMultipliers: array[TDominatorSeries] of Double = (1.0, 1.2, 0.8); // @addr $810760 Native Blazer, Keller, Terron research multipliers.
   ResearchProgramCostFactors: array[TDominatorSeries] of Double = (1, 1.4, 1.8); // @addr $810778
 var
-  ScriptActionTypeNames: array[TScriptActionType] of WideString = (
+  ScriptActionTypeNames: array[TScriptEventKind] of WideString = (
     't_OnStep', 't_OnWeaponShot', 't_OnMissileShot',
     't_OnDealingDamage', 't_OnDealingFatalDamage', 't_OnDealingKamikazeDamage',
     't_OnTakingDamage', 't_OnTakingDamageEn', 't_OnTakingDamageSp',
@@ -527,35 +527,94 @@ type
   TItemTypeSelection = set of TItemType; // @size 10 Final four bits are storage padding.
 
 const
-  // English Items.Weapon.Name resource names; retain the native enum spellings for RTTI.
-  t_IndustrialLaser = t_Weapon1;
-  t_FragmentationCannon = t_Weapon2;
-  t_Flux = t_Weapon3;
-  t_MissileLauncher = t_Weapon4;
-  t_Treton = t_Weapon5;
-  t_WavePhaser = t_Weapon6;
-  t_FlowBlaster = t_Weapon7;
-  t_ElectronicCutter = t_Weapon8;
-  t_Multiresonator = t_Weapon9;
-  t_AtomicVision = t_Weapon10;
-  t_Disintegrator = t_Weapon11;
-  t_Turbogravitron = t_Weapon12;
-  t_IMHO9000 = t_Weapon13;
-  t_Vertix = t_Weapon14;
-  t_TorpedoTube = t_Weapon15;
-  t_Esodapher = t_Weapon16;
-  t_Caphasitor = t_Weapon17;
-  t_Lirecron = t_Weapon18;
+  // Readable item names for callers; native TItemType spellings above are
+  // retained verbatim for RTTI. Weapon names follow Items.Weapon.Name.
+  item_food = t_Food;
+  item_medicine = t_Medicine;
+  item_technical_goods = t_Technics;
+  item_luxury = t_Luxury;
+  item_minerals = t_Minerals;
+  item_alcohol = t_Alcohol;
+  item_arms = t_Arms;
+  item_narcotics = t_Narcotics;
+  item_custom_artefact = t_Artefact;
+  item_custom_artefact_no_wear = t_Artefact2;
+  artefact_hull = t_ArtefactHull;
+  artefact_fuel = t_ArtefactFuel;
+  artefact_speed = t_ArtefactSpeed;
+  artefact_power = t_ArtefactPower;
+  artefact_radar = t_ArtefactRadar;
+  artefact_scanner = t_ArtefactScaner;
+  artefact_repair_robot = t_ArtefactDroid;
+  artefact_nano_repair = t_ArtefactNano;
+  artefact_cargo_hook = t_ArtefactHook;
+  artefact_defense = t_ArtefactDef;
+  artefact_analyzer = t_ArtefactAnalyzer;
+  artefact_extra_loot = t_ArtefactMiniExpl;
+  artefact_antigravity = t_ArtefactAntigrav;
+  artefact_transmitter = t_ArtefactTransmitter;
+  artefact_bomb = t_ArtefactBomb;
+  artefact_tranclucator = t_ArtefactTranclucator;
+  artefact_defense_to_energy = t_ArtDefToEnergy;
+  artefact_energy_pulse = t_ArtEnergyPulse;
+  artefact_energy_defense = t_ArtEnergyDef;
+  artefact_splinter = t_ArtSplinter;
+  artefact_decelerate = t_ArtDecelerate;
+  artefact_missile_defense = t_ArtMissileDef;
+  artefact_afterburner = t_ArtForsage;
+  artefact_weapon_to_speed = t_ArtWeaponToSpeed;
+  artefact_hyperjump = t_ArtGiperJump;
+  artefact_black_hole = t_ArtBlackHole;
+  artefact_defense_to_weapon_slot = t_ArtDefToArms1;
+  artefact_defense_slot_to_weapons = t_ArtDefToArms2;
+  artefact_artefactor = t_ArtArtefactor;
+  artefact_health_protection = t_ArtBio;
+  artefact_point_defense = t_ArtPDTurret;
+  artefact_extra_missiles = t_ArtFastRacks;
+  item_hull = t_Hull;
+  item_fuel_tanks = t_FuelTanks;
+  item_engine = t_Engine;
+  item_radar = t_Radar;
+  item_scanner = t_Scaner;
+  item_repair_robot = t_RepairRobot;
+  item_cargo_hook = t_CargoHook;
+  item_defense_generator = t_DefGenerator;
+  item_industrial_laser = t_Weapon1;
+  item_fragmentation_cannon = t_Weapon2;
+  item_flux = t_Weapon3;
+  item_missile_launcher = t_Weapon4;
+  item_treton = t_Weapon5;
+  item_wave_phaser = t_Weapon6;
+  item_flow_blaster = t_Weapon7;
+  item_electronic_cutter = t_Weapon8;
+  item_multiresonator = t_Weapon9;
+  item_atomic_vision = t_Weapon10;
+  item_disintegrator = t_Weapon11;
+  item_turbogravitron = t_Weapon12;
+  item_imho9000 = t_Weapon13;
+  item_vertix = t_Weapon14;
+  item_torpedo_tube = t_Weapon15;
+  item_esodapher = t_Weapon16;
+  item_caphasitor = t_Weapon17;
+  item_lirecron = t_Weapon18;
+  item_custom_weapon = t_CustomWeapon;
+  item_nodes = t_Protoplasm;
+  item_misc = t_UselessItem;
+  item_micro_module = t_MicroModule;
+  item_fuel_container = t_Cistern;
+  item_satellite = t_Satellite;
+  item_treasure_map = t_TreasureMap;
+  item_stackable_misc = t_UselessCountableItem;
 
   // Equipment slot and shop APIs use the first weapon type to represent all weapons.
-  WeaponCategoryItemType = t_IndustrialLaser;
+  WeaponCategoryItemType = item_industrial_laser;
 
-  WeaponItemTypes = [t_IndustrialLaser..t_CustomWeapon];
-  StandardWeaponItemTypes = [t_IndustrialLaser..t_Lirecron];
-  UtilityEquipmentTypes = [t_FuelTanks..t_DefGenerator];
+  WeaponItemTypes = [item_industrial_laser..item_custom_weapon];
+  StandardWeaponItemTypes = [item_industrial_laser..item_lirecron];
+  UtilityEquipmentTypes = [item_fuel_tanks..item_defense_generator];
 
 type
-  TEquipmentInventionIndexTable = array[t_Hull..t_DefGenerator] of TPlanetInvention;
+  TEquipmentInventionIndexTable = array[item_hull..item_defense_generator] of TResearchTrack;
 
   PEquipmentInventionIndexTable = ^TEquipmentInventionIndexTable;
 
@@ -565,8 +624,8 @@ type
   end;
 
   // Nine quotas per Coalition race, with every weapon sharing the final category.
-  TPlanetEquipmentOfferQuotaRow = array[t_Hull..WeaponCategoryItemType] of Integer;
-  TPlanetEquipmentOfferQuotaTable = array[oiMaloc..oiGaal] of TPlanetEquipmentOfferQuotaRow;
+  TPlanetEquipmentOfferQuotaRow = array[item_hull..WeaponCategoryItemType] of Integer;
+  TPlanetEquipmentOfferQuotaTable = array[owner_maloc..owner_gaal] of TPlanetEquipmentOfferQuotaRow;
   PPlanetEquipmentOfferQuotaTable = ^TPlanetEquipmentOfferQuotaTable;
 
   // The final item category is shared by every weapon subtype.
@@ -593,16 +652,16 @@ type
   TEquipmentSlotLayouts = array[0..7] of SEquipment;
 
 var
-  NonNegotiatingShipTypes: TShipTypeMask = [stKling, stTranclucator..rstCustomStation]; // @addr $810888  Excluded from ransom offers and ordinary ally requests.
+  NonNegotiatingShipTypes: TShipTypeMask = [ship_dominator, ship_tranclucator..station_custom]; // @addr $810888  Excluded from ransom offers and ordinary ally requests.
 const
   EquipmentSlotLayouts: array[0..7] of SEquipment = (
-    (ItemType: t_FuelTanks; Name: 'FuelTanks'),
-    (ItemType: t_Engine; Name: 'Engine'),
-    (ItemType: t_Radar; Name: 'Radar'),
-    (ItemType: t_Scaner; Name: 'Scaner'),
-    (ItemType: t_RepairRobot; Name: 'RepairRobot'),
-    (ItemType: t_CargoHook; Name: 'CargoHook'),
-    (ItemType: t_DefGenerator; Name: 'DefGenerator'),
+    (ItemType: item_fuel_tanks; Name: 'FuelTanks'),
+    (ItemType: item_engine; Name: 'Engine'),
+    (ItemType: item_radar; Name: 'Radar'),
+    (ItemType: item_scanner; Name: 'Scaner'),
+    (ItemType: item_repair_robot; Name: 'RepairRobot'),
+    (ItemType: item_cargo_hook; Name: 'CargoHook'),
+    (ItemType: item_defense_generator; Name: 'DefGenerator'),
     (ItemType: WeaponCategoryItemType; Name: 'Weapon')); // @addr $81088C Used by both the ship inventory and scanner.
 var
   ItemTypeNames: array[TItemType] of WideString = (
@@ -751,7 +810,7 @@ type
     InternalName: WideString; // @offset 0x00
     DisplayName: WideString; // @offset 0x04
     RevolutionRelationDelta: array[TRangerCareer] of ShortInt; // @offset 0x08  TRangerCareer order.
-    QuestOfferProbabilities: array[TQuestType] of Single; // @offset 0x0C  TQuestType order.
+    QuestOfferProbabilities: array[TQuestKind] of Single; // @offset 0x0C  TQuestKind order.
     GoodsFactors: array[TGoodsIndex] of TPlanetGoodsFactors; // @offset 0x20
   end;
 
@@ -826,7 +885,7 @@ var
       FearThresholdScale: 0.5;
       ColorTag: '<color=255,255,255>')); // @addr $810B98
 var
-  PlanetOwnerMasks: TPlanetOwnerMasks = (Coalition: [oiMaloc..oiGaal]; Dominators: [oiDominator]; PirateClan: [oiPirate]); // @addr $810C98
+  PlanetOwnerMasks: TPlanetOwnerMasks = (Coalition: [owner_maloc..owner_gaal]; Dominators: [owner_dominator]; PirateClan: [owner_pirate]); // @addr $810C98
   OwnerRelations: TOwnerRelationTable = (
     (100, 80, 70, 40, 60, 0, 0, 30),
     (70, 100, 70, 30, 40, 0, 0, 30),
@@ -1040,7 +1099,7 @@ var
   PirateRankPointThresholds: array[TShipRank] of Word = (100, 250, 450, 700, 1000, 1500, 3000, 0); // @addr $811A48 Zero threshold at the maximum rank.
   SkillConfigNames: array[TPilotSkill] of WideString = ('sAccuracy', 'sMobility', 'sTechnical', 'sTrader', 'sCharm', 'sLeadership'); // @addr $811A58
 var
-  RaceSkillEvaluationFactors: array[oiMaloc..oiGaal, TPilotSkill] of Single = (
+  RaceSkillEvaluationFactors: array[owner_maloc..owner_gaal, TPilotSkill] of Single = (
     (1.2, 1.1, 0.9, 0.8, 1.0, 1.0),
     (1.0, 1.2, 0.8, 1.1, 1.0, 0.9),
     (0.9, 0.8, 1.0, 1.2, 1.0, 1.1),
@@ -1133,7 +1192,7 @@ var
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0),
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0),
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0)); // @addr $812464 Native base slot counts; final column is unsupported kind.
-  DominatorHullSlots: array[TKlingType, TShipSlotKind] of Integer = (
+  DominatorHullSlots: array[TDominatorKind, TShipSlotKind] of Integer = (
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0),
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0),
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0),
@@ -1144,17 +1203,17 @@ var
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 1, 0)); // @addr $8125C4 Native base slot counts; final column is unsupported kind.
   SpecialHullSlots: array[TShipSlotKind] of Integer = (1, 1, 1, 1, 1, 1, 1, 5, 4, 1, 0); // @addr $812724 Native base slot counts; final column is unsupported kind.
   FlagshipHullSlots: array[TShipSlotKind] of Integer = (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0); // @addr $812750 Native base slot counts; final column is unsupported kind.
-  HullSlotBonusKinds: array[TShipSlotKind] of TEquipmentBonusKind = (bonNull, bonNull, bonSlotRadar, bonSlotScaner, bonSlotDroid, bonSlotHook, bonSlotDef, bonSlotWeapon, bonSlotArt, bonSlotForsage, bonNull); // @addr $81277C
-  OwnerWeaponAvailability: TOwnerWeaponAvailabilityTable = (waMalocOnly, waPelengOnly, waPeopleOnly, waFeiOnly, waGaalOnly, waNotSoldAndNodeRepair, waNotSold, waPirateOnly); // @addr $812788
+  HullSlotBonusKinds: array[TShipSlotKind] of TEquipmentBonusKind = (bonus_none, bonus_none, bonus_radar_slots, bonus_scanner_slots, bonus_repair_robot_slots, bonus_cargo_hook_slots, bonus_defense_slots, bonus_weapon_slots, bonus_artefact_slots, bonus_afterburner_slots, bonus_none); // @addr $81277C
+  OwnerWeaponAvailability: TOwnerWeaponAvailabilityTable = (availability_maloc_only, availability_peleng_only, availability_human_only, availability_feyan_only, availability_gaal_only, availability_not_sold_node_repair, availability_not_sold, availability_pirate_only); // @addr $812788
   WeaponDamageFlagNames: array[0..20] of WideString = (
     'Energy', 'Splinter', 'Missile', 'Decelerate', 'Destruct', 'Drain', 'Shock',
     'Acid', 'Magnetic', 'DecelerateA', 'DecelerateAEx', 'Undefendable', 'NonLethal',
     'ScanBonus', 'BonusToDamaged', 'MoreDrop', 'DropCargo', 'ReduceEngine',
     'BlockWeapon', 'BlockDroid', 'NoDelta'); // @addr $812790 Native managed-string descriptors.
   WeaponDamageClasses: array[TWeaponDamageClass] of TPrimaryDamageTypeInfo = (
-    (Kind: wdcEnergy; BonusKind: bonWEnergy; Name: 'Energy'),
-    (Kind: wdcSplinter; BonusKind: bonWSplinter; Name: 'Splinter'),
-    (Kind: wdcMissile; BonusKind: bonWMissile; Name: 'Missile')
+    (Kind: damage_class_energy; BonusKind: bonus_energy_damage; Name: 'Energy'),
+    (Kind: damage_class_splinter; BonusKind: bonus_splinter_damage; Name: 'Splinter'),
+    (Kind: damage_class_missile; BonusKind: bonus_missile_damage; Name: 'Missile')
   ); // @addr $8127E4 Native scalar values and WideString initializer descriptors.
 type
   THullTypeInfo = record // @size $64
@@ -1223,8 +1282,8 @@ type
   PMicroModuleCandidateIndices = ^TMicroModuleCandidateIndices;
 
 var
-  CombatStatusHullFactors: array[TCombatStatusEffectType] of Single = (1, 1, 1, 0.3, 0.3, 0, 0); // @addr $8127FC Indexed by TCombatStatusEffectType.
-  CombatStatusAccumulationFactors: array[TCombatStatusEffectType] of Single = (0, 0, 0.1, 0, 0, 0.025, 0); // @addr $812818
+  CombatStatusHullFactors: array[TCombatEffectKind] of Single = (1, 1, 1, 0.3, 0.3, 0, 0); // @addr $8127FC Indexed by TCombatEffectKind.
+  CombatStatusAccumulationFactors: array[TCombatEffectKind] of Single = (0, 0, 0.1, 0, 0, 0.025, 0); // @addr $812818
   EquipmentBonusNames: array[TEquipmentBonusKind] of WideString = (
     'bonHull', 'bonFuel', 'bonSpeed',
     'bonJump', 'bonRadar', 'bonScan',
@@ -1245,18 +1304,18 @@ type
   tInventionInfo = record // @size 0x08
     Name: WideString; // @offset $00 Native initialization names the research levels.
     InitialLevel: Byte; // @offset 0x04
-    RequiredMainTechLevel: Byte; // @offset 0x05  Compared with InventionLevels[piMainTech], not ResearchLevelPercent.
+    RequiredMainTechLevel: Byte; // @offset 0x05  Compared with InventionLevels[research_main_technology], not ResearchLevelPercent.
   end;
 
-  TPlanetInventionInfoTable = array[TPlanetInvention] of tInventionInfo;
+  TPlanetInventionInfoTable = array[TResearchTrack] of tInventionInfo;
 
   PPlanetInventionInfoTable = ^TPlanetInventionInfoTable;
 
 var
-  EquipmentBonusSkills: array[bonSkill1..bonSkill6] of TPilotSkill = (psAccuracy, psManeuverability, psTechnical, psTrading, psCharisma, psLeadership); // @addr $8128E0 Maps bonSkill1..bonSkill6 to native pilot skills.
+  EquipmentBonusSkills: array[bonus_accuracy..bonus_leadership] of TPilotSkill = (skill_accuracy, skill_maneuverability, skill_technical, skill_trading, skill_charisma, skill_leadership); // @addr $8128E0 Maps bonus_accuracy..bonus_leadership to native pilot skills.
   EquipmentSizeFactors: TEquipmentSizeFactorTable = (2.0, 1.5, 1.0, 0.7, 0.5); // @addr $8128E8
   WeaponRangeLevelFactors: TWeaponRangeLevelFactors = (0.9, 0.95, 0.95, 1.0, 1.0, 1.05, 1.05, 1.1); // @addr $8128FC Native technology multiplier, immediately after EquipmentSizeFactors.
-  PlanetInventionInfo: array[TPlanetInvention] of tInventionInfo = (
+  PlanetInventionInfo: array[TResearchTrack] of tInventionInfo = (
     (Name: 'Hull level'; InitialLevel: 1; RequiredMainTechLevel: 1),
     (Name: 'FuelTanks level'; InitialLevel: 1; RequiredMainTechLevel: 1),
     (Name: 'Engine level'; InitialLevel: 1; RequiredMainTechLevel: 1),
@@ -1282,7 +1341,7 @@ type
     ItemType: TItemType; // @offset 0x00
     ConfigName: WideString; // @offset 0x04  Custom weapon configuration key.
     TechLevel: Byte; // @offset 0x08
-    InventionIndex: TPlanetInvention; // @offset 0x09  Planetary invention used to determine the available weapon level.
+    InventionIndex: TResearchTrack; // @offset 0x09  Planetary invention used to determine the available weapon level.
     CostFactor: Single; // @offset 0x0C
     MinDamage: Integer; // @offset 0x10
     MaxDamage: Integer; // @offset 0x14
@@ -1311,7 +1370,7 @@ type
 
   PWeaponInfo = ^TWeaponInfo;
 
-  TWeaponInfoTable = array[t_IndustrialLaser..t_Lirecron] of TWeaponInfo;
+  TWeaponInfoTable = array[item_industrial_laser..item_lirecron] of TWeaponInfo;
 
   PWeaponInfoTable = ^TWeaponInfoTable;
 
@@ -1420,17 +1479,17 @@ var
   CargoHookLevelStats: TCargoHookLevelStatsTable; // @addr $81BC54
   HullFragilityByOwner: array[TWeaponDamageClass, TOwnerId] of Single; // @addr $81BCD4 Damage class, then owner; loaded from mFragilityByOwner*.
   HullFragilityByType: array[THullType] of Single; // @addr $81BD34 Loaded from mFragilityByShipType.
-  WeaponInfos: array[t_IndustrialLaser..t_Lirecron] of TWeaponInfo; // @addr 0x0081BD60
+  WeaponInfos: array[item_industrial_laser..item_lirecron] of TWeaponInfo; // @addr 0x0081BD60
 var
-  EquipmentInventionIndices: TEquipmentInventionIndexTable = (piHull, piFuelTanks, piEngine, piRadar, piScanner, piRepairRobot, piCargoHook, piMainTech); // @addr $8129BC
+  EquipmentInventionIndices: TEquipmentInventionIndexTable = (research_hull, research_fuel_tanks, research_engine, research_radar, research_scanner, research_repair_robot, research_cargo_hook, research_main_technology); // @addr $8129BC
   CoalitionProjectNames: array[TCoalitionProject] of WideString = ('CreateRC', 'CreatePB', 'CreateWB', 'CreateSB', 'CreateBK', 'CreateMC', 'RangersSubsidy', 'PiratesSubsidy', 'TransportSubsidy', 'LostSubsidy', 'WarSubsidy', 'WarOperation'); // @addr $8129C4
 type
   // Locations where captain health effects can be acquired.
   THealthLocation = (
-    hlPlanet = 0,
-    hlDocked = 1,
-    hlNormalSpace = 2,
-    hlCombat = 3
+    health_on_planet = 0,
+    health_docked = 1,
+    health_in_space = 2,
+    health_in_combat = 3
   ); // @size $01
   THealthLocations = set of THealthLocation; // @size $01
 
@@ -1450,7 +1509,7 @@ type
     Duration: Integer; // @offset $24
   end;
 
-  TCaptainHealthDefinitions = array[heBlindness..heAbsoluteStatus] of TIllnessInfo;
+  TCaptainHealthDefinitions = array[disease_blindness..stimulant_absolute_status] of TIllnessInfo;
 
   TRadiationHealthDefinitions = array[1..1] of TIllnessInfo;
 
@@ -1478,7 +1537,7 @@ var
   HullSeriesDefinitions: array of THullTypeInfo; // @addr $81C768 Loaded from HullType configuration, sorted by numeric suffix.
 var
   HullSeriesCount: Integer; // @addr $81C76C Native count used by CheatIdeal and hull-series configuration.
-  CaptainHealthDefinitions: array[heBlindness..heAbsoluteStatus] of TIllnessInfo; // @addr $81C770 Disease and stimulant definitions.
+  CaptainHealthDefinitions: array[disease_blindness..stimulant_absolute_status] of TIllnessInfo; // @addr $81C770 Disease and stimulant definitions.
   RadiationHealthDefinitions: TRadiationHealthDefinitions; // @addr $81CB30 Finalized as one TIllnessInfo alongside the 24 captain effects.
   MicroModuleCandidateIndices: array of Integer; // @addr 0x0081CB58 @note "Shared selection scratch, sized to MicroModuleTemplateCount when templates load. Callers track the used prefix separately."
 
@@ -1495,7 +1554,7 @@ var
   Level, GoodsIndex: Byte;
   Government: TPlanetGovernment;
   Relation: TRelationLevel;
-  KlingKind: TKlingType; Series: TDominatorSeries; Owner: TOwnerId;
+  KlingKind: TDominatorKind; Series: TDominatorSeries; Owner: TOwnerId;
   Economy: TPlanetEconomy;
   Difficulty: ^TGalaxyDifficultyTuning;
 
@@ -1551,12 +1610,12 @@ begin
   for GoodsIndex := Low(TGoodsIndex) to High(TGoodsIndex) do GoodsMarket[GoodsIndex].TradeName := LocalizedText('Items.Goods.NameBuy.' + IntToStr(GoodsIndex + 1));
   for Government := Low(TPlanetGovernment) to High(TPlanetGovernment) do PlanetGovernmentMarket[Government].DisplayName := LocalizedText('Goverment.Type.' + IntToStr(Ord(Government)));
   for Relation := Low(TRelationLevel) to High(TRelationLevel) do RelationInfo[Relation].DisplayName := LocalizedText('Relations.Type.' + IntToStr(Ord(Relation)));
-  for KlingKind := Low(TKlingType) to High(TKlingType) do
+  for KlingKind := Low(TDominatorKind) to High(TDominatorKind) do
     for Series := Low(TDominatorSeries) to High(TDominatorSeries) do
       DominatorShipDefinitions[KlingKind].DisplayNames[Series] := LookupLocalizedTextByKey('ShipType.Dominator.' + DominatorSeriesNames[Series] + '.' + IntToStr(Ord(KlingKind)));
-  for Owner := oiMaloc to oiPirate do OwnerInfo[Owner].DisplayName := LookupLocalizedTextByKey('Race.Name.' + OwnerInfo[Owner].InternalName);
+  for Owner := owner_maloc to owner_pirate do OwnerInfo[Owner].DisplayName := LookupLocalizedTextByKey('Race.Name.' + OwnerInfo[Owner].InternalName);
   // Both identical localization passes are present in the native initializer.
-  for Owner := oiMaloc to oiPirate do OwnerInfo[Owner].DisplayName := LookupLocalizedTextByKey('Race.Name.' + OwnerInfo[Owner].InternalName);
+  for Owner := owner_maloc to owner_pirate do OwnerInfo[Owner].DisplayName := LookupLocalizedTextByKey('Race.Name.' + OwnerInfo[Owner].InternalName);
   for Economy := Low(TPlanetEconomy) to High(TPlanetEconomy) do
   begin
     PlanetEconomyInfo[Economy].DisplayName := LookupLocalizedTextByKey('Economy.Name.' + IntToStr(Ord(Economy)));
@@ -1576,8 +1635,8 @@ begin
   InitializeCaptainHealthDefinitions;
   LoadHullSeriesConfiguration;
   if LanguageDataConfig.CountParamsByPath('Artefacts.NumericValues.MaxSlots') > 0 then
-    DefaultHullSlotCounts[sskArtefact] := Max(4, Min(32, ExtractDigitsToIntW(LanguageDataConfig.GetParamByPath('Artefacts.NumericValues.MaxSlots'))))
-  else DefaultHullSlotCounts[sskArtefact] := 4;
+    DefaultHullSlotCounts[slot_artefact] := Max(4, Min(32, ExtractDigitsToIntW(LanguageDataConfig.GetParamByPath('Artefacts.NumericValues.MaxSlots'))))
+  else DefaultHullSlotCounts[slot_artefact] := 4;
   HullMassEvaluationStart := Round(HullBaseSize * EquipmentSizeFactors[5] * 2);
   HullMassEvaluationEnd := Round(HullBaseSize * EquipmentSizeFactors[1] * 2);
   WearMassMin := Round(HullBaseSize * EquipmentSizeFactors[1] * 5);
@@ -1589,15 +1648,15 @@ end;
 function OwnerToRace(OwnerId: TOwnerId): TOwnerId;
 begin
   case OwnerId of
-    oiMaloc: Result := oiMaloc;
-    oiPeleng: Result := oiPeleng;
-    oiHuman: Result := oiHuman;
-    oiFeyan: Result := oiFeyan;
-    oiGaal: Result := oiGaal;
+    owner_maloc: Result := owner_maloc;
+    owner_peleng: Result := owner_peleng;
+    owner_human: Result := owner_human;
+    owner_feyan: Result := owner_feyan;
+    owner_gaal: Result := owner_gaal;
   else
     begin
       raise Exception.Create('Error in OwnerToRace');
-      Result := oiMaloc;
+      Result := owner_maloc;
     end;
   end;
 end;
@@ -1607,15 +1666,15 @@ end;
 function RaceToOwner(RaceId: TOwnerId): TOwnerId;
 begin
   case RaceId of
-    oiMaloc: Result := oiMaloc;
-    oiPeleng: Result := oiPeleng;
-    oiHuman: Result := oiHuman;
-    oiFeyan: Result := oiFeyan;
-    oiGaal: Result := oiGaal;
+    owner_maloc: Result := owner_maloc;
+    owner_peleng: Result := owner_peleng;
+    owner_human: Result := owner_human;
+    owner_feyan: Result := owner_feyan;
+    owner_gaal: Result := owner_gaal;
   else
     begin
       raise Exception.Create('Error in RaceToOwner ' + IntToWideString(Ord(RaceId)));
-      Result := oiMaloc;
+      Result := owner_maloc;
     end;
   end;
 end;
@@ -1625,11 +1684,11 @@ end;
 function RaceToSys(RaceId: TOwnerId): WideString;
 begin
   case RaceId of
-    oiMaloc: Result := 'Maloc';
-    oiPeleng: Result := 'Peleng';
-    oiHuman: Result := 'People';
-    oiFeyan: Result := 'Fei';
-    oiGaal: Result := 'Gaal';
+    owner_maloc: Result := 'Maloc';
+    owner_peleng: Result := 'Peleng';
+    owner_human: Result := 'People';
+    owner_feyan: Result := 'Fei';
+    owner_gaal: Result := 'Gaal';
   else
     begin
       raise Exception.Create('Error in RaceToSys');
@@ -1643,13 +1702,13 @@ end;
 function OwnerToFilmColor(OwnerId: TOwnerId): Cardinal;
 begin
   case OwnerId of
-    oiMaloc: Result := CurrentPixelFormat.PackRgbBytes(255, 0, 0);
-    oiPeleng: Result := CurrentPixelFormat.PackRgbBytes(0, 255, 0);
-    oiHuman: Result := CurrentPixelFormat.PackRgbBytes(0, $47, $EA);
-    oiFeyan: Result := CurrentPixelFormat.PackRgbBytes(255, $93, $F1);
-    oiGaal: Result := CurrentPixelFormat.PackRgbBytes($ED, $F7, $3E);
-    oiDominator: Result := CurrentPixelFormat.PackRgbBytes($61, $A7, $BE);
-    oiPirate: Result := CurrentPixelFormat.PackRgbBytes(255, 255, 255);
+    owner_maloc: Result := CurrentPixelFormat.PackRgbBytes(255, 0, 0);
+    owner_peleng: Result := CurrentPixelFormat.PackRgbBytes(0, 255, 0);
+    owner_human: Result := CurrentPixelFormat.PackRgbBytes(0, $47, $EA);
+    owner_feyan: Result := CurrentPixelFormat.PackRgbBytes(255, $93, $F1);
+    owner_gaal: Result := CurrentPixelFormat.PackRgbBytes($ED, $F7, $3E);
+    owner_dominator: Result := CurrentPixelFormat.PackRgbBytes($61, $A7, $BE);
+    owner_pirate: Result := CurrentPixelFormat.PackRgbBytes(255, 255, 255);
   else Result := CurrentPixelFormat.PackRgbBytes(255, 0, 255);
   end;
 end;
@@ -1675,7 +1734,7 @@ begin
         Exit;
       end;
     end;
-  Result := OwnerToFilmColor(oiUninhabited);
+  Result := OwnerToFilmColor(owner_uninhabited);
 end;
 { @end $78F5A0 }
 
@@ -1722,13 +1781,13 @@ end;
 function OwnerToSys(OwnerId: TOwnerId): WideString;
 begin
   case OwnerId of
-    oiMaloc: Result := 'Maloc';
-    oiPeleng: Result := 'Peleng';
-    oiHuman: Result := 'People';
-    oiFeyan: Result := 'Fei';
-    oiGaal: Result := 'Gaal';
-    oiDominator: Result := 'Kling';
-    oiPirate: Result := 'PirateClan';
+    owner_maloc: Result := 'Maloc';
+    owner_peleng: Result := 'Peleng';
+    owner_human: Result := 'People';
+    owner_feyan: Result := 'Fei';
+    owner_gaal: Result := 'Gaal';
+    owner_dominator: Result := 'Kling';
+    owner_pirate: Result := 'PirateClan';
   else Result := 'None';
   end;
 end;
@@ -1737,14 +1796,14 @@ end;
 { @routine $78FAAC OwnerFromInternalName }
 function OwnerFromInternalName(const Name: WideString): TOwnerId;
 begin
-  if Name = 'Maloc' then Result := oiMaloc
-  else if Name = 'Peleng' then Result := oiPeleng
-  else if Name = 'People' then Result := oiHuman
-  else if Name = 'Fei' then Result := oiFeyan
-  else if Name = 'Gaal' then Result := oiGaal
-  else if Name = 'Kling' then Result := oiDominator
-  else if Name = 'PirateClan' then Result := oiPirate
-  else Result := oiUninhabited;
+  if Name = 'Maloc' then Result := owner_maloc
+  else if Name = 'Peleng' then Result := owner_peleng
+  else if Name = 'People' then Result := owner_human
+  else if Name = 'Fei' then Result := owner_feyan
+  else if Name = 'Gaal' then Result := owner_gaal
+  else if Name = 'Kling' then Result := owner_dominator
+  else if Name = 'PirateClan' then Result := owner_pirate
+  else Result := owner_uninhabited;
 end;
 { @end $78FAAC }
 
@@ -1767,15 +1826,15 @@ end;
 function NumberToRace(Value: Integer): TOwnerId;
 begin
   case Value of
-    0: Result := oiMaloc;
-    1: Result := oiPeleng;
-    2: Result := oiHuman;
-    3: Result := oiFeyan;
-    4: Result := oiGaal;
+    0: Result := owner_maloc;
+    1: Result := owner_peleng;
+    2: Result := owner_human;
+    3: Result := owner_feyan;
+    4: Result := owner_gaal;
   else
     begin
       raise Exception.Create('Error in NumberToRace');
-      Result := oiMaloc;
+      Result := owner_maloc;
     end;
   end;
 end;
@@ -1806,13 +1865,13 @@ end;
 { @routine $78FE18 SysToReward }
 function SysToReward(const Name: WideString): TAwardKind;
 begin
-  if Name = 'ForLiberationSystem' then Result := atLiberation
-  else if Name = 'ForAccomplishment' then Result := atAccomplishment
-  else if Name = 'ForSecretMission' then Result := atSecretMission
-  else if Name = 'ForCowardice' then Result := atCowardice
-  else if Name = 'ForPerfidy' then Result := atPerfidy
-  else if Name = 'ForPlanetBattle' then Result := atPlanetBattle
-  else begin RaiseWideMessage('Error in SysToReward'); Result := atPerfidy; end;
+  if Name = 'ForLiberationSystem' then Result := award_liberation
+  else if Name = 'ForAccomplishment' then Result := award_accomplishment
+  else if Name = 'ForSecretMission' then Result := award_secret_mission
+  else if Name = 'ForCowardice' then Result := award_cowardice
+  else if Name = 'ForPerfidy' then Result := award_perfidy
+  else if Name = 'ForPlanetBattle' then Result := award_planet_battle
+  else begin RaiseWideMessage('Error in SysToReward'); Result := award_perfidy; end;
 end;
 { @end $78FE18 }
 
@@ -1823,7 +1882,7 @@ begin
   for Kind := Low(TShipType) to High(TShipType) do
     if ShipTypeNames[Kind].Name = Name then begin Result := Kind; Exit; end;
   RaiseWideMessage('Error in SysToShipType');
-  Result := stKling;
+  Result := ship_dominator;
 end;
 { @end $78FFA4 }
 
@@ -1831,46 +1890,46 @@ end;
 function GetAverageItemSize(ItemType: TItemType): Integer;
 begin
   case ItemType of
-    t_ArtefactHull: Result := 12;
-    t_ArtefactFuel: Result := 4;
-    t_ArtefactSpeed: Result := 12;
-    t_ArtefactPower: Result := 7;
-    t_ArtefactRadar: Result := 10;
-    t_ArtefactScaner: Result := 8;
-    t_ArtefactDroid: Result := 10;
-    t_ArtefactNano: Result := 3;
-    t_ArtefactHook: Result := 3;
-    t_ArtefactDef: Result := 12;
-    t_ArtefactAnalyzer: Result := 5;
-    t_ArtefactMiniExpl: Result := 10;
-    t_ArtefactAntigrav: Result := 20;
-    t_ArtefactTransmitter: Result := 3;
-    t_ArtefactBomb: Result := 5;
-    t_ArtefactTranclucator: Result := 50;
-    t_ArtDefToEnergy: Result := 5;
-    t_ArtEnergyPulse: Result := 8;
-    t_ArtEnergyDef: Result := 5;
-    t_ArtSplinter: Result := 10;
-    t_ArtDecelerate: Result := 5;
-    t_ArtMissileDef: Result := 6;
-    t_ArtForsage: Result := 6;
-    t_ArtWeaponToSpeed: Result := 7;
-    t_ArtGiperJump: Result := 5;
-    t_ArtBlackHole: Result := 3;
-    t_ArtDefToArms1: Result := 9;
-    t_ArtDefToArms2: Result := 7;
-    t_ArtArtefactor: Result := 3;
-    t_ArtBio: Result := 2;
-    t_ArtPDTurret: Result := 15;
-    t_ArtFastRacks: Result := 10;
-    t_Hull: Result := HullBaseSize;
-    t_FuelTanks: Result := FuelTanksBaseSize;
-    t_Engine: Result := EngineBaseSize;
-    t_Radar: Result := RadarBaseSize;
-    t_Scaner: Result := ScannerBaseSize;
-    t_RepairRobot: Result := RepairRobotBaseSize;
-    t_CargoHook: Result := CargoHookBaseSize;
-    t_DefGenerator: Result := DefGeneratorBaseSize;
+    artefact_hull: Result := 12;
+    artefact_fuel: Result := 4;
+    artefact_speed: Result := 12;
+    artefact_power: Result := 7;
+    artefact_radar: Result := 10;
+    artefact_scanner: Result := 8;
+    artefact_repair_robot: Result := 10;
+    artefact_nano_repair: Result := 3;
+    artefact_cargo_hook: Result := 3;
+    artefact_defense: Result := 12;
+    artefact_analyzer: Result := 5;
+    artefact_extra_loot: Result := 10;
+    artefact_antigravity: Result := 20;
+    artefact_transmitter: Result := 3;
+    artefact_bomb: Result := 5;
+    artefact_tranclucator: Result := 50;
+    artefact_defense_to_energy: Result := 5;
+    artefact_energy_pulse: Result := 8;
+    artefact_energy_defense: Result := 5;
+    artefact_splinter: Result := 10;
+    artefact_decelerate: Result := 5;
+    artefact_missile_defense: Result := 6;
+    artefact_afterburner: Result := 6;
+    artefact_weapon_to_speed: Result := 7;
+    artefact_hyperjump: Result := 5;
+    artefact_black_hole: Result := 3;
+    artefact_defense_to_weapon_slot: Result := 9;
+    artefact_defense_slot_to_weapons: Result := 7;
+    artefact_artefactor: Result := 3;
+    artefact_health_protection: Result := 2;
+    artefact_point_defense: Result := 15;
+    artefact_extra_missiles: Result := 10;
+    item_hull: Result := HullBaseSize;
+    item_fuel_tanks: Result := FuelTanksBaseSize;
+    item_engine: Result := EngineBaseSize;
+    item_radar: Result := RadarBaseSize;
+    item_scanner: Result := ScannerBaseSize;
+    item_repair_robot: Result := RepairRobotBaseSize;
+    item_cargo_hook: Result := CargoHookBaseSize;
+    item_defense_generator: Result := DefGeneratorBaseSize;
   else
     if ItemType in WeaponItemTypes then Result := WeaponInfos[ItemType].AverageSize
     else
@@ -1924,19 +1983,19 @@ end;
 { @routine $790454 ShipToHullType }
 function ShipToHullType(Ship: TObject): THullType;
 begin
-  Result := htRanger;
-  if Ship is TRanger then Result := htRanger
-  else if Ship is TWarrior then Result := htWarrior
-  else if Ship is TPirate then Result := htPirate
+  Result := hull_ranger;
+  if Ship is TRanger then Result := hull_ranger
+  else if Ship is TWarrior then Result := hull_warrior
+  else if Ship is TPirate then Result := hull_pirate
   else if Ship is TTransport then
   begin
-    if TTransport(Ship).TransportType = ttTransport then Result := htTransport
-    else if TTransport(Ship).TransportType = ttLiner then Result := htLiner
-    else Result := htDiplomat;
+    if TTransport(Ship).TransportType = transport_standard then Result := hull_transport
+    else if TTransport(Ship).TransportType = transport_liner then Result := hull_liner
+    else Result := hull_diplomat;
   end
-  else if Ship is TKling then Result := htKling
-  else if Ship is TTranclucator then Result := htTranclucator
-  else if Ship is TRuins then Result := htStation
+  else if Ship is TKling then Result := hull_dominator
+  else if Ship is TTranclucator then Result := hull_tranclucator
+  else if Ship is TRuins then Result := hull_station
   else RaiseWideMessage('ShipToSShipType');
 end;
 { @end $790454 }
@@ -1945,13 +2004,13 @@ end;
 function RelationValueToLevel(Value: TPercent): TRelationLevel;
 begin
   case Value of
-    0..RelationBadMin - 1: Result := rlHostile;
-    RelationBadMin..RelationNormalMin - 1: Result := rlBad;
-    RelationNormalMin..RelationGoodMin - 1: Result := rlNormal;
-    RelationGoodMin..RelationExcellentMin - 1: Result := rlGood;
-    RelationExcellentMin..100: Result := rlExcellent;
+    0..RelationBadMin - 1: Result := relation_level_hostile;
+    RelationBadMin..RelationNormalMin - 1: Result := relation_level_bad;
+    RelationNormalMin..RelationGoodMin - 1: Result := relation_level_normal;
+    RelationGoodMin..RelationExcellentMin - 1: Result := relation_level_good;
+    RelationExcellentMin..100: Result := relation_level_excellent;
   else
-    Result := rlNormal;
+    Result := relation_level_normal;
   end;
 end;
 { @end $790540 }
@@ -1960,17 +2019,17 @@ end;
 function ItemTypeToSlotKind(ItemType: TItemType): TShipSlotKind;
 begin
   case ItemType of
-    t_FuelTanks: Result := sskFuelTanks;
-    t_Engine: Result := sskEngine;
-    t_Radar: Result := sskRadar;
-    t_Scaner: Result := sskScanner;
-    t_RepairRobot: Result := sskRepairRobot;
-    t_CargoHook: Result := sskCargoHook;
-    t_DefGenerator: Result := sskDefGenerator;
+    item_fuel_tanks: Result := slot_fuel_tanks;
+    item_engine: Result := slot_engine;
+    item_radar: Result := slot_radar;
+    item_scanner: Result := slot_scanner;
+    item_repair_robot: Result := slot_repair_robot;
+    item_cargo_hook: Result := slot_cargo_hook;
+    item_defense_generator: Result := slot_defense_generator;
   else
-    if ItemType in WeaponItemTypes then Result := sskWeapon
-    else if ItemType in [t_Artefact..t_ArtFastRacks] then Result := sskArtefact
-    else Result := sskUnsupported;
+    if ItemType in WeaponItemTypes then Result := slot_weapon
+    else if ItemType in [item_custom_artefact..artefact_extra_missiles] then Result := slot_artefact
+    else Result := slot_unsupported;
   end;
 end;
 { @end $79057C }
@@ -2091,7 +2150,7 @@ end;
 
 { @routine $791100 LoadArtefactConfiguration }
 procedure LoadArtefactConfiguration;
-const ArtefactTypes = [t_ArtefactHull..t_ArtFastRacks];
+const ArtefactTypes = [artefact_hull..artefact_extra_missiles];
 var
   Index: Integer;
   Config, Block: TBlockParEC;
@@ -2179,7 +2238,7 @@ begin
   Config := LanguageDataConfig.GetBlockByPath('Artefacts');
   for Index := 1 to CountItemTypesInMask(ArtefactTypes) do
   begin
-    Kind := GetItemTypeFromMask([t_ArtefactHull..t_ArtFastRacks], Index);
+    Kind := GetItemTypeFromMask([artefact_hull..artefact_extra_missiles], Index);
     Block := Config.GetBlock(ItemTypeNames[Kind]);
     CanBeABDrop := (Block.CountParams('CanBeABDrop') <= 0) or (ExtractDigitsToIntW(Block.GetParam('CanBeABDrop')) > 0);
     CanBeTreasure := (Block.CountParams('CanBeTreasure') <= 0) or (ExtractDigitsToIntW(Block.GetParam('CanBeTreasure')) > 0);
@@ -2192,17 +2251,17 @@ begin
       Inc(AnyCount);
     end;
   end;
-  SetLength(ArtefactLootPools[ilpArcadeBattle], ABDropCount);
-  SetLength(ArtefactLootPools[ilpTreasure], TreasureCount);
-  SetLength(ArtefactLootPools[ilpReward], RewardCount);
-  SetLength(ArtefactLootPools[ilpAnyAvailable], AnyCount);
+  SetLength(ArtefactLootPools[loot_arcade_battle], ABDropCount);
+  SetLength(ArtefactLootPools[loot_treasure], TreasureCount);
+  SetLength(ArtefactLootPools[loot_reward], RewardCount);
+  SetLength(ArtefactLootPools[loot_any_available], AnyCount);
   ABDropCount := 0;
   TreasureCount := 0;
   RewardCount := 0;
   AnyCount := 0;
   for Index := 1 to CountItemTypesInMask(ArtefactTypes) do
   begin
-    Kind := GetItemTypeFromMask([t_ArtefactHull..t_ArtFastRacks], Index);
+    Kind := GetItemTypeFromMask([artefact_hull..artefact_extra_missiles], Index);
     Block := Config.GetBlock(ItemTypeNames[Kind]);
     CanBeABDrop := (Block.CountParams('CanBeABDrop') <= 0) or (ExtractDigitsToIntW(Block.GetParam('CanBeABDrop')) > 0);
     CanBeTreasure := (Block.CountParams('CanBeTreasure') <= 0) or (ExtractDigitsToIntW(Block.GetParam('CanBeTreasure')) > 0);
@@ -2211,20 +2270,20 @@ begin
     begin
       if CanBeABDrop then
       begin
-        ArtefactLootPools[ilpArcadeBattle][ABDropCount] := Kind;
+        ArtefactLootPools[loot_arcade_battle][ABDropCount] := Kind;
         Inc(ABDropCount);
       end;
       if CanBeTreasure then
       begin
-        ArtefactLootPools[ilpTreasure][TreasureCount] := Kind;
+        ArtefactLootPools[loot_treasure][TreasureCount] := Kind;
         Inc(TreasureCount);
       end;
       if CanBeReward then
       begin
-        ArtefactLootPools[ilpReward][RewardCount] := Kind;
+        ArtefactLootPools[loot_reward][RewardCount] := Kind;
         Inc(RewardCount);
       end;
-      ArtefactLootPools[ilpAnyAvailable][AnyCount] := Kind;
+      ArtefactLootPools[loot_any_available][AnyCount] := Kind;
       Inc(AnyCount);
     end;
   end;
@@ -2247,10 +2306,10 @@ begin
       Inc(AnyCount);
     end;
   end;
-  SetLength(CustomArtefactLootPools[ilpArcadeBattle], ABDropCount);
-  SetLength(CustomArtefactLootPools[ilpTreasure], TreasureCount);
-  SetLength(CustomArtefactLootPools[ilpReward], RewardCount);
-  SetLength(CustomArtefactLootPools[ilpAnyAvailable], AnyCount);
+  SetLength(CustomArtefactLootPools[loot_arcade_battle], ABDropCount);
+  SetLength(CustomArtefactLootPools[loot_treasure], TreasureCount);
+  SetLength(CustomArtefactLootPools[loot_reward], RewardCount);
+  SetLength(CustomArtefactLootPools[loot_any_available], AnyCount);
   ABDropCount := 0;
   TreasureCount := 0;
   RewardCount := 0;
@@ -2266,20 +2325,20 @@ begin
       ItemName := Config.GetBlockNameByIndex(Index);
       if CanBeABDrop then
       begin
-        CustomArtefactLootPools[ilpArcadeBattle][ABDropCount] := ItemName;
+        CustomArtefactLootPools[loot_arcade_battle][ABDropCount] := ItemName;
         Inc(ABDropCount);
       end;
       if CanBeTreasure then
       begin
-        CustomArtefactLootPools[ilpTreasure][TreasureCount] := ItemName;
+        CustomArtefactLootPools[loot_treasure][TreasureCount] := ItemName;
         Inc(TreasureCount);
       end;
       if CanBeReward then
       begin
-        CustomArtefactLootPools[ilpReward][RewardCount] := ItemName;
+        CustomArtefactLootPools[loot_reward][RewardCount] := ItemName;
         Inc(RewardCount);
       end;
-      CustomArtefactLootPools[ilpAnyAvailable][AnyCount] := ItemName;
+      CustomArtefactLootPools[loot_any_available][AnyCount] := ItemName;
       Inc(AnyCount);
     end;
   end;
@@ -2302,10 +2361,10 @@ begin
       Inc(AnyCount);
     end;
   end;
-  SetLength(UselessItemLootPools[ilpArcadeBattle], ABDropCount);
-  SetLength(UselessItemLootPools[ilpTreasure], TreasureCount);
-  SetLength(UselessItemLootPools[ilpReward], RewardCount);
-  SetLength(UselessItemLootPools[ilpAnyAvailable], AnyCount);
+  SetLength(UselessItemLootPools[loot_arcade_battle], ABDropCount);
+  SetLength(UselessItemLootPools[loot_treasure], TreasureCount);
+  SetLength(UselessItemLootPools[loot_reward], RewardCount);
+  SetLength(UselessItemLootPools[loot_any_available], AnyCount);
   ABDropCount := 0;
   TreasureCount := 0;
   RewardCount := 0;
@@ -2321,20 +2380,20 @@ begin
       ItemName := Config.GetBlockNameByIndex(Index);
       if CanBeABDrop then
       begin
-        UselessItemLootPools[ilpArcadeBattle][ABDropCount] := ItemName;
+        UselessItemLootPools[loot_arcade_battle][ABDropCount] := ItemName;
         Inc(ABDropCount);
       end;
       if CanBeTreasure then
       begin
-        UselessItemLootPools[ilpTreasure][TreasureCount] := ItemName;
+        UselessItemLootPools[loot_treasure][TreasureCount] := ItemName;
         Inc(TreasureCount);
       end;
       if CanBeReward then
       begin
-        UselessItemLootPools[ilpReward][RewardCount] := ItemName;
+        UselessItemLootPools[loot_reward][RewardCount] := ItemName;
         Inc(RewardCount);
       end;
-      UselessItemLootPools[ilpAnyAvailable][AnyCount] := ItemName;
+      UselessItemLootPools[loot_any_available][AnyCount] := ItemName;
       Inc(AnyCount);
     end;
   end;
@@ -2347,7 +2406,7 @@ var
   Level, Cost: Integer;
   Block: TBlockParEC;
   Values: WideString;
-  QuestKind: TQuestType;
+  QuestKind: TQuestKind;
   Skill: TPilotSkill;
 begin
   Block := LanguageDataConfig.GetBlockByPath('Asteroid');
@@ -2368,13 +2427,13 @@ begin
     end;
   end;
   Values := LanguageDataConfig.GetBlockByPath('Quest').GetParam('QuestPoints');
-  for QuestKind := Low(TQuestType) to High(TQuestType) do QuestExperience[QuestKind] := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Ord(QuestKind) - Ord(Low(TQuestType)), ',')));
+  for QuestKind := Low(TQuestKind) to High(TQuestKind) do QuestExperience[QuestKind] := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Ord(QuestKind) - Ord(Low(TQuestKind)), ',')));
   Values := LanguageDataConfig.GetBlockByPath('Quest').GetParam('QuestTurns');
-  for QuestKind := Low(TQuestType) to High(TQuestType) do QuestTuning[QuestKind].BaseDuration := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Ord(QuestKind) - Ord(Low(TQuestType)), ',')));
+  for QuestKind := Low(TQuestKind) to High(TQuestKind) do QuestTuning[QuestKind].BaseDuration := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Ord(QuestKind) - Ord(Low(TQuestKind)), ',')));
   Values := LanguageDataConfig.GetBlockByPath('Quest').GetParam('QuestMoneyBase');
-  for QuestKind := Low(TQuestType) to High(TQuestType) do QuestTuning[QuestKind].BaseRewardMoney := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Ord(QuestKind) - Ord(Low(TQuestType)), ',')));
+  for QuestKind := Low(TQuestKind) to High(TQuestKind) do QuestTuning[QuestKind].BaseRewardMoney := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Ord(QuestKind) - Ord(Low(TQuestKind)), ',')));
   Values := LanguageDataConfig.GetBlockByPath('Quest').GetParam('QuestMoneyPerc');
-  for QuestKind := Low(TQuestType) to High(TQuestType) do QuestTuning[QuestKind].RewardCapitalPercent := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Ord(QuestKind) - Ord(Low(TQuestType)), ',')));
+  for QuestKind := Low(TQuestKind) to High(TQuestKind) do QuestTuning[QuestKind].RewardCapitalPercent := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Ord(QuestKind) - Ord(Low(TQuestKind)), ',')));
   Block := LanguageDataConfig.GetBlockByPath('Items.Goods');
   GoodsInflationMin := ExtractDecimalToSingleW(Block.GetParam('kInflationMin'));
   GoodsInflationMax := ExtractDecimalToSingleW(Block.GetParam('kInflationMax'));
@@ -2488,26 +2547,26 @@ begin
       else SecondaryDamageRadius := 0;
       MiningFactor := StrToFloat(AnsiString(Block.GetParam('MiningFactor')));
       ArcadeWeaponType := Ord(Kind);
-      Availability := waFree;
+      Availability := availability_unrestricted;
       DamageFlags := [];
       Values := Block.GetParam('DamageSet');
       for DamageKind := Low(WeaponDamageFlagNames) to High(WeaponDamageFlagNames) do
-        if not (DamageKind in [Ord(dkDecelerateA), Ord(dkDecelerateAEx), Ord(dkNonLethal)]) and (Pos(WeaponDamageFlagNames[DamageKind], Values) > 0) then
-          Include(DamageFlags, TDamageKind(DamageKind));
-      ShotType := wstNormal;
+        if not (DamageKind in [Ord(damage_flag_artefact_slow), Ord(damage_flag_extra_artefact_slow), Ord(damage_flag_nonlethal)]) and (Pos(WeaponDamageFlagNames[DamageKind], Values) > 0) then
+          Include(DamageFlags, TDamageFlag(DamageKind));
+      ShotType := shot_single_target;
       ShotCount := 1;
       Values := Block.GetParam('ShotType');
       if Pos('Normal', Values) > 0 then
       begin
       end
-      else if Pos('Splash', Values) > 0 then ShotType := wstSplash
-      else if Pos('Exploder', Values) > 0 then ShotType := wstExploder
-      else if Pos('AreaDamage', Values) > 0 then ShotType := wstAreaDamage
-      else if Pos('Torpedo', Values) > 0 then ShotType := wstTorpedo
-      else if Pos('Missile', Values) > 0 then ShotType := wstMissile
-      else if Pos('Rocket', Values) > 0 then ShotType := wstRocket
-      else if Pos('Chain', Values) > 0 then ShotType := wstChain;
-      if ShotType in [wstChain, wstMissile, wstRocket] then ShotCount := ExtractDigitsToIntW(Values);
+      else if Pos('Splash', Values) > 0 then ShotType := shot_splash
+      else if Pos('Exploder', Values) > 0 then ShotType := shot_explode_on_kill
+      else if Pos('AreaDamage', Values) > 0 then ShotType := shot_area_damage
+      else if Pos('Torpedo', Values) > 0 then ShotType := shot_torpedo
+      else if Pos('Missile', Values) > 0 then ShotType := shot_missile
+      else if Pos('Rocket', Values) > 0 then ShotType := shot_rocket
+      else if Pos('Chain', Values) > 0 then ShotType := shot_chain;
+      if ShotType in [shot_chain, shot_missile, shot_rocket] then ShotCount := ExtractDigitsToIntW(Values);
       AttackCount := 1;
       if Block.CountParams('AttackCount') > 0 then AttackCount := StrToInt(AnsiString(Block.GetParam('AttackCount')));
       MissileRange := 0;
@@ -2527,39 +2586,39 @@ begin
     Kind := GetItemTypeFromMask(StandardWeaponItemTypes, Level);
     WeaponInfos[Kind].PrimarySE := 'Weapon.' + IntToStr(Ord(Kind) - 50);
     WeaponInfos[Kind].SecondarySE := 'Weapon.NoGraph';
-    if WeaponInfos[Kind].ShotType in [wstTorpedo, wstMissile, wstRocket] then
+    if WeaponInfos[Kind].ShotType in [shot_torpedo, shot_missile, shot_rocket] then
       WeaponInfos[Kind].AreaSE := 'Weapon.MissileHit'
     else WeaponInfos[Kind].AreaSE := '';
     WeaponInfos[Kind].DefaultPalette := 0;
     WeaponInfos[Kind].TypeHash := Ord(Kind) * 171;
   end;
-  WeaponInfos[t_Multiresonator].SecondarySE := 'Weapon.Nine';
-  WeaponInfos[t_IMHO9000].SecondarySE := 'Weapon.12';
-  WeaponInfos[t_Vertix].AreaSE := 'Weapon.13';
-  WeaponInfos[t_IndustrialLaser].InventionIndex := piIndustrialLaser;
-  WeaponInfos[t_FragmentationCannon].InventionIndex := piFragmentationCannon;
-  WeaponInfos[t_Flux].InventionIndex := piFlux;
-  WeaponInfos[t_MissileLauncher].InventionIndex := piMissileLauncher;
-  WeaponInfos[t_Treton].InventionIndex := piTreton;
-  WeaponInfos[t_WavePhaser].InventionIndex := piWavePhaser;
-  WeaponInfos[t_FlowBlaster].InventionIndex := piFlowBlaster;
-  WeaponInfos[t_ElectronicCutter].InventionIndex := piElectronicCutter;
-  WeaponInfos[t_Multiresonator].InventionIndex := piMultiresonator;
-  WeaponInfos[t_AtomicVision].InventionIndex := piAtomicVision;
-  WeaponInfos[t_Disintegrator].InventionIndex := piDisintegrator;
-  WeaponInfos[t_Turbogravitron].InventionIndex := piTurbogravitron;
-  WeaponInfos[t_IMHO9000].InventionIndex := piTurbogravitron;
-  WeaponInfos[t_Vertix].InventionIndex := piTurbogravitron;
-  WeaponInfos[t_TorpedoTube].InventionIndex := piTurbogravitron;
-  WeaponInfos[t_Esodapher].InventionIndex := piMultiresonator;
-  WeaponInfos[t_Caphasitor].InventionIndex := piFlux;
-  WeaponInfos[t_Lirecron].InventionIndex := piMissileLauncher;
-  WeaponInfos[t_IMHO9000].Availability := waNotSoldAndNodeRepair;
-  WeaponInfos[t_Vertix].Availability := waNotSoldAndNodeRepair;
-  WeaponInfos[t_TorpedoTube].Availability := waNotSoldAndNodeRepair;
-  WeaponInfos[t_Esodapher].Availability := waPirateOnly;
-  WeaponInfos[t_Caphasitor].Availability := waPirateOnly;
-  WeaponInfos[t_Lirecron].Availability := waPirateOnly;
+  WeaponInfos[item_multiresonator].SecondarySE := 'Weapon.Nine';
+  WeaponInfos[item_imho9000].SecondarySE := 'Weapon.12';
+  WeaponInfos[item_vertix].AreaSE := 'Weapon.13';
+  WeaponInfos[item_industrial_laser].InventionIndex := research_industrial_laser;
+  WeaponInfos[item_fragmentation_cannon].InventionIndex := research_fragmentation_cannon;
+  WeaponInfos[item_flux].InventionIndex := research_flux;
+  WeaponInfos[item_missile_launcher].InventionIndex := research_missile_launcher;
+  WeaponInfos[item_treton].InventionIndex := research_treton;
+  WeaponInfos[item_wave_phaser].InventionIndex := research_wave_phaser;
+  WeaponInfos[item_flow_blaster].InventionIndex := research_flow_blaster;
+  WeaponInfos[item_electronic_cutter].InventionIndex := research_electronic_cutter;
+  WeaponInfos[item_multiresonator].InventionIndex := research_multiresonator;
+  WeaponInfos[item_atomic_vision].InventionIndex := research_atomic_vision;
+  WeaponInfos[item_disintegrator].InventionIndex := research_disintegrator;
+  WeaponInfos[item_turbogravitron].InventionIndex := research_turbogravitron;
+  WeaponInfos[item_imho9000].InventionIndex := research_turbogravitron;
+  WeaponInfos[item_vertix].InventionIndex := research_turbogravitron;
+  WeaponInfos[item_torpedo_tube].InventionIndex := research_turbogravitron;
+  WeaponInfos[item_esodapher].InventionIndex := research_multiresonator;
+  WeaponInfos[item_caphasitor].InventionIndex := research_flux;
+  WeaponInfos[item_lirecron].InventionIndex := research_missile_launcher;
+  WeaponInfos[item_imho9000].Availability := availability_not_sold_node_repair;
+  WeaponInfos[item_vertix].Availability := availability_not_sold_node_repair;
+  WeaponInfos[item_torpedo_tube].Availability := availability_not_sold_node_repair;
+  WeaponInfos[item_esodapher].Availability := availability_pirate_only;
+  WeaponInfos[item_caphasitor].Availability := availability_pirate_only;
+  WeaponInfos[item_lirecron].Availability := availability_pirate_only;
 end;
 { @end $794754 }
 
@@ -2654,7 +2713,7 @@ begin
       begin
         Value := ReadMicroModuleParam(EquipmentBonusNames[BonusKind]);
         if Value = '' then StatBonuses[BonusKind] := 0
-        else if BonusKind in [bonExtraAkrinEff, bonExtraAkrinPenalty] then StatBonuses[BonusKind] := Round(ExtractDecimalToSingleW(Value) * 100)
+        else if BonusKind in [bonus_acryn_effect, bonus_acryn_penalty] then StatBonuses[BonusKind] := Round(ExtractDecimalToSingleW(Value) * 100)
         else StatBonuses[BonusKind] := StrToInt(AnsiString(Value));
       end;
       Value := ReadMicroModuleParam('Cost');
@@ -2672,9 +2731,9 @@ begin
       Value := ReadMicroModuleParam('Owner');
       if (Value = '') or (Value = 'Any') then
       begin
-        if SpecialOnly then AllowedHullOwnerMask := [oiMaloc..oiGaal, oiPirate]
-        else AllowedHullOwnerMask := [oiMaloc..oiDominator, oiPirate];
-        AllowedDominatorSeriesMask := [dsBlazer..dsTerron];
+        if SpecialOnly then AllowedHullOwnerMask := [owner_maloc..owner_gaal, owner_pirate]
+        else AllowedHullOwnerMask := [owner_maloc..owner_dominator, owner_pirate];
+        AllowedDominatorSeriesMask := [series_blazer..series_terron];
         AllowedCustomHullFactions := '';
       end
       else
@@ -2683,39 +2742,39 @@ begin
         AllowedDominatorSeriesMask := [];
         Tokens := ReplaceAllWideString(Value, ' ', '');
         Tokens := '<' + ReplaceAllWideString(Tokens, ',', '>,<') + '>';
-        if ConsumeMicroModuleToken('<Maloc>') then Include(AllowedHullOwnerMask, oiMaloc);
-        if ConsumeMicroModuleToken('<Peleng>') then Include(AllowedHullOwnerMask, oiPeleng);
-        if ConsumeMicroModuleToken('<People>') then Include(AllowedHullOwnerMask, oiHuman);
-        if ConsumeMicroModuleToken('<Fei>') then Include(AllowedHullOwnerMask, oiFeyan);
-        if ConsumeMicroModuleToken('<Gaal>') then Include(AllowedHullOwnerMask, oiGaal);
-        if ConsumeMicroModuleToken('<PirateClan>') then Include(AllowedHullOwnerMask, oiPirate);
-        if ConsumeMicroModuleToken('<None>') then Include(AllowedHullOwnerMask, oiUninhabited);
+        if ConsumeMicroModuleToken('<Maloc>') then Include(AllowedHullOwnerMask, owner_maloc);
+        if ConsumeMicroModuleToken('<Peleng>') then Include(AllowedHullOwnerMask, owner_peleng);
+        if ConsumeMicroModuleToken('<People>') then Include(AllowedHullOwnerMask, owner_human);
+        if ConsumeMicroModuleToken('<Fei>') then Include(AllowedHullOwnerMask, owner_feyan);
+        if ConsumeMicroModuleToken('<Gaal>') then Include(AllowedHullOwnerMask, owner_gaal);
+        if ConsumeMicroModuleToken('<PirateClan>') then Include(AllowedHullOwnerMask, owner_pirate);
+        if ConsumeMicroModuleToken('<None>') then Include(AllowedHullOwnerMask, owner_uninhabited);
         if SpecialOnly then
         begin
-          if ConsumeMicroModuleToken('<Kling>') then Include(AllowedHullOwnerMask, oiDominator);
+          if ConsumeMicroModuleToken('<Kling>') then Include(AllowedHullOwnerMask, owner_dominator);
           ConsumeMicroModuleToken('<NonKling>');
         end
         else
         begin
-          if not ConsumeMicroModuleToken('<NonKling>') then Include(AllowedHullOwnerMask, oiDominator);
+          if not ConsumeMicroModuleToken('<NonKling>') then Include(AllowedHullOwnerMask, owner_dominator);
           ConsumeMicroModuleToken('<Kling>');
         end;
         if ConsumeMicroModuleToken('<Blazer>') then
         begin
-          Include(AllowedDominatorSeriesMask, dsBlazer);
-          if SpecialOnly then Include(AllowedHullOwnerMask, oiDominator);
+          Include(AllowedDominatorSeriesMask, series_blazer);
+          if SpecialOnly then Include(AllowedHullOwnerMask, owner_dominator);
         end;
         if ConsumeMicroModuleToken('<Terron>') then
         begin
-          Include(AllowedDominatorSeriesMask, dsTerron);
-          if SpecialOnly then Include(AllowedHullOwnerMask, oiDominator);
+          Include(AllowedDominatorSeriesMask, series_terron);
+          if SpecialOnly then Include(AllowedHullOwnerMask, owner_dominator);
         end;
         if ConsumeMicroModuleToken('<Keller>') then
         begin
-          Include(AllowedDominatorSeriesMask, dsKeller);
-          if SpecialOnly then Include(AllowedHullOwnerMask, oiDominator);
+          Include(AllowedDominatorSeriesMask, series_keller);
+          if SpecialOnly then Include(AllowedHullOwnerMask, owner_dominator);
         end;
-        if AllowedDominatorSeriesMask = [] then AllowedDominatorSeriesMask := [dsBlazer..dsTerron];
+        if AllowedDominatorSeriesMask = [] then AllowedDominatorSeriesMask := [series_blazer..series_terron];
         AllowedCustomHullFactions := '';
         for Part := 0 to CountDelimitedPartsW(Tokens, ',') - 1 do
         begin
@@ -2731,7 +2790,7 @@ begin
       Value := ReadMicroModuleParam('Equipments');
       if (Value = '') or (Value = 'Any') then
       begin
-        AllowedItemTypes := [t_Hull..t_CustomWeapon];
+        AllowedItemTypes := [item_hull..item_custom_weapon];
         AllowedCustomWeaponTypes := 'Any';
       end
       else
@@ -2740,24 +2799,24 @@ begin
         AllowedCustomWeaponTypes := '';
         Tokens := ReplaceAllWideString(Value, ' ', '');
         Tokens := '<' + ReplaceAllWideString(Tokens, ',', '>,<') + '>';
-        if ConsumeMicroModuleToken('<Hull>') then Include(AllowedItemTypes, t_Hull);
-        if ConsumeMicroModuleToken('<FuelTank>') then Include(AllowedItemTypes, t_FuelTanks);
-        if ConsumeMicroModuleToken('<Engine>') then Include(AllowedItemTypes, t_Engine);
-        if ConsumeMicroModuleToken('<Radar>') then Include(AllowedItemTypes, t_Radar);
-        if ConsumeMicroModuleToken('<Scaner>') then Include(AllowedItemTypes, t_Scaner);
-        if ConsumeMicroModuleToken('<Droid>') then Include(AllowedItemTypes, t_RepairRobot);
-        if ConsumeMicroModuleToken('<Hook>') then Include(AllowedItemTypes, t_CargoHook);
-        if ConsumeMicroModuleToken('<DefGenerator>') then Include(AllowedItemTypes, t_DefGenerator);
+        if ConsumeMicroModuleToken('<Hull>') then Include(AllowedItemTypes, item_hull);
+        if ConsumeMicroModuleToken('<FuelTank>') then Include(AllowedItemTypes, item_fuel_tanks);
+        if ConsumeMicroModuleToken('<Engine>') then Include(AllowedItemTypes, item_engine);
+        if ConsumeMicroModuleToken('<Radar>') then Include(AllowedItemTypes, item_radar);
+        if ConsumeMicroModuleToken('<Scaner>') then Include(AllowedItemTypes, item_scanner);
+        if ConsumeMicroModuleToken('<Droid>') then Include(AllowedItemTypes, item_repair_robot);
+        if ConsumeMicroModuleToken('<Hook>') then Include(AllowedItemTypes, item_cargo_hook);
+        if ConsumeMicroModuleToken('<DefGenerator>') then Include(AllowedItemTypes, item_defense_generator);
         for Part := 1 to CountItemTypesInMask(StandardWeaponItemTypes) do
         begin
           Kind := GetItemTypeFromMask(StandardWeaponItemTypes, Part);
           if ConsumeMicroModuleToken('<' + ItemTypeNames[Kind] + '>') then
             Include(AllowedItemTypes, Kind)
-          else if (Pos('<WMissile>', Tokens) > 0) and (dkMissile in WeaponInfos[Kind].DamageFlags) then
+          else if (Pos('<WMissile>', Tokens) > 0) and (damage_flag_missile in WeaponInfos[Kind].DamageFlags) then
             Include(AllowedItemTypes, Kind)
-          else if (Pos('<WSplinter>', Tokens) > 0) and (dkSplinter in WeaponInfos[Kind].DamageFlags) then
+          else if (Pos('<WSplinter>', Tokens) > 0) and (damage_flag_splinter in WeaponInfos[Kind].DamageFlags) then
             Include(AllowedItemTypes, Kind)
-          else if (Pos('<WEnergy>', Tokens) > 0) and (dkEnergy in WeaponInfos[Kind].DamageFlags) then
+          else if (Pos('<WEnergy>', Tokens) > 0) and (damage_flag_energy in WeaponInfos[Kind].DamageFlags) then
             Include(AllowedItemTypes, Kind);
         end;
         for Part := 0 to CountDelimitedPartsW(Tokens, ',') - 1 do
@@ -2772,17 +2831,17 @@ begin
       OfferStationTypes := [];
       OfferStationNames := ReplaceAllWideString(Value, ' ', '');
       OfferStationNames := '<' + ReplaceAllWideString(OfferStationNames, ',', '>,<') + '>';
-      if Value = 'Any' then OfferStationTypes := [rstRangerCenter..rstDominion]
+      if Value = 'Any' then OfferStationTypes := [station_ranger_center..station_dominion]
       else if Value <> '' then
-        for StationKind := rstRangerCenter to rstDominion do
+        for StationKind := station_ranger_center to station_dominion do
           if Pos(ShipTypeNames[StationKind].Name, Value) > 0 then Include(OfferStationTypes, StationKind);
       OnPlanets := ExtractDigitsToIntW(ReadMicroModuleParam('OnPlanets')) <> 0;
       Value := ReadMicroModuleParam('WeaponMods');
       WeaponDamageFlags := [];
       if Value <> '' then
         for DamageKind := Low(WeaponDamageFlagNames) to High(WeaponDamageFlagNames) do
-          if not (DamageKind in [Ord(dkEnergy)..Ord(dkMissile)]) and not (DamageKind in [Ord(dkDecelerateA), Ord(dkDecelerateAEx), Ord(dkNonLethal)]) and (Pos(WeaponDamageFlagNames[DamageKind], Value) > 0) then
-            Include(WeaponDamageFlags, TDamageKind(DamageKind));
+          if not (DamageKind in [Ord(damage_flag_energy)..Ord(damage_flag_missile)]) and not (DamageKind in [Ord(damage_flag_artefact_slow), Ord(damage_flag_extra_artefact_slow), Ord(damage_flag_nonlethal)]) and (Pos(WeaponDamageFlagNames[DamageKind], Value) > 0) then
+            Include(WeaponDamageFlags, TDamageFlag(DamageKind));
       KindGraph := ReadMicroModuleParam('KindGraph');
       MissileGraph := ReadMicroModuleParam('MissileGraph');
       Value := ReadMicroModuleParam('ShotVisual');
@@ -2801,270 +2860,270 @@ end;
 procedure InitializeCaptainHealthDefinitions;
 var I: Integer; Path, Value: WideString;
 begin
-  CaptainHealthDefinitions[heBlindness].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heBlindness].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heBlindness].AllowedRatingBands := [2, 3, 4, 5];
-  CaptainHealthDefinitions[heBlindness].AllowedRanks := [2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heBlindness].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heBlindness].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[heBlindness].DevelopmentRate := 100.0;
-  CaptainHealthDefinitions[heBlindness].InfectionChance := 1.0;
-  CaptainHealthDefinitions[heBlindness].Locations := [hlCombat];
-  CaptainHealthDefinitions[heBlindness].Duration := 150;
+  CaptainHealthDefinitions[disease_blindness].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[disease_blindness].AllowedOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[disease_blindness].AllowedRatingBands := [2, 3, 4, 5];
+  CaptainHealthDefinitions[disease_blindness].AllowedRanks := [2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[disease_blindness].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[disease_blindness].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[disease_blindness].DevelopmentRate := 100.0;
+  CaptainHealthDefinitions[disease_blindness].InfectionChance := 1.0;
+  CaptainHealthDefinitions[disease_blindness].Locations := [health_in_combat];
+  CaptainHealthDefinitions[disease_blindness].Duration := 150;
 
-  CaptainHealthDefinitions[heChekumash].AllowedLocationOwners := [oiPeleng];
-  CaptainHealthDefinitions[heChekumash].AllowedOwners := [oiPeleng, oiHuman, oiFeyan, oiGaal];
-  CaptainHealthDefinitions[heChekumash].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[heChekumash].AllowedRanks := [3, 4, 5];
-  CaptainHealthDefinitions[heChekumash].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heChekumash].MedicalPriceSizeLevel := 4;
-  CaptainHealthDefinitions[heChekumash].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[heChekumash].InfectionChance := 1.0;
-  CaptainHealthDefinitions[heChekumash].Locations := [hlPlanet];
-  CaptainHealthDefinitions[heChekumash].Duration := 555;
+  CaptainHealthDefinitions[disease_chekumash].AllowedLocationOwners := [owner_peleng];
+  CaptainHealthDefinitions[disease_chekumash].AllowedOwners := [owner_peleng, owner_human, owner_feyan, owner_gaal];
+  CaptainHealthDefinitions[disease_chekumash].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[disease_chekumash].AllowedRanks := [3, 4, 5];
+  CaptainHealthDefinitions[disease_chekumash].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[disease_chekumash].MedicalPriceSizeLevel := 4;
+  CaptainHealthDefinitions[disease_chekumash].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[disease_chekumash].InfectionChance := 1.0;
+  CaptainHealthDefinitions[disease_chekumash].Locations := [health_on_planet];
+  CaptainHealthDefinitions[disease_chekumash].Duration := 555;
 
-  CaptainHealthDefinitions[heHolyFanaticism].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heHolyFanaticism].AllowedOwners := [oiMaloc, oiPeleng, oiHuman];
-  CaptainHealthDefinitions[heHolyFanaticism].AllowedRatingBands := [3, 4, 5];
-  CaptainHealthDefinitions[heHolyFanaticism].AllowedRanks := [3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heHolyFanaticism].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heHolyFanaticism].MedicalPriceSizeLevel := 3;
-  CaptainHealthDefinitions[heHolyFanaticism].DevelopmentRate := 100.0;
-  CaptainHealthDefinitions[heHolyFanaticism].InfectionChance := 1.0;
-  CaptainHealthDefinitions[heHolyFanaticism].Locations := [hlCombat];
-  CaptainHealthDefinitions[heHolyFanaticism].Duration := 200;
+  CaptainHealthDefinitions[disease_holy_fanaticism].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[disease_holy_fanaticism].AllowedOwners := [owner_maloc, owner_peleng, owner_human];
+  CaptainHealthDefinitions[disease_holy_fanaticism].AllowedRatingBands := [3, 4, 5];
+  CaptainHealthDefinitions[disease_holy_fanaticism].AllowedRanks := [3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[disease_holy_fanaticism].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[disease_holy_fanaticism].MedicalPriceSizeLevel := 3;
+  CaptainHealthDefinitions[disease_holy_fanaticism].DevelopmentRate := 100.0;
+  CaptainHealthDefinitions[disease_holy_fanaticism].InfectionChance := 1.0;
+  CaptainHealthDefinitions[disease_holy_fanaticism].Locations := [health_in_combat];
+  CaptainHealthDefinitions[disease_holy_fanaticism].Duration := 200;
 
-  CaptainHealthDefinitions[heComplexImmunocide].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heComplexImmunocide].AllowedOwners := [oiPeleng, oiHuman, oiFeyan, oiGaal];
-  CaptainHealthDefinitions[heComplexImmunocide].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[heComplexImmunocide].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heComplexImmunocide].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heComplexImmunocide].MedicalPriceSizeLevel := 5;
-  CaptainHealthDefinitions[heComplexImmunocide].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[heComplexImmunocide].InfectionChance := 1.0;
-  CaptainHealthDefinitions[heComplexImmunocide].Locations := [hlNormalSpace];
-  CaptainHealthDefinitions[heComplexImmunocide].Duration := 1000;
+  CaptainHealthDefinitions[disease_complex_immunocide].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[disease_complex_immunocide].AllowedOwners := [owner_peleng, owner_human, owner_feyan, owner_gaal];
+  CaptainHealthDefinitions[disease_complex_immunocide].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[disease_complex_immunocide].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[disease_complex_immunocide].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[disease_complex_immunocide].MedicalPriceSizeLevel := 5;
+  CaptainHealthDefinitions[disease_complex_immunocide].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[disease_complex_immunocide].InfectionChance := 1.0;
+  CaptainHealthDefinitions[disease_complex_immunocide].Locations := [health_in_space];
+  CaptainHealthDefinitions[disease_complex_immunocide].Duration := 1000;
 
-  CaptainHealthDefinitions[heMysteriousLuatanza].AllowedLocationOwners := [oiGaal];
-  CaptainHealthDefinitions[heMysteriousLuatanza].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heMysteriousLuatanza].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[heMysteriousLuatanza].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heMysteriousLuatanza].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heMysteriousLuatanza].MedicalPriceSizeLevel := 1;
-  CaptainHealthDefinitions[heMysteriousLuatanza].DevelopmentRate := 10.0;
-  CaptainHealthDefinitions[heMysteriousLuatanza].InfectionChance := 1.0;
-  CaptainHealthDefinitions[heMysteriousLuatanza].Locations := [hlPlanet, hlDocked];
-  CaptainHealthDefinitions[heMysteriousLuatanza].Duration := 170;
+  CaptainHealthDefinitions[disease_mysterious_luatanza].AllowedLocationOwners := [owner_gaal];
+  CaptainHealthDefinitions[disease_mysterious_luatanza].AllowedOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[disease_mysterious_luatanza].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[disease_mysterious_luatanza].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[disease_mysterious_luatanza].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[disease_mysterious_luatanza].MedicalPriceSizeLevel := 1;
+  CaptainHealthDefinitions[disease_mysterious_luatanza].DevelopmentRate := 10.0;
+  CaptainHealthDefinitions[disease_mysterious_luatanza].InfectionChance := 1.0;
+  CaptainHealthDefinitions[disease_mysterious_luatanza].Locations := [health_on_planet, health_docked];
+  CaptainHealthDefinitions[disease_mysterious_luatanza].Duration := 170;
 
-  CaptainHealthDefinitions[heDrugAddiction].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heDrugAddiction].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heDrugAddiction].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[heDrugAddiction].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heDrugAddiction].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heDrugAddiction].MedicalPriceSizeLevel := 4;
-  CaptainHealthDefinitions[heDrugAddiction].DevelopmentRate := 100.0;
-  CaptainHealthDefinitions[heDrugAddiction].InfectionChance := 1.0;
-  CaptainHealthDefinitions[heDrugAddiction].Locations := [];
-  CaptainHealthDefinitions[heDrugAddiction].Duration := 1000;
+  CaptainHealthDefinitions[disease_drug_addiction].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[disease_drug_addiction].AllowedOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[disease_drug_addiction].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[disease_drug_addiction].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[disease_drug_addiction].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[disease_drug_addiction].MedicalPriceSizeLevel := 4;
+  CaptainHealthDefinitions[disease_drug_addiction].DevelopmentRate := 100.0;
+  CaptainHealthDefinitions[disease_drug_addiction].InfectionChance := 1.0;
+  CaptainHealthDefinitions[disease_drug_addiction].Locations := [];
+  CaptainHealthDefinitions[disease_drug_addiction].Duration := 1000;
 
-  CaptainHealthDefinitions[heWhirlwindConcussion].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heWhirlwindConcussion].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heWhirlwindConcussion].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[heWhirlwindConcussion].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heWhirlwindConcussion].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heWhirlwindConcussion].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[heWhirlwindConcussion].DevelopmentRate := 100.0;
-  CaptainHealthDefinitions[heWhirlwindConcussion].InfectionChance := 1.0;
-  CaptainHealthDefinitions[heWhirlwindConcussion].Locations := [hlCombat];
-  CaptainHealthDefinitions[heWhirlwindConcussion].Duration := 130;
+  CaptainHealthDefinitions[disease_whirlwind_concussion].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[disease_whirlwind_concussion].AllowedOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[disease_whirlwind_concussion].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[disease_whirlwind_concussion].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[disease_whirlwind_concussion].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[disease_whirlwind_concussion].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[disease_whirlwind_concussion].DevelopmentRate := 100.0;
+  CaptainHealthDefinitions[disease_whirlwind_concussion].InfectionChance := 1.0;
+  CaptainHealthDefinitions[disease_whirlwind_concussion].Locations := [health_in_combat];
+  CaptainHealthDefinitions[disease_whirlwind_concussion].Duration := 130;
 
-  CaptainHealthDefinitions[hePulledMuscle].AllowedLocationOwners := [oiPeleng, oiHuman, oiFeyan, oiGaal];
-  CaptainHealthDefinitions[hePulledMuscle].AllowedOwners := [oiPeleng, oiHuman, oiFeyan, oiGaal];
-  CaptainHealthDefinitions[hePulledMuscle].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[hePulledMuscle].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[hePulledMuscle].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[hePulledMuscle].MedicalPriceSizeLevel := 1;
-  CaptainHealthDefinitions[hePulledMuscle].DevelopmentRate := 100.0;
-  CaptainHealthDefinitions[hePulledMuscle].InfectionChance := 1.0;
-  CaptainHealthDefinitions[hePulledMuscle].Locations := [hlCombat];
-  CaptainHealthDefinitions[hePulledMuscle].Duration := 100;
+  CaptainHealthDefinitions[disease_pulled_muscle].AllowedLocationOwners := [owner_peleng, owner_human, owner_feyan, owner_gaal];
+  CaptainHealthDefinitions[disease_pulled_muscle].AllowedOwners := [owner_peleng, owner_human, owner_feyan, owner_gaal];
+  CaptainHealthDefinitions[disease_pulled_muscle].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[disease_pulled_muscle].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[disease_pulled_muscle].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[disease_pulled_muscle].MedicalPriceSizeLevel := 1;
+  CaptainHealthDefinitions[disease_pulled_muscle].DevelopmentRate := 100.0;
+  CaptainHealthDefinitions[disease_pulled_muscle].InfectionChance := 1.0;
+  CaptainHealthDefinitions[disease_pulled_muscle].Locations := [health_in_combat];
+  CaptainHealthDefinitions[disease_pulled_muscle].Duration := 100;
 
-  CaptainHealthDefinitions[heGrandMalosausus].AllowedLocationOwners := [oiMaloc];
-  CaptainHealthDefinitions[heGrandMalosausus].AllowedOwners := [oiMaloc];
-  CaptainHealthDefinitions[heGrandMalosausus].AllowedRatingBands := [2, 3, 4, 5];
-  CaptainHealthDefinitions[heGrandMalosausus].AllowedRanks := [2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heGrandMalosausus].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heGrandMalosausus].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[heGrandMalosausus].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[heGrandMalosausus].InfectionChance := 1.0;
-  CaptainHealthDefinitions[heGrandMalosausus].Locations := [hlPlanet, hlDocked, hlNormalSpace];
-  CaptainHealthDefinitions[heGrandMalosausus].Duration := 180;
+  CaptainHealthDefinitions[disease_grand_malosausus].AllowedLocationOwners := [owner_maloc];
+  CaptainHealthDefinitions[disease_grand_malosausus].AllowedOwners := [owner_maloc];
+  CaptainHealthDefinitions[disease_grand_malosausus].AllowedRatingBands := [2, 3, 4, 5];
+  CaptainHealthDefinitions[disease_grand_malosausus].AllowedRanks := [2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[disease_grand_malosausus].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[disease_grand_malosausus].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[disease_grand_malosausus].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[disease_grand_malosausus].InfectionChance := 1.0;
+  CaptainHealthDefinitions[disease_grand_malosausus].Locations := [health_on_planet, health_docked, health_in_space];
+  CaptainHealthDefinitions[disease_grand_malosausus].Duration := 180;
 
-  CaptainHealthDefinitions[heBitterPelenosia].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heBitterPelenosia].AllowedOwners := [oiPeleng];
-  CaptainHealthDefinitions[heBitterPelenosia].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[heBitterPelenosia].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heBitterPelenosia].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heBitterPelenosia].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[heBitterPelenosia].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[heBitterPelenosia].InfectionChance := 1.0;
-  CaptainHealthDefinitions[heBitterPelenosia].Locations := [hlPlanet, hlDocked, hlNormalSpace];
-  CaptainHealthDefinitions[heBitterPelenosia].Duration := 122;
+  CaptainHealthDefinitions[disease_bitter_pelenosia].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[disease_bitter_pelenosia].AllowedOwners := [owner_peleng];
+  CaptainHealthDefinitions[disease_bitter_pelenosia].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[disease_bitter_pelenosia].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[disease_bitter_pelenosia].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[disease_bitter_pelenosia].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[disease_bitter_pelenosia].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[disease_bitter_pelenosia].InfectionChance := 1.0;
+  CaptainHealthDefinitions[disease_bitter_pelenosia].Locations := [health_on_planet, health_docked, health_in_space];
+  CaptainHealthDefinitions[disease_bitter_pelenosia].Duration := 122;
 
-  CaptainHealthDefinitions[heAkaSezyanka].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heAkaSezyanka].AllowedOwners := [oiFeyan];
-  CaptainHealthDefinitions[heAkaSezyanka].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[heAkaSezyanka].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heAkaSezyanka].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heAkaSezyanka].MedicalPriceSizeLevel := 4;
-  CaptainHealthDefinitions[heAkaSezyanka].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[heAkaSezyanka].InfectionChance := 1.0;
-  CaptainHealthDefinitions[heAkaSezyanka].Locations := [hlPlanet, hlDocked];
-  CaptainHealthDefinitions[heAkaSezyanka].Duration := 164;
+  CaptainHealthDefinitions[disease_aka_sezyanka].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[disease_aka_sezyanka].AllowedOwners := [owner_feyan];
+  CaptainHealthDefinitions[disease_aka_sezyanka].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[disease_aka_sezyanka].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[disease_aka_sezyanka].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[disease_aka_sezyanka].MedicalPriceSizeLevel := 4;
+  CaptainHealthDefinitions[disease_aka_sezyanka].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[disease_aka_sezyanka].InfectionChance := 1.0;
+  CaptainHealthDefinitions[disease_aka_sezyanka].Locations := [health_on_planet, health_docked];
+  CaptainHealthDefinitions[disease_aka_sezyanka].Duration := 164;
 
-  CaptainHealthDefinitions[heNewMolizone].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heNewMolizone].AllowedOwners := [oiGaal];
-  CaptainHealthDefinitions[heNewMolizone].AllowedRatingBands := [2, 3, 4, 5];
-  CaptainHealthDefinitions[heNewMolizone].AllowedRanks := [2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heNewMolizone].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heNewMolizone].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[heNewMolizone].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[heNewMolizone].InfectionChance := 0.5;
-  CaptainHealthDefinitions[heNewMolizone].Locations := [hlPlanet, hlDocked, hlNormalSpace];
-  CaptainHealthDefinitions[heNewMolizone].Duration := 88;
+  CaptainHealthDefinitions[disease_new_molizone].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[disease_new_molizone].AllowedOwners := [owner_gaal];
+  CaptainHealthDefinitions[disease_new_molizone].AllowedRatingBands := [2, 3, 4, 5];
+  CaptainHealthDefinitions[disease_new_molizone].AllowedRanks := [2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[disease_new_molizone].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[disease_new_molizone].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[disease_new_molizone].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[disease_new_molizone].InfectionChance := 0.5;
+  CaptainHealthDefinitions[disease_new_molizone].Locations := [health_on_planet, health_docked, health_in_space];
+  CaptainHealthDefinitions[disease_new_molizone].Duration := 88;
 
-  RadiationHealthDefinitions[1].AllowedLocationOwners := [oiMaloc..oiGaal];
-  RadiationHealthDefinitions[1].AllowedOwners := [oiMaloc..oiGaal];
+  RadiationHealthDefinitions[1].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  RadiationHealthDefinitions[1].AllowedOwners := [owner_maloc..owner_gaal];
   RadiationHealthDefinitions[1].AllowedRatingBands := [1, 2, 3, 4, 5];
   RadiationHealthDefinitions[1].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  RadiationHealthDefinitions[1].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  RadiationHealthDefinitions[1].AllowedCareers := [career_trader, career_pirate, career_warrior];
   RadiationHealthDefinitions[1].MedicalPriceSizeLevel := 4;
   RadiationHealthDefinitions[1].DevelopmentRate := 100.0;
   RadiationHealthDefinitions[1].InfectionChance := 0.0;
   RadiationHealthDefinitions[1].Locations := [];
   RadiationHealthDefinitions[1].Duration := 30;
 
-  CaptainHealthDefinitions[heMaloqSizha].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heMaloqSizha].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heMaloqSizha].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[heMaloqSizha].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heMaloqSizha].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heMaloqSizha].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[heMaloqSizha].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[heMaloqSizha].InfectionChance := 0.9;
-  CaptainHealthDefinitions[heMaloqSizha].Duration := 140;
+  CaptainHealthDefinitions[stimulant_maloq_sizha].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_maloq_sizha].AllowedOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_maloq_sizha].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[stimulant_maloq_sizha].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[stimulant_maloq_sizha].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[stimulant_maloq_sizha].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[stimulant_maloq_sizha].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[stimulant_maloq_sizha].InfectionChance := 0.9;
+  CaptainHealthDefinitions[stimulant_maloq_sizha].Duration := 140;
 
-  CaptainHealthDefinitions[heOneEyedKhamas].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heOneEyedKhamas].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heOneEyedKhamas].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[heOneEyedKhamas].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heOneEyedKhamas].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heOneEyedKhamas].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[heOneEyedKhamas].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[heOneEyedKhamas].InfectionChance := 0.9;
-  CaptainHealthDefinitions[heOneEyedKhamas].Duration := 130;
+  CaptainHealthDefinitions[stimulant_one_eyed_khamas].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_one_eyed_khamas].AllowedOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_one_eyed_khamas].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[stimulant_one_eyed_khamas].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[stimulant_one_eyed_khamas].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[stimulant_one_eyed_khamas].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[stimulant_one_eyed_khamas].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[stimulant_one_eyed_khamas].InfectionChance := 0.9;
+  CaptainHealthDefinitions[stimulant_one_eyed_khamas].Duration := 130;
 
-  CaptainHealthDefinitions[heStardust].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heStardust].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heStardust].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[heStardust].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heStardust].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heStardust].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[heStardust].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[heStardust].InfectionChance := 0.8;
-  CaptainHealthDefinitions[heStardust].Duration := 140;
+  CaptainHealthDefinitions[stimulant_stardust].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_stardust].AllowedOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_stardust].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[stimulant_stardust].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[stimulant_stardust].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[stimulant_stardust].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[stimulant_stardust].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[stimulant_stardust].InfectionChance := 0.8;
+  CaptainHealthDefinitions[stimulant_stardust].Duration := 140;
 
-  CaptainHealthDefinitions[heSuperTechnician].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heSuperTechnician].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heSuperTechnician].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[heSuperTechnician].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heSuperTechnician].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heSuperTechnician].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[heSuperTechnician].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[heSuperTechnician].InfectionChance := 0.4;
-  CaptainHealthDefinitions[heSuperTechnician].Duration := 120;
+  CaptainHealthDefinitions[stimulant_super_technician].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_super_technician].AllowedOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_super_technician].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[stimulant_super_technician].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[stimulant_super_technician].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[stimulant_super_technician].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[stimulant_super_technician].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[stimulant_super_technician].InfectionChance := 0.4;
+  CaptainHealthDefinitions[stimulant_super_technician].Duration := 120;
 
-  CaptainHealthDefinitions[heGaalianAlacrity].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heGaalianAlacrity].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heGaalianAlacrity].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[heGaalianAlacrity].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heGaalianAlacrity].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heGaalianAlacrity].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[heGaalianAlacrity].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[heGaalianAlacrity].InfectionChance := 0.9;
-  CaptainHealthDefinitions[heGaalianAlacrity].Duration := 90;
+  CaptainHealthDefinitions[stimulant_gaalian_alacrity].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_gaalian_alacrity].AllowedOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_gaalian_alacrity].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[stimulant_gaalian_alacrity].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[stimulant_gaalian_alacrity].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[stimulant_gaalian_alacrity].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[stimulant_gaalian_alacrity].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[stimulant_gaalian_alacrity].InfectionChance := 0.9;
+  CaptainHealthDefinitions[stimulant_gaalian_alacrity].Duration := 90;
 
-  CaptainHealthDefinitions[heBloodDjogar].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heBloodDjogar].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heBloodDjogar].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[heBloodDjogar].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heBloodDjogar].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heBloodDjogar].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[heBloodDjogar].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[heBloodDjogar].InfectionChance := 0.8;
-  CaptainHealthDefinitions[heBloodDjogar].Duration := 300;
+  CaptainHealthDefinitions[stimulant_blood_djogar].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_blood_djogar].AllowedOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_blood_djogar].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[stimulant_blood_djogar].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[stimulant_blood_djogar].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[stimulant_blood_djogar].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[stimulant_blood_djogar].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[stimulant_blood_djogar].InfectionChance := 0.8;
+  CaptainHealthDefinitions[stimulant_blood_djogar].Duration := 300;
 
-  CaptainHealthDefinitions[heRagobamWhisper].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heRagobamWhisper].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heRagobamWhisper].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[heRagobamWhisper].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heRagobamWhisper].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heRagobamWhisper].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[heRagobamWhisper].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[heRagobamWhisper].InfectionChance := 0.9;
-  CaptainHealthDefinitions[heRagobamWhisper].Duration := 140;
+  CaptainHealthDefinitions[stimulant_ragobam_whisper].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_ragobam_whisper].AllowedOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_ragobam_whisper].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[stimulant_ragobam_whisper].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[stimulant_ragobam_whisper].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[stimulant_ragobam_whisper].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[stimulant_ragobam_whisper].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[stimulant_ragobam_whisper].InfectionChance := 0.9;
+  CaptainHealthDefinitions[stimulant_ragobam_whisper].Duration := 140;
 
-  CaptainHealthDefinitions[heShakhmandooLeader].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heShakhmandooLeader].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heShakhmandooLeader].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[heShakhmandooLeader].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heShakhmandooLeader].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heShakhmandooLeader].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[heShakhmandooLeader].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[heShakhmandooLeader].InfectionChance := 0.9;
-  CaptainHealthDefinitions[heShakhmandooLeader].Duration := 200;
+  CaptainHealthDefinitions[stimulant_shakhmandoo_leader].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_shakhmandoo_leader].AllowedOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_shakhmandoo_leader].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[stimulant_shakhmandoo_leader].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[stimulant_shakhmandoo_leader].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[stimulant_shakhmandoo_leader].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[stimulant_shakhmandoo_leader].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[stimulant_shakhmandoo_leader].InfectionChance := 0.9;
+  CaptainHealthDefinitions[stimulant_shakhmandoo_leader].Duration := 200;
 
-  CaptainHealthDefinitions[hePsychotropicCache].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[hePsychotropicCache].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[hePsychotropicCache].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[hePsychotropicCache].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[hePsychotropicCache].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[hePsychotropicCache].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[hePsychotropicCache].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[hePsychotropicCache].InfectionChance := 0.9;
-  CaptainHealthDefinitions[hePsychotropicCache].Duration := 200;
+  CaptainHealthDefinitions[stimulant_psychotropic_cache].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_psychotropic_cache].AllowedOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_psychotropic_cache].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[stimulant_psychotropic_cache].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[stimulant_psychotropic_cache].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[stimulant_psychotropic_cache].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[stimulant_psychotropic_cache].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[stimulant_psychotropic_cache].InfectionChance := 0.9;
+  CaptainHealthDefinitions[stimulant_psychotropic_cache].Duration := 200;
 
-  CaptainHealthDefinitions[heBusinessMark].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heBusinessMark].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heBusinessMark].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[heBusinessMark].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heBusinessMark].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heBusinessMark].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[heBusinessMark].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[heBusinessMark].InfectionChance := 0.25;
-  CaptainHealthDefinitions[heBusinessMark].Duration := 150;
+  CaptainHealthDefinitions[stimulant_business_mark].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_business_mark].AllowedOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_business_mark].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[stimulant_business_mark].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[stimulant_business_mark].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[stimulant_business_mark].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[stimulant_business_mark].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[stimulant_business_mark].InfectionChance := 0.25;
+  CaptainHealthDefinitions[stimulant_business_mark].Duration := 150;
 
-  CaptainHealthDefinitions[heDoubleplex].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heDoubleplex].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heDoubleplex].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[heDoubleplex].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heDoubleplex].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heDoubleplex].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[heDoubleplex].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[heDoubleplex].InfectionChance := 0.15;
-  CaptainHealthDefinitions[heDoubleplex].Duration := 90;
+  CaptainHealthDefinitions[stimulant_doubleplex].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_doubleplex].AllowedOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_doubleplex].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[stimulant_doubleplex].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[stimulant_doubleplex].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[stimulant_doubleplex].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[stimulant_doubleplex].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[stimulant_doubleplex].InfectionChance := 0.15;
+  CaptainHealthDefinitions[stimulant_doubleplex].Duration := 90;
 
-  CaptainHealthDefinitions[heAbsoluteStatus].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heAbsoluteStatus].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[heAbsoluteStatus].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[heAbsoluteStatus].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[heAbsoluteStatus].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[heAbsoluteStatus].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[heAbsoluteStatus].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[heAbsoluteStatus].InfectionChance := 0.2;
-  CaptainHealthDefinitions[heAbsoluteStatus].Duration := 120;
+  CaptainHealthDefinitions[stimulant_absolute_status].AllowedLocationOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_absolute_status].AllowedOwners := [owner_maloc..owner_gaal];
+  CaptainHealthDefinitions[stimulant_absolute_status].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[stimulant_absolute_status].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[stimulant_absolute_status].AllowedCareers := [career_trader, career_pirate, career_warrior];
+  CaptainHealthDefinitions[stimulant_absolute_status].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[stimulant_absolute_status].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[stimulant_absolute_status].InfectionChance := 0.2;
+  CaptainHealthDefinitions[stimulant_absolute_status].Duration := 120;
 
-  for I := heBlindness to heNewMolizone do
+  for I := disease_blindness to disease_new_molizone do
     with CaptainHealthDefinitions[I] do
     begin
       Path := 'Illness.Illness.' + IntToStr(I - 1);
@@ -3170,55 +3229,55 @@ begin
       Text := ReadHullSeriesParam('Text');
       Value := ReadHullSeriesParam('Race');
       AllowedOwners := [];
-      if (Value = '') or (Value = 'Any') then AllowedOwners := [oiMaloc..oiGaal]
+      if (Value = '') or (Value = 'Any') then AllowedOwners := [owner_maloc..owner_gaal]
       else
       begin
-        if Pos('Maloc', Value) > 0 then Include(AllowedOwners, oiMaloc);
-        if Pos('Peleng', Value) > 0 then Include(AllowedOwners, oiPeleng);
-        if Pos('People', Value) > 0 then Include(AllowedOwners, oiHuman);
-        if Pos('Fei', Value) > 0 then Include(AllowedOwners, oiFeyan);
-        if Pos('Gaal', Value) > 0 then Include(AllowedOwners, oiGaal);
+        if Pos('Maloc', Value) > 0 then Include(AllowedOwners, owner_maloc);
+        if Pos('Peleng', Value) > 0 then Include(AllowedOwners, owner_peleng);
+        if Pos('People', Value) > 0 then Include(AllowedOwners, owner_human);
+        if Pos('Fei', Value) > 0 then Include(AllowedOwners, owner_feyan);
+        if Pos('Gaal', Value) > 0 then Include(AllowedOwners, owner_gaal);
       end;
       Value := ReadHullSeriesParam('ShipType');
       AllowedShipTypes := [];
-      if (Value = '') or (Value = 'Any') then AllowedShipTypes := [htRanger..htDiplomat]
+      if (Value = '') or (Value = 'Any') then AllowedShipTypes := [hull_ranger..hull_diplomat]
       else
       begin
-        if Pos('Transport', Value) > 0 then Include(AllowedShipTypes, htTransport);
-        if Pos('Liner', Value) > 0 then Include(AllowedShipTypes, htLiner);
-        if Pos('Diplomat', Value) > 0 then Include(AllowedShipTypes, htDiplomat);
-        if Pos('Ranger', Value) > 0 then Include(AllowedShipTypes, htRanger);
-        if Pos('Pirate', Value) > 0 then Include(AllowedShipTypes, htPirate);
-        if Pos('Warrior', Value) > 0 then Include(AllowedShipTypes, htWarrior);
-        if Pos('Flagman', Value) > 0 then Include(AllowedShipTypes, htFlagship);
+        if Pos('Transport', Value) > 0 then Include(AllowedShipTypes, hull_transport);
+        if Pos('Liner', Value) > 0 then Include(AllowedShipTypes, hull_liner);
+        if Pos('Diplomat', Value) > 0 then Include(AllowedShipTypes, hull_diplomat);
+        if Pos('Ranger', Value) > 0 then Include(AllowedShipTypes, hull_ranger);
+        if Pos('Pirate', Value) > 0 then Include(AllowedShipTypes, hull_pirate);
+        if Pos('Warrior', Value) > 0 then Include(AllowedShipTypes, hull_warrior);
+        if Pos('Flagman', Value) > 0 then Include(AllowedShipTypes, hull_flagship);
       end;
-      SlotBonuses[sskFuelTanks] := 0;
-      SlotBonuses[sskEngine] := 0;
-      SlotBonuses[sskUnsupported] := 0;
+      SlotBonuses[slot_fuel_tanks] := 0;
+      SlotBonuses[slot_engine] := 0;
+      SlotBonuses[slot_unsupported] := 0;
       Value := ReadHullSeriesParam('Radar');
-      if Value = '' then SlotBonuses[sskRadar] := 0
-      else SlotBonuses[sskRadar] := StrToInt(AnsiString(Value));
+      if Value = '' then SlotBonuses[slot_radar] := 0
+      else SlotBonuses[slot_radar] := StrToInt(AnsiString(Value));
       Value := ReadHullSeriesParam('Scaner');
-      if Value = '' then SlotBonuses[sskScanner] := 0
-      else SlotBonuses[sskScanner] := StrToInt(AnsiString(Value));
+      if Value = '' then SlotBonuses[slot_scanner] := 0
+      else SlotBonuses[slot_scanner] := StrToInt(AnsiString(Value));
       Value := ReadHullSeriesParam('Droid');
-      if Value = '' then SlotBonuses[sskRepairRobot] := 0
-      else SlotBonuses[sskRepairRobot] := StrToInt(AnsiString(Value));
+      if Value = '' then SlotBonuses[slot_repair_robot] := 0
+      else SlotBonuses[slot_repair_robot] := StrToInt(AnsiString(Value));
       Value := ReadHullSeriesParam('Hook');
-      if Value = '' then SlotBonuses[sskCargoHook] := 0
-      else SlotBonuses[sskCargoHook] := StrToInt(AnsiString(Value));
+      if Value = '' then SlotBonuses[slot_cargo_hook] := 0
+      else SlotBonuses[slot_cargo_hook] := StrToInt(AnsiString(Value));
       Value := ReadHullSeriesParam('Def');
-      if Value = '' then SlotBonuses[sskDefGenerator] := 0
-      else SlotBonuses[sskDefGenerator] := StrToInt(AnsiString(Value));
+      if Value = '' then SlotBonuses[slot_defense_generator] := 0
+      else SlotBonuses[slot_defense_generator] := StrToInt(AnsiString(Value));
       Value := ReadHullSeriesParam('Weapon');
-      if Value = '' then SlotBonuses[sskWeapon] := 0
-      else SlotBonuses[sskWeapon] := StrToInt(AnsiString(Value));
+      if Value = '' then SlotBonuses[slot_weapon] := 0
+      else SlotBonuses[slot_weapon] := StrToInt(AnsiString(Value));
       Value := ReadHullSeriesParam('Artefact');
-      if Value = '' then SlotBonuses[sskArtefact] := 0
-      else SlotBonuses[sskArtefact] := StrToInt(AnsiString(Value));
+      if Value = '' then SlotBonuses[slot_artefact] := 0
+      else SlotBonuses[slot_artefact] := StrToInt(AnsiString(Value));
       Value := ReadHullSeriesParam('Forsage');
-      if Value = '' then SlotBonuses[sskAfterburner] := 0
-      else SlotBonuses[sskAfterburner] := StrToInt(AnsiString(Value));
+      if Value = '' then SlotBonuses[slot_afterburner] := 0
+      else SlotBonuses[slot_afterburner] := StrToInt(AnsiString(Value));
       Value := ReadHullSeriesParam('Size');
       if Value = '' then SizePercent := 100
       else SizePercent := StrToInt(AnsiString(Value));
@@ -3312,7 +3371,7 @@ var
   Count: Integer;
 begin
   Count := 0;
-  Result := t_Food;
+  Result := item_food;
   for ItemType := Low(TItemType) to High(TItemType) do
   begin
     if ItemType in Mask then Inc(Count);
@@ -3328,9 +3387,9 @@ end;
 { @routine $798884 ClassifyWeaponDamageFlags }
 function ClassifyWeaponDamageFlags(Flags: TDamageFlagSet): TWeaponDamageClass;
 begin
-  if dkMissile in Flags then Result := wdcMissile
-  else if dkSplinter in Flags then Result := wdcSplinter
-  else Result := wdcEnergy;
+  if damage_flag_missile in Flags then Result := damage_class_missile
+  else if damage_flag_splinter in Flags then Result := damage_class_splinter
+  else Result := damage_class_energy;
 end;
 { @end $798884 }
 

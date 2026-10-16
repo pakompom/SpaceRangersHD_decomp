@@ -5,7 +5,7 @@ interface
 uses EC_Buf, EC_Struct;
 
 type
-  TBlockParKind = (bpkText = 0, bpkString = 1, bpkBlock = 2); // @size 0x04
+  TConfigEntryKind = (config_comment = 0, config_parameter = 1, config_block = 2); // @size 0x04
   TBlockParEC = class;
 
   TBlockParElEC = class(TObjectEx) // @size 0x2C
@@ -13,7 +13,7 @@ type
     Prev: TBlockParElEC; // @offset 0x04
     Next: TBlockParElEC; // @offset 0x08
     OwnerBlock: TBlockParEC; // @offset 0x0C
-    ItemType: TBlockParKind; // @offset 0x10
+    ItemType: TConfigEntryKind; // @offset 0x10
     Name: WideString; // @offset 0x14
     StringValue: WideString; // @offset 0x18
     Comment: WideString; // @offset 0x1C
@@ -86,7 +86,7 @@ type
 
     function GetEntryCount: Integer; // @addr 0x007B325C
     // Mixed-kind indexes use the sorted array only when it covers every entry.
-    function GetEntryKindByIndex(Index: Integer): TBlockParKind; // @addr 0x007B3260
+    function GetEntryKindByIndex(Index: Integer): TConfigEntryKind; // @addr 0x007B3260
     function GetEntryBlockByIndex(Index: Integer): TBlockParEC; // @addr 0x007B3328
     function GetEntryStringByIndex(Index: Integer): WideString; // @addr 0x007B345C
     function GetEntryNameByIndex(Index: Integer): WideString; // @addr 0x007B359C
@@ -113,7 +113,7 @@ type
     property Blocks[Index: Integer]: TBlockParEC read GetBlockByIndex;
     property BlockNames[Index: Integer]: WideString read GetBlockNameByIndex;
     property Count: Integer read GetEntryCount;
-    property EntryKinds[Index: Integer]: TBlockParKind read GetEntryKindByIndex;
+    property EntryKinds[Index: Integer]: TConfigEntryKind read GetEntryKindByIndex;
     property EntryNames[Index: Integer]: WideString read GetEntryNameByIndex;
     property EntryStrings[Index: Integer]: WideString read GetEntryStringByIndex;
     property EntryBlocks[Index: Integer]: TBlockParEC read GetEntryBlockByIndex;
@@ -155,7 +155,7 @@ begin
     ChildBlock.Free;
     ChildBlock := nil;
   end;
-  ItemType := bpkText;
+  ItemType := config_comment;
   Name := '';
   StringValue := '';
   Comment := '';
@@ -171,7 +171,7 @@ begin
     ChildBlock := nil;
   end;
   ChildBlock := TBlockParEC.Create;
-  ItemType := bpkBlock;
+  ItemType := config_block;
   StringValue := '';
 end;
 { @end $7B1B5C }
@@ -242,8 +242,8 @@ begin
     Added := AddEntry;
     Added.CopyFrom(Entry);
     if UseSortedIndex then InsertIntoSortedIndex(Added);
-    if Entry.ItemType = bpkString then Inc(StringParamCount)
-    else if Entry.ItemType = bpkBlock then Inc(ChildBlockCount);
+    if Entry.ItemType = config_parameter then Inc(StringParamCount)
+    else if Entry.ItemType = config_block then Inc(ChildBlockCount);
     Entry := Entry.Next;
   end;
 end;
@@ -273,8 +273,8 @@ begin
   if LastEntry = Entry then LastEntry := Entry.Prev;
   if FirstEntry = Entry then FirstEntry := Entry.Next;
   Dec(EntryCount);
-  if Entry.ItemType = bpkString then Dec(StringParamCount)
-  else if Entry.ItemType = bpkBlock then Dec(ChildBlockCount);
+  if Entry.ItemType = config_parameter then Dec(StringParamCount)
+  else if Entry.ItemType = config_block then Dec(ChildBlockCount);
   Entry.Free;
 end;
 { @end $7B1D3C }
@@ -391,7 +391,7 @@ begin
       Exit;
     end;
     if Cursor >= PathLength then Break;
-    if Entry.ItemType <> bpkBlock then
+    if Entry.ItemType <> config_block then
     begin
       if RaiseIfMissing then raise EBlockPar.Create('GetEl. Path=' + Path, False);
       Result := nil;
@@ -532,7 +532,7 @@ function TBlockParEC.GetParamByPath(const Path: WideString): WideString;
 var Entry: TBlockParElEC;
 begin
   Entry := FindEntryByPath(Path, True);
-  if Entry.ItemType <> bpkString then raise Exception.Create('Par_Get. Path=' + Path);
+  if Entry.ItemType <> config_parameter then raise Exception.Create('Par_Get. Path=' + Path);
   Result := Entry.StringValue;
 end;
 { @end $7B242C }
@@ -547,7 +547,7 @@ begin
     Result := '[' + Path + ']';
     Exit;
   end;
-  if (Entry <> nil) and (Entry.ItemType = bpkString) then Result := Entry.StringValue
+  if (Entry <> nil) and (Entry.ItemType = config_parameter) then Result := Entry.StringValue
   else Result := '[' + Path + ']';
 end;
 { @end $7B24E4 }
@@ -578,7 +578,7 @@ function TBlockParEC.AddParam(const ParamName, ParamValue: WideString): TBlockPa
 var Entry: TBlockParElEC;
 begin
   Entry := AddEntry;
-  Entry.ItemType := bpkString;
+  Entry.ItemType := config_parameter;
   Entry.Name := ParamName;
   Entry.StringValue := ParamValue;
   if UseSortedIndex then InsertIntoSortedIndex(Entry);
@@ -594,7 +594,7 @@ begin
   Entry := FirstEntry;
   while Entry <> nil do
   begin
-    if (Entry.Name = ParamName) and (Entry.ItemType = bpkString) then
+    if (Entry.Name = ParamName) and (Entry.ItemType = config_parameter) then
     begin
       Entry.StringValue := ParamValue;
       Exit;
@@ -612,7 +612,7 @@ begin
   Entry := FirstEntry;
   while Entry <> nil do
   begin
-    if (Entry.Name = ParamName) and (Entry.ItemType = bpkString) then
+    if (Entry.Name = ParamName) and (Entry.ItemType = config_parameter) then
     begin
       Entry.StringValue := ParamValue;
       Exit;
@@ -630,7 +630,7 @@ begin
   Entry := FirstEntry;
   while Entry <> nil do
   begin
-    if (Entry.Name = ParamName) and (Entry.ItemType = bpkString) then
+    if (Entry.Name = ParamName) and (Entry.ItemType = config_parameter) then
     begin
       if UseSortedIndex then RemoveFromSortedIndex(Entry);
       DeleteEntry(Entry);
@@ -649,7 +649,7 @@ begin
   Entry := FirstEntry;
   while Entry <> nil do
   begin
-    if (Entry.Name = BlockName) and (Entry.ItemType = bpkBlock) then
+    if (Entry.Name = BlockName) and (Entry.ItemType = config_block) then
     begin
       if UseSortedIndex then RemoveFromSortedIndex(Entry);
       DeleteEntry(Entry);
@@ -668,7 +668,7 @@ begin
   Entry := FirstEntry;
   while Entry <> nil do
   begin
-    if (Entry.Name = ParamName) and (Entry.ItemType = bpkString) then
+    if (Entry.Name = ParamName) and (Entry.ItemType = config_parameter) then
     begin
       Result := Entry.StringValue;
       Exit;
@@ -686,7 +686,7 @@ begin
   Entry := FirstEntry;
   while Entry <> nil do
   begin
-    if (Entry.Name = ParamName) and (Entry.ItemType = bpkString) then
+    if (Entry.Name = ParamName) and (Entry.ItemType = config_parameter) then
     begin
       Result := Entry.StringValue;
       Exit;
@@ -719,7 +719,7 @@ begin
       while Index < Limit do
       begin
         Entry := SortedEntries[Index];
-        if Entry.ItemType = bpkString then Inc(Result);
+        if Entry.ItemType = config_parameter then Inc(Result);
         Inc(Index);
       end;
     end;
@@ -730,7 +730,7 @@ begin
     Count := 0;
     while Entry <> nil do
     begin
-      if (Entry.ItemType = bpkString) and (Entry.Name = ParamName) then Inc(Count);
+      if (Entry.ItemType = config_parameter) and (Entry.Name = ParamName) then Inc(Count);
       Entry := Entry.Next;
     end;
     Result := Count;
@@ -750,7 +750,7 @@ begin
   Entry := FirstEntry;
   while Entry <> nil do
   begin
-    if Entry.ItemType = bpkString then
+    if Entry.ItemType = config_parameter then
     begin
       if Index = 0 then
       begin
@@ -777,7 +777,7 @@ begin
   Entry := FirstEntry;
   while Entry <> nil do
   begin
-    if Entry.ItemType = bpkString then
+    if Entry.ItemType = config_parameter then
     begin
       if Index = 0 then
       begin
@@ -824,7 +824,7 @@ function TBlockParEC.GetBlockByPath(const Path: WideString): TBlockParEC;
 var Entry: TBlockParElEC;
 begin
   Entry := FindEntryByPath(Path, True);
-  if Entry.ItemType <> bpkBlock then raise Exception.Create('TBlockParEC.BlockPath_Get. Path=' + Path);
+  if Entry.ItemType <> config_block then raise Exception.Create('TBlockParEC.BlockPath_Get. Path=' + Path);
   Result := Entry.ChildBlock;
 end;
 { @end $7B2DEC }
@@ -834,7 +834,7 @@ function TBlockParEC.FindBlockByPath(const Path: WideString): TBlockParEC;
 var Entry: TBlockParElEC;
 begin
   Entry := FindEntryByPath(Path, False);
-  if (Entry = nil) or (Entry.ItemType <> bpkBlock) then
+  if (Entry = nil) or (Entry.ItemType <> config_block) then
   begin
     Result := nil;
     Exit;
@@ -871,7 +871,7 @@ begin
   Entry := FirstEntry;
   while Entry <> nil do
   begin
-    if (Entry.Name = BlockName) and (Entry.ItemType = bpkBlock) then
+    if (Entry.Name = BlockName) and (Entry.ItemType = config_block) then
     begin
       Result := Entry.ChildBlock;
       Exit;
@@ -889,7 +889,7 @@ begin
   Entry := FirstEntry;
   while Entry <> nil do
   begin
-    if (Entry.Name = BlockName) and (Entry.ItemType = bpkBlock) then
+    if (Entry.Name = BlockName) and (Entry.ItemType = config_block) then
     begin
       Result := Entry.ChildBlock;
       Exit;
@@ -922,7 +922,7 @@ begin
       while Index < Limit do
       begin
         Entry := SortedEntries[Index];
-        if Entry.ItemType = bpkBlock then Inc(Result);
+        if Entry.ItemType = config_block then Inc(Result);
         Inc(Index);
       end;
     end;
@@ -933,7 +933,7 @@ begin
     Count := 0;
     while Entry <> nil do
     begin
-      if (Entry.ItemType = bpkBlock) and (Entry.Name = BlockName) then Inc(Count);
+      if (Entry.ItemType = config_block) and (Entry.Name = BlockName) then Inc(Count);
       Entry := Entry.Next;
     end;
     Result := Count;
@@ -953,7 +953,7 @@ begin
   Entry := FirstEntry;
   while Entry <> nil do
   begin
-    if Entry.ItemType = bpkBlock then
+    if Entry.ItemType = config_block then
     begin
       if Index = 0 then
       begin
@@ -980,7 +980,7 @@ begin
   Entry := FirstEntry;
   while Entry <> nil do
   begin
-    if Entry.ItemType = bpkBlock then
+    if Entry.ItemType = config_block then
     begin
       if Index = 0 then
       begin
@@ -1003,7 +1003,7 @@ end;
 { @end $7B325C }
 
 { @routine $7B3260 TBlockParEC_GetEntryKindByIndex }
-function TBlockParEC.GetEntryKindByIndex(Index: Integer): TBlockParKind;
+function TBlockParEC.GetEntryKindByIndex(Index: Integer): TConfigEntryKind;
 var Entry: TBlockParElEC;
 begin
   if UseSortedIndex and (EntryCount = SortedEntryCount) then
@@ -1034,7 +1034,7 @@ begin
   if UseSortedIndex and (EntryCount = SortedEntryCount) then
   begin
     Entry := SortedEntries[Index];
-    if Entry.ItemType <> bpkBlock then raise Exception.Create('TBlockParEC.All_GetBlock. Error tip.');
+    if Entry.ItemType <> config_block then raise Exception.Create('TBlockParEC.All_GetBlock. Error tip.');
     Result := Entry.ChildBlock;
     Exit;
   end;
@@ -1043,7 +1043,7 @@ begin
   begin
     if Index = 0 then
     begin
-      if Entry.ItemType <> bpkBlock then raise Exception.Create('TBlockParEC.All_GetBlock. Error tip.');
+      if Entry.ItemType <> config_block then raise Exception.Create('TBlockParEC.All_GetBlock. Error tip.');
       Result := Entry.ChildBlock;
       Exit;
     end;
@@ -1061,7 +1061,7 @@ begin
   if UseSortedIndex and (EntryCount = SortedEntryCount) then
   begin
     Entry := SortedEntries[Index];
-    if Entry.ItemType <> bpkString then raise Exception.Create('TBlockParEC.All_GetPar. Error tip.');
+    if Entry.ItemType <> config_parameter then raise Exception.Create('TBlockParEC.All_GetPar. Error tip.');
     Result := Entry.StringValue;
     Exit;
   end;
@@ -1070,7 +1070,7 @@ begin
   begin
     if Index = 0 then
     begin
-      if Entry.ItemType <> bpkString then raise Exception.Create('TBlockParEC.All_GetPar. Error tip.');
+      if Entry.ItemType <> config_parameter then raise Exception.Create('TBlockParEC.All_GetPar. Error tip.');
       Result := Entry.StringValue;
       Exit;
     end;
@@ -1088,7 +1088,7 @@ begin
   if UseSortedIndex and (EntryCount = SortedEntryCount) then
   begin
     Entry := SortedEntries[Index];
-    if (Entry.ItemType <> bpkString) and (Entry.ItemType <> bpkBlock) then raise Exception.Create('TBlockParEC.All_GetName. Error tip.');
+    if (Entry.ItemType <> config_parameter) and (Entry.ItemType <> config_block) then raise Exception.Create('TBlockParEC.All_GetName. Error tip.');
     Result := Entry.Name;
     Exit;
   end;
@@ -1097,7 +1097,7 @@ begin
   begin
     if Index = 0 then
     begin
-      if (Entry.ItemType <> bpkString) and (Entry.ItemType <> bpkBlock) then raise Exception.Create('TBlockParEC.All_GetName. Error tip.');
+      if (Entry.ItemType <> config_parameter) and (Entry.ItemType <> config_block) then raise Exception.Create('TBlockParEC.All_GetName. Error tip.');
       Result := Entry.Name;
       Exit;
     end;
@@ -1116,13 +1116,13 @@ var Entry: TBlockParElEC;
   procedure WriteWideBlockEntry; // @addr 0x007B36F0 @ida "void __cdecl $name(void *ParentFrame);" @note "Nested helper of TBlockParEC.WriteWideText."
   var j: Integer;
   begin
-    if Entry.ItemType = bpkText then
+    if Entry.ItemType = config_comment then
     begin
       if Entry.Comment <> '' then Dest.AddWideStringRaw(Entry.Comment);
       Dest.AddWord(13);
       Dest.AddWord(10);
     end
-    else if Entry.ItemType = bpkString then
+    else if Entry.ItemType = config_parameter then
     begin
       for j := 1 to Indent * WideTextIndentWidth do Dest.AddWord(Ord(' '));
       Dest.AddWideStringRaw(Entry.Name);
@@ -1176,13 +1176,13 @@ var Entry: TBlockParElEC;
   procedure WriteAnsiBlockEntry; // @addr 0x007B3948 @ida "void __cdecl $name(void *ParentFrame);" @note "Nested helper of TBlockParEC.WriteAnsiText."
   var j: Integer;
   begin
-    if Entry.ItemType = bpkText then
+    if Entry.ItemType = config_comment then
     begin
       if Entry.Comment <> '' then Dest.AddAnsiStringRaw(WideCharToString(PWideChar(Entry.Comment)));
       Dest.AddByte(13);
       Dest.AddByte(10);
     end
-    else if Entry.ItemType = bpkString then
+    else if Entry.ItemType = config_parameter then
     begin
       for j := 1 to Indent do Dest.AddByte(9);
       Dest.AddAnsiStringRaw(WideCharToString(PWideChar(Entry.Name)));
@@ -1322,7 +1322,7 @@ begin
       else if PreserveComments then
       begin
         Entry := AddEntry;
-        Entry.ItemType := bpkText;
+        Entry.ItemType := config_comment;
         Entry.Comment := Comment;
       end;
     end;
@@ -1367,8 +1367,8 @@ begin
   Incoming := Source.FirstEntry;
   while Incoming <> nil do
   begin
-    if Incoming.ItemType <> bpkText then
-      if Incoming.ItemType = bpkString then
+    if Incoming.ItemType <> config_comment then
+      if Incoming.ItemType = config_parameter then
       begin
         Cursor := FirstEntry;
         while Cursor <> nil do
@@ -1380,13 +1380,13 @@ begin
           DeleteEntry(Removed);
         end;
       end
-      else if Incoming.ItemType = bpkBlock then
+      else if Incoming.ItemType = config_block then
       begin
         Occurrence := 0;
         Cursor := Source.FirstEntry;
         while Cursor <> Incoming do
         begin
-          if (Cursor.ItemType = bpkBlock) and (Cursor.Name = Incoming.Name) then Inc(Occurrence);
+          if (Cursor.ItemType = config_block) and (Cursor.Name = Incoming.Name) then Inc(Occurrence);
           Cursor := Cursor.Next;
         end;
         Inc(Occurrence);
@@ -1394,7 +1394,7 @@ begin
         Existing := FirstEntry;
         while Existing <> nil do
         begin
-          if (Existing.ItemType = bpkBlock) and (Existing.Name = Incoming.Name) then Inc(Seen);
+          if (Existing.ItemType = config_block) and (Existing.Name = Incoming.Name) then Inc(Seen);
           if Seen = Occurrence then Break;
           Existing := Existing.Next;
         end;
@@ -1414,7 +1414,7 @@ begin
   Incoming := Source.FirstEntry;
   while Incoming <> nil do
   begin
-    if Incoming.ItemType = bpkString then AddParam(Incoming.Name, Incoming.StringValue);
+    if Incoming.ItemType = config_parameter then AddParam(Incoming.Name, Incoming.StringValue);
     Incoming := Incoming.Next;
   end;
 end;
@@ -1426,7 +1426,7 @@ var i: Integer;
 begin
   Result := '';
   for i := 0 to Count - 1 do
-    if EntryKinds[i] = bpkBlock then
+    if EntryKinds[i] = config_block then
       Result := Result + '{' + EntryBlocks[i].ConcatenateValues + '}'
     else Result := Result + EntryStrings[i];
 end;
@@ -1453,15 +1453,15 @@ begin
       Entry.GroupIndex := Buf.GetInt32;
       Entry.GroupCount := Buf.GetInt32;
     end;
-    Entry.ItemType := TBlockParKind(Buf.GetByte);
+    Entry.ItemType := TConfigEntryKind(Buf.GetByte);
     Entry.Name := Buf.ReadWideString;
-    if Entry.ItemType = bpkString then
+    if Entry.ItemType = config_parameter then
     begin
       Entry.StringValue := Buf.ReadWideString;
       Inc(StringParamCount);
       if UseSortedIndex then SortedEntries[i] := Entry;
     end
-    else if Entry.ItemType = bpkBlock then
+    else if Entry.ItemType = config_block then
     begin
       Entry.MakeChildBlock;
       if UseSortedIndex then SortedEntries[i] := Entry;

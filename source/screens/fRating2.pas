@@ -5,8 +5,8 @@ interface
 uses GI_MessageLoop, GI_PanelScrollBar, GI_Window, Types, aRanger, fPanelMain;
 
 type
-  TRangerRatingSortColumn = (rrscName=1, rrscExperience=2, rrscRace=3,
-    rrscRank=4, rrscCharacter=5); // @size 0x4
+  TRangerRatingSortColumn = (rating_sort_name=1, rating_sort_experience=2, rating_sort_race=3,
+    rating_sort_rank=4, rating_sort_personality=5); // @size 0x4
 
   TRangerRatingRow = packed record // @size 0x0C
     Ranger: TRanger; // @offset 0x00  Borrowed.
@@ -118,7 +118,7 @@ begin
   inherited OnOpen;
   if AuxRenderBuffer.GetPixels = nil then CaptureScreenBackground(True,0);
   (GetByName('BGBuf') as TGraphBufGI).BindExternalGraphBuf(AuxRenderBuffer);
-  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnEnteringForm,nil,nil,0);
+  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(event_enter_form,nil,nil,0);
   MainPanel.OnOpen;
   (GetByName('PM_Ship') as TGraphButtonGI).SetHitTestDisabled(True);
   (GetByName('PM_Gal') as TGraphButtonGI).SetHitTestDisabled(True);
@@ -126,7 +126,7 @@ begin
   (GetByName('PM_EndTurn') as TGraphButtonGI).SetHitTestDisabled(True);
   (GetByName('PM_Logo') as TGraphButtonGI).SetHitTestDisabled(True);
   BackgroundClickStarted := True;
-  SortColumn := rrscExperience;
+  SortColumn := rating_sort_experience;
   SelectedIndex := -1;
   SelectedRangerId := GetPlayer.Id;
   with GetByName('SortName') do
@@ -163,7 +163,7 @@ procedure TfRating2.OnClose;
 begin
   inherited OnClose;
   Galaxy.CheckIntegrityChecksum(1114);
-  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnLeavingForm,nil,nil,0);
+  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(event_leave_form,nil,nil,0);
   ClearRows;
   MainPanel.OnClose;
 end;
@@ -376,8 +376,8 @@ begin
   with GetByName('RewardImage') as TGraphBufGI do
   begin
     SourceHasPerPixelAlpha := True;
-    SetImageKindX(ikxCenter);
-    SetImageKindY(ikyCenter);
+    SetImageKindX(image_x_center);
+    SetImageKindY(image_y_center);
   end;
   ShipScreen.LayoutItemInfo(RewardWindow,GetByName('RewardName') as TLabelGI,GetByName('RewardText') as TLabelGI,True,True,0);
   with GetByName('RewardName') as TLabelGI do
@@ -421,11 +421,11 @@ begin
   with GetByName('RewardImage') as TGraphBufGI do
   begin
     SourceHasPerPixelAlpha := True;
-    SetImageKindX(ikxCenter);
-    SetImageKindY(ikyCenter);
+    SetImageKindX(image_x_center);
+    SetImageKindY(image_y_center);
   end;
   ShipScreen.LayoutItemInfo(RewardWindow,GetByName('RewardName') as TLabelGI,GetByName('RewardText') as TLabelGI,True,True,0);
-  with GetByName('RewardText') as TLabelGI do SetTextAlignX(taxLeft);
+  with GetByName('RewardText') as TLabelGI do SetTextAlignX(text_x_left);
   with GetByName('RewardName') as TLabelGI do
     SetSize(Classes.Point(Self.RewardWindow.ClientSize.X - LocalPosition.X - Self.RewardWindow.WorkSubRect.Right,ClientSize.Y));
   Cursor := GetCursorPoint;
@@ -452,8 +452,8 @@ begin
       GraphBuf.RescaleRgba(ClientSize.X,Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height),5)
     else
       GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width),ClientSize.Y,5);
-    SetImageKindX(ikxCenter);
-    SetImageKindY(ikyCenter);
+    SetImageKindX(image_x_center);
+    SetImageKindY(image_y_center);
   end;
   with GetByName('RewardName') as TLabelGI do Text := Ranger.GetAwardInfo(AwardId).Name;
   with GetByName('RewardText') as TLabelGI do Text := Ranger.GetAwardInfo(AwardId).Text;
@@ -499,7 +499,7 @@ begin
   else
   begin
     SortColumn := Column;
-    SortAscending := (SortColumn = rrscName) or (SortColumn = rrscRace);
+    SortAscending := (SortColumn = rating_sort_name) or (SortColumn = rating_sort_race);
   end;
   RebuildTable;
 end;
@@ -569,10 +569,10 @@ begin
   ClearRows;
   with GetByName('SortImage') as TImageGI do
   begin
-    if Self.SortColumn = rrscName then SetPosition(Classes.Point(Self.GetByName('SortName').LocalPosition.X + Self.GetByName('SortName').ClientSize.X - ClientSize.X,LocalPosition.Y))
-    else if Self.SortColumn = rrscExperience then SetPosition(Classes.Point(Self.GetByName('SortScore').LocalPosition.X + Self.GetByName('SortScore').ClientSize.X - ClientSize.X,LocalPosition.Y))
-    else if Self.SortColumn = rrscRace then SetPosition(Classes.Point(Self.GetByName('SortRace').LocalPosition.X + Self.GetByName('SortRace').ClientSize.X - ClientSize.X,LocalPosition.Y))
-    else if Self.SortColumn = rrscRank then SetPosition(Classes.Point(Self.GetByName('SortRank').LocalPosition.X + Self.GetByName('SortRank').ClientSize.X - ClientSize.X,LocalPosition.Y));
+    if Self.SortColumn = rating_sort_name then SetPosition(Classes.Point(Self.GetByName('SortName').LocalPosition.X + Self.GetByName('SortName').ClientSize.X - ClientSize.X,LocalPosition.Y))
+    else if Self.SortColumn = rating_sort_experience then SetPosition(Classes.Point(Self.GetByName('SortScore').LocalPosition.X + Self.GetByName('SortScore').ClientSize.X - ClientSize.X,LocalPosition.Y))
+    else if Self.SortColumn = rating_sort_race then SetPosition(Classes.Point(Self.GetByName('SortRace').LocalPosition.X + Self.GetByName('SortRace').ClientSize.X - ClientSize.X,LocalPosition.Y))
+    else if Self.SortColumn = rating_sort_rank then SetPosition(Classes.Point(Self.GetByName('SortRank').LocalPosition.X + Self.GetByName('SortRank').ClientSize.X - ClientSize.X,LocalPosition.Y));
     if Self.SortAscending then ImageSourcePath := 'GI,Bm.FormRating2.' + GiResourceSuffix + 'SortDown'
     else ImageSourcePath := 'GI,Bm.FormRating2.' + GiResourceSuffix + 'SortUp';
   end;
@@ -587,7 +587,7 @@ begin
     begin
       A := List[I];
       B := List[J];
-      if SortColumn = rrscName then
+      if SortColumn = rating_sort_name then
       begin
         if SortAscending then
         begin
@@ -595,7 +595,7 @@ begin
         end
         else if CompareString(LOCALE_USER_DEFAULT,0,PChar(AnsiString(B.Name)),-1,PChar(AnsiString(A.Name)),-1) - 2 > 0 then List.Exchange(I,J);
       end
-      else if SortColumn = rrscExperience then
+      else if SortColumn = rating_sort_experience then
       begin
         if SortAscending then
         begin
@@ -603,7 +603,7 @@ begin
         end
         else if B.TotalExperience > A.TotalExperience then List.Exchange(I,J);
       end
-      else if SortColumn = rrscRace then
+      else if SortColumn = rating_sort_race then
       begin
         if SortAscending then
         begin
@@ -611,7 +611,7 @@ begin
         end
         else if Ord(B.PilotRace) > Ord(A.PilotRace) then List.Exchange(I,J);
       end
-      else if SortColumn = rrscRank then
+      else if SortColumn = rating_sort_rank then
       begin
         if SortAscending then
         begin
@@ -619,7 +619,7 @@ begin
         end
         else if Ord(B.Rank) > Ord(A.Rank) then List.Exchange(I,J);
       end
-      else if SortColumn = rrscCharacter then
+      else if SortColumn = rating_sort_personality then
       begin
         if SortAscending then
         begin
@@ -716,8 +716,8 @@ var Ranger: TRanger; Panel, BarPanel: TPanelGI; Image: TImageGI;
     begin
       Buffer := TGraphBufGI.Create(Panel,False);
       Buffer.SetDepth(11);
-      Buffer.SetImageKindX(ikxLeft);
-      Buffer.SetImageKindY(ikyBottom);
+      Buffer.SetImageKindX(image_x_left);
+      Buffer.SetImageKindY(image_y_bottom);
       Buffer.SetPosition(Classes.Point(GiScalePixels(93),GiScalePixels(130)));
       Buffer.SetSize(Classes.Point(92,Size));
       Buffer.SetPositionModeW(True);
@@ -773,8 +773,8 @@ begin
     Caption.SetSize(Classes.Point(GiScalePixels(150),GiScalePixels(30)));
     Caption.SetFontName(SmallFontName);
     Caption.SetWordWrapEnabled(False);
-    Caption.SetTextAlignX(taxCenter);
-    Caption.SetTextAlignY(tayCenterEx);
+    Caption.SetTextAlignX(text_x_center);
+    Caption.SetTextAlignY(text_y_font_center);
     Caption.SetText(Ranger.GetRankName);
     Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
     Caption := TLabelGI.Create(Panel);
@@ -782,8 +782,8 @@ begin
     Caption.SetSize(Classes.Point(GiScalePixels(96),GiScalePixels(19)));
     Caption.SetFontName(SmallFontName);
     Caption.SetWordWrapEnabled(False);
-    Caption.SetTextAlignX(taxCenter);
-    Caption.SetTextAlignY(tayCenterEx);
+    Caption.SetTextAlignX(text_x_center);
+    Caption.SetTextAlignY(text_y_font_center);
     Caption.SetText(LocalizedText('FormRating.Kill') + ':');
     Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
     Caption := TLabelGI.Create(Panel);
@@ -791,8 +791,8 @@ begin
     Caption.SetSize(Classes.Point(GiScalePixels(94),GiScalePixels(24)));
     Caption.SetFontName(NormalFontName);
     Caption.SetWordWrapEnabled(False);
-    Caption.SetTextAlignX(taxCenter);
-    Caption.SetTextAlignY(tayCenterEx);
+    Caption.SetTextAlignX(text_x_center);
+    Caption.SetTextAlignY(text_y_font_center);
     Caption.SetText(LocalizedText('FormRating.Dominator'));
     Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
     Caption.UserValue := Index;
@@ -803,8 +803,8 @@ begin
     Caption.SetSize(Classes.Point(GiScalePixels(69),GiScalePixels(24)));
     Caption.SetFontName(NormalFontName);
     Caption.SetWordWrapEnabled(False);
-    Caption.SetTextAlignX(taxCenter);
-    Caption.SetTextAlignY(tayCenterEx);
+    Caption.SetTextAlignX(text_x_center);
+    Caption.SetTextAlignY(text_y_font_center);
     Caption.SetText(LocalizedText('FormRating.Pirate'));
     Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
     Caption := TLabelGI.Create(Panel);
@@ -812,8 +812,8 @@ begin
     Caption.SetSize(Classes.Point(GiScalePixels(69),GiScalePixels(24)));
     Caption.SetFontName(NormalFontName);
     Caption.SetWordWrapEnabled(False);
-    Caption.SetTextAlignX(taxCenter);
-    Caption.SetTextAlignY(tayCenterEx);
+    Caption.SetTextAlignX(text_x_center);
+    Caption.SetTextAlignY(text_y_font_center);
     Caption.SetText(LocalizedText('FormRating.Other'));
     Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
     Caption := TLabelGI.Create(Panel);
@@ -821,8 +821,8 @@ begin
     Caption.SetSize(Classes.Point(GiScalePixels(74),GiScalePixels(24)));
     Caption.SetFontName(NormalFontName);
     Caption.SetWordWrapEnabled(False);
-    Caption.SetTextAlignX(taxCenter);
-    Caption.SetTextAlignY(tayCenterEx);
+    Caption.SetTextAlignX(text_x_center);
+    Caption.SetTextAlignY(text_y_font_center);
     Caption.SetText(LocalizedText('FormRating.KillAllShip'));
     Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
     Caption := TLabelGI.Create(Panel);
@@ -830,8 +830,8 @@ begin
     Caption.SetSize(Classes.Point(GiScalePixels(94),GiScalePixels(22)));
     Caption.SetFontName(NormalFontName);
     Caption.SetWordWrapEnabled(False);
-    Caption.SetTextAlignX(taxCenter);
-    Caption.SetTextAlignY(tayCenterEx);
+    Caption.SetTextAlignX(text_x_center);
+    Caption.SetTextAlignY(text_y_font_center);
     Caption.SetText(IntToStr(Ranger.DominatorKillCount));
     Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
     Caption := TLabelGI.Create(Panel);
@@ -839,8 +839,8 @@ begin
     Caption.SetSize(Classes.Point(GiScalePixels(69),GiScalePixels(22)));
     Caption.SetFontName(NormalFontName);
     Caption.SetWordWrapEnabled(False);
-    Caption.SetTextAlignX(taxCenter);
-    Caption.SetTextAlignY(tayCenterEx);
+    Caption.SetTextAlignX(text_x_center);
+    Caption.SetTextAlignY(text_y_font_center);
     Caption.SetText(IntToStr(Ranger.PirateKillCount));
     Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
     Caption := TLabelGI.Create(Panel);
@@ -848,8 +848,8 @@ begin
     Caption.SetSize(Classes.Point(GiScalePixels(69),GiScalePixels(22)));
     Caption.SetFontName(NormalFontName);
     Caption.SetWordWrapEnabled(False);
-    Caption.SetTextAlignX(taxCenter);
-    Caption.SetTextAlignY(tayCenterEx);
+    Caption.SetTextAlignX(text_x_center);
+    Caption.SetTextAlignY(text_y_font_center);
     Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
     Caption.SetText(IntToStr(Ranger.TotalShipKillCount - Ranger.PirateKillCount - Ranger.DominatorKillCount));
     ExtraKills := 0;
@@ -863,8 +863,8 @@ begin
     Caption.SetSize(Classes.Point(GiScalePixels(74),GiScalePixels(22)));
     Caption.SetFontName(NormalFontName);
     Caption.SetWordWrapEnabled(False);
-    Caption.SetTextAlignX(taxCenter);
-    Caption.SetTextAlignY(tayCenterEx);
+    Caption.SetTextAlignX(text_x_center);
+    Caption.SetTextAlignY(text_y_font_center);
     Caption.SetText(IntToStr(Ranger.TotalShipKillCount + ExtraKills));
     Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
     Caption := TLabelGI.Create(Panel);
@@ -872,8 +872,8 @@ begin
     Caption.SetSize(Classes.Point(GiScalePixels(300),GiScalePixels(22)));
     Caption.SetFontName(NormalFontName);
     Caption.SetWordWrapEnabled(False);
-    Caption.SetTextAlignX(taxCenter);
-    Caption.SetTextAlignY(tayCenterEx);
+    Caption.SetTextAlignX(text_x_center);
+    Caption.SetTextAlignY(text_y_font_center);
     Caption.SetText(LocalizedText('FormRating.LiberationSystem') + ': ' + IntToStr(Ranger.LiberatedSystemCount));
     Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
     Caption := TLabelGI.Create(Panel);
@@ -881,8 +881,8 @@ begin
     Caption.SetSize(Classes.Point(GiScalePixels(120),GiScalePixels(18)));
     Caption.SetFontName(NormalFontName);
     Caption.SetWordWrapEnabled(False);
-    Caption.SetTextAlignX(taxLeft);
-    Caption.SetTextAlignY(tayCenterEx);
+    Caption.SetTextAlignX(text_x_left);
+    Caption.SetTextAlignY(text_y_font_center);
     Caption.SetText(LocalizedText('FormRating.Strength'));
     Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
     Caption := TLabelGI.Create(Panel);
@@ -890,8 +890,8 @@ begin
     Caption.SetSize(Classes.Point(GiScalePixels(120),GiScalePixels(18)));
     Caption.SetFontName(NormalFontName);
     Caption.SetWordWrapEnabled(False);
-    Caption.SetTextAlignX(taxLeft);
-    Caption.SetTextAlignY(tayCenterEx);
+    Caption.SetTextAlignX(text_x_left);
+    Caption.SetTextAlignY(text_y_font_center);
     Caption.SetText(LocalizedText('FormRating.Capital'));
     Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
     BarPanel := TPanelGI.Create(Panel);
@@ -931,8 +931,8 @@ begin
     Image := TImageGI.Create(Panel);
     Image.SetDepth(13);
     Image.SetImagePath('GI,' + Ranger.GetCaptainPortraitResourceBase + 'i');
-    Image.SetImageKindX(ikxCenter);
-    Image.SetImageKindY(ikyCenter);
+    Image.SetImageKindX(image_x_center);
+    Image.SetImageKindY(image_y_center);
     if GiResourceVariant = 1 then Image.SetPosition(Classes.Point(72,34))
     else Image.SetPosition(Classes.Point(90,43));
     if GiResourceVariant = 1 then Image.SetSize(Classes.Point(77,86))
@@ -946,8 +946,8 @@ begin
       Animation.SequenceIndex := 0;
       Animation.UpdateAutoGeometry;
       Animation.TransparentColor := CurrentPixelFormat.PackRgbBytes(255,0,255);
-      Animation.SetImageKindX(ikxCenter);
-      Animation.SetImageKindY(ikyCenter);
+      Animation.SetImageKindX(image_x_center);
+      Animation.SetImageKindY(image_y_center);
       if GiResourceVariant = 1 then Animation.SetPosition(Classes.Point(72,34))
       else Animation.SetPosition(Classes.Point(90,43));
       if GiResourceVariant = 1 then Animation.SetSize(Classes.Point(77,86))
@@ -986,8 +986,8 @@ begin
   Image.SetImagePath(GetRatingRankImagePath(Ranger.Rank));
   Image.SetSize(Classes.Point(GiScalePixels(100),GiScalePixels(30)));
   Image.SetPosition(Classes.Point(GiScalePixels(442),GiScalePixels(9)));
-  Image.SetImageKindX(ikxCenter);
-  Image.SetImageKindY(ikyCenter);
+  Image.SetImageKindX(image_x_center);
+  Image.SetImageKindY(image_y_center);
   Image.SetDepth(8);
   Caption := TLabelGI.Create(Panel);
   if GiResourceVariant = 1 then Caption.SetPosition(Classes.Point(GiScalePixels(215),GiScalePixels(16) + 1))
@@ -995,8 +995,8 @@ begin
   Caption.SetSize(Classes.Point(GiScalePixels(117),GiScalePixels(17)));
   Caption.SetFontName(NormalFontName);
   Caption.SetWordWrapEnabled(False);
-  Caption.SetTextAlignX(taxCenter);
-  Caption.SetTextAlignY(tayCenterEx);
+  Caption.SetTextAlignX(text_x_center);
+  Caption.SetTextAlignY(text_y_font_center);
   Caption.SetText(Ranger.GetCharacterName);
   Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
   Caption.UserValue := Index;
@@ -1008,8 +1008,8 @@ begin
   Caption.SetSize(Classes.Point(GiScalePixels(130),GiScalePixels(17)));
   Caption.SetFontName(NormalBoldFontName);
   Caption.SetWordWrapEnabled(False);
-  Caption.SetTextAlignX(taxCenter);
-  Caption.SetTextAlignY(tayCenterEx);
+  Caption.SetTextAlignX(text_x_center);
+  Caption.SetTextAlignY(text_y_font_center);
   Caption.SetText(Ranger.GetName);
   Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
   Caption := TLabelGI.Create(Panel);
@@ -1018,8 +1018,8 @@ begin
   Caption.SetSize(Classes.Point(GiScalePixels(45),GiScalePixels(17)));
   Caption.SetFontName(NormalFontName);
   Caption.SetWordWrapEnabled(False);
-  Caption.SetTextAlignX(taxCenter);
-  Caption.SetTextAlignY(tayCenterEx);
+  Caption.SetTextAlignX(text_x_center);
+  Caption.SetTextAlignY(text_y_font_center);
   Caption.SetText(IntToStr(Index + 1));
   Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
   Caption := TLabelGI.Create(Panel);
@@ -1028,8 +1028,8 @@ begin
   Caption.SetSize(Classes.Point(GiScalePixels(75),GiScalePixels(17)));
   Caption.SetFontName(NormalBoldFontName);
   Caption.SetWordWrapEnabled(False);
-  Caption.SetTextAlignX(taxCenter);
-  Caption.SetTextAlignY(tayCenterEx);
+  Caption.SetTextAlignX(text_x_center);
+  Caption.SetTextAlignY(text_y_font_center);
   Caption.SetText(IntToStr(Ranger.TotalExperience));
   Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
   Rows[Index].Height := Panel.ClientSize.Y;
@@ -1059,7 +1059,7 @@ end;
 procedure TfRating2.RefreshFeaturedRangers;
 var Ship: TShip;
 begin
-  if Galaxy.EminentCareerShips[rcTrader] = nil then
+  if Galaxy.EminentCareerShips[career_trader] = nil then
   begin
     GetByName('TraderCaptainI').SetActive(False);
     GetByName('TraderCaptainA').SetActive(False);
@@ -1070,7 +1070,7 @@ begin
   end
   else
   begin
-    Ship := TShip(Galaxy.EminentCareerShips[rcTrader]);
+    Ship := TShip(Galaxy.EminentCareerShips[career_trader]);
     with GetByName('ButTrader') as TGraphButtonGI do
     begin
       SetDisabled(False);
@@ -1087,8 +1087,8 @@ begin
     begin
       UserValue := Ship.Id;
       ImageSourcePath := 'GI,' + Ship.GetCaptainPortraitResourceBase + 'i';
-      KindX := ikxCenter;
-      KindY := ikyCenter;
+      KindX := image_x_center;
+      KindY := image_y_center;
       SetActive(True);
     end;
     with GetByName('TraderCaptainA') as TgaiGI do
@@ -1098,13 +1098,13 @@ begin
       SequenceIndex := 0;
       UpdateAutoGeometry;
       SetSequenceFrame(RandomIntRange(0,SequenceFrameCount - 1));
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      SetImageKindX(image_x_center);
+      SetImageKindY(image_y_center);
       SetActive(True);
       RestartPlayback;
     end;
   end;
-  if Galaxy.EminentCareerShips[rcWarrior] = nil then
+  if Galaxy.EminentCareerShips[career_warrior] = nil then
   begin
     GetByName('WarriorCaptainI').SetActive(False);
     GetByName('WarriorCaptainA').SetActive(False);
@@ -1115,7 +1115,7 @@ begin
   end
   else
   begin
-    Ship := TShip(Galaxy.EminentCareerShips[rcWarrior]);
+    Ship := TShip(Galaxy.EminentCareerShips[career_warrior]);
     with GetByName('ButWarior') as TGraphButtonGI do
     begin
       SetDisabled(False);
@@ -1132,8 +1132,8 @@ begin
     begin
       UserValue := Ship.Id;
       ImageSourcePath := 'GI,' + Ship.GetCaptainPortraitResourceBase + 'i';
-      KindX := ikxCenter;
-      KindY := ikyCenter;
+      KindX := image_x_center;
+      KindY := image_y_center;
       SetActive(True);
     end;
     with GetByName('WarriorCaptainA') as TgaiGI do
@@ -1143,13 +1143,13 @@ begin
       SequenceIndex := 0;
       UpdateAutoGeometry;
       SetSequenceFrame(RandomIntRange(0,SequenceFrameCount - 1));
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      SetImageKindX(image_x_center);
+      SetImageKindY(image_y_center);
       SetActive(True);
       RestartPlayback;
     end;
   end;
-  if Galaxy.EminentCareerShips[rcPirate] = nil then
+  if Galaxy.EminentCareerShips[career_pirate] = nil then
   begin
     GetByName('PirateCaptainI').SetActive(False);
     GetByName('PirateCaptainA').SetActive(False);
@@ -1160,7 +1160,7 @@ begin
   end
   else
   begin
-    Ship := TShip(Galaxy.EminentCareerShips[rcPirate]);
+    Ship := TShip(Galaxy.EminentCareerShips[career_pirate]);
     with GetByName('ButPirate') as TGraphButtonGI do
     begin
       SetDisabled(False);
@@ -1177,8 +1177,8 @@ begin
     begin
       UserValue := Ship.Id;
       ImageSourcePath := 'GI,' + Ship.GetCaptainPortraitResourceBase + 'i';
-      KindX := ikxCenter;
-      KindY := ikyCenter;
+      KindX := image_x_center;
+      KindY := image_y_center;
       SetActive(True);
     end;
     with GetByName('PirateCaptainA') as TgaiGI do
@@ -1188,8 +1188,8 @@ begin
       SequenceIndex := 0;
       UpdateAutoGeometry;
       SetSequenceFrame(RandomIntRange(0,SequenceFrameCount - 1));
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      SetImageKindX(image_x_center);
+      SetImageKindY(image_y_center);
       SetActive(True);
       RestartPlayback;
     end;
@@ -1204,7 +1204,7 @@ begin
   else if GetPlayer.IsOnPlanet then
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
-    else if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
+    else if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
     begin
       if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
         MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
@@ -1215,7 +1215,7 @@ begin
   else if GetPlayer.IsDockedToShip then
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
-    else if GetPlayer.DockedTo.TypeId in [rstPirateBase, rstDominion] then
+    else if GetPlayer.DockedTo.TypeId in [station_pirate_base, station_dominion] then
       MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
   end
@@ -1300,7 +1300,7 @@ begin
     CaptionText := '<td=' + FormatDominatorKillsHintColumn(1) + '><align=left>' + LocalizedText('FormRating.Dominator') + '</align>' + #13#10;
     for DisplayIndex := Low(DominatorDisplayOrder) to High(DominatorDisplayOrder) do
     begin
-      if DominatorDisplayOrder[DisplayIndex] = ktBoss then Continue;
+      if DominatorDisplayOrder[DisplayIndex] = dominator_boss then Continue;
       CaptionText := CaptionText + '<td=' + FormatDominatorKillsHintColumn(1) + '><align=left>' + LocalizedColorText(AnsiString('ShipType.Dominator.Blazer.') + IntToStr(Ord(DominatorDisplayOrder[DisplayIndex]))) +
         '<td=' + FormatDominatorKillsHintColumn(2) + '>:</align><td=' + FormatDominatorKillsHintColumn(3) + '><align=left>' +
         WrapTextInColor(IntToStr(GetPlayer.DominatorKillsByType[DominatorDisplayOrder[DisplayIndex]]) ,TextHighlightColorTag) + '</align>' + #13#10;
@@ -1310,11 +1310,11 @@ begin
   with GetByName('RewardImage') as TGraphBufGI do
   begin
     SourceHasPerPixelAlpha := True;
-    SetImageKindX(ikxCenter);
-    SetImageKindY(ikyCenter);
+    SetImageKindX(image_x_center);
+    SetImageKindY(image_y_center);
   end;
   ShipScreen.LayoutItemInfo(RewardWindow,GetByName('RewardName') as TLabelGI,GetByName('RewardText') as TLabelGI,True,True,0);
-  with GetByName('RewardText') as TLabelGI do SetTextAlignX(taxLeft);
+  with GetByName('RewardText') as TLabelGI do SetTextAlignX(text_x_left);
   with GetByName('RewardName') as TLabelGI do
     SetSize(Classes.Point(Self.RewardWindow.ClientSize.X - LocalPosition.X - Self.RewardWindow.WorkSubRect.Right,ClientSize.Y));
   Cursor := GetCursorPoint;

@@ -366,8 +366,8 @@ end;
 procedure TImageGI.UpdateAutoGeometry;
 begin
   inherited UpdateAutoGeometry;
-  if (AutoUpdateFlags and agfPosition) = agfPosition then SetPosition(Parent.ToLocalPoint(GetContentOrigin));
-  if (AutoUpdateFlags and agfSize) = agfSize then SetSize(GetContentSize);
+  if (AutoUpdateFlags and auto_position) = auto_position then SetPosition(Parent.ToLocalPoint(GetContentOrigin));
+  if (AutoUpdateFlags and auto_size) = auto_size then SetSize(GetContentSize);
 end;
 { @end $499C34 }
 

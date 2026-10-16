@@ -83,13 +83,13 @@ function PointDistanceF(First, Last: TPointF): Single; // @addr $7CE694
 function PointSegmentDistanceF(First, Last, Point: TPointF): Single; // @addr $7CE6D0
 
 const
-  PointRelationLeft = 1;
-  PointRelationRight = 2;
-  PointRelationBeforeFirst = 3;
-  PointRelationAfterLast = 4;
-  PointRelationInterior = 5;
-  PointRelationFirstEndpoint = 6;
-  PointRelationLastEndpoint = 7;
+  point_relation_left = 1;
+  point_relation_right = 2;
+  point_relation_before_first = 3;
+  point_relation_after_last = 4;
+  point_relation_interior = 5;
+  point_relation_first_endpoint = 6;
+  point_relation_last_endpoint = 7;
 
 function ClassifyPointToSegment(First, Last, Point: TPointF): Integer; // @addr $7CE7B0
 
@@ -310,13 +310,13 @@ begin
   Direction := MakePointF(Last.X - First.X, Last.Y - First.Y);
   Offset := MakePointF(Point.X - First.X, Point.Y - First.Y);
   Cross := Direction.X * Offset.Y - Direction.Y * Offset.X;
-  if Cross > 0 then Result := PointRelationLeft
-  else if Cross < 0 then Result := PointRelationRight
-  else if (Direction.X * Offset.X < 0) or (Direction.Y * Offset.Y < 0) then Result := PointRelationBeforeFirst
-  else if Sqrt(Direction.X * Direction.X + Direction.Y * Direction.Y) < Sqrt(Offset.X * Offset.X + Offset.Y * Offset.Y) then Result := PointRelationAfterLast
-  else if (First.X = Point.X) and (First.Y = Point.Y) then Result := PointRelationFirstEndpoint
-  else if (Last.X = Point.X) and (Last.Y = Point.Y) then Result := PointRelationLastEndpoint
-  else Result := PointRelationInterior;
+  if Cross > 0 then Result := point_relation_left
+  else if Cross < 0 then Result := point_relation_right
+  else if (Direction.X * Offset.X < 0) or (Direction.Y * Offset.Y < 0) then Result := point_relation_before_first
+  else if Sqrt(Direction.X * Direction.X + Direction.Y * Direction.Y) < Sqrt(Offset.X * Offset.X + Offset.Y * Offset.Y) then Result := point_relation_after_last
+  else if (First.X = Point.X) and (First.Y = Point.Y) then Result := point_relation_first_endpoint
+  else if (Last.X = Point.X) and (Last.Y = Point.Y) then Result := point_relation_last_endpoint
+  else Result := point_relation_interior;
 end;
 { @end $7CE7B0 }
 

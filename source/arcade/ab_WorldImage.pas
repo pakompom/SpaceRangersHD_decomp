@@ -8,8 +8,8 @@ uses EC_Struct, GI_Image;
 const
   // ab_WorldImage_Update ($6634B8) applies these only when Dirty is set.
   // Other values, and ordinary front/back switches, preserve the current frame.
-  afmRestart = 0;
-  afmRandomStart = 1;
+  animation_restart = 0;
+  animation_random_start = 1;
 
 type
   PabWorldImage = ^TabWorldImage;
@@ -113,7 +113,7 @@ begin
   Entry.Finished := False;
   Entry.FrontDepth := WorldImageFrontDepth;
   Entry.BackDepth := WorldImageBackDepth;
-  Entry.FrameMode := afmRestart;
+  Entry.FrameMode := animation_restart;
   Entry.StopAnimation := StopAnimation;
   Result := Entry;
 end;
@@ -129,7 +129,7 @@ begin
   Entry.Finished := False;
   Entry.FrontDepth := WorldImageFrontDepth;
   Entry.BackDepth := WorldImageBackDepth;
-  Entry.FrameMode := afmRestart;
+  Entry.FrameMode := animation_restart;
   Entry.Dirty := True;
 end;
 { @end $6633FC }
@@ -203,8 +203,8 @@ begin
             Entry.Image.GaiImageControl.UserValue := Integer(Entry);
             if not Entry.LoopAnimation then Entry.Image.GaiImageControl.CycleCompleteCallback := ArcadeBattleScreen.WorldImageCycleComplete
             else Entry.Image.GaiImageControl.CycleCompleteCallback := nil;
-            if (Entry.FrameMode = afmRestart) and Entry.Dirty then Entry.Image.GaiImageControl.SetSequenceFrame(0)
-            else if (Entry.FrameMode = afmRandomStart) and Entry.Dirty then
+            if (Entry.FrameMode = animation_restart) and Entry.Dirty then Entry.Image.GaiImageControl.SetSequenceFrame(0)
+            else if (Entry.FrameMode = animation_random_start) and Entry.Dirty then
               Entry.Image.GaiImageControl.SetSequenceFrame(RandomIntRange(0, Entry.Image.GaiImageControl.SequenceFrameCount - 1))
             else Entry.Image.GaiImageControl.SetSequenceFrame(Frame);
             Entry.Image.RestartPlayback;
@@ -229,8 +229,8 @@ begin
             Entry.Image.GaiImageControl.UserValue := Integer(Entry);
             if not Entry.LoopAnimation then Entry.Image.GaiImageControl.CycleCompleteCallback := ArcadeBattleScreen.WorldImageCycleComplete
             else Entry.Image.GaiImageControl.CycleCompleteCallback := nil;
-            if (Entry.FrameMode = afmRestart) and Entry.Dirty then Entry.Image.GaiImageControl.SetSequenceFrame(0)
-            else if (Entry.FrameMode = afmRandomStart) and Entry.Dirty then
+            if (Entry.FrameMode = animation_restart) and Entry.Dirty then Entry.Image.GaiImageControl.SetSequenceFrame(0)
+            else if (Entry.FrameMode = animation_random_start) and Entry.Dirty then
               Entry.Image.GaiImageControl.SetSequenceFrame(RandomIntRange(0, Entry.Image.GaiImageControl.SequenceFrameCount - 1))
             else Entry.Image.GaiImageControl.SetSequenceFrame(Frame);
             Entry.Image.RestartPlayback;

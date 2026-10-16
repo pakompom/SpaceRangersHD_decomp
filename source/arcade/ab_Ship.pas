@@ -285,7 +285,7 @@ begin
   for Index := 0 to Enemies.Count - 1 do
   begin
     Ship := Enemies[Index];
-    if (Ship.Health >= 1) and ((Ship.BonusTicks[abkInvisibility] <= 0) or (Ship.RevealTicks > 0)) then
+    if (Ship.Health >= 1) and ((Ship.BonusTicks[arcade_effect_invisibility] <= 0) or (Ship.RevealTicks > 0)) then
     begin
       Distance := Origin.DistanceTo(Ship);
       if Distance < BestDistance then
@@ -311,7 +311,7 @@ begin
   for Index := 0 to Enemies.Count - 1 do
   begin
     Ship := Enemies[Index];
-    if (Ship.Health >= 1) and ((Ship.BonusTicks[abkInvisibility] <= 0) or (Ship.RevealTicks > 0)) then
+    if (Ship.Health >= 1) and ((Ship.BonusTicks[arcade_effect_invisibility] <= 0) or (Ship.RevealTicks > 0)) then
     begin
       CandidateBearing := Origin.BearingAndDistanceTo(Ship);
       if CandidateBearing.Distance < BestDistance then
@@ -344,7 +344,7 @@ end;
 procedure TabShip.ApplyDamage(Amount: Integer; Source: TabObject; Disrupt: Boolean);
 begin
   if Health > 0 then
-    if BonusTicks[abkShield] > 0 then
+    if BonusTicks[arcade_effect_shield] > 0 then
       inherited ApplyDamage(Round(Amount * ShieldDamageScale * DamageTakenScale), Source, Disrupt)
     else
       inherited ApplyDamage(Round(Amount * DamageTakenScale), Source, Disrupt);
@@ -392,18 +392,18 @@ var
   Score, BestScore, Index, Candidate, BestWeapon: Integer;
   DamageScale: Single;
 begin
-  if (Health > 0) and (WeaponCount > 0) and (BonusTicks[abkWeaponLock] <= 0) then
+  if (Health > 0) and (WeaponCount > 0) and (BonusTicks[arcade_effect_weapons_disabled] <= 0) then
     if (Self <> PlayerArcadeShip) or (LastPrimaryWeapon = PrimaryWeapon) or
       (WeaponSwitchDelayMs div ArcadeTickMs <= ArcadeTickCount - LastPrimaryFireTick) then
       if CanFireWeapon(PrimaryWeapon) then
       begin
-        if BonusTicks[abkInvisibility] > 0 then RevealTicks := RevealAfterFiringMs div ArcadeTickMs;
+        if BonusTicks[arcade_effect_invisibility] > 0 then RevealTicks := RevealAfterFiringMs div ArcadeTickMs;
         LastPrimaryWeapon := PrimaryWeapon;
         LastPrimaryFireTick := ArcadeTickCount;
         Weapons[PrimaryWeapon].LastFireTick := ArcadeTickCount;
         if not ((Galaxy <> nil) and (Galaxy.AmmoModEnabled = 1) and (Self = PlayerArcadeShip)) then
           Dec(Weapons[PrimaryWeapon].Ammo, Weapons[PrimaryWeapon].AmmoCost);
-        if BonusTicks[abkDamage] > 0 then DamageScale := WeaponDamageBonusScale
+        if BonusTicks[arcade_effect_damage_boost] > 0 then DamageScale := WeaponDamageBonusScale
         else DamageScale := 1;
         DamageScale := DamageScale * WeaponDamageScale;
         ab_Weapon_Fire(@Weapons[PrimaryWeapon], Self, DamageScale);
@@ -442,18 +442,18 @@ var
 begin
   if (Health > 0) then
     if (WeaponCount > 0) then
-    if (BonusTicks[abkWeaponLock] <= 0) then
+    if (BonusTicks[arcade_effect_weapons_disabled] <= 0) then
     if (Self <> PlayerArcadeShip) or (LastSecondaryWeapon = SecondaryWeapon) or
       (WeaponSwitchDelayMs div ArcadeTickMs <= ArcadeTickCount - LastSecondaryFireTick) then
       if CanFireWeapon(SecondaryWeapon) then
       begin
-        if BonusTicks[abkInvisibility] > 0 then RevealTicks := RevealAfterFiringMs div ArcadeTickMs;
+        if BonusTicks[arcade_effect_invisibility] > 0 then RevealTicks := RevealAfterFiringMs div ArcadeTickMs;
         LastSecondaryWeapon := SecondaryWeapon;
         LastSecondaryFireTick := ArcadeTickCount;
         Weapons[SecondaryWeapon].LastFireTick := ArcadeTickCount;
         if not ((Galaxy <> nil) and (Galaxy.AmmoModEnabled = 1) and (Self = PlayerArcadeShip)) then
           Dec(Weapons[SecondaryWeapon].Ammo, Weapons[SecondaryWeapon].AmmoCost);
-        if BonusTicks[abkDamage] > 0 then DamageScale := WeaponDamageBonusScale
+        if BonusTicks[arcade_effect_damage_boost] > 0 then DamageScale := WeaponDamageBonusScale
         else DamageScale := 1;
         DamageScale := DamageScale * WeaponDamageScale;
         ab_Weapon_Fire(@Weapons[SecondaryWeapon], Self, DamageScale);
@@ -490,7 +490,7 @@ procedure TabShip.FirePrimaryAt(Target: TabObject);
 var
   Distance: Double;
 begin
-  if (Health <= 0) or (BonusTicks[abkWeaponLock] > 0) then Exit;
+  if (Health <= 0) or (BonusTicks[arcade_effect_weapons_disabled] > 0) then Exit;
   Distance := DistanceTo(Target);
   if Distance <= Weapons[PrimaryWeapon].Range then FirePrimary;
 end;
@@ -501,7 +501,7 @@ procedure TabShip.FireSecondaryAt(Target: TabObject);
 var
   Distance: Double;
 begin
-  if (Health <= 0) or (BonusTicks[abkWeaponLock] > 0) then Exit;
+  if (Health <= 0) or (BonusTicks[arcade_effect_weapons_disabled] > 0) then Exit;
   Distance := DistanceTo(Target);
   if Distance <= Weapons[SecondaryWeapon].Range then FireSecondary;
 end;
@@ -532,7 +532,7 @@ end;
 function TabShip.CanFireWeapon(Index: Integer): Boolean;
 begin
   Result := False;
-  if (BonusTicks[abkWeaponLock] <= 0) then
+  if (BonusTicks[arcade_effect_weapons_disabled] <= 0) then
     if (Index >= 0) then
     if (Index < WeaponCount) then
     if (Weapons[Index].AmmoCost <= Weapons[Index].Ammo) then
@@ -575,7 +575,7 @@ var
   Turn: Double;
   Index: Integer;
 begin
-  if BonusTicks[abkRecharge] > 0 then
+  if BonusTicks[arcade_effect_ammo_recharge] > 0 then
   begin
     for Index := 0 to WeaponCount - 1 do
       Weapons[Index].Ammo := Min(Weapons[Index].Ammo + Round(Weapons[Index].RechargePerTick * AmmoRechargeScale * AmmoRechargeBonusScale), Weapons[Index].MaxAmmo);
@@ -595,10 +595,10 @@ begin
   inherited UpdateState;
   SpeedScale := SpeedScale * MovementScale;
   TurnSpeedScale := TurnSpeedScale * MovementScale;
-  if BonusTicks[abkSpeed] > 0 then SpeedScale := SpeedScale * SpeedBonusScale;
-  if BonusTicks[abkSlow] > 0 then SpeedScale := SpeedScale * SpeedPenaltyScale;
-  if BonusTicks[abkSpeed] > 0 then TurnSpeedScale := TurnSpeedScale * SpeedBonusScale;
-  if BonusTicks[abkSlow] > 0 then TurnSpeedScale := TurnSpeedScale * SpeedPenaltyScale;
+  if BonusTicks[arcade_effect_speed_boost] > 0 then SpeedScale := SpeedScale * SpeedBonusScale;
+  if BonusTicks[arcade_effect_slowdown] > 0 then SpeedScale := SpeedScale * SpeedPenaltyScale;
+  if BonusTicks[arcade_effect_speed_boost] > 0 then TurnSpeedScale := TurnSpeedScale * SpeedBonusScale;
+  if BonusTicks[arcade_effect_slowdown] > 0 then TurnSpeedScale := TurnSpeedScale * SpeedPenaltyScale;
 end;
 { @end $6606DC }
 
@@ -618,7 +618,7 @@ begin
   begin
     for Index := Low(BonusTicks) to High(BonusTicks) do
       if BonusTicks[Index] > 0 then Dec(BonusTicks[Index]);
-    if BonusTicks[abkRegeneration] > 0 then Health := Min(MaxHealth, Health + RegenerationHealthPerTick);
+    if BonusTicks[arcade_effect_regeneration] > 0 then Health := Min(MaxHealth, Health + RegenerationHealthPerTick);
     if 0.01 <= RegenerationRate then
     begin
       if RegenerationRate < 10 then
@@ -629,9 +629,9 @@ begin
     end;
     if (Self = PlayerArcadeShip) and (TickCounter mod 10 = 0) then
       if GetPlayer <> nil then
-        if GetPlayer.CountActiveArtefacts(t_ArtefactDroid) > 0 then
-          Health := Min(MaxHealth, Health + RegenerationHealthPerTick * GetPlayer.CountActiveArtefacts(t_ArtefactDroid));
-    if (BonusTicks[abkInvisibility] > 0) and (RevealTicks > 0) then Dec(RevealTicks);
+        if GetPlayer.CountActiveArtefacts(artefact_repair_robot) > 0 then
+          Health := Min(MaxHealth, Health + RegenerationHealthPerTick * GetPlayer.CountActiveArtefacts(artefact_repair_robot));
+    if (BonusTicks[arcade_effect_invisibility] > 0) and (RevealTicks > 0) then Dec(RevealTicks);
   end;
   UpdateObstacleSensors;
   if ArcadeTickCount and $40 = 0 then
@@ -672,7 +672,7 @@ begin
     Visual.Pos := MakePointF(Position.X, Position.Y);
     if Health > 0 then
     begin
-      if (BonusTicks[abkInvisibility] > 0) and (RevealTicks <= 0) then
+      if (BonusTicks[arcade_effect_invisibility] > 0) and (RevealTicks <= 0) then
       begin
         if Self <> PlayerArcadeShip then InvisibilityAlpha := OtherInvisibleAlpha
         else InvisibilityAlpha := PlayerInvisibleAlpha;

@@ -83,12 +83,12 @@ begin
   Attempts := 100;
   while Attempts > 0 do
   begin
-    TextLabel.SetTextAlignX(taxCenter);
-    TextLabel.SetTextAlignY(tayCenter);
+    TextLabel.SetTextAlignX(text_x_center);
+    TextLabel.SetTextAlignY(text_y_center);
     TextLabel.ObjectSize := Classes.Point(CandidateSize.X - Borders.Left - Borders.Right - Icon.ClientSize.X - GiScalePixels(10), 1);
     TextLabel.SetWordWrapEnabled(True);
-    TextLabel.SetTextAlignX(taxLeft);
-    TextLabel.SetTextAlignY(tayAuto);
+    TextLabel.SetTextAlignX(text_x_left);
+    TextLabel.SetTextAlignY(text_y_fit_height);
     TextSize := TextLabel.ClientSize;
     Window.Pos := Classes.Point(0, 0);
     Window.ObjectSize := Classes.Point(TextSize.X + Borders.Left + Borders.Right + Icon.ClientSize.X + GiScalePixels(10),
@@ -119,7 +119,7 @@ begin
     else
       AcceptButton.Pos := Classes.Point(WindowSize.X div 2 - AcceptButton.ClientSize.X - GiScalePixels(5),
         WindowSize.Y - Borders.Bottom - AcceptButton.ClientSize.Y);
-    AcceptButton.HitKind := gbhRect;
+    AcceptButton.HitKind := button_hit_bounds;
     AcceptButton.UpdateStateImagePlacement;
     AcceptButton.UpdateStateVisuals;
     AcceptButton.UpCallback := AcceptClick;
@@ -142,7 +142,7 @@ begin
     else
       CancelButton.Pos := Classes.Point(WindowSize.X div 2 + GiScalePixels(5),
         WindowSize.Y - Borders.Bottom - CancelButton.ClientSize.Y);
-    CancelButton.HitKind := gbhRect;
+    CancelButton.HitKind := button_hit_bounds;
     CancelButton.UpdateStateImagePlacement;
     CancelButton.UpdateStateVisuals;
     CancelButton.UpCallback := CancelClick;
@@ -155,9 +155,9 @@ begin
   ContentPanel.ObjectSize := WindowSize;
   ContentPanel.UpdateAbsolutePosition;
   ContentPanel.UpdateSubtreeHitBounds;
-  if Options and mbgLeftAlign = mbgLeftAlign then TextLabel.SetTextAlignX(taxLeft)
-  else TextLabel.SetTextAlignX(taxCenter);
-  TextLabel.SetTextAlignY(tayAuto);
+  if Options and mbgLeftAlign = mbgLeftAlign then TextLabel.SetTextAlignX(text_x_left)
+  else TextLabel.SetTextAlignX(text_x_center);
+  TextLabel.SetTextAlignY(text_y_fit_height);
   TextLabel.Pos := Classes.Point(Icon.ClientSize.X + Borders.Left + GiScalePixels(10),
     Integer(Round((WindowSize.Y - Borders.Top - Borders.Bottom - BottomMargin - TextLabel.ClientSize.Y) * VerticalFactor)) + Borders.Top);
   Icon.Pos := Classes.Point(Icon.LocalPosition.X, TextLabel.LocalPosition.Y);

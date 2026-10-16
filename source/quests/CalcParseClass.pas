@@ -84,21 +84,21 @@ var
   X, Y: Extended;
 begin
   OutValue.Reset;
-  OutValue.ValueKind := cpvkFloat;
-  if (Left.ValueKind = cpvkFloat) and (Right.ValueKind = cpvkFloat) then
+  OutValue.ValueKind := number_float;
+  if (Left.ValueKind = number_float) and (Right.ValueKind = number_float) then
     OutValue.FloatValue := Math.Sign(Left.AsExtended) *
       Math.Power(Abs(Left.AsExtended), Right.AsExtended)
-  else if Left.ValueKind = cpvkFloat then
+  else if Left.ValueKind = number_float then
     OutValue.FloatValue := Math.Sign(Left.AsExtended) *
       Math.IntPower(Abs(Left.AsExtended), Right.AsInteger)
-  else if Right.ValueKind = cpvkFloat then
+  else if Right.ValueKind = number_float then
   begin
     A := Left.AsInteger;
     OutValue.FloatValue := Math.Power(Abs(A), Right.AsExtended) * Math.Sign(A);
   end
   else
   begin
-    OutValue.ValueKind := cpvkInteger;
+    OutValue.ValueKind := number_integer;
     A := Left.AsInteger;
     B := Right.AsInteger;
     X := A;
@@ -116,16 +116,16 @@ var
   X, Y: Extended;
 begin
   OutValue.Reset;
-  OutValue.ValueKind := cpvkFloat;
-  if (Left.ValueKind = cpvkFloat) and (Right.ValueKind = cpvkFloat) then
+  OutValue.ValueKind := number_float;
+  if (Left.ValueKind = number_float) and (Right.ValueKind = number_float) then
     OutValue.FloatValue := Left.AsExtended + Right.AsExtended
-  else if Left.ValueKind = cpvkFloat then
+  else if Left.ValueKind = number_float then
     OutValue.FloatValue := Left.AsExtended + Right.AsInteger
-  else if Right.ValueKind = cpvkFloat then
+  else if Right.ValueKind = number_float then
     OutValue.FloatValue := Left.AsInteger + Right.AsExtended
   else
   begin
-    OutValue.ValueKind := cpvkInteger;
+    OutValue.ValueKind := number_integer;
     A := Left.AsInteger;
     B := Right.AsInteger;
     X := A;
@@ -144,16 +144,16 @@ var
   X, Y: Extended;
 begin
   OutValue.Reset;
-  OutValue.ValueKind := cpvkFloat;
-  if (Left.ValueKind = cpvkFloat) and (Right.ValueKind = cpvkFloat) then
+  OutValue.ValueKind := number_float;
+  if (Left.ValueKind = number_float) and (Right.ValueKind = number_float) then
     OutValue.FloatValue := Left.AsExtended - Right.AsExtended
-  else if Left.ValueKind = cpvkFloat then
+  else if Left.ValueKind = number_float then
     OutValue.FloatValue := Left.AsExtended - Right.AsInteger
-  else if Right.ValueKind = cpvkFloat then
+  else if Right.ValueKind = number_float then
     OutValue.FloatValue := Left.AsInteger - Right.AsExtended
   else
   begin
-    OutValue.ValueKind := cpvkInteger;
+    OutValue.ValueKind := number_integer;
     A := Left.AsInteger;
     B := Right.AsInteger;
     X := A;
@@ -172,16 +172,16 @@ var
   X, Y: Extended;
 begin
   OutValue.Reset;
-  OutValue.ValueKind := cpvkFloat;
-  if (Left.ValueKind = cpvkFloat) and (Right.ValueKind = cpvkFloat) then
+  OutValue.ValueKind := number_float;
+  if (Left.ValueKind = number_float) and (Right.ValueKind = number_float) then
     OutValue.FloatValue := Left.AsExtended * Right.AsExtended
-  else if Left.ValueKind = cpvkFloat then
+  else if Left.ValueKind = number_float then
     OutValue.FloatValue := Left.AsExtended * Right.AsInteger
-  else if Right.ValueKind = cpvkFloat then
+  else if Right.ValueKind = number_float then
     OutValue.FloatValue := Left.AsInteger * Right.AsExtended
   else
   begin
-    OutValue.ValueKind := cpvkInteger;
+    OutValue.ValueKind := number_integer;
     A := Left.AsInteger;
     B := Right.AsInteger;
     X := A;
@@ -197,7 +197,7 @@ end;
 procedure TCalcParse.ApplyPercentChange(var Left, Right, OutValue: TCPVariant);
 begin
   OutValue.Reset;
-  OutValue.ValueKind := cpvkFloat;
+  OutValue.ValueKind := number_float;
   OutValue.FloatValue := Left.AsExtended * (1 + Right.AsExtended * 0.01);
 end;
 { @end $4DCE18 }
@@ -209,24 +209,24 @@ var
   X, Y: Extended;
 begin
   OutValue.Reset;
-  if (Left.ValueKind <> cpvkFloat) and (Right.ValueKind <> cpvkFloat) then
+  if (Left.ValueKind <> number_float) and (Right.ValueKind <> number_float) then
   begin
     A := Left.AsInteger;
     B := Right.AsInteger;
     if B = 0 then
     begin
-      OutValue.ValueKind := cpvkInteger;
+      OutValue.ValueKind := number_integer;
       if A < 0 then OutValue.IntValue := -QuestNumericLimit
       else OutValue.IntValue := QuestNumericLimit;
     end
     else if A mod B = 0 then
     begin
-      OutValue.ValueKind := cpvkInteger;
+      OutValue.ValueKind := number_integer;
       OutValue.IntValue := A div B;
     end
     else
       try
-        OutValue.ValueKind := cpvkFloat;
+        OutValue.ValueKind := number_float;
         OutValue.FloatValue := A / B;
       except
         on EDivByZero do begin end;
@@ -243,7 +243,7 @@ begin
     end
     else
       try
-      OutValue.ValueKind := cpvkFloat;
+      OutValue.ValueKind := number_float;
       OutValue.FloatValue := X / Y;
       except
         on EDivByZero do begin end;
@@ -259,8 +259,8 @@ var
   X, Y: Extended;
 begin
   OutValue.Reset;
-  OutValue.ValueKind := cpvkInteger;
-  if (Left.ValueKind <> cpvkFloat) and (Right.ValueKind <> cpvkFloat) then
+  OutValue.ValueKind := number_integer;
+  if (Left.ValueKind <> number_float) and (Right.ValueKind <> number_float) then
   begin
     A := Left.AsInteger;
     B := Right.AsInteger;
@@ -299,11 +299,11 @@ var
 begin
   OutValue.Reset;
   Negative := False;
-  if (Left.ValueKind <> cpvkFloat) and (Right.ValueKind <> cpvkFloat) then
+  if (Left.ValueKind <> number_float) and (Right.ValueKind <> number_float) then
   begin
     A := Left.AsInteger;
     B := Right.AsInteger;
-    OutValue.ValueKind := cpvkInteger;
+    OutValue.ValueKind := number_integer;
     Negative := A < 0;
     if B = 0 then
     begin
@@ -333,7 +333,7 @@ begin
           X := X * -1;
           Negative := True;
         end;
-        OutValue.ValueKind := cpvkFloat;
+        OutValue.ValueKind := number_float;
         OutValue.FloatValue := Trunc(X - Trunc(X / Y) * Y);
         if Negative then OutValue.FloatValue := OutValue.FloatValue * -1;
       except
@@ -351,13 +351,13 @@ begin
   OutValue.Reset;
   Maximum := 0;
   Minimum := 0;
-  if Left.ValueKind = cpvkFloat then Minimum := System.Round(Left.FloatValue)
-  else if Left.ValueKind = cpvkInteger then Minimum := Left.IntValue
-  else if Left.ValueKind = cpvkRange then Minimum := Left.Range.GetMinimum;
-  if Right.ValueKind = cpvkFloat then Maximum := System.Round(Right.FloatValue)
-  else if Right.ValueKind = cpvkInteger then Maximum := Right.IntValue
-  else if Right.ValueKind = cpvkRange then Maximum := Right.Range.GetMaximum;
-  OutValue.ValueKind := cpvkRange;
+  if Left.ValueKind = number_float then Minimum := System.Round(Left.FloatValue)
+  else if Left.ValueKind = number_integer then Minimum := Left.IntValue
+  else if Left.ValueKind = number_ranges then Minimum := Left.Range.GetMinimum;
+  if Right.ValueKind = number_float then Maximum := System.Round(Right.FloatValue)
+  else if Right.ValueKind = number_integer then Maximum := Right.IntValue
+  else if Right.ValueKind = number_ranges then Maximum := Right.Range.GetMaximum;
+  OutValue.ValueKind := number_ranges;
   OutValue.Range.AddRange(Minimum, Maximum);
 end;
 { @end $4DD310 }
@@ -366,26 +366,26 @@ end;
 procedure TCalcParse.ApplyMembership(var Left, Right, OutValue: TCPVariant);
 begin
   OutValue.Reset;
-  OutValue.ValueKind := cpvkInteger;
-  if (Left.ValueKind <> cpvkRange) and (Right.ValueKind <> cpvkRange) then
+  OutValue.ValueKind := number_integer;
+  if (Left.ValueKind <> number_ranges) and (Right.ValueKind <> number_ranges) then
   begin
     if Left.AsExtended = Right.AsExtended then OutValue.IntValue := 1
     else OutValue.IntValue := 0;
     Exit;
   end;
-  if (Left.ValueKind = cpvkRange) and (Right.ValueKind <> cpvkRange) then
+  if (Left.ValueKind = number_ranges) and (Right.ValueKind <> number_ranges) then
   begin
     if Left.Range.Contains(Right.AsExtended) then OutValue.IntValue := 1
     else OutValue.IntValue := 0;
     Exit;
   end;
-  if (Left.ValueKind <> cpvkRange) and (Right.ValueKind = cpvkRange) then
+  if (Left.ValueKind <> number_ranges) and (Right.ValueKind = number_ranges) then
   begin
     if Right.Range.Contains(Left.AsExtended) then OutValue.IntValue := 1
     else OutValue.IntValue := 0;
     Exit;
   end;
-  if (Left.ValueKind = cpvkRange) and (Right.ValueKind = cpvkRange) then
+  if (Left.ValueKind = number_ranges) and (Right.ValueKind = number_ranges) then
   begin
     if Right.Range.Contains(Left.AsInteger) then OutValue.IntValue := 1
     else OutValue.IntValue := 0;
@@ -398,7 +398,7 @@ end;
 procedure TCalcParse.ApplyLessThan(var Left, Right, OutValue: TCPVariant);
 begin
   OutValue.Reset;
-  OutValue.ValueKind := cpvkInteger;
+  OutValue.ValueKind := number_integer;
   if Left.AsExtended < Right.AsExtended then
     OutValue.IntValue := 1
   else
@@ -410,7 +410,7 @@ end;
 procedure TCalcParse.ApplyGreaterThan(var Left, Right, OutValue: TCPVariant);
 begin
   OutValue.Reset;
-  OutValue.ValueKind := cpvkInteger;
+  OutValue.ValueKind := number_integer;
   if Left.AsExtended > Right.AsExtended then
     OutValue.IntValue := 1
   else
@@ -422,7 +422,7 @@ end;
 procedure TCalcParse.ApplyLessOrEqual(var Left, Right, OutValue: TCPVariant);
 begin
   OutValue.Reset;
-  OutValue.ValueKind := cpvkInteger;
+  OutValue.ValueKind := number_integer;
   if Left.AsExtended <= Right.AsExtended then
     OutValue.IntValue := 1
   else
@@ -434,7 +434,7 @@ end;
 procedure TCalcParse.ApplyGreaterOrEqual(var Left, Right, OutValue: TCPVariant);
 begin
   OutValue.Reset;
-  OutValue.ValueKind := cpvkInteger;
+  OutValue.ValueKind := number_integer;
   if Left.AsExtended >= Right.AsExtended then
     OutValue.IntValue := 1
   else
@@ -446,7 +446,7 @@ end;
 procedure TCalcParse.ApplyEqual(var Left, Right, OutValue: TCPVariant);
 begin
   OutValue.Reset;
-  OutValue.ValueKind := cpvkInteger;
+  OutValue.ValueKind := number_integer;
   if Left.AsExtended = Right.AsExtended then
     OutValue.IntValue := 1
   else
@@ -458,7 +458,7 @@ end;
 procedure TCalcParse.ApplyNotEqual(var Left, Right, OutValue: TCPVariant);
 begin
   OutValue.Reset;
-  OutValue.ValueKind := cpvkInteger;
+  OutValue.ValueKind := number_integer;
   if Left.AsExtended <> Right.AsExtended then
     OutValue.IntValue := 1
   else
@@ -470,27 +470,27 @@ end;
 procedure TCalcParse.ApplyAnd(var Left, Right, OutValue: TCPVariant);
 begin
   OutValue.Reset;
-  if (Left.ValueKind <> cpvkRange) and (Right.ValueKind > cpvkRange) then
+  if (Left.ValueKind <> number_ranges) and (Right.ValueKind > number_ranges) then
   begin
-    OutValue.ValueKind := cpvkInteger;
+    OutValue.ValueKind := number_integer;
     if (Left.AsExtended <> 0) and (Right.AsExtended <> 0) then OutValue.IntValue := 1
     else OutValue.IntValue := 0;
   end
-  else if (Left.ValueKind = cpvkRange) and (Right.ValueKind = cpvkRange) then
+  else if (Left.ValueKind = number_ranges) and (Right.ValueKind = number_ranges) then
   begin
     OutValue.Assign(Left, False);
     OutValue.Range.Append(Right.Range);
   end
-  else if (Left.ValueKind <> cpvkRange) and (Right.ValueKind = cpvkRange) then
+  else if (Left.ValueKind <> number_ranges) and (Right.ValueKind = number_ranges) then
   begin
     OutValue.Assign(Right, False);
-    if Left.ValueKind = cpvkInteger then OutValue.Range.AddRange(Left.IntValue, Left.IntValue)
+    if Left.ValueKind = number_integer then OutValue.Range.AddRange(Left.IntValue, Left.IntValue)
     else OutValue.Range.AddValue(Left.FloatValue);
   end
-  else if (Left.ValueKind = cpvkRange) and (Right.ValueKind <> cpvkRange) then
+  else if (Left.ValueKind = number_ranges) and (Right.ValueKind <> number_ranges) then
   begin
     OutValue.Assign(Left, False);
-    if Right.ValueKind = cpvkInteger then OutValue.Range.AddRange(Right.IntValue, Right.IntValue)
+    if Right.ValueKind = number_integer then OutValue.Range.AddRange(Right.IntValue, Right.IntValue)
     else OutValue.Range.AddValue(Right.FloatValue);
   end;
 end;
@@ -499,27 +499,27 @@ end;
 { @routine $4DD888 TCalcParse_ApplyOr }
 procedure TCalcParse.ApplyOr(var Left, Right, OutValue: TCPVariant);
 begin
-  if (Left.ValueKind <> cpvkRange) and (Right.ValueKind > cpvkRange) then
+  if (Left.ValueKind <> number_ranges) and (Right.ValueKind > number_ranges) then
   begin
-    OutValue.ValueKind := cpvkInteger;
+    OutValue.ValueKind := number_integer;
     if (Left.AsExtended <> 0) or (Right.AsExtended <> 0) then OutValue.IntValue := 1
     else OutValue.IntValue := 0;
   end
-  else if (Left.ValueKind = cpvkRange) and (Right.ValueKind = cpvkRange) then
+  else if (Left.ValueKind = number_ranges) and (Right.ValueKind = number_ranges) then
   begin
     OutValue.Assign(Left, False);
     OutValue.Range.Append(Right.Range);
   end
-  else if (Left.ValueKind <> cpvkRange) and (Right.ValueKind = cpvkRange) then
+  else if (Left.ValueKind <> number_ranges) and (Right.ValueKind = number_ranges) then
   begin
     OutValue.Assign(Right, False);
-    if Left.ValueKind = cpvkInteger then OutValue.Range.AddRange(Left.IntValue, Left.IntValue)
+    if Left.ValueKind = number_integer then OutValue.Range.AddRange(Left.IntValue, Left.IntValue)
     else OutValue.Range.AddValue(Left.FloatValue);
   end
-  else if (Left.ValueKind = cpvkRange) and (Right.ValueKind <> cpvkRange) then
+  else if (Left.ValueKind = number_ranges) and (Right.ValueKind <> number_ranges) then
   begin
     OutValue.Assign(Left, False);
-    if Right.ValueKind = cpvkInteger then OutValue.Range.AddRange(Right.IntValue, Right.IntValue)
+    if Right.ValueKind = number_integer then OutValue.Range.AddRange(Right.IntValue, Right.IntValue)
     else OutValue.Range.AddValue(Right.FloatValue);
   end;
 end;

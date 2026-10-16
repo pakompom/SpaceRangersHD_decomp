@@ -309,7 +309,7 @@ procedure TfPanelMain.RefreshMoneyAndCargo;
 var
   FreeSpace: Integer;
 begin
-  if (CurrentScreenId <> screenStarMap) or (StarMapScreen.Mode = smmOrders) then
+  if (CurrentScreenId <> screen_star_map) or (StarMapScreen.Mode = map_mode_orders) then
   begin
     TargetTurn := Galaxy.CurrentTurn;
     if (DisplayedTurn < TargetTurn) and (DateSlideProgress >= 1) then
@@ -436,16 +436,16 @@ begin
   if NavigationLocked then Exit;
   if HasPendingScriptRequests then Exit;
   if GetPlayer = nil then Exit;
-  if (GetPlayer.CurrentPlanet <> nil) and (GetPlayer.CurrentPlanet.OwnerId = oiDominator) then Exit;
+  if (GetPlayer.CurrentPlanet <> nil) and (GetPlayer.CurrentPlanet.OwnerId = owner_dominator) then Exit;
   if GetPlayer.QueuedTravelTarget <> nil then Exit;
   if GetPlayer.RuinsMode <> 0 then Exit;
   if Screen.ParentLoop <> nil then Exit;
   if (GetPlayer <> nil) and (GetPlayer.CurrentPlanet <> nil) and
-    (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = rlHostile) then
+    (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = relation_level_hostile) then
   begin
     if Screen <> GovernmentScreen then
     begin
-      RequestedScreenId := screenGovernment;
+      RequestedScreenId := screen_government;
       Screen.RequestClose(1);
     end;
     Exit;
@@ -466,25 +466,25 @@ begin
       CalculateGalaxyTurnAndWait;
     end;
   end;
-  if (GetPlayer = nil) or ((GetPlayer.CurrentPlanet <> nil) and (GetPlayer.CurrentPlanet.OwnerId = oiDominator)) then
+  if (GetPlayer = nil) or ((GetPlayer.CurrentPlanet <> nil) and (GetPlayer.CurrentPlanet.OwnerId = owner_dominator)) then
   begin
     Event := AddGalaxyEvent('PlayerDeath');
     Event.AddTextData('PlanetCaptured');
-    GameEndReason := gerPlayerDeath;
-    RequestedScreenId := screenGameEnd;
+    GameEndReason := game_end_player_death;
+    RequestedScreenId := screen_game_end;
     Screen.RequestClose(1);
     Exit;
   end;
   PostMouseMoveMessage;
   if (GetPlayer.PendingDockDialogue > 0) and (GetPlayer.DockedTo <> nil) then
   begin
-    RequestedScreenId := screenRuinsTalk;
+    RequestedScreenId := screen_ruins_talk;
     TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
     Exit;
   end;
-  if (GetPlayer.PendingDockDialogue > 0) and (GetPlayer.CurrentPlanet <> nil) and (GetPlayer.CurrentPlanet.OwnerId <> oiUninhabited) then
+  if (GetPlayer.PendingDockDialogue > 0) and (GetPlayer.CurrentPlanet <> nil) and (GetPlayer.CurrentPlanet.OwnerId <> owner_uninhabited) then
   begin
-    RequestedScreenId := screenGovernment;
+    RequestedScreenId := screen_government;
     TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
   end;
 end;
@@ -528,9 +528,9 @@ begin
   Galaxy.PrimeIntegrityChecksum(110);
   ShipScreen.ShipStateChanged := Changed;
   if GetPlayer.IsOnPlanet and (Screen <> GovernmentScreen) then
-    if GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = rlHostile then
+    if GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = relation_level_hostile then
     begin
-      RequestedScreenId := screenGovernment;
+      RequestedScreenId := screen_government;
       Screen.RequestClose(1);
     end;
 end;
@@ -619,7 +619,7 @@ begin
   Galaxy.PrimeIntegrityChecksum(99);
   Screen.ShowCursor := True;
   GameMenuReturnScreenId := FormToId(Screen);
-  RequestedScreenId := screenGameMenu;
+  RequestedScreenId := screen_game_menu;
   Screen.RequestClose(1);
 end;
 { @end $75B610 }
@@ -691,7 +691,7 @@ begin
     if ShowMessageBoxGI(Screen, Text, mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
     begin
       PendingLoadFileName := AnsiString(SaveManagerScreen.GetQuickSavePath(SlotIndex));
-      RequestedScreenId := screenGameLoad;
+      RequestedScreenId := screen_save_loading;
       Screen.RequestClose(1);
       Exit;
     end;
@@ -748,7 +748,7 @@ begin
           if Control is TGraphButtonGI then
           begin
             Stage := 4;
-            if (MessageEntry.Kind in [pmGalaxyNews, pmTip]) and not MessageEntry.WasRead then
+            if (MessageEntry.Kind in [message_galaxy_news, message_tip]) and not MessageEntry.WasRead then
             begin
               Stage := 5;
               with Control as TGraphButtonGI do
@@ -873,11 +873,11 @@ begin
       Button.EnterSound := 'Sound.ButtonInfoEnter';
       Button.LeaveSound := 'Sound.ButtonInfoLeave';
       Button.ClickSound := 'Sound.ButtonInfoClick';
-      if (MessageEntry.Kind = pmRadio) and (GetPlayer <> nil) and
+      if (MessageEntry.Kind = message_radio) and (GetPlayer <> nil) and
         ((MessageEntry.Targets[0].ShipId = GetPlayer.Id) or
         (MessageEntry.Targets[1].ShipId = GetPlayer.Id) or
-        (MessageEntry.Targets[2].ShipId = GetPlayer.Id)) then MessageEntry.Kind := pmRadioPlayer;
-      if (MessageEntry.Kind in [pmGalaxyNews, pmTip]) and not MessageEntry.WasRead then
+        (MessageEntry.Targets[2].ShipId = GetPlayer.Id)) then MessageEntry.Kind := message_radio_with_player;
+      if (MessageEntry.Kind in [message_galaxy_news, message_tip]) and not MessageEntry.WasRead then
       begin
         Button.SetImageNormalPath('GraphBuf');
         Button.ImageNormal.GraphBufControl.SourceHasPerPixelAlpha := True;
@@ -891,7 +891,7 @@ begin
         Button.SetImageNormalPath('GI,Bm.MsgPlayer.' + GiResourceSuffix + MessageEntry.GetNormalImageName);
       Button.SetImageNormalActivePath('GI,Bm.MsgPlayer.' + GiResourceSuffix + MessageEntry.GetActiveImageName);
       Button.SetImageDownPath('GI,Bm.MsgPlayer.' + GiResourceSuffix + MessageEntry.GetPressedImageName);
-      Button.HitKind := gbhRect;
+      Button.HitKind := button_hit_bounds;
       Button.SetSize(Button.GetMaxStateImageSize);
       Button.SetPosition(Classes.Point(X, Panel.ClientSize.Y div 2 - Button.ClientSize.Y div 2));
       X := X + Button.ClientSize.X + 2;
@@ -936,7 +936,7 @@ end;
 function TfPanelMain.RemoveDismissibleMessages(Key: WideString): Boolean;
 begin
   Result := False;
-  if RemovePlayerMessagesExceptKinds(Key, [pmQuestActive, pmStorage], False) then
+  if RemovePlayerMessagesExceptKinds(Key, [message_quest_active, message_storage], False) then
   begin
     RebuildMessageButtons(False);
     SoundManager.PlaySound('Sound.DelMsg');
@@ -960,9 +960,9 @@ begin
     Panel := Screen.GetByName('PM_PanelMsg') as TPanelGI;
     Window := Screen.GetByName('PM_WinMsg') as TWindowGI;
     LabelControl := Screen.GetByName('PM_LabelMsg') as TLabelGI;
-    LabelControl.SetTextAlignY(tayAuto);
+    LabelControl.SetTextAlignY(text_y_fit_height);
     LabelControl.SetText(MessageEntry.Text);
-    LabelControl.SetTextAlignY(tayCenterEx);
+    LabelControl.SetTextAlignY(text_y_font_center);
     Window.SetSize(Classes.Point(LabelControl.ClientSize.X + Window.WorkSubRect.Left + Window.WorkSubRect.Right,
       LabelControl.ClientSize.Y + Window.WorkSubRect.Top + Window.WorkSubRect.Bottom));
     Window.UpdateAutoGeometry;
@@ -973,7 +973,7 @@ begin
     if not MessageEntry.WasRead then
     begin
       MessageEntry.WasRead := True;
-      if MessageEntry.Kind = pmTip then MessageEntry.Turn := Galaxy.CurrentTurn;
+      if MessageEntry.Kind = message_tip then MessageEntry.Turn := Galaxy.CurrentTurn;
     end;
     LabelControl.SetPosition(Window.WorkSubRect.TopLeft);
     Window.SetPosition(Classes.Point(Sender.HitTestBounds.Left + Sender.ClientSize.X div 2,
@@ -1002,7 +1002,7 @@ begin
   try
     MessageEntry := TMessagePlayer(Sender.UserValue);
     if not IsPersistentPlayerMessageQueued(MessageEntry, True) then Exit;
-    if MessageEntry.Kind in [pmQuestActive, pmStorage] then Exit;
+    if MessageEntry.Kind in [message_quest_active, message_storage] then Exit;
     Control := MessagePanel.FirstChild;
     while Control <> nil do
     begin
@@ -1198,8 +1198,8 @@ var
   Attempts: Integer;
   FilmObject: TEFilmObj;
 begin
-  if (CurrentScreenId <> screenStarMap) or
-    ((StarMapScreen.Mode <> smmOrders) and (StarMapScreen.Mode <> smmTurnFilm)) then Exit;
+  if (CurrentScreenId <> screen_star_map) or
+    ((StarMapScreen.Mode <> map_mode_orders) and (StarMapScreen.Mode <> map_mode_playback)) then Exit;
   PersistentPlayerMessageLock.Enter;
   try
     MessageEntry := TMessagePlayer(Sender.UserValue);
@@ -1234,7 +1234,7 @@ begin
       DisplayedPlanetId := PlanetId;
       if DisplayedShipId <> 0 then
       begin
-        if StarMapScreen.Mode = smmOrders then
+        if StarMapScreen.Mode = map_mode_orders then
         begin
           Ship := Galaxy.IdToShip(DisplayedShipId, False) as TShip;
           if (Ship <> nil) and Ship.InNormalSpace and (Ship.CurrentStar = GetPlayer.CurrentStar) then
@@ -1258,7 +1258,7 @@ begin
       end
       else if DisplayedPlanetId <> 0 then
       begin
-        if StarMapScreen.Mode = smmOrders then
+        if StarMapScreen.Mode = map_mode_orders then
         begin
           Planet := Galaxy.IdToPlanet(DisplayedPlanetId, False) as TPlanet;
           if (Planet <> nil) and (Planet.CurrentStar = GetPlayer.CurrentStar) then
@@ -1304,14 +1304,14 @@ begin
     while MessageEntry <> nil do
     begin
       if not MessageEntry.NotificationSoundPlayed then
-        if MessageEntry.Kind in [pmGalaxyNews..pmTip, pmShipNegative] then
+        if MessageEntry.Kind in [message_galaxy_news..message_tip, message_ship_negative] then
         begin
-          if not PlayedQuestOk and (MessageEntry.Kind = pmQuestSucceeded) then
+          if not PlayedQuestOk and (MessageEntry.Kind = message_quest_succeeded) then
           begin
             PlayedQuestOk := True;
             SoundManager.PlaySound('Sound.QuestOk');
           end
-          else if not PlayedQuestCancel and (MessageEntry.Kind = pmQuestCancelled) then
+          else if not PlayedQuestCancel and (MessageEntry.Kind = message_quest_cancelled) then
           begin
             PlayedQuestCancel := True;
             SoundManager.PlaySound('Sound.QuestCancel');
@@ -1448,16 +1448,16 @@ begin
       CaptureGalaxyPreview(Screen);
       Galaxy.PrimeIntegrityChecksum(101);
       SaveManagerReturnScreenId := FormToId(Screen);
-      SaveManagerMode := smmSave;
-      RequestedScreenId := screenSaveManager;
+      SaveManagerMode := save_dialog_save;
+      RequestedScreenId := screen_save_manager;
       Screen.RequestClose(1);
     end;
   end
   else if Key = VK_F3 then
   begin
     SaveManagerReturnScreenId := FormToId(Screen);
-    SaveManagerMode := smmLoad;
-    RequestedScreenId := screenSaveManager;
+    SaveManagerMode := save_dialog_load;
+    RequestedScreenId := screen_save_manager;
     Screen.RequestClose(1);
   end
   else if Key = VK_SPACE then EndTurnClicked(nil)

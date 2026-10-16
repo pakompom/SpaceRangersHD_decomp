@@ -5,10 +5,10 @@ interface
 uses EC_BlockPar, GI_MessageLoop, Types;
 
 type
-  TFrameKindGI = (fkHide=0, fkRect=1); // @size 0x01
+  TFrameBorderKindGI = (frame_no_border=0, frame_rect_border=1); // @size 0x01
   TFrameGI = class(TObjectGI) // @size 0x130
   public
-    Kind: TFrameKindGI; // @offset 0x120
+    Kind: TFrameBorderKindGI; // @offset 0x120
     Color: Cardinal; // @offset 0x124
     FillColor: Cardinal; // @offset 0x128
     Fill: Boolean; // @offset 0x12C
@@ -17,7 +17,7 @@ type
     constructor Create(Owner: TObjectGI); // @addr 0x00491B50
     destructor Destroy; override; // @addr 0x00491B9C
     procedure Clear; override; // @addr 0x00491BC4 @note "Preserves fill and color fields."
-    procedure SetKind(Value: TFrameKindGI); // @addr 0x00491BD4
+    procedure SetKind(Value: TFrameBorderKindGI); // @addr 0x00491BD4
     procedure SetColor(Value: Cardinal); // @addr 0x00491BF4
     procedure SetFillColor(Value: Cardinal); // @addr 0x00491C14
     procedure SetFill(Value: Boolean); // @addr 0x00491C34
@@ -35,7 +35,7 @@ uses Classes, EC_Mem, GI_Main, GR_DX, GR_Main;
 constructor TFrameGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
-  Kind := fkHide;
+  Kind := frame_no_border;
   Fill := False;
   FillAlpha := 255;
 end;
@@ -51,13 +51,13 @@ end;
 { @routine $491BC4 TFrameGI_Clear }
 procedure TFrameGI.Clear;
 begin
-  Kind := fkHide;
+  Kind := frame_no_border;
   inherited Clear;
 end;
 { @end $491BC4 }
 
 { @routine $491BD4 TFrameGI_SetKind }
-procedure TFrameGI.SetKind(Value: TFrameKindGI);
+procedure TFrameGI.SetKind(Value: TFrameBorderKindGI);
 begin
   if Kind = Value then Exit;
   Kind := Value;
@@ -113,8 +113,8 @@ procedure TFrameGI.LoadFrameProperties(Block: TBlockParEC);
 begin
   if Block.CountParams('Kind') > 0 then
   begin
-    if Block.GetParam('Kind') = 'Hide' then Kind := fkHide
-    else if Block.GetParam('Kind') = 'Rect' then Kind := fkRect;
+    if Block.GetParam('Kind') = 'Hide' then Kind := frame_no_border
+    else if Block.GetParam('Kind') = 'Rect' then Kind := frame_rect_border;
   end;
   if Block.CountParams('Color') > 0 then SetColor(GetColorGI(Block.GetParam('Color')));
   if Block.CountParams('ColorFill') > 0 then SetFillColor(GetColorGI(Block.GetParam('ColorFill')));
@@ -149,7 +149,7 @@ begin
           FillColor, 64, ClipRect);
     end;
   end;
-  if Kind = fkRect then
+  if Kind = frame_rect_border then
   begin
     if HardwareRenderingEnabled then
     begin

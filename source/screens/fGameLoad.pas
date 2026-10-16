@@ -119,7 +119,7 @@ begin
     if GetPlayer = nil then MusicManager.PlayCategory('Base')
     else if GetPlayer.IsOnPlanet then
     begin
-      if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
+      if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
       begin
         if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
         else MusicManager.PlayCategory('Nation.PiratePlanetMain');
@@ -128,7 +128,7 @@ begin
     end
     else if GetPlayer.IsDockedToShip then
     begin
-      if GetPlayer.DockedTo.TypeId in [rstRangerCenter..rstCustomStation] then
+      if GetPlayer.DockedTo.TypeId in [station_ranger_center..station_custom] then
       begin
         Category := GetPlayer.DockedTo.TypeNameOverrideKey;
         if (Category <> '') and (MainDataConfig.GetBlock('Music').CountBlocks(Category) > 0) then
@@ -138,7 +138,7 @@ begin
       else
       begin
           // Retain the native CurrentPlanet lookup in this non-station docking branch.
-        if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
+        if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
           MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
         else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
       end;
@@ -196,15 +196,15 @@ begin
           Block.AddParam('CurrentMod',LoadedSaveModSet);
           Block.SaveTextFile(ModSelectionConfigPath,True,False);
           Block.Free;
-          RequestedScreenId := screenNone;
-          PostLoadScreenId := screenGameLoad;
+          RequestedScreenId := screen_none;
+          PostLoadScreenId := screen_save_loading;
           ReloadModsRequested := True;
           RequestClose(1);
           Exit;
         end;
       end
       else ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormSaveManager.LoadError'),mbgOK or mbgError);
-      RequestedScreenId := screenMainMenu;
+      RequestedScreenId := screen_main_menu;
       ApplyEditableSaveOnLoad := False;
       RequestClose(1);
       Exit;
@@ -212,7 +212,7 @@ begin
     if not AssetPreloadStarted then
     begin
       Loads := TList.Create;
-      StarMapScreen.ResumeMode := smrOrders;
+      StarMapScreen.ResumeMode := map_resume_orders;
       if ScreenUsesCompositeLoadAssets(RequestedScreenId) then QueueSpaceLoadingAssets(Loads,RootUiObject);
       if Loads.Count < 1 then
       begin

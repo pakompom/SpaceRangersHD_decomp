@@ -75,7 +75,7 @@ end;
 procedure TfAchievements.OnOpen;
 begin
   inherited OnOpen;
-  if (PreviousScreenId <> screenArcadeBattle) and (AuxRenderBuffer.GetPixels = nil) then
+  if (PreviousScreenId <> screen_arcade_battle) and (AuxRenderBuffer.GetPixels = nil) then
     CaptureScreenBackground(True, 0);
   (GetByName('BGBuf') as TGraphBufGI).BindExternalGraphBuf(AuxRenderBuffer);
   RebuildAchievementList;
@@ -89,7 +89,7 @@ var
 begin
   for I := 0 to High(Rows) do FreeAchievementData(Rows[I].Data);
   SetLength(Rows, 0);
-  if RequestedScreenId <> screenArcadeBattle then AuxRenderBuffer.Clear;
+  if RequestedScreenId <> screen_arcade_battle then AuxRenderBuffer.Clear;
   inherited OnClose;
 end;
 { @end $79E4B4 }
@@ -223,8 +223,8 @@ begin
     SetSize(Classes.Point(Owner.ClientSize.X - 38, Owner.ClientSize.Y));
     SetDepth(7);
     SetFontName(NormalBoldFontName);
-    SetTextAlignX(taxLeft);
-    SetTextAlignY(tayTop);
+    SetTextAlignX(text_x_left);
+    SetTextAlignY(text_y_top);
     Text := Rows[Index].Data.Name^;
   end;
   with TLabelGI.Create(Owner) do
@@ -233,8 +233,8 @@ begin
     SetSize(Classes.Point(440, 53));
     SetDepth(7);
     SetFontName(SmallFontName);
-    SetTextAlignX(taxCenter);
-    SetTextAlignY(tayCenterEx);
+    SetTextAlignX(text_x_center);
+    SetTextAlignY(text_y_font_center);
     Text := Rows[Index].Data.Description^;
     SetWordWrapEnabled(True);
     SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
@@ -249,8 +249,8 @@ begin
       SetSize(Classes.Point(205, 20));
       SetDepth(7);
       SetFontName(SmallFontName);
-      SetTextAlignX(taxCenter);
-      SetTextAlignY(tayCenterEx);
+      SetTextAlignX(text_x_center);
+      SetTextAlignY(text_y_font_center);
       Text := WideString(IntToStr(Rows[Index].Data.Value)) +
         LanguageDataConfig.GetParamByPathOrMarker('Achievements.Of') +
         WideString(IntToStr(Rows[Index].Data.MaxValue));
@@ -264,8 +264,8 @@ begin
       SetSize(Classes.Point(505, 20));
       SetDepth(7);
       SetFontName(SmallFontName);
-      SetTextAlignX(taxRight);
-      SetTextAlignY(tayCenterEx);
+      SetTextAlignX(text_x_right);
+      SetTextAlignY(text_y_font_center);
       Text := LanguageDataConfig.GetParamByPathOrMarker('Achievements.Achieved') +
         FormatUnixDateTime(Rows[Index].Data.Date);
       SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));

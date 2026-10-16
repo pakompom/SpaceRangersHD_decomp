@@ -55,8 +55,10 @@ implementation
 uses CalcParseClass, EC_Str, Math;
 
 type
-  TQuestLocationKind = (qlkOrdinary = 0, qlkStart = 1, qlkEmpty = 2,
-    qlkSuccess = 3, qlkFailure = 4, qlkDeath = 5); // @size 0x01 Serialized location tag.
+  // Empty locations can still have events, parameter changes and paths.
+  // When prior text exists they retain it and skip the intermediate Continue action.
+  TQuestLocationKind = (location_normal = 0, location_start = 1, location_empty = 2,
+    location_success = 3, location_failure = 4, location_death = 5); // @size 0x01 Serialized location tag.
 
 { @routine $4E188C TLocation_Create }
 constructor TLocation.Create;
@@ -254,11 +256,11 @@ begin
   Id := Reader.GetInt32;
   VisitLimit := Reader.GetInt32;
   LocationType := TQuestLocationKind(Reader.GetByte);
-  IsStart := LocationType = qlkStart;
-  IsEmpty := LocationType = qlkEmpty;
-  IsSuccess := LocationType = qlkSuccess;
-  IsFailure := (LocationType = qlkFailure) or (LocationType = qlkDeath);
-  IsDeath := LocationType = qlkDeath;
+  IsStart := LocationType = location_start;
+  IsEmpty := LocationType = location_empty;
+  IsSuccess := LocationType = location_success;
+  IsFailure := (LocationType = location_failure) or (LocationType = location_death);
+  IsDeath := LocationType = location_death;
   Count := Reader.GetInt32;
   for i := 1 to Count do
   begin
@@ -301,11 +303,11 @@ begin
   Id := Reader.GetInt32;
   VisitLimit := 0;
   LocationType := TQuestLocationKind(Reader.GetByte);
-  IsStart := LocationType = qlkStart;
-  IsEmpty := LocationType = qlkEmpty;
-  IsSuccess := LocationType = qlkSuccess;
-  IsFailure := (LocationType = qlkFailure) or (LocationType = qlkDeath);
-  IsDeath := LocationType = qlkDeath;
+  IsStart := LocationType = location_start;
+  IsEmpty := LocationType = location_empty;
+  IsSuccess := LocationType = location_success;
+  IsFailure := (LocationType = location_failure) or (LocationType = location_death);
+  IsDeath := LocationType = location_death;
   Count := Reader.GetInt32;
   for i := 1 to Count do
   begin

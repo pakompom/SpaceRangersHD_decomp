@@ -79,7 +79,7 @@ end;
 procedure TSimpleButtonGI.ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonDown(KeyState, Point);
-  DispatchNamedEvent(nceButtonDown, Point.X, Point.Y);
+  DispatchNamedEvent(control_event_button_down, Point.X, Point.Y);
 end;
 { @end $4B3FAC }
 
@@ -87,7 +87,7 @@ end;
 procedure TSimpleButtonGI.ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonUp(KeyState, Point);
-  DispatchNamedEvent(nceButtonUp, Point.X, Point.Y);
+  DispatchNamedEvent(control_event_button_up, Point.X, Point.Y);
 end;
 { @end $4B3FE0 }
 

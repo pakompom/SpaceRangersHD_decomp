@@ -179,7 +179,7 @@ begin
         SaveCompletionData;
       end;
       BattleResult := 0;
-      RequestedScreenId := screenLoadRobot;
+      RequestedScreenId := screen_planet_battle_selection;
       RequestClose(1);
     end;
     Exit;
@@ -214,7 +214,7 @@ end;
 procedure TfLoadRobot.CloseClick(Sender: TObjectGI);
 begin
   AuxRenderBuffer.Clear;
-  RequestedScreenId := screenMainMenu;
+  RequestedScreenId := screen_main_menu;
   RequestClose(1);
 end;
 { @end $5DD5E8 }
@@ -538,8 +538,8 @@ begin
     end;
     SetDepth(7);
     SetFontName(NormalFontName);
-    SetTextAlignX(taxLeft);
-    SetTextAlignY(tayCenterEx);
+    SetTextAlignX(text_x_left);
+    SetTextAlignY(text_y_font_center);
     Text := Entries[Index].Name;
     if Entries[Index].Access <= UnlockedAccess then SetTextColor(RobotMapNameColor)
     else SetTextColor(CurrentPixelFormat.PackRgbBytes(112, 112, 112));
@@ -558,8 +558,8 @@ begin
     end;
     SetDepth(7);
     SetFontName(NormalFontName);
-    SetTextAlignX(taxRight);
-    SetTextAlignY(tayCenterEx);
+    SetTextAlignX(text_x_right);
+    SetTextAlignY(text_y_font_center);
     while True do
     begin
       MapIndex := Entries[Index].MapIndex;
@@ -718,7 +718,7 @@ begin
   if BattleResult <> 0 then Exit;
   if (SelectedIndex < 0) or (SelectedIndex > High(Entries)) then Exit;
   BattleResult := 1;
-  RequestedScreenId := screenLoadRobot;
+  RequestedScreenId := screen_planet_battle_selection;
   LoadPanel.SelectBackgroundStyle(3);
   LoadPanel.RefreshBackgroundImages;
   LoadPanel.StartClosingShutters;

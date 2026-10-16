@@ -223,7 +223,7 @@ begin
             Bonus.Visual.DetachFromSpace;
             Bonus.SpawnZone.NextBonusTick := ArcadeTickCount + 20 * RandomIntRange(
               BonusRespawnSeconds[Bonus.SpawnZone.BonusRespawnClass * 2], BonusRespawnSeconds[Bonus.SpawnZone.BonusRespawnClass * 2 + 1]);
-            if (Bonus.BonusKind = abkInvisibility) and (TabShip(Ship).BonusTicks[Bonus.BonusKind] <= 0) then TabShip(Ship).RevealTicks := 0;
+            if (Bonus.BonusKind = arcade_effect_invisibility) and (TabShip(Ship).BonusTicks[Bonus.BonusKind] <= 0) then TabShip(Ship).RevealTicks := 0;
             TabShip(Ship).BonusTicks[Bonus.BonusKind] := 20 * BonusDurationSeconds[Bonus.BonusKind];
             if PlayerArcadeShip = TabShip(Ship) then SoundManager.PlaySound(ArcadeItemSounds[Bonus.BonusKind]);
             ab_Object_Delete(Bonus);
@@ -300,7 +300,7 @@ begin
   begin
     if TObject(Obj) is TabItem then
       case Obj.BonusKind of
-        abkRegeneration, abkSpeed, abkDamage..abkInvisibility:
+        arcade_effect_regeneration, arcade_effect_speed_boost, arcade_effect_damage_boost..arcade_effect_invisibility:
           begin
             ComputeSphericalDistance(Distance, Origin.Longitude, Origin.PolarAngle,
               0, Obj.State.LongitudeDegrees, Obj.State.PolarAngleDegrees, SphereRadius);
@@ -331,7 +331,7 @@ begin
   begin
     if Obj is TabItem then
       case TabItem(Obj).BonusKind of
-        abkRegeneration, abkSpeed, abkDamage..abkInvisibility:
+        arcade_effect_regeneration, arcade_effect_speed_boost, arcade_effect_damage_boost..arcade_effect_invisibility:
           begin
             ComputeSphericalDistance(Distance, Origin.Longitude, Origin.PolarAngle,
               0, Obj.State.LongitudeDegrees, Obj.State.PolarAngleDegrees, SphereRadius);
@@ -365,7 +365,7 @@ begin
   Obj := FirstArcadeObject;
   while Obj <> nil do
   begin
-    if (Obj is TabItem) and (TabItem(Obj).BonusKind in [abkRegeneration]) then
+    if (Obj is TabItem) and (TabItem(Obj).BonusKind in [arcade_effect_regeneration]) then
     begin
       ComputeSphericalDistance(Distance, Origin.Longitude, Origin.PolarAngle,
         0, Obj.State.LongitudeDegrees, Obj.State.PolarAngleDegrees, SphereRadius);

@@ -8,14 +8,28 @@ uses GI_MessageLoop, SysUtils, Types, EC_Struct;
 
 const
   // ParseAutoGeometryFlagsGI maps the native configuration names pos / size.
-  agfPosition = $01;
-  agfSize = $02;
+  auto_position = $01;
+  auto_size = $02;
 
 type
-  TImageKindXGI = (ikxLeftFill=0, ikxCenterFill=1, ikxRightFill=2, ikxLeft=3, ikxCenter=4, ikxRight=5); // @size 0x01
-  TImageKindYGI = (ikyTopFill=0, ikyCenterFill=1, ikyBottomFill=2, ikyTop=3, ikyCenter=4, ikyBottom=5); // @size 0x01
-  TTextAlignXGI = (taxLeft=0, taxCenter=1, taxRight=2, taxAuto=3); // @size 0x01
-  TTextAlignYGI = (tayTop=0, tayCenter=1, tayCenterEx=2, tayBottom=3, tayAuto=4); // @size 0x01
+  TImageKindXGI = (
+    image_x_tile_left = 0,
+    image_x_tile_center = 1, // Configurable, but not implemented by the native renderers.
+    image_x_tile_right = 2,
+    image_x_left = 3,
+    image_x_center = 4,
+    image_x_right = 5
+  ); // @size 0x01
+  TImageKindYGI = (
+    image_y_tile_top = 0,
+    image_y_tile_center = 1, // Configurable, but not implemented by the native renderers.
+    image_y_tile_bottom = 2,
+    image_y_top = 3,
+    image_y_center = 4,
+    image_y_bottom = 5
+  ); // @size 0x01
+  TTextAlignXGI = (text_x_left=0, text_x_center=1, text_x_right=2, text_x_fit_or_justify=3); // @size 0x01
+  TTextAlignYGI = (text_y_top=0, text_y_center=1, text_y_font_center=2, text_y_bottom=3, text_y_fit_height=4); // @size 0x01
 
 procedure BreakUiMessage; // @addr $4BE3AC @note "Sets the shared exception-log-copy suppression flag and raises EBreakMessageGI."
 
@@ -93,12 +107,12 @@ end;
 { @routine $4BD5F8 ParseImageKindXName }
 function ParseImageKindXName(Name: WideString): TImageKindXGI;
 begin
-  if Name = 'LeftFill' then Result := ikxLeftFill
-  else if Name = 'CenterFill' then Result := ikxCenterFill
-  else if Name = 'RightFill' then Result := ikxRightFill
-  else if Name = 'Left' then Result := ikxLeft
-  else if Name = 'Center' then Result := ikxCenter
-  else if Name = 'Right' then Result := ikxRight
+  if Name = 'LeftFill' then Result := image_x_tile_left
+  else if Name = 'CenterFill' then Result := image_x_tile_center
+  else if Name = 'RightFill' then Result := image_x_tile_right
+  else if Name = 'Left' then Result := image_x_left
+  else if Name = 'Center' then Result := image_x_center
+  else if Name = 'Right' then Result := image_x_right
   else raise Exception.Create('GetITDXbyNameGI. name=' + Name);
 end;
 { @end $4BD5F8 }
@@ -106,12 +120,12 @@ end;
 { @routine $4BD7A8 ParseImageKindYName }
 function ParseImageKindYName(Name: WideString): TImageKindYGI;
 begin
-  if Name = 'TopFill' then Result := ikyTopFill
-  else if Name = 'CenterFill' then Result := ikyCenterFill
-  else if Name = 'BottomFill' then Result := ikyBottomFill
-  else if Name = 'Top' then Result := ikyTop
-  else if Name = 'Center' then Result := ikyCenter
-  else if Name = 'Bottom' then Result := ikyBottom
+  if Name = 'TopFill' then Result := image_y_tile_top
+  else if Name = 'CenterFill' then Result := image_y_tile_center
+  else if Name = 'BottomFill' then Result := image_y_tile_bottom
+  else if Name = 'Top' then Result := image_y_top
+  else if Name = 'Center' then Result := image_y_center
+  else if Name = 'Bottom' then Result := image_y_bottom
   else raise Exception.Create('GetITDYbyNameGI. name=' + Name);
 end;
 { @end $4BD7A8 }
@@ -119,10 +133,10 @@ end;
 { @routine $4BD958 ParseTextAlignXName }
 function ParseTextAlignXName(Name: WideString): TTextAlignXGI;
 begin
-  if Name = 'Left' then Result := taxLeft
-  else if Name = 'Center' then Result := taxCenter
-  else if Name = 'Right' then Result := taxRight
-  else if Name = 'Auto' then Result := taxAuto
+  if Name = 'Left' then Result := text_x_left
+  else if Name = 'Center' then Result := text_x_center
+  else if Name = 'Right' then Result := text_x_right
+  else if Name = 'Auto' then Result := text_x_fit_or_justify
   else raise Exception.Create('GetTTAXbyNameGI. name=' + Name);
 end;
 { @end $4BD958 }
@@ -130,11 +144,11 @@ end;
 { @routine $4BDAA4 ParseTextAlignYName }
 function ParseTextAlignYName(Name: WideString): TTextAlignYGI;
 begin
-  if Name = 'Top' then Result := tayTop
-  else if Name = 'Center' then Result := tayCenter
-  else if Name = 'CenterEx' then Result := tayCenterEx
-  else if Name = 'Bottom' then Result := tayBottom
-  else if Name = 'Auto' then Result := tayAuto
+  if Name = 'Top' then Result := text_y_top
+  else if Name = 'Center' then Result := text_y_center
+  else if Name = 'CenterEx' then Result := text_y_font_center
+  else if Name = 'Bottom' then Result := text_y_bottom
+  else if Name = 'Auto' then Result := text_y_fit_height
   else raise Exception.Create('GetTTAYbyNameGI. name=' + Name);
 end;
 { @end $4BDAA4 }
@@ -202,8 +216,8 @@ begin
   for Index := 0 to Count - 1 do
   begin
     Part := LowerCaseWideString(TrimWideString(ExtractDelimitedPartW(Values, Index, ',')));
-    if Part = 'pos' then Flags := Flags or agfPosition
-    else if Part = 'size' then Flags := Flags or agfSize;
+    if Part = 'pos' then Flags := Flags or auto_position
+    else if Part = 'size' then Flags := Flags or auto_size;
   end;
   Result := Flags;
 end;

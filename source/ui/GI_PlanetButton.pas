@@ -76,7 +76,7 @@ end;
 procedure TPlanetButtonGI.ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonDown(KeyState, Point);
-  DispatchNamedEvent(nceButtonDown, Point.X, Point.Y);
+  DispatchNamedEvent(control_event_button_down, Point.X, Point.Y);
 end;
 { @end $4ABC40 }
 

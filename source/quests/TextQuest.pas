@@ -6,10 +6,10 @@ uses Classes, EC_Buf, EC_Struct, EventClass, LocationClass, ParameterClass, Path
 
 type
   // Quest-header race bits; the destination also supports uninhabited planets.
-  TQuestRace = (qrMaloc = 0, qrPeleng = 1, qrHuman = 2, qrFeyan = 3,
-    qrGaal = 4, qrUninhabited = 6); // @size $01
+  TQuestRace = (quest_race_maloc = 0, quest_race_peleng = 1, quest_race_human = 2, quest_race_feyan = 3,
+    quest_race_gaal = 4, quest_race_uninhabited = 6); // @size $01
   TQuestRaceSet = set of TQuestRace; // @size $01
-  TQuestPlayerCareer = (qpcTrader = 0, qpcPirate = 1, qpcWarrior = 2); // @size $01
+  TQuestPlayerCareer = (quest_career_trader = 0, quest_career_pirate = 1, quest_career_warrior = 2); // @size $01
   TQuestPlayerCareerSet = set of TQuestPlayerCareer; // @size $01
 
   TTextQuest = class(TObjectEx) // @size 0x80
@@ -85,7 +85,7 @@ begin
   PlayerInterface := nil;
   TextShown := False;
   OutcomeEvent := TEvent.Create;
-  Outcome := qoNone;
+  Outcome := quest_outcome_none;
   DisplayedEvent := nil;
   MajorVersion := 1;
   MinorVersion := 0;
@@ -186,10 +186,10 @@ begin
   MinorVersion := 0;
   ChangeLogText.ClearText;
   CompleteOnFinish := True;
-  IssuerRaces := [qrMaloc..qrGaal];
-  TargetRaces := [qrUninhabited];
-  PlayerRaces := [qrMaloc..qrGaal];
-  PlayerCareers := [qpcTrader..qpcWarrior];
+  IssuerRaces := [quest_race_maloc..quest_race_gaal];
+  TargetRaces := [quest_race_uninhabited];
+  PlayerRaces := [quest_race_maloc..quest_race_gaal];
+  PlayerCareers := [quest_career_trader..quest_career_warrior];
   EditorScreenWidth := 0;
   EditorScreenHeight := 0;
   DefaultTraversalLimit := 0;
@@ -213,7 +213,7 @@ begin
   for i := GetParameterCount downto 1 do GetParameter(i).Free;
   Parameters.Clear;
   OutcomeEvent.ClearTextFields;
-  Outcome := qoNone;
+  Outcome := quest_outcome_none;
   DisplayedEvent := nil;
 end;
 { @end $4E4268 }
@@ -290,12 +290,12 @@ begin
   if FormatVersion >= 1111111119 then Reader.ReadBytes(@IssuerRaces, 1)
   else
     case i of
-      -1: IssuerRaces := [qrUninhabited];
-      0: IssuerRaces := [qrMaloc];
-      1: IssuerRaces := [qrPeleng];
-      2: IssuerRaces := [qrHuman];
-      3: IssuerRaces := [qrFeyan];
-      4: IssuerRaces := [qrGaal];
+      -1: IssuerRaces := [quest_race_uninhabited];
+      0: IssuerRaces := [quest_race_maloc];
+      1: IssuerRaces := [quest_race_peleng];
+      2: IssuerRaces := [quest_race_human];
+      3: IssuerRaces := [quest_race_feyan];
+      4: IssuerRaces := [quest_race_gaal];
     else IssuerRaces := [];
     end;
   if FormatVersion >= 1111111112 then CompleteOnFinish := Reader.GetBoolean;
@@ -303,34 +303,34 @@ begin
   if FormatVersion >= 1111111119 then Reader.ReadBytes(@TargetRaces, 1)
   else
     case i of
-      -1: TargetRaces := [qrUninhabited];
-      0: TargetRaces := [qrMaloc];
-      1: TargetRaces := [qrPeleng];
-      2: TargetRaces := [qrHuman];
-      3: TargetRaces := [qrFeyan];
-      4: TargetRaces := [qrGaal];
+      -1: TargetRaces := [quest_race_uninhabited];
+      0: TargetRaces := [quest_race_maloc];
+      1: TargetRaces := [quest_race_peleng];
+      2: TargetRaces := [quest_race_human];
+      3: TargetRaces := [quest_race_feyan];
+      4: TargetRaces := [quest_race_gaal];
     else TargetRaces := [];
     end;
   if FormatVersion < 1111111125 then i := Reader.GetInt32;
   if FormatVersion >= 1111111120 then Reader.ReadBytes(@PlayerCareers, 1)
   else
     case i of
-      -1: PlayerCareers := [qpcTrader..qpcWarrior];
-      0: PlayerCareers := [qpcTrader];
-      1: PlayerCareers := [qpcPirate];
-      2: PlayerCareers := [qpcWarrior];
+      -1: PlayerCareers := [quest_career_trader..quest_career_warrior];
+      0: PlayerCareers := [quest_career_trader];
+      1: PlayerCareers := [quest_career_pirate];
+      2: PlayerCareers := [quest_career_warrior];
     else PlayerCareers := [];
     end;
   if FormatVersion < 1111111125 then i := Reader.GetInt32;
   if FormatVersion >= 1111111120 then Reader.ReadBytes(@PlayerRaces, 1)
   else
     case i of
-      -1: PlayerRaces := [qrMaloc..qrGaal];
-      0: PlayerRaces := [qrMaloc];
-      1: PlayerRaces := [qrPeleng];
-      2: PlayerRaces := [qrHuman];
-      3: PlayerRaces := [qrFeyan];
-      4: PlayerRaces := [qrGaal];
+      -1: PlayerRaces := [quest_race_maloc..quest_race_gaal];
+      0: PlayerRaces := [quest_race_maloc];
+      1: PlayerRaces := [quest_race_peleng];
+      2: PlayerRaces := [quest_race_human];
+      3: PlayerRaces := [quest_race_feyan];
+      4: PlayerRaces := [quest_race_gaal];
     else PlayerRaces := [];
     end;
   SuccessRelationDelta := Reader.GetInt32;
@@ -756,14 +756,14 @@ begin
   for i := 1 to GetParameterCount do
   begin
     Parameter := GetParameter(i);
-    if Parameter.Enabled and (Parameter.CriticalOutcome <> qoNone) and
+    if Parameter.Enabled and (Parameter.CriticalOutcome <> quest_outcome_none) and
       (not Parameter.CriticalAtMinimum or (Parameter.Value <= Parameter.MinValue)) and
       (Parameter.CriticalAtMinimum or (Parameter.Value >= Parameter.MaxValue)) then
       if Outcomes[Integer(Parameter.CriticalOutcome)] < 0 then Outcomes[Integer(Parameter.CriticalOutcome)] := i;
   end;
-  if Outcomes[Ord(qoDeath)] >= 0 then Selected := Outcomes[Ord(qoDeath)]
-  else if Outcomes[Ord(qoFailure)] >= 0 then Selected := Outcomes[Ord(qoFailure)]
-  else if Outcomes[Ord(qoSuccess)] >= 0 then Selected := Outcomes[Ord(qoSuccess)]
+  if Outcomes[Ord(quest_outcome_death)] >= 0 then Selected := Outcomes[Ord(quest_outcome_death)]
+  else if Outcomes[Ord(quest_outcome_failure)] >= 0 then Selected := Outcomes[Ord(quest_outcome_failure)]
+  else if Outcomes[Ord(quest_outcome_success)] >= 0 then Selected := Outcomes[Ord(quest_outcome_success)]
   else Exit;
   Result := True;
   OutcomeEvent.Assign(GetParameter(Selected).CriticalEvent);
@@ -787,7 +787,7 @@ begin
   if PlayerInterface = nil then Exit;
   TextShown := False;
   OutcomeEvent.ClearTextFields;
-  Outcome := qoNone;
+  Outcome := quest_outcome_none;
   DisplayedEvent := nil;
   StartId := -1;
   for i := 1 to GetLocationCount do
@@ -1077,9 +1077,9 @@ begin
   ShowEvent(OutcomeEvent);
   LastEventSource := 'Critical param value';
   case Outcome of
-    qoFailure: PlayerInterface.AddFailureAction;
-    qoSuccess: PlayerInterface.AddSuccessAction;
-    qoDeath: PlayerInterface.AddDeathAction;
+    quest_outcome_failure: PlayerInterface.AddFailureAction;
+    quest_outcome_success: PlayerInterface.AddSuccessAction;
+    quest_outcome_death: PlayerInterface.AddDeathAction;
   end;
 end;
 { @end $4E6D44 }

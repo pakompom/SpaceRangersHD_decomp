@@ -5,8 +5,8 @@ interface
 uses EC_Struct;
 
 type
-  TQuestOutcome = (qoNone = 0, qoFailure = 1, qoSuccess = 2,
-    qoDeath = 3); // @size 0x04
+  TQuestOutcome = (quest_outcome_none = 0, quest_outcome_failure = 1, quest_outcome_success = 2,
+    quest_outcome_death = 3); // @size 0x04
 
   TTextQuestInterface = class(TObjectEx) // @size 0x04
   public

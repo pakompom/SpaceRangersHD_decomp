@@ -80,7 +80,7 @@ begin
    SetImageDownPath('GI,Bm.FormMessageBox.' + GiResourceSuffix + 'OkD');
     SetSize(Self.AcceptButton.GetMaxStateImageSize);
     SetPosition(Classes.Point(Size.X div 2 - Self.AcceptButton.ClientSize.X - GiScalePixels(5),Size.Y - Insets.Bottom - Self.AcceptButton.ClientSize.Y));
-    HitKind := gbhRect;
+    HitKind := button_hit_bounds;
     UpdateStateImagePlacement;
     UpdateStateVisuals;
     UpCallback := AcceptClicked;
@@ -96,7 +96,7 @@ begin
   CancelButton.SetImageDownPath('GI,Bm.FormMessageBox.' + GiResourceSuffix + 'CancelD');
   CancelButton.SetSize(CancelButton.GetMaxStateImageSize);
   CancelButton.SetPosition(Classes.Point(Size.X div 2 + GiScalePixels(5),Size.Y - Insets.Bottom - CancelButton.ClientSize.Y));
-  CancelButton.HitKind := gbhRect;
+  CancelButton.HitKind := button_hit_bounds;
   CancelButton.UpdateStateImagePlacement;
   CancelButton.UpdateStateVisuals;
   CancelButton.UpCallback := CancelClicked;
@@ -105,8 +105,8 @@ begin
   CaptionLabel.SetText(Caption);
   CaptionLabel.SetSize(Classes.Point(Size.X,GiScalePixels(21)));
   CaptionLabel.SetPosition(Classes.Point(0,GiScalePixels(30)));
-  CaptionLabel.SetTextAlignX(taxCenter);
-  CaptionLabel.SetTextAlignY(tayCenter);
+  CaptionLabel.SetTextAlignX(text_x_center);
+  CaptionLabel.SetTextAlignY(text_y_center);
   CaptionLabel.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
   CaptionLabel.SetFontName(NormalBoldFontName);
   ScrollPanel := TPanelScrollBarGI.Create(Window);
@@ -120,14 +120,14 @@ begin
     SetVerticalScrollbarEnabled(True);
     SetPosition(Classes.Point(Insets.Left + GiScalePixels(10),CaptionLabel.LocalPosition.Y + CaptionLabel.ClientSize.Y + GiScalePixels(10)));
     SetSize(Classes.Point(Size.X - Insets.Right - LocalPosition.X - VerticalScrollBar.ClientSize.X - GiScalePixels(10),AcceptButton.LocalPosition.Y - LocalPosition.Y - GiScalePixels(15)));
-    ScrollAxis := psaVertical;
+    ScrollAxis := panel_drag_vertical;
   end;
   with TFrameGI.Create(Window) do
   begin
     SetPosition(Classes.Point(ScrollPanel.LocalPosition.X - 1,ScrollPanel.LocalPosition.Y - 1));
     SetSize(Classes.Point(ScrollPanel.ClientSize.X - 1,ScrollPanel.ClientSize.Y + 2));
     SetDepth(8);
-    SetKind(fkRect);
+    SetKind(frame_rect_border);
     SetColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
   end;
   PopulateChoices;
@@ -166,8 +166,8 @@ begin
     Row.SetSize(Classes.Point(ScrollPanel.ClientSize.X,GiScalePixels(15)));
     LabelControl := TLabelGI.Create(Row);
     LabelControl.SetPosition(Classes.Point(0,0));
-    LabelControl.SetTextAlignX(taxLeft);
-    LabelControl.SetTextAlignY(tayCenterEx);
+    LabelControl.SetTextAlignX(text_x_left);
+    LabelControl.SetTextAlignY(text_y_font_center);
     LabelControl.SetWordWrapEnabled(False);
     LabelControl.SetSize(Row.ClientSize);
     LabelControl.SetFontName(NormalFontName);

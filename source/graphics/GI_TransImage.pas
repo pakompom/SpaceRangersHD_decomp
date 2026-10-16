@@ -41,8 +41,8 @@ begin
   inherited Create(Owner);
   ImageCache := TCTBitmapControlEC.Create;
   GlobalCache.ResetControl(ImageCache);
-  ImageKindX := ikxCenter;
-  ImageKindY := ikyCenter;
+  ImageKindX := image_x_center;
+  ImageKindY := image_y_center;
 end;
 { @end $493104 }
 
@@ -58,8 +58,8 @@ end;
 { @routine $4931AC TTransImageGI_Clear }
 procedure TTransImageGI.Clear;
 begin
-  ImageKindX := ikxCenter;
-  ImageKindY := ikyCenter;
+  ImageKindX := image_x_center;
+  ImageKindY := image_y_center;
   inherited Clear;
 end;
 { @end $4931AC }
@@ -171,55 +171,55 @@ begin
   try
   Width := Bitmap.PixelSize.X;
   Height := Bitmap.PixelSize.Y;
-  if ImageKindX = ikxLeftFill then
+  if ImageKindX = image_x_tile_left then
   begin
     Left := HitTestBounds.Left;
     Right := HitTestBounds.Right;
   end
-  else if ImageKindX = ikxRightFill then
+  else if ImageKindX = image_x_tile_right then
   begin
     Right := HitTestBounds.Right;
     Left := Right;
     while Left > ClipRect.Left do Dec(Left, Width);
   end
-  else if ImageKindX = ikxLeft then
+  else if ImageKindX = image_x_left then
   begin
     Left := HitTestBounds.Left;
     Right := Left + Width;
   end
-  else if ImageKindX = ikxRight then
+  else if ImageKindX = image_x_right then
   begin
     Right := HitTestBounds.Right;
     Left := Right - Width;
   end
-  else if ImageKindX = ikxCenter then
+  else if ImageKindX = image_x_center then
   begin
     Left := (HitTestBounds.Right - HitTestBounds.Left) div 2 + HitTestBounds.Left - Width div 2;
     Right := Left + Width;
   end
   else begin Exit; end;
-  if ImageKindY = ikyTopFill then
+  if ImageKindY = image_y_tile_top then
   begin
     Top := HitTestBounds.Top;
     Bottom := HitTestBounds.Bottom;
   end
-  else if ImageKindY = ikyBottomFill then
+  else if ImageKindY = image_y_tile_bottom then
   begin
     Bottom := HitTestBounds.Bottom;
     Top := Bottom;
     while Top > ClipRect.Top do Dec(Top, Height);
   end
-  else if ImageKindY = ikyTop then
+  else if ImageKindY = image_y_top then
   begin
     Top := HitTestBounds.Top;
     Bottom := Top + Height;
   end
-  else if ImageKindY = ikyBottom then
+  else if ImageKindY = image_y_bottom then
   begin
     Bottom := HitTestBounds.Bottom;
     Top := Bottom - Height;
   end
-  else if ImageKindY = ikyCenter then
+  else if ImageKindY = image_y_center then
   begin
     Top := (HitTestBounds.Bottom - HitTestBounds.Top) div 2 + HitTestBounds.Top - Height div 2;
     Bottom := Top + Height;

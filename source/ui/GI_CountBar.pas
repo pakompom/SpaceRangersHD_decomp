@@ -64,11 +64,11 @@ begin
   MarkerImage := TImageGI.Create(Self);
   DecreaseButton.DownCallback := DecreasePressed;
   IncreaseButton.DownCallback := IncreasePressed;
-  AfterThumbImage.KindX := ikxLeftFill;
-  AfterThumbImage.KindY := ikyTopFill;
-  BeforeThumbImage.KindX := ikxLeftFill;
-  BeforeThumbImage.KindY := ikyTopFill;
-  ThumbButton.SetKind(gbkFix);
+  AfterThumbImage.KindX := image_x_tile_left;
+  AfterThumbImage.KindY := image_y_tile_top;
+  BeforeThumbImage.KindX := image_x_tile_left;
+  BeforeThumbImage.KindY := image_y_tile_top;
+  ThumbButton.SetKind(button_toggle);
 end;
 { @end $4AF204 }
 
@@ -184,11 +184,11 @@ begin
   AfterThumbImage.ObjectSize := Classes.Point(ClientSize.X - ThumbRight - IncreaseSize.X, BeforeThumbImage.GetContentSize.Y);
   ThumbButton.Pos := Classes.Point(ThumbLeft, 0);
   ThumbButton.ObjectSize := Classes.Point(ThumbRight - ThumbLeft, ThumbSize.Y);
-  AfterThumbImage.KindX := ikxRightFill;
-  BeforeThumbImage.KindX := ikxLeftFill;
+  AfterThumbImage.KindX := image_x_tile_right;
+  BeforeThumbImage.KindX := image_x_tile_left;
   MarkerImage.Pos := AddPoints(ThumbButton.LocalPosition, HalfPoint(ThumbButton.ClientSize));
-  if DecreaseButton.Kind = gbkDisable then DecreaseButton.SetDisabled(Position <= Minimum);
-  if IncreaseButton.Kind = gbkDisable then IncreaseButton.SetDisabled(Position >= Maximum);
+  if DecreaseButton.Kind = button_push_can_disable then DecreaseButton.SetDisabled(Position <= Minimum);
+  if IncreaseButton.Kind = button_push_can_disable then IncreaseButton.SetDisabled(Position >= Maximum);
 end;
 { @end $4AF53C }
 

@@ -58,7 +58,7 @@ begin
   ExpireTick := ArcadeTickCount + 25;
   if Offset <> 0 then State := AdvanceSphericalStateOnCurrentSphere(State, Offset);
   Image := ab_WorldImage_Create(MakeVector3D(0, 0, 0), 'GAI,Bm.AB.w04_f', 'GAI,Bm.AB.w04_s', False);
-  ab_WorldImage_SetFrameMode(Image, afmRandomStart);
+  ab_WorldImage_SetFrameMode(Image, animation_random_start);
   ab_WorldImage_SetDepth(Image, HitFrontDepth, HitBackDepth);
 end;
 { @end $5532C4 }
@@ -76,7 +76,7 @@ begin
   Thrust := 1;
   Phase := 2;
   Image := ab_WorldImage_Create(MakeVector3D(0, 0, 0), 'GAI,Bm.AB.w04b_f', 'GAI,Bm.AB.w04b_s', False);
-  ab_WorldImage_SetFrameMode(Image, afmRandomStart);
+  ab_WorldImage_SetFrameMode(Image, animation_random_start);
   ab_WorldImage_SetDepth(Image, HitFrontDepth, HitBackDepth);
 end;
 { @end $5533E0 }

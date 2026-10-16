@@ -272,8 +272,8 @@ begin
       begin
         ImageSourcePath := 'GI,Bm.Captain.' + GiResourceSuffix + 'ShopBot1i';
         SetHardwareMirrorHorizontal(HardwareRenderingEnabled);
-        KindX := ikxCenter;
-        KindY := ikyCenter;
+        KindX := image_x_center;
+        KindY := image_y_center;
         SetActive(True);
       end;
       with GetByName('FaceA') as TgaiGI do
@@ -284,8 +284,8 @@ begin
         SequenceIndex := 0;
         UpdateAutoGeometry;
         SetSequenceFrame(RandomIntRange(0, SequenceFrameCount - 1));
-        SetImageKindX(ikxCenter);
-        SetImageKindY(ikyCenter);
+        SetImageKindX(image_x_center);
+        SetImageKindY(image_y_center);
         SetActive(True);
         RestartPlayback;
         UserValue := 1;
@@ -298,8 +298,8 @@ begin
       begin
         ImageSourcePath := 'GI,Bm.Captain.' + GiResourceSuffix + 'ShopBot1i';
         SetHardwareMirrorHorizontal(HardwareRenderingEnabled);
-        KindX := ikxCenter;
-        KindY := ikyCenter;
+        KindX := image_x_center;
+        KindY := image_y_center;
         SetActive(True);
       end;
       with GetByName('FaceA') as TgaiGI do
@@ -310,8 +310,8 @@ begin
         SequenceIndex := 0;
         UpdateAutoGeometry;
         SetSequenceFrame(RandomIntRange(0, SequenceFrameCount - 1));
-        SetImageKindX(ikxCenter);
-        SetImageKindY(ikyCenter);
+        SetImageKindX(image_x_center);
+        SetImageKindY(image_y_center);
         SetActive(True);
         RestartPlayback;
         UserValue := 1;
@@ -324,8 +324,8 @@ begin
       begin
         ImageSourcePath := 'GI,' + TalkShip.GetCaptainPortraitResourceBase + 'i';
         SetHardwareMirrorHorizontal(HardwareRenderingEnabled);
-        KindX := ikxCenter;
-        KindY := ikyCenter;
+        KindX := image_x_center;
+        KindY := image_y_center;
         SetActive(True);
       end;
       with GetByName('FaceA') as TgaiGI do
@@ -336,8 +336,8 @@ begin
         SequenceIndex := 0;
         UpdateAutoGeometry;
         SetSequenceFrame(RandomIntRange(0, SequenceFrameCount - 1));
-        SetImageKindX(ikxCenter);
-        SetImageKindY(ikyCenter);
+        SetImageKindX(image_x_center);
+        SetImageKindY(image_y_center);
         SetActive(True);
         RestartPlayback;
         CycleCompleteCallback := nil;
@@ -348,8 +348,8 @@ begin
     with GetByName('CaptainI') as TImageGI do
     begin
       ImageSourcePath := 'GI,' + GetPlayer.GetCaptainPortraitResourceBase + 'i';
-      KindX := ikxCenter;
-      KindY := ikyCenter;
+      KindX := image_x_center;
+      KindY := image_y_center;
       SetActive(True);
     end;
     with GetByName('CaptainA') as TgaiGI do
@@ -358,8 +358,8 @@ begin
       SetImagePath(GetPlayer.GetCaptainPortraitResourceBase + 'a');
       SequenceIndex := 0;
       UpdateAutoGeometry;
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      SetImageKindX(image_x_center);
+      SetImageKindY(image_y_center);
       SetActive(True);
       RestartPlayback;
     end;
@@ -397,13 +397,13 @@ begin
   end;
   with GetByName('BGCity2') as TImageGI do
   begin
-    SetActive(GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = rstMilitaryBase));
+    SetActive(GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = station_military_base));
     if Active then
     begin
       ImageSourcePath := 'GAI,' + GetPlayer.CurrentStar.GetBackgroundImagePath(I);
       GaiImageControl.LoadFrameSequenceFromText(SingleFrameAnimationSpec);
-      KindX := ikxCenter;
-      KindY := ikyCenter;
+      KindX := image_x_center;
+      KindY := image_y_center;
     end;
   end;
   with GetByName('BGCity') as TImageGI do
@@ -442,7 +442,7 @@ begin
   RefreshCargoWarning;
   ReopenRequested := False;
   AmbientSound.SetVolume(1);
-  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnEnteringForm, nil, nil, 0);
+  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(event_enter_form, nil, nil, 0);
   if not GetPlayer.InNormalSpace then Galaxy.PrimeIntegrityChecksum(134);
 end;
 { @end $50D0C4 }
@@ -452,7 +452,7 @@ procedure TfGoodsShop2.OnClose;
 begin
   if GetPlayer <> nil then
     if not GetPlayer.InNormalSpace then Galaxy.CheckIntegrityChecksum(135);
-  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnLeavingForm, nil, nil, 0);
+  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(event_leave_form, nil, nil, 0);
   LoadPanel.OnClose;
   if MoneyWarningTimer <> 0 then
   begin
@@ -781,9 +781,9 @@ begin
           end;
           if not GetPlayer.InNormalSpace then Galaxy.PrimeIntegrityChecksum(137);
           if GetPlayer.IsOnPlanet then
-            if GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = rlHostile then
+            if GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = relation_level_hostile then
             begin
-              RequestedScreenId := screenGovernment;
+              RequestedScreenId := screen_government;
               RequestClose(1);
             end;
         end;
@@ -1036,7 +1036,7 @@ begin
   if GetPlayer.IsOnPlanet then Location := GetPlayer.CurrentPlanet
   else if GetPlayer.IsDockedToShip then Location := GetPlayer.DockedTo
   else if GetPlayer.InNormalSpace then Location := TalkShip else Location := nil;
-  AddOrUpdatePlayerBubble(pmUserNote, Galaxy.CurrentTurn, BuildPriceText(Location), StarMapScreen.GetPriceSnapshotKey(Location));
+  AddOrUpdatePlayerBubble(message_user_note, Galaxy.CurrentTurn, BuildPriceText(Location), StarMapScreen.GetPriceSnapshotKey(Location));
   MainPanel.RebuildMessageButtons(False);
   FinishModalTrade;
 end;
@@ -1047,20 +1047,20 @@ procedure TfGoodsShop2.EndTurnClicked(Sender: TObjectGI);
 begin
   if GetPlayer = nil then Exit;
   if GetPlayer.QueuedTravelTarget <> nil then Exit;
-  if GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = rstDominion) and
-    (GetPlayer.DockedTo.Order = soTeleport) and (Cardinal(GetPlayer.DockedTo.OrderStateData) > 0) and not GetPlayer.DockedTo.InHyperspace then
+  if GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = station_dominion) and
+    (GetPlayer.DockedTo.Order = order_teleport) and (Cardinal(GetPlayer.DockedTo.OrderStateData) > 0) and not GetPlayer.DockedTo.InHyperspace then
   begin
     RuinsTalkScreen.DepartWithStation(1);
     Exit;
   end;
-  if GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = rstDominion) and
+  if GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = station_dominion) and
     ((GetPlayer.DockedTo as TRuins).FlyToStar <> nil) and ((GetPlayer.DockedTo as TRuins).FlyToStar <> GetPlayer.CurrentStar) and
     ((GetPlayer.DockedTo as TRuins).FlyDate <= Galaxy.CurrentTurn) then
   begin
     RuinsTalkScreen.DepartWithStation(1);
     Exit;
   end;
-  if GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = rstMilitaryBase) and
+  if GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = station_military_base) and
     ((GetPlayer.DockedTo as TRuins).FlyToStar <> nil) and ((GetPlayer.DockedTo as TRuins).FlyToStar <> GetPlayer.CurrentStar) and
     ((GetPlayer.DockedTo as TRuins).FlyDate <= Galaxy.CurrentTurn) then
   begin
@@ -1153,9 +1153,9 @@ begin
   if not GetPlayer.InNormalSpace then Galaxy.PrimeIntegrityChecksum(143);
   AmbientSound.SetVolume(1);
   if GetPlayer.IsOnPlanet then
-    if GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = rlHostile then
+    if GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = relation_level_hostile then
     begin
-      RequestedScreenId := screenGovernment;
+      RequestedScreenId := screen_government;
       RequestClose(1);
     end;
 end;
@@ -1214,8 +1214,8 @@ begin
   begin
     ImageSourcePath := 'GI,Bm.Captain.' + GiResourceSuffix + 'ShopBot' + IntToStr(Cardinal(Sender.UserValue)) + 'i';
     SetHardwareMirrorHorizontal(HardwareRenderingEnabled);
-    KindX := ikxCenter;
-    KindY := ikyCenter;
+    KindX := image_x_center;
+    KindY := image_y_center;
     SetActive(True);
   end;
   with GetByName('FaceA') as TgaiGI do
@@ -1226,8 +1226,8 @@ begin
     SequenceIndex := 0;
     UpdateAutoGeometry;
     SetSequenceFrame(0);
-    SetImageKindX(ikxCenter);
-    SetImageKindY(ikyCenter);
+    SetImageKindX(image_x_center);
+    SetImageKindY(image_y_center);
     SetActive(True);
     RestartPlayback;
     CycleCompleteCallback := MerchantAnimationComplete;
@@ -1419,7 +1419,7 @@ procedure TfGoodsShop2.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
   if MainPanel.NavigationLocked then Exit;
   if ExitScreenLoop then Exit;
-  if TurnCalculationPhase in [tcpIdle, tcpGalaxyFinished, tcpPlayerStarFinished, tcpPlayerStarPrepared] then
+  if TurnCalculationPhase in [turn_idle, turn_galaxy_finished, turn_player_star_finished, turn_player_star_prepared] then
   begin
     Galaxy.CheckIntegrityChecksum(10006);
     ExecuteGameplayUiCode(Block, Key);
@@ -1439,7 +1439,7 @@ begin
   end;
   if GetPlayer.IsOnPlanet then
   begin
-    if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
+    if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
     begin
       if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
         MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
@@ -1450,7 +1450,7 @@ begin
   else if GetPlayer.IsDockedToShip then
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
-    else if GetPlayer.DockedTo.TypeId in [rstPirateBase, rstDominion] then
+    else if GetPlayer.DockedTo.TypeId in [station_pirate_base, station_dominion] then
       MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
   end;

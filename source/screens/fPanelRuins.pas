@@ -96,7 +96,7 @@ begin
   if (ActiveLoadPanel <> nil) and ActiveLoadPanel.IsAnimatingShutters then Exit;
   if (GetPlayer.PendingDockDialogue > 1) and (RuinsTalkScreen = Screen) then Exit;
   if HasPendingScriptRequests then Exit;
-    RequestedScreenId := screenRuinsTalk;
+    RequestedScreenId := screen_ruins_talk;
     Screen.RequestClose(1);
 end;
 { @end $67D9CC }
@@ -109,11 +109,11 @@ begin
   if (GetPlayer.PendingDockDialogue > 1) and (RuinsTalkScreen = Screen) then Exit;
   if (GetPlayer.RuinsMode > 0) and (RuinsTalkScreen = Screen) then Exit;
   if HasPendingScriptRequests then Exit;
-  if (GetPlayer.DockedTo.TypeId = rstBusinessCenter) and (GetPlayer.DebtDefaultCount > 1) then
+  if (GetPlayer.DockedTo.TypeId = station_business_center) and (GetPlayer.DebtDefaultCount > 1) then
     ShowMessageBoxGI(Screen, LocalizedColorText('FormRuins.BK.DebtNoAccess'), mbgCancel or mbgWarning)
   else
   begin
-    RequestedScreenId := screenEquipmentShop;
+    RequestedScreenId := screen_equipment_shop;
     Screen.RequestClose(1);
   end;
 end;
@@ -127,11 +127,11 @@ begin
   if (GetPlayer.PendingDockDialogue > 1) and (RuinsTalkScreen = Screen) then Exit;
   if (GetPlayer.RuinsMode > 0) and (RuinsTalkScreen = Screen) then Exit;
   if HasPendingScriptRequests then Exit;
-  if (GetPlayer.DockedTo.TypeId = rstBusinessCenter) and (GetPlayer.DebtDefaultCount > 1) then
+  if (GetPlayer.DockedTo.TypeId = station_business_center) and (GetPlayer.DebtDefaultCount > 1) then
     ShowMessageBoxGI(Screen, LocalizedColorText('FormRuins.BK.DebtNoAccess'), mbgCancel or mbgWarning)
   else
   begin
-    RequestedScreenId := screenGoodsShop;
+    RequestedScreenId := screen_goods_shop;
     Screen.RequestClose(1);
   end;
 end;
@@ -145,11 +145,11 @@ begin
   if (GetPlayer.PendingDockDialogue > 1) and (RuinsTalkScreen = Screen) then Exit;
   if (GetPlayer.RuinsMode > 0) and (RuinsTalkScreen = Screen) then Exit;
   if HasPendingScriptRequests then Exit;
-  if (GetPlayer.DockedTo.TypeId = rstBusinessCenter) and (GetPlayer.DebtDefaultCount > 1) then
+  if (GetPlayer.DockedTo.TypeId = station_business_center) and (GetPlayer.DebtDefaultCount > 1) then
     ShowMessageBoxGI(Screen, LocalizedColorText('FormRuins.BK.DebtNoAccess'), mbgCancel or mbgWarning)
   else
   begin
-    RequestedScreenId := screenInfo;
+    RequestedScreenId := screen_info;
     Screen.RequestClose(1);
   end;
 end;
@@ -163,7 +163,7 @@ begin
   if (GetPlayer.PendingDockDialogue > 1) and (RuinsTalkScreen = Screen) then Exit;
   if (GetPlayer.RuinsMode > 0) and (RuinsTalkScreen = Screen) then Exit;
   if HasPendingScriptRequests then Exit;
-    RequestedScreenId := screenHangar;
+    RequestedScreenId := screen_hangar;
     Screen.RequestClose(1);
 end;
 { @end $67DDBC }
@@ -187,16 +187,16 @@ begin
   PlayerStar.RefreshSpaceObjectPositions;
   RestoreTemporaryShopStock;
   RunGlobalScriptsForContext(GetPlayer.CurrentStar, 1);
-  if (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(heHolyFanaticism) then Galaxy.EnableDominatorSurfaces
+  if (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(disease_holy_fanaticism) then Galaxy.EnableDominatorSurfaces
   else Galaxy.DisableDominatorSurfaces;
   CalculatePlayerStarTurnAndWait;
   if ExitScreenLoop then Exit;
   QueueGalaxyTurnCalculation;
   StarMapWeaponPanelOpen := False;
-  StarMapScreen.ResumeMode := smrTurnFilm;
+  StarMapScreen.ResumeMode := map_resume_playback;
   ScreenLoadMode := 2;
-  PostLoadScreenId := screenStarMap;
-  RequestedScreenId := screenLoad;
+  PostLoadScreenId := screen_star_map;
+  RequestedScreenId := screen_asset_loading;
   if ActiveLoadPanel <> nil then
   begin
     ActiveLoadPanel.SelectBackgroundStyle(0);

@@ -149,18 +149,18 @@ begin
   SetProgress(1);
   ShutterOpenFraction := 0;
   SetShutterOpenFraction(ShutterOpenFraction);
-  if ((PreviousScreenId = screenLoad) and (CurrentScreenId <> screenMainMenu) and
-      (CurrentScreenId <> screenGameLoad) and (CurrentScreenId <> screenLoadQuest)) or
-    ((PreviousScreenId = screenLoad) and (CurrentScreenId = screenMainMenu) and SkipVideo) or
-    ((PreviousScreenId = screenGameLoad) and (CurrentScreenId <> screenLoad)) or
-    ((CurrentScreenId in [screenHangar, screenPlanet, screenPlanetNO, screenEquipmentShop,
-        screenGovernment, screenRuinsTalk, screenInfo]) and
-      (PreviousScreenId = screenStarMap) and (GetPlayer.RuinsMode = 0)) or
-    ((CurrentScreenId in [screenStarMap, screenRuinsTalk]) and
-      (PreviousScreenId in [screenJump, screenArcadeBattle])) or
-    ((CurrentScreenId = screenArcadeBattle) and (PreviousScreenId = screenStarMap)) then
+  if ((PreviousScreenId = screen_asset_loading) and (CurrentScreenId <> screen_main_menu) and
+      (CurrentScreenId <> screen_save_loading) and (CurrentScreenId <> screen_quest_selection)) or
+    ((PreviousScreenId = screen_asset_loading) and (CurrentScreenId = screen_main_menu) and SkipVideo) or
+    ((PreviousScreenId = screen_save_loading) and (CurrentScreenId <> screen_asset_loading)) or
+    ((CurrentScreenId in [screen_hangar, screen_planet, screen_uninhabited_planet, screen_equipment_shop,
+        screen_government, screen_ruins_talk, screen_info]) and
+      (PreviousScreenId = screen_star_map) and (GetPlayer.RuinsMode = 0)) or
+    ((CurrentScreenId in [screen_star_map, screen_ruins_talk]) and
+      (PreviousScreenId in [screen_jump, screen_arcade_battle])) or
+    ((CurrentScreenId = screen_arcade_battle) and (PreviousScreenId = screen_star_map)) then
   begin
-    PreviousScreenId := screenNone;
+    PreviousScreenId := screen_none;
     StartOpeningShutters;
   end;
   ActiveLoadPanel := Self;

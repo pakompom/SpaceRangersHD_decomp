@@ -80,8 +80,8 @@ begin
   LabelControl.Pos := Classes.Point(Icon.LocalPosition.X + Icon.ClientSize.X + 15, 54);
   LabelControl.ObjectSize := Classes.Point(Panel.ClientSize.X - Icon.ClientSize.X - Icon.LocalPosition.X - 30, 72);
   LabelControl.SetFontName(NormalBoldFontName);
-  LabelControl.SetTextAlignX(taxCenter);
-  LabelControl.SetTextAlignY(tayCenterEx);
+  LabelControl.SetTextAlignX(text_x_center);
+  LabelControl.SetTextAlignY(text_y_font_center);
   LabelControl.SetWordWrapEnabled(True);
   LabelControl.Text := Text;
   LabelControl.SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));

@@ -94,8 +94,8 @@ begin
   TextBorderWidth := 0;
   TextBorderColor := 0;
   BorderEnabled := False;
-  TextAlignX := taxCenter;
-  TextAlignY := tayCenter;
+  TextAlignX := text_x_center;
+  TextAlignY := text_y_center;
   AutoHeightPadding := 4;
   TextTexture := nil;
 end;
@@ -125,8 +125,8 @@ begin
   BorderLightColor := CurrentPixelFormat.PackRgbBytes(255, 255, 255);
   BorderDarkColor := CurrentPixelFormat.PackRgbBytes(55, 55, 55);
   BorderEnabled := False;
-  TextAlignX := taxCenter;
-  TextAlignY := tayCenter;
+  TextAlignX := text_x_center;
+  TextAlignY := text_y_center;
   if TextLines <> nil then TextLines.Clear;
   if EmbeddedImage <> nil then
   begin
@@ -300,8 +300,8 @@ begin
   begin
     if EmbeddedImage = nil then EmbeddedImage := TImageGI.Create(Self);
     EmbeddedImage.ImageSourcePath := ImagePath;
-    EmbeddedImage.KindX := ikxLeftFill;
-    EmbeddedImage.KindY := ikyTopFill;
+    EmbeddedImage.KindX := image_x_tile_left;
+    EmbeddedImage.KindY := image_y_tile_top;
     EmbeddedImage.ObjectSize := ClientSize;
   end;
 end;
@@ -478,19 +478,19 @@ procedure TLabelGI.UpdateHitTestBounds;
 var Size: TPoint; TopAdjustment: Integer;
 begin
   Size := MeasureContentSize(@TopAdjustment);
-  if (TextAlignX = taxLeft) or (WordWrapEnabled = True) then TextLeft := AbsolutePosition.X + 2
-  else if TextAlignX = taxRight then TextLeft := AbsolutePosition.X + ClientSize.X - Size.X - 2
-  else if TextAlignX = taxCenter then TextLeft := ClientSize.X div 2 + AbsolutePosition.X - Size.X div 2
-  else if TextAlignX = taxAuto then
+  if (TextAlignX = text_x_left) or (WordWrapEnabled = True) then TextLeft := AbsolutePosition.X + 2
+  else if TextAlignX = text_x_right then TextLeft := AbsolutePosition.X + ClientSize.X - Size.X - 2
+  else if TextAlignX = text_x_center then TextLeft := ClientSize.X div 2 + AbsolutePosition.X - Size.X div 2
+  else if TextAlignX = text_x_fit_or_justify then
   begin
     TextLeft := AbsolutePosition.X + 2;
     ClientSize.X := Size.X + 4;
   end;
-  if TextAlignY = tayTop then TextTop := AbsolutePosition.Y + 2 + TopAdjustment
-  else if TextAlignY = tayBottom then TextTop := AbsolutePosition.Y + ClientSize.Y - Size.Y - 2 + TopAdjustment
-  else if TextAlignY = tayCenter then TextTop := ClientSize.Y div 2 + AbsolutePosition.Y - Size.Y div 2 + TopAdjustment
-  else if TextAlignY = tayCenterEx then TextTop := ClientSize.Y div 2 + AbsolutePosition.Y - Size.Y div 2 + TopAdjustment
-  else if TextAlignY = tayAuto then
+  if TextAlignY = text_y_top then TextTop := AbsolutePosition.Y + 2 + TopAdjustment
+  else if TextAlignY = text_y_bottom then TextTop := AbsolutePosition.Y + ClientSize.Y - Size.Y - 2 + TopAdjustment
+  else if TextAlignY = text_y_center then TextTop := ClientSize.Y div 2 + AbsolutePosition.Y - Size.Y div 2 + TopAdjustment
+  else if TextAlignY = text_y_font_center then TextTop := ClientSize.Y div 2 + AbsolutePosition.Y - Size.Y div 2 + TopAdjustment
+  else if TextAlignY = text_y_fit_height then
   begin
     TextTop := AbsolutePosition.Y + 2 + TopAdjustment;
     ClientSize.Y := Size.Y + AutoHeightPadding;
@@ -756,7 +756,7 @@ begin
       begin
         if not WordWrapEnabled then
         begin
-          if TextAlignY = tayCenterEx then
+          if TextAlignY = text_y_font_center then
             Y := HitTestBounds.Top + ClientSize.Y div 2 - (Font.GetLineHeight * (TextLines.Count - 1) + Font.GetCenteringHeight) div 2 + Font.GetCenteringHeight
           else Y := TextTop + Font.AboveBaseline - 2;
           TextLines.First;
@@ -794,7 +794,7 @@ begin
             Lines.First;
             while not Lines.IsAtEnd do
             begin
-              if TextAlignX = taxLeft then
+              if TextAlignX = text_x_left then
               begin
                 Font.ColorTagsEnabled := False;
                 if TextShadowOffset > 0 then
@@ -814,7 +814,7 @@ begin
                 Font.DefaultColor := TextColor;
                 Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft, Y, Lines.CurrentText, ClipRect);
               end
-              else if TextAlignX = taxRight then
+              else if TextAlignX = text_x_right then
               begin
                 Font.ColorTagsEnabled := False;
                 Bounds := Font.MeasureTaggedTextBounds(Lines.CurrentText, 0, 0, nil);
@@ -835,7 +835,7 @@ begin
                 Font.DefaultColor := TextColor;
                 Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, HitTestBounds.Right - (Bounds.Right - Bounds.Left) - 2, Y, Lines.CurrentText, ClipRect);
               end
-              else if TextAlignX = taxCenter then
+              else if TextAlignX = text_x_center then
               begin
                 Font.ColorTagsEnabled := False;
                 Bounds := Font.MeasureTaggedTextBounds(Lines.CurrentText, 0, 0, nil);
@@ -856,7 +856,7 @@ begin
                 Font.DefaultColor := TextColor;
                 Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, (HitTestBounds.Right - HitTestBounds.Left) div 2 + HitTestBounds.Left - (Bounds.Right - Bounds.Left) div 2, Y, Lines.CurrentText, ClipRect);
               end
-              else if (TextAlignX = taxAuto) and (not Lines.IsAtLast) then
+              else if (TextAlignX = text_x_fit_or_justify) and (not Lines.IsAtLast) then
               begin
                 Font.ColorTagsEnabled := False;
                 if TextShadowOffset > 0 then

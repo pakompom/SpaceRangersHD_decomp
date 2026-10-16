@@ -6,7 +6,7 @@ uses Classes, EC_Buf, EC_Struct, Windows, aGalaxy, aShip;
 
 type
   // Ordinal 1 is unused by the recovered route logic.
-  TGroupWaitMode = (GroupWaitArrival = 0, GroupWaitAssembly = 2, GroupWaitUntilTurn = 3); // @size $01
+  TGroupWaitMode = (wait_for_arrival = 0, wait_for_group = 2, wait_until_turn = 3); // @size $01
 
   TGroupRouteOrder = record // @size $18
     Kind: TShipOrder; // @offset $00
@@ -87,11 +87,11 @@ begin
   for I := 0 to Count - 1 do begin
     Order := Route[I];
     Buffer.AddAnsiChar(AnsiChar(Order.Kind));
-    if Order.Kind = soJump then Buffer.AddDWord((Order.Target as TStar).Id)
-    else if Order.Kind = soJumpHole then Buffer.AddDWord((Order.Target as THole).Id)
-    else if Order.Kind = soLand then begin if Order.Target is TShip then Buffer.AddDWord((Order.Target as TShip).Id or OrderTargetShipFlag)
+    if Order.Kind = order_jump then Buffer.AddDWord((Order.Target as TStar).Id)
+    else if Order.Kind = order_black_hole then Buffer.AddDWord((Order.Target as THole).Id)
+    else if Order.Kind = order_land then begin if Order.Target is TShip then Buffer.AddDWord((Order.Target as TShip).Id or OrderTargetShipFlag)
          else Buffer.AddDWord((Order.Target as TPlanet).Id);
-    end else if Order.Kind = soFollowShip then Buffer.AddDWord((Order.Target as TShip).Id)
+    end else if Order.Kind = order_follow_ship then Buffer.AddDWord((Order.Target as TShip).Id)
     else Buffer.AddDWord(0);
     Buffer.AddSingle(Order.Destination.X);
     Buffer.AddSingle(Order.Destination.Y);
@@ -138,12 +138,12 @@ begin
     Ship.LiberationGroup := Self;
   end;
   for I := 0 to Length(Route) - 1 do begin
-    if Route[I].Kind = soJump then Route[I].Target := TObject(Galaxy.IdToStar(Cardinal(Route[I].Target))) as TStar
-    else if Route[I].Kind = soJumpHole then Route[I].Target := TObject(Galaxy.IdToHole(Cardinal(Route[I].Target))) as THole
-    else if Route[I].Kind = soLand then begin if Cardinal(Route[I].Target) and OrderTargetShipFlag = OrderTargetShipFlag then
+    if Route[I].Kind = order_jump then Route[I].Target := TObject(Galaxy.IdToStar(Cardinal(Route[I].Target))) as TStar
+    else if Route[I].Kind = order_black_hole then Route[I].Target := TObject(Galaxy.IdToHole(Cardinal(Route[I].Target))) as THole
+    else if Route[I].Kind = order_land then begin if Cardinal(Route[I].Target) and OrderTargetShipFlag = OrderTargetShipFlag then
            Route[I].Target := Galaxy.IdToShip(Cardinal(Route[I].Target) and TaggedObjectIdMask, True) as TShip
          else Route[I].Target := Galaxy.IdToPlanet(Cardinal(Route[I].Target)) as TPlanet;
-    end else if Route[I].Kind = soFollowShip then Route[I].Target := Galaxy.IdToShip(Cardinal(Route[I].Target), True) as TShip
+    end else if Route[I].Kind = order_follow_ship then Route[I].Target := Galaxy.IdToShip(Cardinal(Route[I].Target), True) as TShip
     else Route[I].Target := nil;
     end;
 end;
@@ -182,7 +182,7 @@ end;
 function TGroup.SelectLiberationTarget: Boolean;
 var Attempts: Integer;
 begin
-  TargetStar := Galaxy.SelectStarForLiberationAttack(FindCentralMemberStar, sfCoalition);
+  TargetStar := Galaxy.SelectStarForLiberationAttack(FindCentralMemberStar, faction_coalition);
   Attempts := 0;
   while (TargetStar = nil) or TargetStar.HasLiberationGroupOrder or Galaxy.HasMilitaryBaseAssignedToStar(TargetStar) do begin
     if Attempts > 10 then begin
@@ -192,10 +192,10 @@ begin
       Result := False;
       Exit;
     end;
-    TargetStar := Galaxy.SelectStarForLiberationAttack(FindCentralMemberStar, sfCoalition);
+    TargetStar := Galaxy.SelectStarForLiberationAttack(FindCentralMemberStar, faction_coalition);
     Inc(Attempts);
   end;
-  AssemblyStar := TargetStar.FindNearestStarByFaction(sfCoalition, False);
+  AssemblyStar := TargetStar.FindNearestStarByFaction(faction_coalition, False);
   if (AssemblyStar = nil) or (PointDistance(AssemblyStar.Position, TargetStar.Position) > 28) then begin
     TargetStar := nil;
     AssemblyStar := nil;
@@ -212,27 +212,27 @@ begin
   Result := True;
   if ((TargetStar = nil) or (AssemblyStar = nil)) and not SelectLiberationTarget then Exit;
   SetLength(Route, 4);
-  with Route[0] do begin Kind := soJump; Target := AssemblyStar; WaitMode := GroupWaitArrival; WaitUntilTurn := 0; end;
+  with Route[0] do begin Kind := order_jump; Target := AssemblyStar; WaitMode := wait_for_arrival; WaitUntilTurn := 0; end;
   Planet := TObject(AssemblyStar.FindFirstInhabitedPlanet) as TPlanet;
   if Planet = nil then begin Result := False; Disband; Exit; end;
-  with Route[1] do begin Kind := soLand; Target := Planet; WaitMode := GroupWaitArrival; WaitUntilTurn := 0; end;
+  with Route[1] do begin Kind := order_land; Target := Planet; WaitMode := wait_for_arrival; WaitUntilTurn := 0; end;
   with Route[2] do begin
-    Kind := soMove;
+    Kind := order_move;
     Target := nil;
     Destination := AssemblyStar.GetBoundaryPointTowardStar(TargetStar);
-    WaitMode := GroupWaitUntilTurn;
+    WaitMode := wait_until_turn;
     WaitUntilTurn := Galaxy.CurrentTurn + NextRandomIntRange(45, 55, RandomState);
   end;
-  with Route[3] do begin Kind := soJump; Target := TargetStar; WaitMode := GroupWaitArrival; WaitUntilTurn := 0; end;
+  with Route[3] do begin Kind := order_jump; Target := TargetStar; WaitMode := wait_for_arrival; WaitUntilTurn := 0; end;
   if TargetStar.Status.CustomFaction <> '' then Text := PickLocalizedTextVariant('GalaxyNews.Group.WarriorLiberator.Create' + TargetStar.Status.CustomFaction, RandomState * (Galaxy.CurrentTurn mod 71))
-  else if TargetStar.ControlFaction = sfPirates then Text := PickLocalizedTextVariant('GalaxyNews.Group.WarriorLiberator.CreatePirates', RandomState * (Galaxy.CurrentTurn mod 71))
+  else if TargetStar.ControlFaction = faction_pirates then Text := PickLocalizedTextVariant('GalaxyNews.Group.WarriorLiberator.CreatePirates', RandomState * (Galaxy.CurrentTurn mod 71))
   else Text := PickLocalizedTextVariant('GalaxyNews.Group.WarriorLiberator.Create', RandomState * (Galaxy.CurrentTurn mod 71));
   ReplaceTextToken(Text, '<StarNormal>', AssemblyStar.Name, TextHighlightColorTag);
   ReplaceTextToken(Text, '<StarEnemy>', TargetStar.Name, TextHighlightColorTag);
   ReplaceTextToken(Text, '<SectorNormal>', AssemblyStar.Constellation.GetName, TextHighlightColorTag);
   ReplaceTextToken(Text, '<SectorEnemy>', TargetStar.Constellation.GetName, TextHighlightColorTag);
   ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(Route[2].WaitUntilTurn), TextHighlightColorTag);
-  Galaxy.AddPlanetNews(gnLiberationGroupCreated, Text);
+  Galaxy.AddPlanetNews(news_liberation_group_created, Text);
 end;
 { @end $4FD63C }
 
@@ -244,7 +244,7 @@ begin
   RouteIndex := Ship.LiberationGroupRouteIndex;
   for I := 0 to Ships.Count - 1 do begin
     Ship := Ships[I];
-    if (Ship.LiberationGroupRouteIndex <> RouteIndex) or not (Ship.Order in [soNone, soMove]) or
+    if (Ship.LiberationGroupRouteIndex <> RouteIndex) or not (Ship.Order in [order_none, order_move]) or
       (PointDistanceSquared(Ship.Position, Route[RouteIndex].Destination) > 90000) then begin Result := False; Exit; end;
   end;
   Result := True;
