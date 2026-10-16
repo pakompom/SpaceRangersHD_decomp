@@ -1368,8 +1368,8 @@ begin
       if CandidatePriority * SeededRandomIntRange(1, 100, Seed + EntryIndex * (Galaxy.CurrentTurn div 20)) <
         BestPriority * SeededRandomIntRange(1, 100, Seed + EntryIndex * (Galaxy.CurrentTurn div 20) * 3) then Continue;
     end;
-    Good := NoGreetingGoods;
-    if Definitions[EntryIndex].Goods <> UnspecifiedGoods then Good := Definitions[EntryIndex].Goods;
+    Good := greeting_goods_none;
+    if Definitions[EntryIndex].Goods <> goods_unspecified then Good := Definitions[EntryIndex].Goods;
     if (Definitions[EntryIndex].AutoTalk <> greeting_match_any) then begin
       if (Automatic and (Definitions[EntryIndex].AutoTalk = greeting_match_false)) then Continue;
       if (not Automatic and (Definitions[EntryIndex].AutoTalk = greeting_match_true)) then Continue;
@@ -1383,7 +1383,7 @@ begin
         if CurrentStar.Status.CustomFaction <> '' then Continue;
         if (Definitions[EntryIndex].ToPlanetRace <> []) and not (Planet.RaceId in Definitions[EntryIndex].ToPlanetRace) then Continue;
         if (Definitions[EntryIndex].ToPlanetRelations <> []) and not (Planet.GetRelationLevelToShip(GetPlayer) in Definitions[EntryIndex].ToPlanetRelations) then Continue;
-        if Good <> NoGreetingGoods then begin
+        if Good <> greeting_goods_none then begin
           if (Definitions[EntryIndex].ToPlanetGoodsCnt <> []) and not (Galaxy.ClassifyGoodsQuantity(Planet.Goods[Good].Count, Good) in Definitions[EntryIndex].ToPlanetGoodsCnt) then Continue;
           if (Definitions[EntryIndex].ToPlanetGoodsSale <> []) and not (Galaxy.ClassifyGoodsPrice(GetPlayer.ShopGoodsPurchasePrice(Good, Planet), Good) in Definitions[EntryIndex].ToPlanetGoodsSale) then Continue;
           if (Definitions[EntryIndex].ToPlanetGoodsBuy <> []) and not (Galaxy.ClassifyGoodsPrice(GetPlayer.ShopGoodsSellPrice(Good, Planet), Good) in Definitions[EntryIndex].ToPlanetGoodsBuy) then Continue;
@@ -1412,7 +1412,7 @@ begin
         end;
         MessageText := LocalizedColorText('ShipGreetings.' + Definitions[EntryIndex].Name + '.Text');
         MessageText := ReplaceColoredToken(MessageText, '<ToPlanet>', Planet.Name + GetLocalObjectLink(Planet, Automatic), TextHighlightColorTag);
-        if Good <> NoGreetingGoods then begin
+        if Good <> greeting_goods_none then begin
           MessageText := ReplaceColoredToken(MessageText, '<ToPlanetGoodsSale>', IntToStr(GetPlayer.ShopGoodsPurchasePrice(Good, Planet)), TextHighlightColorTag);
           MessageText := ReplaceColoredToken(MessageText, '<ToPlanetGoodsBuy>', IntToStr(GetPlayer.ShopGoodsSellPrice(Good, Planet)), TextHighlightColorTag);
         end;
@@ -1575,7 +1575,7 @@ begin
     if (Definitions[EntryIndex].RankShipWithPlayer <> []) and not (GetPlayer.GetShipRankComparison(Self) in Definitions[EntryIndex].RankShipWithPlayer) then Continue;
     if (Definitions[EntryIndex].RankShipWithPlayerExtra <> []) and not (GetPlayer.GetShipPirateRankComparison(Self) in Definitions[EntryIndex].RankShipWithPlayerExtra) then Continue;
     if (Definitions[EntryIndex].StrengthShipWithPlayer <> []) and not (GetPlayer.GetShipStrengthComparison(Self) in Definitions[EntryIndex].StrengthShipWithPlayer) then Continue;
-    if Good <> NoGreetingGoods then begin
+    if Good <> greeting_goods_none then begin
       if (Definitions[EntryIndex].ShipGoodsCnt <> []) and not (Galaxy.ClassifyGoodsQuantity(CargoGoods[Good].Count, Good) in Definitions[EntryIndex].ShipGoodsCnt) then Continue;
       if (Definitions[EntryIndex].PlayerGoodsCnt <> []) and not (Galaxy.ClassifyGoodsQuantity(GetPlayer.CargoGoods[Good].Count, Good) in Definitions[EntryIndex].PlayerGoodsCnt) then Continue;
       if (Definitions[EntryIndex].ShipHaveGoods <> greeting_match_any) then begin
@@ -1619,7 +1619,7 @@ begin
       if LastDockedPlanet.CurrentStar.Status.CustomFaction <> '' then Continue;
       if not (LastDockedPlanet.RaceId in Definitions[EntryIndex].LastPlanetRace) then Continue;
       if (Definitions[EntryIndex].LastPlanetRelations <> []) and not (LastDockedPlanet.GetRelationLevelToShip(GetPlayer) in Definitions[EntryIndex].LastPlanetRelations) then Continue;
-      if Good <> NoGreetingGoods then begin
+      if Good <> greeting_goods_none then begin
         if (Definitions[EntryIndex].LastPlanetGoodsCnt <> []) and not (Galaxy.ClassifyGoodsQuantity(LastDockedPlanet.Goods[Good].Count, Good) in Definitions[EntryIndex].LastPlanetGoodsCnt) then Continue;
         if (Definitions[EntryIndex].LastPlanetGoodsSale <> []) and not (Galaxy.ClassifyGoodsPrice(GetPlayer.ShopGoodsPurchasePrice(Good, LastDockedPlanet), Good) in Definitions[EntryIndex].LastPlanetGoodsSale) then Continue;
         if (Definitions[EntryIndex].LastPlanetGoodsBuy <> []) and not (Galaxy.ClassifyGoodsPrice(GetPlayer.ShopGoodsSellPrice(Good, LastDockedPlanet), Good) in Definitions[EntryIndex].LastPlanetGoodsBuy) then Continue;
@@ -1671,7 +1671,7 @@ begin
       end;
       MessageText := ReplaceColoredToken(MessageText, '<LastPlanet>', LastDockedPlanet.Name + GetLocalObjectLink(LastDockedPlanet, Automatic), TextHighlightColorTag);
       MessageText := ReplaceColoredToken(MessageText, '<LastPlanetStar>', LastDockedPlanet.CurrentStar.Name, TextHighlightColorTag);
-      if Good <> NoGreetingGoods then begin
+      if Good <> greeting_goods_none then begin
         MessageText := ReplaceColoredToken(MessageText, '<LastPlanetGoodsSale>', IntToStr(GetPlayer.ShopGoodsPurchasePrice(Good, LastDockedPlanet)), TextHighlightColorTag);
         MessageText := ReplaceColoredToken(MessageText, '<LastPlanetGoodsBuy>', IntToStr(GetPlayer.ShopGoodsSellPrice(Good, LastDockedPlanet)), TextHighlightColorTag);
       end;

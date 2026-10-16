@@ -368,7 +368,7 @@ begin
   ObjectSize := Classes.Point(Radius * 2, Radius * 2);
   if SourceLightBuffer = nil then
   begin
-    MapWidthMask := SatelliteTemplateParameter1 - 1;
+    MapWidthMask := SatelliteSurfaceTextureWidth - 1;
     LightControl := TCPalBitmapControlEC.Create;
     GlobalCache.ResetControl(LightControl);
     LightControl.SetCacheKey(SatelliteLightMapPath);

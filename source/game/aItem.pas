@@ -7,7 +7,7 @@ uses Classes, EC_BlockPar, EC_Buf, EC_Struct, SE_Space, SE_Container, Windows, a
 const
   // AssignedSlotData is also copied into TabWeapon.SlotData; bit 7 selects the weapon group.
   EquipmentSlotIndexMask = $7F;
-  EquipmentSecondaryFireFlag = $80;
+  equipment_secondary_fire = $80;
 
 type
   TTechLevel = 1..8; // @size $01 Native optimized promotion; equipment tables have eight levels.

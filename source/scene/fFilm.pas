@@ -162,7 +162,7 @@ begin
     Loader := nil;
   end;
   Loader := TfFilmLoader.Create;
-  Loader.SetPriority(ThreadPriorityLowest);
+  Loader.SetPriority(priority_lowest);
   PanTimer := ScheduleCallbackTimer(ScrollTime, ScrollTime, PanView);
   ContentPanel.KeyDownCallback := KeyDown;
   ContentPanel.KeyUpCallback := KeyUp;

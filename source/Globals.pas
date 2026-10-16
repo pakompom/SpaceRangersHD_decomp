@@ -501,7 +501,7 @@ type
     Image1: WideString; // @offset $04
     Image2: WideString; // @offset $08
     War: Integer; // @offset $0C Clamped to -1..1.
-    Goods: Byte; // @offset $10 0..7, or UnspecifiedGoods when absent/unrecognized.
+    Goods: Byte; // @offset $10 0..7, or goods_unspecified when absent/unrecognized.
     Owner: TOwnerMask; // @offset $11
   end;
 
@@ -567,7 +567,7 @@ begin
   ScriptUiRequestEvent := CreateEvent(nil, True, False, nil);
   ScriptUiAbortEvent := CreateEvent(nil, True, False, nil);
   TurnCalculationThread := TThreadCalc.Create;
-  TurnCalculationThread.SetPriority(ThreadPriorityBelowNormal);
+  TurnCalculationThread.SetPriority(priority_below_normal);
   ScriptTemplates := TList.Create;
   GlobalScriptVariables := TVarArrayEC.Create;
   SharedScriptVariables := TVarArrayEC.Create;
@@ -1157,7 +1157,7 @@ begin
   begin
     SatelliteTemplate := TSputnikTempl.Create;
     SatelliteRenderTemplates.Add(SatelliteTemplate);
-    SatelliteTemplate.MaskName := WideString('Bm.Planet.S.Mask0' + IntToStr(Index) + '?' + IntToStr(SatelliteTemplateParameter1) + ',' + IntToStr(SatelliteTemplateParameter2));
+    SatelliteTemplate.MaskName := WideString('Bm.Planet.S.Mask0' + IntToStr(Index) + '?' + IntToStr(SatelliteSurfaceTextureWidth) + ',' + IntToStr(SatelliteSurfaceTextureHeight));
     SatelliteTemplate.Radius := Index;
     Inc(Index);
   end;
@@ -2601,7 +2601,7 @@ begin
           if Pos('Huge', AnsiString(Text)) > 0 then Include(StrengthShipWithPlayer, 5);
         end;
         Text := ReadShipGreetingField('Goods');
-        if Text = '' then Goods := UnspecifiedGoods
+        if Text = '' then Goods := goods_unspecified
         else if Text = 'Food' then Goods := 0
         else if Text = 'Medicine' then Goods := 1
         else if Text = 'Technics' then Goods := 2
@@ -2610,7 +2610,7 @@ begin
         else if Text = 'Alcohol' then Goods := 5
         else if Text = 'Arms' then Goods := 6
         else if Text = 'Narcotics' then Goods := 7
-        else Goods := UnspecifiedGoods;
+        else Goods := goods_unspecified;
         Text := ReadShipGreetingField('ShipGoodsCnt');
         ShipGoodsCnt := [];
         if (Text <> '') and (Text <> 'Any') then
@@ -3143,7 +3143,7 @@ begin
           if Pos('Admiral', AnsiString(Text)) > 0 then Include(PlayerRank, 7);
         end;
         Text := ReadGovernmentGreetingField('Goods');
-        if Text = '' then Goods := UnspecifiedGoods
+        if Text = '' then Goods := goods_unspecified
         else if Text = 'Food' then Goods := 0
         else if Text = 'Medicine' then Goods := 1
         else if Text = 'Technics' then Goods := 2
@@ -3152,7 +3152,7 @@ begin
         else if Text = 'Alcohol' then Goods := 5
         else if Text = 'Arms' then Goods := 6
         else if Text = 'Narcotics' then Goods := 7
-        else Goods := UnspecifiedGoods;
+        else Goods := goods_unspecified;
         Text := ReadGovernmentGreetingField('CurPlanetRace');
         CurPlanetRace := ParseRobotMapRaceMask(Text);
         Text := ReadGovernmentGreetingField('CurPlanetRaceIsPlayerRace');
@@ -3484,7 +3484,7 @@ begin
         else if PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].War > 1 then
           PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].War := 1;
       end;
-      PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := UnspecifiedGoods;
+      PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := goods_unspecified;
       if Block.CountParams('Goods') > 0 then
       begin
         Text := Block.Params['Goods'];
@@ -3496,7 +3496,7 @@ begin
         else if Text = 'Alcohol' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 5
         else if Text = 'Arms' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 6
         else if Text = 'Narcotics' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 7
-        else PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := UnspecifiedGoods;
+        else PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := goods_unspecified;
       end;
       PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner := [];
       if Block.CountParams('Owner') > 0 then

@@ -56,11 +56,11 @@ const
   GaiFrameDataSizeOffset = SizeOf(Integer); // TGaiFrameEntry.DataSize follows DataOffset.
   GaiSequenceFrameDelayOffset = SizeOf(Integer); // TGaiSequenceFrameEntry.FrameDelay follows SourceFrameIndex.
 
-// The directory follows SequenceCount and one unresolved header dword.
+// Each directory entry contains an auxiliary offset followed by its frame-data offset.
 function ReadGaiSequenceOffset(const Table: PGaiSequenceTableHeader; const Index: Integer): Cardinal; inline;
 begin
   Result := ReadDWordEC(AddPointerOffset(Table,
-    Index * SizeOf(TGaiSequenceDirectoryEntry) + 4 + 4));
+    Index * SizeOf(TGaiSequenceDirectoryEntry) + SizeOf(TGaiSequenceTableHeader) + SizeOf(Integer)));
 end;
 
 { @routine $4876AC TCGaiControlEC_QueueLoadIfMissing }

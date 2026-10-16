@@ -240,22 +240,22 @@ begin
   Galaxy.PrimeIntegrityChecksum(129);
   if (HeldSatellite <> nil) and (HeldSatelliteOrigin = 0) and (GetPlayer.GetCargoFreeSpace < HeldSatellite.Weight) then
   begin
-    ShowMessageBoxGI(Self,LocalizedText('FormRuins.ShipOvercharging'),mbgCancel or mbgError);
+    ShowMessageBoxGI(Self,LocalizedText('FormRuins.ShipOvercharging'),messagebox_cancel or messagebox_error);
     Exit;
   end;
   if not GetPlayer.HasPositiveSpeed then
   begin
     if GetPlayer.GetCargoFreeSpace < 0 then
-      ShowMessageBoxGI(Self,LocalizedText('FormRuins.ShipOvercharging'),mbgCancel or mbgError)
+      ShowMessageBoxGI(Self,LocalizedText('FormRuins.ShipOvercharging'),messagebox_cancel or messagebox_error)
     else if GetPlayer.GetEngine = nil then
-      ShowMessageBoxGI(Self,LocalizedText('FormRuins.NotEngine'),mbgCancel or mbgError)
+      ShowMessageBoxGI(Self,LocalizedText('FormRuins.NotEngine'),messagebox_cancel or messagebox_error)
     else if GetPlayer.GetFuelTanks = nil then
-      ShowMessageBoxGI(Self,LocalizedText('FormRuins.NotFuelTank'),mbgCancel or mbgError);
+      ShowMessageBoxGI(Self,LocalizedText('FormRuins.NotFuelTank'),messagebox_cancel or messagebox_error);
     Exit;
   end;
   if GetPlayer.HasSatelliteOnPlanet(GetPlayer.CurrentPlanet) and
     (ShowMessageBoxGI(Self,FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormPlanetNO.SatelliteInPlanet'),
-    TextHighlightColorTag,'<Name>',GetPlayer.CurrentPlanet.Name),mbgOK or mbgCancel) <> mbgResultOK) then Exit;
+    TextHighlightColorTag,'<Name>',GetPlayer.CurrentPlanet.Name),messagebox_ok or messagebox_cancel) <> messagebox_result_ok) then Exit;
   Galaxy.CheckIntegrityChecksum(113);
   CloseResearchPanel;
   ReturnHeldSatellite;
@@ -300,7 +300,7 @@ procedure TfPlanetNO.StartTextQuest(Sender: TObjectGI);
 begin
   if LoadPanel.IsAnimatingShutters then Exit;
   if (Sender.UserValue <> 0) and
-    (ShowMessageBoxGI(Self,LocalizedText('FormGov.QuestCertificate.NotCertificateAttention'),mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK) then Exit;
+    (ShowMessageBoxGI(Self,LocalizedText('FormGov.QuestCertificate.NotCertificateAttention'),messagebox_ok or messagebox_cancel or messagebox_question) <> messagebox_result_ok) then Exit;
   Galaxy.CheckIntegrityChecksum(114);
   CaptureSavePreview;
   CaptureGalaxyPreview(Self);

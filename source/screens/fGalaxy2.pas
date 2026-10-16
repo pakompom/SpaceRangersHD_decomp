@@ -1073,7 +1073,7 @@ begin
   begin
     if GetPlayer.Speed <= 0 then
     begin
-      ShowMessageBoxGI(Self, LocalizedColorText('Help.Speed0'), mbgCancel or mbgError);
+      ShowMessageBoxGI(Self, LocalizedColorText('Help.Speed0'), messagebox_cancel or messagebox_error);
       Exit;
     end;
     if not GetPlayer.HasPositiveSpeed then Exit;
@@ -1085,7 +1085,7 @@ begin
       GetPlayer.OrderNone(False);
       Galaxy.PrimeIntegrityChecksum(152);
       ShowMessageBoxGI(Self, FormatText1(LocalizedText('FormGalaxy.NeedFuelOrEngine'),
-        TextHighlightColorTag, '<Star>', SelectedJumpStar.Name), mbgCancel or mbgError);
+        TextHighlightColorTag, '<Star>', SelectedJumpStar.Name), messagebox_cancel or messagebox_error);
       if Sender <> nil then BreakUiMessage;
       Exit;
     end

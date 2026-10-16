@@ -7,9 +7,9 @@ uses EC_Struct, SyncObjs;
 type
   // Indices into ThreadPriorityValues, in ascending Win32 scheduling priority.
   TThreadPriorityEC = (
-    ThreadPriorityIdle, ThreadPriorityLowest, ThreadPriorityBelowNormal,
-    ThreadPriorityNormal, ThreadPriorityAboveNormal, ThreadPriorityHighest,
-    ThreadPriorityTimeCritical
+    priority_idle, priority_lowest, priority_below_normal,
+    priority_normal, priority_above_normal, priority_highest,
+    priority_time_critical
   ); // @size $01
 
   TThreadEC = class(TObjectEx) // @size 0x2C
@@ -20,8 +20,8 @@ type
     Priority: TThreadPriorityEC; // @offset 0x10
     StopRequested: Boolean; // @offset 0x11
     StopEvent: Cardinal; // @offset 0x14
-    // Set/cleared by two helpers; its purpose is unresolved.
-    Flag18: Boolean; // @offset $18
+    // TCacheLoader.Execute checks this between loads; the base scheduler does not.
+    PauseRequested: Boolean; // @offset $18 Cooperative pause request, not OS thread suspension.
     ShutdownEvent: Cardinal; // @offset 0x1C
     StartEvent: Cardinal; // @offset 0x20
     RunningEvent: Cardinal; // @offset 0x24
@@ -32,8 +32,8 @@ type
     procedure ProcessRequests; // @addr 0x004D4414
     procedure Execute; virtual; // @addr 0x004D4580 @slot 0x00
     procedure SetPriority(Value: TThreadPriorityEC); // @addr 0x004D459C
-    procedure SetFlag18; // @addr $4D45B8
-    procedure ClearFlag18; // @addr $4D45C0
+    procedure RequestPause; // @addr $4D45B8
+    procedure ClearPauseRequest; // @addr $4D45C0
     procedure RequestStop; // @addr 0x004D45C8
     function IsStopRequested: Boolean; // @addr 0x004D45EC
     procedure SetStopRequested(Value: Boolean); // @addr 0x004D460C
@@ -192,17 +192,17 @@ begin
 end;
 { @end $4D459C }
 
-{ @routine $4D45B8 TThreadEC_SetFlag18 }
-procedure TThreadEC.SetFlag18;
+{ @routine $4D45B8 TThreadEC_RequestPause }
+procedure TThreadEC.RequestPause;
 begin
-  Flag18 := True;
+  PauseRequested := True;
 end;
 { @end $4D45B8 }
 
-{ @routine $4D45C0 TThreadEC_ClearFlag18 }
-procedure TThreadEC.ClearFlag18;
+{ @routine $4D45C0 TThreadEC_ClearPauseRequest }
+procedure TThreadEC.ClearPauseRequest;
 begin
-  Flag18 := False;
+  PauseRequested := False;
 end;
 { @end $4D45C0 }
 

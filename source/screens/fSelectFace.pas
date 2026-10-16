@@ -213,13 +213,13 @@ begin
   begin
     AcceptedCost := Cost;
     Text := FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormRuins.PB.ChangeNationality.Confirm'),TextHighlightColorTag,'<Money>',IntToStr(Cost));
-    if ShowMessageBoxGI(Self,Text,mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then RequestClose(1);
+    if ShowMessageBoxGI(Self,Text,messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then RequestClose(1);
   end
   else
   begin
     AcceptedCost := 0;
     Text := FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormRuins.PB.ChangeNationality.NoMoney'),TextHighlightColorTag,'<Money>',IntToStr(Cost));
-    ShowMessageBoxGI(Self,Text,mbgOK or mbgWarning);
+    ShowMessageBoxGI(Self,Text,messagebox_ok or messagebox_warning);
   end;
 end;
 { @end $5D9354 }

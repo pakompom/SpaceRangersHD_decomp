@@ -19,7 +19,7 @@ const
   arcade_effect_invisibility = 7;
 
   ArcadeBonusKindMask = $FF;
-  ArcadeHiddenBonusFlag = $80000000;
+  arcade_bonus_hidden = $80000000;
 
 type
   // Column-major storage: Matrix[Column][Row].

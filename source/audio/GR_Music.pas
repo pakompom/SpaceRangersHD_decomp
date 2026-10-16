@@ -153,11 +153,11 @@ begin
   Stream := TFileStreamEC.Create($400FF, FileName);
   if Deferred then
   begin
-    SetPriority(ThreadPriorityLowest);
+    SetPriority(priority_lowest);
     StartPlaybackEvent := CreateEvent(nil, False, False, nil);
     if StartPlaybackEvent = 0 then raise Exception.Create('CreateEvent');
   end
-  else SetPriority(ThreadPriorityAboveNormal);
+  else SetPriority(priority_above_normal);
   Start;
 end;
 { @end $4D4BC8 }
@@ -211,7 +211,7 @@ begin
         SetEvent(CompletionEvent);
         Exit;
       end;
-      SetPriority(ThreadPriorityAboveNormal);
+      SetPriority(priority_above_normal);
       SysUtils.Sleep(100);
       SysUtils.Sleep(100);
     end;
@@ -260,7 +260,7 @@ begin
       Current.CompletionEvent := CompletionEvent;
       Queued.CompletionEvent := 0;
     end;
-    SetPriority(ThreadPriorityAboveNormal);
+    SetPriority(priority_above_normal);
     CompletionEvent := CreateEvent(nil, False, False, nil);
     if CompletionEvent = 0 then raise Exception.Create('CreateEvent');
     if MusicEnabled then Start;

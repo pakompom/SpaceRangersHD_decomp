@@ -1381,7 +1381,7 @@ procedure TfPlanetQuest.RequestLoadGame(Sender: TObjectGI);
 var
   Standalone: Boolean;
 begin
-  if ShowMessageBoxGI(Self, LanguageDataConfig.GetParamByPathOrMarker('FormGameMenu.QExit'), mbgOK or mbgCancel) = mbgResultOK then
+  if ShowMessageBoxGI(Self, LanguageDataConfig.GetParamByPathOrMarker('FormGameMenu.QExit'), messagebox_ok or messagebox_cancel) = messagebox_result_ok then
   begin
     Standalone := Galaxy = nil;
     ClearPendingScriptRequests;
@@ -1438,7 +1438,7 @@ begin
   if VirtualKey = Ord('R') then
     if ActiveQueuedTextQuest = nil then
       if SaveManagerScreen.AutoSaveExists then
-        if ShowMessageBoxGI(Self, LocalizedText('Planet.NotCivil.QuestPlay.MsgLoad'), mbgOK or mbgCancel) = mbgResultOK then
+        if ShowMessageBoxGI(Self, LocalizedText('Planet.NotCivil.QuestPlay.MsgLoad'), messagebox_ok or messagebox_cancel) = messagebox_result_ok then
           if GetPlayer <> nil then
           begin
             PendingLoadFileName := SaveManagerScreen.GetAutoSavePath;
@@ -1629,7 +1629,7 @@ begin
             end;
           end;
     if (ActiveQueuedTextQuest = nil) and SaveManagerScreen.AutoSaveExists and
-      (ShowMessageBoxGI(Self, LocalizedText('Planet.NotCivil.QuestPlay.MsgLoad'), mbgOK or mbgCancel) = mbgResultOK) then
+      (ShowMessageBoxGI(Self, LocalizedText('Planet.NotCivil.QuestPlay.MsgLoad'), messagebox_ok or messagebox_cancel) = messagebox_result_ok) then
     begin
       PendingLoadFileName := SaveManagerScreen.GetAutoSavePath;
       RequestedScreenId := screen_save_loading;
@@ -1652,7 +1652,7 @@ begin
   else
   begin
     if SaveManagerScreen.AutoSaveExists and
-      (ShowMessageBoxGI(Self, LocalizedText('Planet.NotCivil.QuestPlay.MsgLoad'), mbgOK or mbgCancel) = mbgResultOK) then
+      (ShowMessageBoxGI(Self, LocalizedText('Planet.NotCivil.QuestPlay.MsgLoad'), messagebox_ok or messagebox_cancel) = messagebox_result_ok) then
     begin
       PendingLoadFileName := SaveManagerScreen.GetAutoSavePath;
       RequestedScreenId := screen_save_loading;

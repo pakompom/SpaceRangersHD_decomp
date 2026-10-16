@@ -607,7 +607,7 @@ const
   item_stackable_misc = t_UselessCountableItem;
 
   // Equipment slot and shop APIs use the first weapon type to represent all weapons.
-  WeaponCategoryItemType = item_industrial_laser;
+  weapon_category = item_industrial_laser;
 
   WeaponItemTypes = [item_industrial_laser..item_custom_weapon];
   StandardWeaponItemTypes = [item_industrial_laser..item_lirecron];
@@ -624,7 +624,7 @@ type
   end;
 
   // Nine quotas per Coalition race, with every weapon sharing the final category.
-  TPlanetEquipmentOfferQuotaRow = array[item_hull..WeaponCategoryItemType] of Integer;
+  TPlanetEquipmentOfferQuotaRow = array[item_hull..weapon_category] of Integer;
   TPlanetEquipmentOfferQuotaTable = array[owner_maloc..owner_gaal] of TPlanetEquipmentOfferQuotaRow;
   PPlanetEquipmentOfferQuotaTable = ^TPlanetEquipmentOfferQuotaTable;
 
@@ -662,7 +662,7 @@ const
     (ItemType: item_repair_robot; Name: 'RepairRobot'),
     (ItemType: item_cargo_hook; Name: 'CargoHook'),
     (ItemType: item_defense_generator; Name: 'DefGenerator'),
-    (ItemType: WeaponCategoryItemType; Name: 'Weapon')); // @addr $81088C Used by both the ship inventory and scanner.
+    (ItemType: weapon_category; Name: 'Weapon')); // @addr $81088C Used by both the ship inventory and scanner.
 var
   ItemTypeNames: array[TItemType] of WideString = (
     'Food', 'Medicine', 'Technics', 'Luxury',

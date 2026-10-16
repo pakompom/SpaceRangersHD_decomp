@@ -136,9 +136,9 @@ type
   TJumpGateEntry = record // @size 0x14
     Gate: TGateSE; // @offset 0x00  Retained TGateSE reference.
     UsedThisTurn: Boolean; // @offset 0x04
-    GateFilmId: Cardinal; // @offset 0x08  Encoded TEFilmObj pointer, not a serialized object ordinal.
+    GateFilmObject: Pointer; // @offset 0x08 Borrowed TEFilmObj; Pointer avoids the aEFilm interface dependency cycle.
     Effect: TGateEffectSE; // @offset 0x0C  Optional retained TGateEffectSE reference.
-    EffectFilmId: Cardinal; // @offset 0x10  Encoded TEFilmObj pointer.
+    EffectFilmObject: Pointer; // @offset 0x10 Borrowed TEFilmObj.
   end;
   PJumpGateEntry = ^TJumpGateEntry;
 
@@ -264,7 +264,7 @@ type
     GodModEnabled: Byte; // @offset 0x180
     UltraScanModEnabled: Byte; // @offset 0x181
     StasisModEnabled: Byte; // @offset 0x182
-    CampaignFlag183: Byte; // @offset $183 Reset on campaign creation; other meaning unresolved.
+    EditableSaveDumpRequested: Byte; // @offset $183 MAKEDUMP requests an editable text companion; cleared after saving or closing the save dialog.
     FinalizationNameEncoded: WideString; // @offset 0x184
     CustomRules: TGalaxyCustomRules; // @offset 0x188
     NextSpecialStationServiceTurn: Integer; // @offset 0x1B0
@@ -558,7 +558,7 @@ end;
     CreatedTurn: Integer; // @offset 0x20
     HoleType: Integer; // @offset 0x24  1 ordinary, 2 Blazer, 4 Keller mission; other internal states exist.
     Graphic: THoleSE; // @offset 0x28  Retained reference.
-    FilmObjectId: Integer; // @offset 0x2C
+    FilmObject: Pointer; // @offset 0x2C Borrowed TEFilmObj; Pointer avoids the aEFilm interface dependency cycle.
     ArcadeMapName: WideString; // @offset 0x30  Also accepts SkipAB and NoEntry.
 
     constructor Create; // @addr 0x007DC628
@@ -639,7 +639,7 @@ end;
     InterruptLongTravel: Boolean; // @offset 0xF2
     KeepFilmRunning: Boolean; // @offset 0xF3
     CombatEvents: TList; // @offset 0xF4  Owns PStarCombatEvent records; object references are borrowed.
-    PendingFilmObjectRemovals: TList; // @offset 0xF8  Space-engine object IDs.
+    PendingFilmObjectRemovals: TList; // @offset 0xF8 Borrowed TEFilmObj references awaiting replay release commands.
     ReferencedItems: TList; // @offset 0xFC  Borrowed TItem references.
     PlayerFilmPath: TSPath; // @offset 0x100  Temporary camera path; node Heading stores the step index.
     MovementStepCount: Integer; // @offset 0x104
@@ -1048,7 +1048,7 @@ begin
   RangerSpawnQuotas[owner_feyan] := 0;
   RangerSpawnQuotas[owner_gaal] := 0;
   ComputeGlobalGoodsPriceBands;
-  CampaignFlag183 := 0;
+  EditableSaveDumpRequested := 0;
   GR_Main.CCInterface.SetEditableStateApplied(False);
   FinalizationNameEncoded := '';
   SpecialSimulationMode := 0;
@@ -1371,7 +1371,7 @@ begin
   Buffer.AddBoolean(False);
   Buffer.AddBoolean(False);
   Buffer.AddBoolean(False);
-  if CampaignFlag183 <> 0 then SaveEditableState;
+  if EditableSaveDumpRequested <> 0 then SaveEditableState;
 end;
 { @end $7D0F54 }
 
@@ -11942,7 +11942,7 @@ begin
         GateEntry := Galaxy.JumpGates[Index];
         GateEntry^.UsedThisTurn := True;
         ObjectFilm := PrimaryFilm.AddObject(0, GateEntry^.Gate);
-        GateEntry^.GateFilmId := Cardinal(ObjectFilm);
+        GateEntry^.GateFilmObject := ObjectFilm;
         PrimaryFilm.SetObjectPosition(StepIndex, ObjectFilm, GateEntry^.Gate.Position);
         PrimaryFilm.SetObjectAngle(StepIndex, ObjectFilm, GateEntry^.Gate.GetAngle);
         PrimaryFilm.SetGateSize(StepIndex, ObjectFilm, GateEntry^.Gate.Size.X);
@@ -11952,7 +11952,7 @@ begin
         PrimaryFilm.AttachObject(StepIndex, ObjectFilm);
         if not ((GateEntry^.Effect <> nil) and TObjectSE(GateEntry^.Effect).IsAttachedToSpace) then Continue;
         ObjectFilm := PrimaryFilm.AddObject(0, GateEntry^.Effect);
-        GateEntry^.EffectFilmId := Cardinal(ObjectFilm);
+        GateEntry^.EffectFilmObject := ObjectFilm;
         PrimaryFilm.SetObjectPosition(StepIndex, ObjectFilm, GateEntry^.Effect.Position);
         PrimaryFilm.SetObjectAngle(StepIndex, ObjectFilm, GateEntry^.Effect.GetAngle);
         PrimaryFilm.SetGateSize(StepIndex, ObjectFilm, GateEntry^.Effect.Size.X);
@@ -11969,7 +11969,7 @@ begin
         if Hole.Star1 = Self then
         begin
           EffectFilm := PrimaryFilm.AddObject(Hole.Id, Hole.Graphic);
-          Hole.FilmObjectId := Integer(EffectFilm);
+          Hole.FilmObject := EffectFilm;
           PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, Hole.Position1);
           if Galaxy.CurrentTurn = Hole.CreatedTurn then
             PrimaryFilm.SetHoleState(StepIndex, EffectFilm, 1)
@@ -11979,7 +11979,7 @@ begin
         else begin
           if Hole.Star2 <> Self then Continue;
           EffectFilm := PrimaryFilm.AddObject(Hole.Id, Hole.Graphic);
-          Hole.FilmObjectId := Integer(EffectFilm);
+          Hole.FilmObject := EffectFilm;
           PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, Hole.Position2);
           if Galaxy.CurrentTurn = Hole.CreatedTurn then
             PrimaryFilm.SetHoleState(StepIndex, EffectFilm, 1)
@@ -13354,11 +13354,11 @@ begin
                 end;
                 if Index >= DestinationShipCount then
                 begin
-                  if Hole.FilmObjectId <> 0 then
+                  if Hole.FilmObject <> nil then
                   begin
                     ReleaseSpaceObject(Hole.Graphic);
-                    Self.PendingFilmObjectRemovals.Add(Pointer(Hole.FilmObjectId));
-                    PrimaryFilm.SetHoleState(StepIndex, Pointer(Hole.FilmObjectId), 2);
+                    Self.PendingFilmObjectRemovals.Add(Hole.FilmObject);
+                    PrimaryFilm.SetHoleState(StepIndex, Hole.FilmObject, 2);
                   end;
                   if Hole.HoleType = 4 then
                     Galaxy.KellerMissionState := 0;
@@ -13730,9 +13730,9 @@ begin
         GateEntry := Galaxy.JumpGates[Index];
         if GateEntry^.UsedThisTurn then
         begin
-          PrimaryFilm.ReleaseObject(StepIndex, Pointer(GateEntry^.GateFilmId));
-          if GateEntry^.EffectFilmId <> 0 then
-            PrimaryFilm.ReleaseObject(StepIndex, Pointer(GateEntry^.EffectFilmId));
+          PrimaryFilm.ReleaseObject(StepIndex, GateEntry^.GateFilmObject);
+          if GateEntry^.EffectFilmObject <> nil then
+            PrimaryFilm.ReleaseObject(StepIndex, GateEntry^.EffectFilmObject);
           Galaxy.JumpGates.Delete(Index);
           if GateEntry^.Gate <> nil then
             ReleaseSpaceObject(GateEntry^.Gate);

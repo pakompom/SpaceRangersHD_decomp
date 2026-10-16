@@ -1112,7 +1112,7 @@ begin
   else if Order = order_teleport then Buffer.AddDWord((OrderTarget as TStar).Id)
   else if Order = order_land then
   begin
-    if OrderTarget is TShip then Buffer.AddDWord((OrderTarget as TShip).Id or OrderTargetShipFlag)
+    if OrderTarget is TShip then Buffer.AddDWord((OrderTarget as TShip).Id or order_target_ship_flag)
     else Buffer.AddDWord((OrderTarget as TPlanet).Id);
   end
   else if Order = order_follow_ship then Buffer.AddDWord((OrderTarget as TShip).Id)
@@ -1835,7 +1835,7 @@ begin
   else if Order = order_teleport then OrderTarget := TObject(Galaxy.IdToStar(Cardinal(OrderTarget))) as TStar
   else if Order = order_land then
   begin
-    if (Cardinal(OrderTarget) and OrderTargetShipFlag) = OrderTargetShipFlag then
+    if (Cardinal(OrderTarget) and order_target_ship_flag) = order_target_ship_flag then
       OrderTarget := Galaxy.IdToShip(Cardinal(OrderTarget) and TaggedObjectIdMask, True) as TShip
     else OrderTarget := Galaxy.IdToPlanet(Cardinal(OrderTarget)) as TPlanet;
   end
@@ -5966,7 +5966,7 @@ begin
     for I := 1 to CountEquippedWeapons do
       if Weapons[I] = Item then
       begin
-        UnequipSlot(WeaponCategoryItemType, I);
+        UnequipSlot(weapon_category, I);
         Break;
       end;
   end
@@ -7820,7 +7820,7 @@ begin
   end;
   for I := 1 to 5 do Weapons[I] := nil;
   WeaponCount := 0;
-  if CountCarriedEquipmentByType(WeaponCategoryItemType) < GetSlotCount(slot_weapon) then
+  if CountCarriedEquipmentByType(weapon_category) < GetSlotCount(slot_weapon) then
   begin
     for I := 1 to Inventory.Count - 1 do
     begin
@@ -11716,7 +11716,7 @@ begin
           for J := 0 to Count - 1 do
             if (Used shr J) and 1 = 0 then
             begin
-              Item.AssignedSlotData := (Item.AssignedSlotData and EquipmentSecondaryFireFlag) or J;
+              Item.AssignedSlotData := (Item.AssignedSlotData and equipment_secondary_fire) or J;
               Used := Used or (1 shl J);
               NoFreeSlot := False;
               Break;
@@ -11743,7 +11743,7 @@ begin
           for J := 0 to Count - 1 do
             if (Used shr J) and 1 = 0 then
             begin
-              Item.AssignedSlotData := (Item.AssignedSlotData and EquipmentSecondaryFireFlag) or J;
+              Item.AssignedSlotData := (Item.AssignedSlotData and equipment_secondary_fire) or J;
               Used := Used or (1 shl J);
               NoFreeSlot := False;
               Break;
@@ -11767,7 +11767,7 @@ begin
   ReassignActiveItemSlots(item_repair_robot);
   ReassignActiveItemSlots(item_cargo_hook);
   ReassignActiveItemSlots(item_defense_generator);
-  ReassignActiveItemSlots(WeaponCategoryItemType);
+  ReassignActiveItemSlots(weapon_category);
   ReassignActiveItemSlots(item_custom_artefact);
   RefreshInactiveItemSlotAssignments;
 end;
@@ -11817,7 +11817,7 @@ begin
     Item := Inventory[I];
     if (Item.EquippedFlag = 0) then
       if (CountUnequippedItemsInSlot(Item.AssignedSlotData and EquipmentSlotIndexMask) > 1) then
-      Item.AssignedSlotData := FindFreeUnequippedSlot or (Item.AssignedSlotData and EquipmentSecondaryFireFlag);
+      Item.AssignedSlotData := FindFreeUnequippedSlot or (Item.AssignedSlotData and equipment_secondary_fire);
   end;
 end;
 { @end $6E9C80 }

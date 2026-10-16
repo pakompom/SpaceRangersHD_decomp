@@ -175,7 +175,7 @@ begin
   if ShipScreen.IsOpen then Parent := ShipScreen
   else if RangerRatingScreen.IsOpen then Parent := RangerRatingScreen
   else Parent := RegisteredScreens[CurrentScreenId] as TMessageLoopGI;
-  ShowMessageBoxGI(Parent, Text, mbgCancel);
+  ShowMessageBoxGI(Parent, Text, messagebox_cancel);
   FullFrameRedrawRequested := True;
   Parent.InvalidateViewport;
   Parent.DrawQueuedUpdateRects;
@@ -1432,7 +1432,7 @@ end;
 { @routine $6892A4 ShowCheatFeedback }
 procedure ShowCheatFeedback(Text: WideString);
 begin
-  if Galaxy = nil then ShowMessageBoxGI(nil, Text, mbgOK)
+  if Galaxy = nil then ShowMessageBoxGI(nil, Text, messagebox_ok)
   else AddOrUpdatePlayerBubble(message_galaxy_news, Galaxy.CurrentTurn, Text, '');
 end;
 { @end $6892A4 }
@@ -1506,7 +1506,7 @@ begin
       screen_government, screen_star_map, screen_ruins_talk, screen_info, screen_goods_shop]) or
     (TMessageLoopGI(RegisteredScreens[CurrentScreenId]).ChildLoop <> nil) then Exit;
   Galaxy.CheckIntegrityChecksum(888);
-  Galaxy.CampaignFlag183 := 1;
+  Galaxy.EditableSaveDumpRequested := 1;
   CaptureSavePreview;
   CaptureGalaxyPreview(TMessageLoopGI(RegisteredScreens[CurrentScreenId]));
   Galaxy.PrimeIntegrityChecksum(889);
@@ -1648,7 +1648,7 @@ begin
       else ExecuteScriptText(Value, nil);
     end;
   except
-    on E: Exception do ShowMessageBoxGI(RegisteredScreens[CurrentScreenId] as TMessageLoopGI, E.Message, mbgCancel);
+    on E: Exception do ShowMessageBoxGI(RegisteredScreens[CurrentScreenId] as TMessageLoopGI, E.Message, messagebox_cancel);
   end;
   if Galaxy <> nil then Galaxy.PrimeIntegrityChecksum(889);
 end;

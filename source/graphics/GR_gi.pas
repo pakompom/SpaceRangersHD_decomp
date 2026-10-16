@@ -23,12 +23,13 @@ type
     DataSize: Integer; // @offset 0x04
   end;
   PGaiFrameEntry = ^TGaiFrameEntry;
-  TGaiSequenceTableHeader = packed record // @size 0x08
+  TGaiSequenceTableHeader = packed record // @size 0x04
     SequenceCount: Integer; // @offset 0x00
   end;
   PGaiSequenceTableHeader = ^TGaiSequenceTableHeader;
   TGaiSequenceDirectoryEntry = packed record // @size 0x08
-    SequenceDataOffset: Integer; // @offset 0x00
+    AuxiliaryDataOffset: Integer; // @offset 0x00 Relative to the sequence table; payload meaning unresolved.
+    SequenceDataOffset: Integer; // @offset 0x04 Relative to the sequence table.
   end;
   PGaiSequenceDirectoryEntry = ^TGaiSequenceDirectoryEntry;
   TGaiSequenceFrameEntry = packed record // @size 0x08

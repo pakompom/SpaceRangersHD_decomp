@@ -5013,21 +5013,21 @@ end;
 { @routine $469CC8 TCompilerEC_FindReducibleOperator }
 function TCompilerEC.FindReducibleOperator: TCompilerUnitEC;
 const
-  PrecedenceUnary = 0;
-  PrecedenceMultiply = 1;
-  PrecedenceAdd = 2;
-  PrecedenceShift = 3;
-  PrecedenceCompare = 4;
-  PrecedenceBitAnd = 5;
-  PrecedenceBitXor = 6;
-  PrecedenceBitOr = 7;
-  PrecedenceAnd = 8;
-  PrecedenceOr = 9;
-  PrecedenceAssign = 10;
+  precedence_unary = 0;
+  precedence_multiply = 1;
+  precedence_add = 2;
+  precedence_shift = 3;
+  precedence_compare = 4;
+  precedence_bit_and = 5;
+  precedence_bit_xor = 6;
+  precedence_bit_or = 7;
+  precedence_and = 8;
+  precedence_or = 9;
+  precedence_assign = 10;
 var
   i: Integer;
   Item, Following: TCompilerUnitEC;
-  Candidates: array[PrecedenceUnary..PrecedenceAssign] of TCompilerUnitEC;
+  Candidates: array[precedence_unary..precedence_assign] of TCompilerUnitEC;
 begin
   for i := Low(Candidates) to High(Candidates) do Candidates[i] := nil;
   Item := First;
@@ -5035,7 +5035,7 @@ begin
   begin
     if Item.Kind = term_unary_operator then
     begin
-      if (Item.Next <> nil) and (Item.Next.Kind = term_value_slot) and (Candidates[PrecedenceUnary] = nil) then Candidates[PrecedenceUnary] := Item;
+      if (Item.Next <> nil) and (Item.Next.Kind = term_value_slot) and (Candidates[precedence_unary] = nil) then Candidates[precedence_unary] := Item;
     end
     else if Item.Kind = term_binary_operator then
     begin
@@ -5055,41 +5055,41 @@ begin
           if (Item.OperatorToken = token_multiply) or (Item.OperatorToken = token_divide) or
             (Item.OperatorToken = token_modulo) then
           begin
-            if Candidates[PrecedenceMultiply] = nil then Candidates[PrecedenceMultiply] := Item;
+            if Candidates[precedence_multiply] = nil then Candidates[precedence_multiply] := Item;
           end
           else if (Item.OperatorToken = token_plus) or (Item.OperatorToken = token_minus) then
           begin
-            if Candidates[PrecedenceAdd] = nil then Candidates[PrecedenceAdd] := Item;
+            if Candidates[precedence_add] = nil then Candidates[precedence_add] := Item;
           end
           else if (Item.OperatorToken = token_shift_left) or (Item.OperatorToken = token_shift_right) then
           begin
-            if Candidates[PrecedenceShift] = nil then Candidates[PrecedenceShift] := Item;
+            if Candidates[precedence_shift] = nil then Candidates[precedence_shift] := Item;
           end
           else if (Item.OperatorToken = token_equal) or (Item.OperatorToken = token_not_equal) or
             (Item.OperatorToken = token_less) or (Item.OperatorToken = token_greater) or
             (Item.OperatorToken = token_less_equal) or (Item.OperatorToken = token_greater_equal) then
           begin
-            if Candidates[PrecedenceCompare] = nil then Candidates[PrecedenceCompare] := Item;
+            if Candidates[precedence_compare] = nil then Candidates[precedence_compare] := Item;
           end
           else if Item.OperatorToken = token_bit_and then
           begin
-            if Candidates[PrecedenceBitAnd] = nil then Candidates[PrecedenceBitAnd] := Item;
+            if Candidates[precedence_bit_and] = nil then Candidates[precedence_bit_and] := Item;
           end
           else if Item.OperatorToken = token_bit_xor then
           begin
-            if Candidates[PrecedenceBitXor] = nil then Candidates[PrecedenceBitXor] := Item;
+            if Candidates[precedence_bit_xor] = nil then Candidates[precedence_bit_xor] := Item;
           end
           else if Item.OperatorToken = token_bit_or then
           begin
-            if Candidates[PrecedenceBitOr] = nil then Candidates[PrecedenceBitOr] := Item;
+            if Candidates[precedence_bit_or] = nil then Candidates[precedence_bit_or] := Item;
           end
           else if Item.OperatorToken = token_logical_and then
           begin
-            if Candidates[PrecedenceAnd] = nil then Candidates[PrecedenceAnd] := Item;
+            if Candidates[precedence_and] = nil then Candidates[precedence_and] := Item;
           end
           else if Item.OperatorToken = token_logical_or then
           begin
-            if Candidates[PrecedenceOr] = nil then Candidates[PrecedenceOr] := Item;
+            if Candidates[precedence_or] = nil then Candidates[precedence_or] := Item;
           end;
         end;
       end;
@@ -5097,7 +5097,7 @@ begin
     else if Item.Kind = term_assignment then
     begin
       if (Item.Prev.Kind = term_value_slot) and (Item.Next.Kind = term_value_slot) and
-        (Candidates[PrecedenceAssign] = nil) then Candidates[PrecedenceAssign] := Item;
+        (Candidates[precedence_assign] = nil) then Candidates[precedence_assign] := Item;
     end;
     Item := Item.Next;
   end;

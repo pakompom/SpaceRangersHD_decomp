@@ -6425,7 +6425,7 @@ begin
       for WeaponIndex := 1 to Ship.CountEquippedWeapons do
         if Ship.Weapons[WeaponIndex] = Item then
         begin
-          Ship.UnequipSlot(WeaponCategoryItemType, WeaponIndex);
+          Ship.UnequipSlot(weapon_category, WeaponIndex);
           Break;
         end;
   end;
@@ -7326,7 +7326,7 @@ begin
   Source.RefreshAssignedItemSlots;
   for I := Low(Ship.Weapons) to High(Ship.Weapons) do
   begin
-    Weapon := Source.FindEquippedItemInSlot(WeaponCategoryItemType, I) as TWeapon;
+    Weapon := Source.FindEquippedItemInSlot(weapon_category, I) as TWeapon;
     if not Source.IsEquipmentUsable(Weapon) then Continue;
     if Weapon.ItemType <> item_custom_weapon then ab_Weapon_Initialize(@Ship.Weapons[I], Ord(Weapon.ItemType))
     else ab_Weapon_Initialize(@Ship.Weapons[I], Weapon.GetWeaponInfo.ArcadeWeaponType);
@@ -12122,7 +12122,7 @@ begin
       if Target is TShip then TargetFilm := TShip(Target).FilmObject
       else if Target is TPlanet then TargetFilm := TPlanet(Target).FilmObject
       else if Target is TStar then TargetFilm := PrimaryFilm.FindObject(ClassSEtoName(TStar(Target).Graphic), TStar(Target).Graphic.GraphKey, TStar(Target).Id)
-      else if Target is THole then TargetFilm := TEFilmObj(THole(Target).FilmObjectId)
+      else if Target is THole then TargetFilm := TEFilmObj(THole(Target).FilmObject)
       else if Target is TMissile then TargetFilm := TMissile(Target).FilmObject
       else if Target is TAsteroid then TargetFilm := TAsteroid(Target).FilmObject
       else
@@ -12138,7 +12138,7 @@ begin
       if Source is TShip then SourceFilm := TShip(Source).FilmObject
       else if Source is TPlanet then SourceFilm := TPlanet(Source).FilmObject
       else if Source is TStar then SourceFilm := PrimaryFilm.FindObject(ClassSEtoName(TStar(Source).Graphic), TStar(Source).Graphic.GraphKey, TStar(Source).Id)
-      else if Source is THole then SourceFilm := TEFilmObj(THole(Source).FilmObjectId)
+      else if Source is THole then SourceFilm := TEFilmObj(THole(Source).FilmObject)
       else if Source is TMissile then SourceFilm := TMissile(Source).FilmObject
       else if Source is TAsteroid then SourceFilm := TAsteroid(Source).FilmObject
       else
@@ -12300,7 +12300,7 @@ begin
   if Obj is TShip then FilmObject := TShip(Obj).FilmObject
   else if Obj is TPlanet then FilmObject := TPlanet(Obj).FilmObject
   else if Obj is TStar then FilmObject := PrimaryFilm.FindObject(ClassSEtoName(TStar(Obj).Graphic), TStar(Obj).Graphic.GraphKey, TStar(Obj).Id)
-  else if Obj is THole then FilmObject := TEFilmObj(THole(Obj).FilmObjectId)
+  else if Obj is THole then FilmObject := TEFilmObj(THole(Obj).FilmObject)
   else if Obj is TMissile then FilmObject := TMissile(Obj).FilmObject
   else if Obj is TAsteroid then FilmObject := TAsteroid(Obj).FilmObject
   else
@@ -14045,12 +14045,12 @@ begin
     if ScriptUseItem = Item then ScriptUseItem := nil;
     GetPlayer.RefreshDerivedStats(True);
     SoundManager.PlaySound('Sound.UseATranc');
-    ShowMessageBoxGI(ShipScreen, LocalizedColorText('FormShip.UseTranclucator'), mbgOK or mbgUnused04);
+    ShowMessageBoxGI(ShipScreen, LocalizedColorText('FormShip.UseTranclucator'), messagebox_ok or messagebox_info);
   end
   else
   begin
     SoundManager.PlaySound('Sound.NoMoney');
-    ShowMessageBoxGI(ShipScreen, LocalizedColorText('FormShip.NotUseTranclucator'), mbgCancel or mbgUnused04);
+    ShowMessageBoxGI(ShipScreen, LocalizedColorText('FormShip.NotUseTranclucator'), messagebox_cancel or messagebox_info);
   end;
 end;
 { @end $6327A4 }
@@ -14072,21 +14072,21 @@ begin
   if not (GetPlayer.InNormalSpace or not ShowFeedback) then
   begin
     SoundManager.PlaySound('Sound.NoMoney');
-    ShowMessageBoxGI(ShipScreen, LocalizedColorText('FormShip.UseOnlyInSpace'), mbgCancel or mbgUnused04);
+    ShowMessageBoxGI(ShipScreen, LocalizedColorText('FormShip.UseOnlyInSpace'), messagebox_cancel or messagebox_info);
   end
   else if GetPlayer.UseDominatorTransmitter(Artefact) then
   begin
     if ShowFeedback then
     begin
       SoundManager.PlaySound('Sound.UseATranc');
-      ShowMessageBoxGI(ShipScreen, FormatText1(LocalizedColorText('FormShip.UseTransmitter'), TextHighlightColorTag, '<Star>', GetPlayer.CurrentStar.Name), mbgCancel or mbgUnused04);
+      ShowMessageBoxGI(ShipScreen, FormatText1(LocalizedColorText('FormShip.UseTransmitter'), TextHighlightColorTag, '<Star>', GetPlayer.CurrentStar.Name), messagebox_cancel or messagebox_info);
     end;
   end
   else if ShowFeedback then
   begin
     SoundManager.PlaySound('Sound.NoMoney');
     // The native failure message reads ScriptUseItem even when an explicit artefact was supplied.
-    ShowMessageBoxGI(ShipScreen, FormatText1(LocalizedColorText('FormShip.NotUseTransmitter'), TextHighlightColorTag, '<Count>', WideString(IntToStr(MinTransmitterPower - (ScriptUseItem as TArtefactTransmitter).Power))), mbgCancel or mbgUnused04);
+    ShowMessageBoxGI(ShipScreen, FormatText1(LocalizedColorText('FormShip.NotUseTransmitter'), TextHighlightColorTag, '<Count>', WideString(IntToStr(MinTransmitterPower - (ScriptUseItem as TArtefactTransmitter).Power))), messagebox_cancel or messagebox_info);
   end;
 end;
 { @end $632CBC }
@@ -14112,7 +14112,7 @@ begin
   if not GetPlayer.InNormalSpace then
   begin
     SoundManager.PlaySound('Sound.NoMoney');
-    ShowMessageBoxGI(ShipScreen, LocalizedColorText('FormShip.UseOnlyInSpace'), mbgCancel or mbgUnused04);
+    ShowMessageBoxGI(ShipScreen, LocalizedColorText('FormShip.UseOnlyInSpace'), messagebox_cancel or messagebox_info);
   end
   else
   begin
@@ -14169,14 +14169,14 @@ begin
   if not GetPlayer.InNormalSpace then
   begin
     SoundManager.PlaySound('Sound.NoMoney');
-    ShowMessageBoxGI(ShipScreen, LocalizedColorText('FormShip.UseOnlyInSpace'), mbgCancel or mbgUnused04);
+    ShowMessageBoxGI(ShipScreen, LocalizedColorText('FormShip.UseOnlyInSpace'), messagebox_cancel or messagebox_info);
   end
   else
   begin
     for I := 0 to GetPlayer.CurrentStar.Missiles.Count - 1 do
       with TMissile(GetPlayer.CurrentStar.Missiles[I]) do
         if GetPlayer = OwnerShip then FlightTicks := 10000;
-    ShowMessageBoxGI(ShipScreen, LocalizedColorText('FormShip.UseMissileDef'), mbgCancel or mbgUnused04);
+    ShowMessageBoxGI(ShipScreen, LocalizedColorText('FormShip.UseMissileDef'), messagebox_cancel or messagebox_info);
   end;
 end;
 { @end $633598 }
@@ -14188,7 +14188,7 @@ var
   OffsetX, OffsetY: Integer;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script MessageBox');
-  if High(av) < 2 then Options := mbgCancel or mbgUnused04 else Options := av[2].AsInteger;
+  if High(av) < 2 then Options := messagebox_cancel or messagebox_info else Options := av[2].AsInteger;
   if High(av) < 3 then OffsetX := 0 else OffsetX := av[3].AsInteger;
   if High(av) < 4 then OffsetY := 0 else OffsetY := av[4].AsInteger;
   ShowMessageBoxGI(GetInnermostScreenLoop, av[1].AsString, Options, 0, OffsetX, OffsetY);
@@ -14202,11 +14202,11 @@ var
   OffsetX, OffsetY: Integer;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script MessageBoxYesNo');
-  if High(av) < 2 then Options := mbgOK or mbgCancel or mbgQuestion else Options := av[2].AsInteger or mbgOK or mbgCancel;
+  if High(av) < 2 then Options := messagebox_ok or messagebox_cancel or messagebox_question else Options := av[2].AsInteger or messagebox_ok or messagebox_cancel;
   if High(av) < 3 then OffsetX := 0 else OffsetX := av[3].AsInteger;
   if High(av) < 4 then OffsetY := 0 else OffsetY := av[4].AsInteger;
   av[0].AsInteger := 0;
-  if ShowMessageBoxGI(GetInnermostScreenLoop, av[1].AsString, Options, 0, OffsetX, OffsetY) = mbgResultOK then av[0].AsInteger := 1;
+  if ShowMessageBoxGI(GetInnermostScreenLoop, av[1].AsString, Options, 0, OffsetX, OffsetY) = messagebox_result_ok then av[0].AsInteger := 1;
 end;
 { @end $63382C }
 
@@ -16489,7 +16489,7 @@ begin
   for ActionIndex := Low(TScriptEventKind) to High(TScriptEventKind) do
     Scope.Add(ScriptActionTypeNames[ActionIndex], value_int32).AsInteger := Ord(ActionIndex);
   ScriptRequestThread := TScriptThread.Create;
-  ScriptRequestThread.SetPriority(ThreadPriorityBelowNormal);
+  ScriptRequestThread.SetPriority(priority_below_normal);
   ScriptItemContextStack := TList.Create;
   ScriptItemInfoContextStack := TList.Create;
   ScriptActionShipStack := TList.Create;

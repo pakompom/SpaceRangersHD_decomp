@@ -92,7 +92,7 @@ begin
   Galaxy := nil;
   AssetPreloadStarted := False;
   LoadThread := TThreadGameLoad.Create;
-  LoadThread.SetPriority(ThreadPriorityBelowNormal);
+  LoadThread.SetPriority(priority_below_normal);
   LoadThread.Start;
   ProgressTimer := ScheduleCallbackTimer(20,20,UpdateLoadingProgress);
   LoadPanel.SetProgress(0);
@@ -190,7 +190,7 @@ begin
     begin
       if SelectedMods <> LoadedSaveModSet then
       begin
-        if ShowMessageBoxGI(GetInnermostScreenLoop,LanguageDataConfig.GetParamByPathOrMarker('FormSaveManager.QueryReloadMods'),mbgOK or mbgCancel or mbgError) = mbgResultOK then
+        if ShowMessageBoxGI(GetInnermostScreenLoop,LanguageDataConfig.GetParamByPathOrMarker('FormSaveManager.QueryReloadMods'),messagebox_ok or messagebox_cancel or messagebox_error) = messagebox_result_ok then
         begin
           Block := TBlockParEC.Create;
           Block.AddParam('CurrentMod',LoadedSaveModSet);
@@ -203,7 +203,7 @@ begin
           Exit;
         end;
       end
-      else ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormSaveManager.LoadError'),mbgOK or mbgError);
+      else ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormSaveManager.LoadError'),messagebox_ok or messagebox_error);
       RequestedScreenId := screen_main_menu;
       ApplyEditableSaveOnLoad := False;
       RequestClose(1);

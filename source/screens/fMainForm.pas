@@ -325,12 +325,12 @@ begin
   if ShowWineWarning then
   begin
     ShowWineWarning := False;
-    ShowMessageBoxGI(Self, LocalizedColorText('Warning.WeRunOnWine'), mbgCancel or mbgUnused04);
+    ShowMessageBoxGI(Self, LocalizedColorText('Warning.WeRunOnWine'), messagebox_cancel or messagebox_info);
   end;
   if ShowXonarWarning then
   begin
     ShowXonarWarning := False;
-    ShowMessageBoxGI(Self, LocalizedColorText('Warning.XonarDetected'), mbgCancel or mbgUnused04);
+    ShowMessageBoxGI(Self, LocalizedColorText('Warning.XonarDetected'), messagebox_cancel or messagebox_info);
   end;
 end;
 { @end $52FBEC }
@@ -345,7 +345,7 @@ end;
 { @routine $530868 TfMainForm_QuitClicked }
 procedure TfMainForm.QuitClicked(Sender: TObjectGI);
 begin
-  if ShowMessageBoxGI(Self, LanguageDataConfig.GetParamByPathOrMarker('FormMain.MsgExit'), mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+  if ShowMessageBoxGI(Self, LanguageDataConfig.GetParamByPathOrMarker('FormMain.MsgExit'), messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
   begin
     RequestedScreenId := screen_none;
     RequestClose(1);

@@ -192,7 +192,7 @@ begin
               Inc(Count);
             end;
           Bonus := TabItem.Create;
-          Bonus.SetBonus(Kinds[RandomIntRange(0, Count - 1)], (Zone.BonusFlags and ArcadeHiddenBonusFlag) <> 0, Zone);
+          Bonus.SetBonus(Kinds[RandomIntRange(0, Count - 1)], (Zone.BonusFlags and arcade_bonus_hidden) <> 0, Zone);
           Bonus.State.LongitudeDegrees := Zone.Longitude;
           Bonus.State.PolarAngleDegrees := Zone.PolarAngle;
           Bonus.State.BearingDegrees := RandomIntRange(0, 359);

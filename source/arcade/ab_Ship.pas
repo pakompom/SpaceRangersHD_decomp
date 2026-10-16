@@ -414,7 +414,7 @@ begin
           Candidate := PrimaryWeapon;
           for Index := 0 to WeaponCount - 1 do
           begin
-            if Weapons[Candidate].SlotData and EquipmentSecondaryFireFlag = 0 then
+            if Weapons[Candidate].SlotData and equipment_secondary_fire = 0 then
             begin
               Score := Round(Weapons[Candidate].Ammo / Weapons[Candidate].MaxAmmo * 100);
               if CanFireWeapon(Candidate) then Inc(Score, 100);
@@ -465,7 +465,7 @@ begin
           Candidate := SecondaryWeapon;
           for Index := 0 to WeaponCount - 1 do
           begin
-            if Weapons[Candidate].SlotData and EquipmentSecondaryFireFlag <> 0 then
+            if Weapons[Candidate].SlotData and equipment_secondary_fire <> 0 then
             begin
               Score := Round(Weapons[Candidate].Ammo / Weapons[Candidate].MaxAmmo * 100);
               if CanFireWeapon(Candidate) then Inc(Score, 100);
@@ -520,7 +520,7 @@ begin
     end;
     if Index < WeaponCount then
     begin
-      if Weapons[Index].SlotData and EquipmentSecondaryFireFlag = 0 then PrimaryWeapon := Index
+      if Weapons[Index].SlotData and equipment_secondary_fire = 0 then PrimaryWeapon := Index
       else SecondaryWeapon := Index;
     end;
   end

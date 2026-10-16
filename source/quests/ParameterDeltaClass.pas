@@ -299,9 +299,9 @@ end;
 { @routine $4E1778 TParameterDelta_LoadChangeFromReader }
 procedure TParameterDelta.LoadChangeFromReader(Reader: TBufEC);
 const
-  ChangeSetValue = 0;
-  ChangeByPercentage = 2;
-  ChangeFromExpression = 3;
+  change_set = 0;
+  change_percent = 2;
+  change_expression = 3;
 var
   ChangeKind: Byte;
 begin
@@ -309,9 +309,9 @@ begin
   ChangeValue := Reader.GetInt32;
   VisibilityChange := TParameterVisibilityChange(Reader.GetByte);
   ChangeKind := Reader.GetByte;
-  SetValue := ChangeKind = ChangeSetValue;
-  ChangeByPercent := ChangeKind = ChangeByPercentage;
-  UseExpression := ChangeKind = ChangeFromExpression;
+  SetValue := ChangeKind = change_set;
+  ChangeByPercent := ChangeKind = change_percent;
+  UseExpression := ChangeKind = change_expression;
   ExpressionText.LoadTextLinesFromReader(Reader);
   CriticalEvent.Text.LoadTextLinesFromReader(Reader);
   CriticalEvent.Picture.LoadTextLinesFromReader(Reader);

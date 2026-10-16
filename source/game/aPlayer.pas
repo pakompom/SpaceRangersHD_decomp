@@ -588,7 +588,7 @@ begin
   for I := 0 to Count - 1 do
   begin
     New(Entry);
-    if Buffer.GetByte = 0 then Entry.LocationOwner := TObject(Buffer.GetUInt32 or StoredItemPlanetFlag)
+    if Buffer.GetByte = 0 then Entry.LocationOwner := TObject(Buffer.GetUInt32 or stored_item_planet_flag)
     else Entry.LocationOwner := TObject(Buffer.GetUInt32);
     Entry.SlotIndex := Buffer.GetInt32;
     Entry.Item := CreateItemByType(MigrateSavedItemType(Buffer.GetByte));
@@ -772,7 +772,7 @@ begin
   for I := 0 to StorageEntries.Count - 1 do
   begin
     Entry := PStorageEntry(StorageEntries[I]);
-    if Cardinal(Entry.LocationOwner) and StoredItemPlanetFlag <> 0 then
+    if Cardinal(Entry.LocationOwner) and stored_item_planet_flag <> 0 then
       Entry.LocationOwner := Galaxy.IdToPlanet(Cardinal(Entry.LocationOwner) and TaggedObjectIdMask)
     else Entry.LocationOwner := Galaxy.IdToShip(Cardinal(Entry.LocationOwner), True);
     Entry.Item.ResolveLoadedReferences(Galaxy);
@@ -2685,7 +2685,7 @@ procedure TPlayer.ApplyEquipmentConfiguration(Index: Integer);
       ReleaseStorageEntry(Entry);
       Artefact := Item as TArtefact;
       Artefact.Equip;
-      Slot := Slot or Integer(Artefact.AssignedSlotData and EquipmentSecondaryFireFlag);
+      Slot := Slot or Integer(Artefact.AssignedSlotData and equipment_secondary_fire);
       Artefact.AssignedSlotData := Slot;
     end
     else if Item is TEquipment then
@@ -2695,7 +2695,7 @@ procedure TPlayer.ApplyEquipmentConfiguration(Index: Integer);
       Equipment := Item as TEquipment;
       Equipment.Equip;
       if Item is TWeapon then begin
-        Slot := Slot or Integer(Equipment.AssignedSlotData and EquipmentSecondaryFireFlag);
+        Slot := Slot or Integer(Equipment.AssignedSlotData and equipment_secondary_fire);
         Equipment.AssignedSlotData := Slot;
       end;
     end;
@@ -2714,7 +2714,7 @@ procedure TPlayer.ApplyEquipmentConfiguration(Index: Integer);
       if Slot >= 0 then
       begin
         Equipment.Equip;
-        Slot := Slot or Integer(Equipment.AssignedSlotData and EquipmentSecondaryFireFlag);
+        Slot := Slot or Integer(Equipment.AssignedSlotData and equipment_secondary_fire);
         Equipment.AssignedSlotData := Slot;
       end;
     end;
@@ -2725,7 +2725,7 @@ procedure TPlayer.ApplyEquipmentConfiguration(Index: Integer);
       if Slot >= 0 then
       begin
         Artefact.Equip;
-        Slot := Slot or Integer(Artefact.AssignedSlotData and EquipmentSecondaryFireFlag);
+        Slot := Slot or Integer(Artefact.AssignedSlotData and equipment_secondary_fire);
         Artefact.AssignedSlotData := Slot;
       end;
     end;

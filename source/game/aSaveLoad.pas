@@ -221,14 +221,14 @@ begin
         if Size > 0 then Films.AddBytes(FilmEntry.Data, Size);
       end;
       SaveWriter.QueueSave(FileName, Header, Preview, SecondaryPreview, GameState, Films);
-      if Galaxy.CampaignFlag183 <> 0 then begin
+      if Galaxy.EditableSaveDumpRequested <> 0 then begin
         EditableSaveFileName := SaveManagerScreen.GetSaveConfigPath(FileName);
         if (UserSettingsConfig.CountParams('UnicodeDump') > 0) and
           ParseEnabledNameGI(TrimWideString(UserSettingsConfig.GetParamByPathOrMarker('UnicodeDump'))) then
           EditableSaveBlock.SaveTextFile(PWideChar(EditableSaveFileName), False, False)
         else EditableSaveBlock.SaveTextFile(PWideChar(EditableSaveFileName), True, False);
         EditableSaveBlock.Clear;
-        Galaxy.CampaignFlag183 := 0;
+        Galaxy.EditableSaveDumpRequested := 0;
       end;
       Result := True;
     except
@@ -315,7 +315,7 @@ begin
       try
         F.ReadBuffer(Buffer.Data, Size);
       except
-        ShowMessageBoxGI(nil, 'Compressed galaxy read fail', mbgOK);
+        ShowMessageBoxGI(nil, 'Compressed galaxy read fail', messagebox_ok);
       end;
     end;
     Buffer.ApplyDatXorCipher(Seed);

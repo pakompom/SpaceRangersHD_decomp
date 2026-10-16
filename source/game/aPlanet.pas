@@ -773,7 +773,7 @@ begin
   HomeRangerCount := 0;
   HomeTransportCount := 0;
   if OwnerId <> owner_uninhabited then
-    for ItemType := item_hull to WeaponCategoryItemType do
+    for ItemType := item_hull to weapon_category do
       case ItemType of
         item_hull:
           for I := 1 to NextRandomIntRange(1, 5, RandomState) do
@@ -850,7 +850,7 @@ begin
               Round(DefGeneratorBaseSize * EquipmentSizeFactors[1]), RandomState),
               NextRandomIntRange(1, InventionLevels[research_main_technology], RandomState), OwnerId);
           end;
-        WeaponCategoryItemType:
+        weapon_category:
           for I := 1 to NextRandomIntRange(2, InventionLevels[research_main_technology] + 2, RandomState) do
           begin
             WeaponInfo := aGalaxy.Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [availability_unrestricted], InventionLevels[research_main_technology], 1);
@@ -1123,7 +1123,7 @@ begin
   HomeTransportCount := 0;
   // Kept even though OwnerId was assigned 6 above: the original emits this stock-generation branch.
   if OwnerId <> owner_uninhabited then
-    for ItemType := item_hull to WeaponCategoryItemType do
+    for ItemType := item_hull to weapon_category do
       case ItemType of
         item_hull:
           for I := 1 to NextRandomIntRange(1, 5, RandomState) do
@@ -1200,7 +1200,7 @@ begin
               Round(DefGeneratorBaseSize * EquipmentSizeFactors[1]), RandomState),
               NextRandomIntRange(1, InventionLevels[research_main_technology], RandomState), OwnerId);
           end;
-        WeaponCategoryItemType:
+        weapon_category:
           for I := 1 to NextRandomIntRange(2, InventionLevels[research_main_technology] + 2, RandomState) do
           begin
             WeaponInfo := aGalaxy.Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [availability_unrestricted], InventionLevels[research_main_technology], 1);
@@ -3216,7 +3216,7 @@ begin
   else if Graphic.RingKind = 4 then Family := 1
   else if Graphic.RingKind = 5 then Family := 2
   else Exit;
-  SelectedGood := UnspecifiedGoods;
+  SelectedGood := goods_unspecified;
   // Before the advert pass, ConditionIndex holds the best (negative) price delta.
   ConditionIndex := 0;
   for GoodsIndex := Low(TGoodsIndex) to High(TGoodsIndex) do
@@ -4750,9 +4750,9 @@ begin
       if Item <> nil then Offers.Add(Item);
     end;
   end;
-  for i := 1 to aConst.PlanetEquipmentOfferQuotas[RaceId, WeaponCategoryItemType] do
+  for i := 1 to aConst.PlanetEquipmentOfferQuotas[RaceId, weapon_category] do
   begin
-    Item := GenerateEquipmentOffer(Ship, WeaponCategoryItemType);
+    Item := GenerateEquipmentOffer(Ship, weapon_category);
     if Item <> nil then Offers.Add(Item);
   end;
   Result := Offers;
@@ -4766,7 +4766,7 @@ var
   ItemType: TItemType;
 begin
   Count := 0;
-  for ItemType := item_hull to WeaponCategoryItemType do
+  for ItemType := item_hull to weapon_category do
     Count := Count + aConst.PlanetEquipmentOfferQuotas[RaceId][ItemType];
   Result := System.Round(RemapClamped(Population, 100000, 1000000, 0.5, 1.3) * Count) +
     SeededRandomIntRange(-2, 2, (GenerationSeed - aGalaxy.Galaxy.CurrentTurn) * 1011011);
@@ -4996,8 +4996,8 @@ begin
     if (Rules[RuleIndex].PlayerRating <> []) and not (GetPlayer.GetRangerRatingBand in Rules[RuleIndex].PlayerRating) then Continue;
     if (Rules[RuleIndex].PlayerRank <> []) and not (GetPlayer.Rank in Rules[RuleIndex].PlayerRank) then Continue;
     if (Rules[RuleIndex].PlayerPirateRank <> []) and not (GetPlayer.PirateRank in Rules[RuleIndex].PlayerPirateRank) then Continue;
-    Good := NoGreetingGoods;
-    if Rules[RuleIndex].Goods <> UnspecifiedGoods then Good := Rules[RuleIndex].Goods;
+    Good := greeting_goods_none;
+    if Rules[RuleIndex].Goods <> goods_unspecified then Good := Rules[RuleIndex].Goods;
     Greeting := LocalizedColorText('GovGreetings.' + Rules[RuleIndex].Name + '.Text');
     if (Rules[RuleIndex].CurPlanetRace <> []) and not (RaceId in Rules[RuleIndex].CurPlanetRace) then Continue;
     if Rules[RuleIndex].CurPlanetPirateClan <> greeting_match_any then
@@ -5011,7 +5011,7 @@ begin
       if (Rules[RuleIndex].CurPlanetRaceIsPlayerRace = greeting_match_false) and (GetPlayer.PilotRace = RaceId) then Continue;
     end;
     if (Rules[RuleIndex].CurPlanetRelations <> []) and not (GetRelationLevelToShip(GetPlayer) in Rules[RuleIndex].CurPlanetRelations) then Continue;
-    if Good <> NoGreetingGoods then
+    if Good <> greeting_goods_none then
     begin
       if Rules[RuleIndex].CurPlanetGoodsPermit <> greeting_match_any then
       begin
@@ -5145,7 +5145,7 @@ begin
             if not (Planet.GetRelationLevelToShip(GetPlayer) in Rules[RuleIndex].ToPlanetRelations) or
                (Planet.OwnerId = owner_pirate) then Continue;
           end;
-          if Good <> NoGreetingGoods then
+          if Good <> greeting_goods_none then
           begin
             if Rules[RuleIndex].ToPlanetGoodsPermit <> greeting_match_any then
             begin
@@ -5160,7 +5160,7 @@ begin
           if (Rules[RuleIndex].ToPlanetGovernment <> []) and not (Planet.Government in Rules[RuleIndex].ToPlanetGovernment) then Continue;
           Greeting := ReplaceColoredToken(Greeting, '<ToPlanet>', Planet.Name, TextHighlightColorTag);
           Greeting := ReplaceColoredToken(Greeting, '<ToStar>', Planet.CurrentStar.Name, TextHighlightColorTag);
-          if Good <> NoGreetingGoods then
+          if Good <> greeting_goods_none then
           begin
             Greeting := ReplaceColoredToken(Greeting, '<ToPlanetGoodsCnt>', WideString(IntToStr(Planet.Goods[Good].Count)), TextHighlightColorTag);
             Greeting := ReplaceColoredToken(Greeting, '<ToPlanetGoodsSale>', WideString(IntToStr(GetPlayer.ShopGoodsPurchasePrice(Good, Planet))), TextHighlightColorTag);
@@ -5179,7 +5179,7 @@ begin
       Result := ReplaceColoredToken(Result, '<PlayerRank>', GetPlayer.GetRankName, TextHighlightColorTag);
       Result := ReplaceColoredToken(Result, '<CurPlanet>', Name, TextHighlightColorTag);
       Result := ReplaceColoredToken(Result, '<CurStar>', CurrentStar.Name, TextHighlightColorTag);
-      if Good <> NoGreetingGoods then
+      if Good <> greeting_goods_none then
       begin
         Result := ReplaceColoredToken(Result, '<CurPlanetGoodsCnt>', WideString(IntToStr(Goods[Good].Count)), TextHighlightColorTag);
         Result := ReplaceColoredToken(Result, '<CurPlanetGoodsSale>', WideString(IntToStr(GetPlayer.ShopGoodsPurchasePrice(Good, nil))), TextHighlightColorTag);

@@ -452,9 +452,9 @@ begin
     ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([item_industrial_laser..item_lirecron]));
     Ship.Weapons[2].SlotData := 2;
     ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([item_industrial_laser..item_lirecron]));
-    Ship.Weapons[3].SlotData := 3 or EquipmentSecondaryFireFlag;
+    Ship.Weapons[3].SlotData := 3 or equipment_secondary_fire;
     ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([item_industrial_laser..item_lirecron]));
-    Ship.Weapons[4].SlotData := 4 or EquipmentSecondaryFireFlag;
+    Ship.Weapons[4].SlotData := 4 or equipment_secondary_fire;
     Ship.PrimaryWeapon := -1;
     Ship.SecondaryWeapon := -1;
     NormalizeWeaponSelection;
@@ -604,7 +604,7 @@ begin
   ab_Space_Clear;
   if CacheLoader <> nil then
   begin
-    CacheLoader.ClearFlag18;
+    CacheLoader.ClearPauseRequest;
     CacheLoader.Free;
     CacheLoader := nil;
   end;
@@ -655,10 +655,10 @@ procedure TfAB.RequestExit(Sender: TObjectGI);
 var
   Standalone: Boolean;
 begin
-  if ShowMessageBoxGI(Self, LanguageDataConfig.GetParamByPathOrMarker('FormGameMenu.QExit'), mbgOK or mbgCancel) = mbgResultOK then
+  if ShowMessageBoxGI(Self, LanguageDataConfig.GetParamByPathOrMarker('FormGameMenu.QExit'), messagebox_ok or messagebox_cancel) = messagebox_result_ok then
   begin
     Standalone := Galaxy = nil;
-    if CacheLoader <> nil then CacheLoader.ClearFlag18;
+    if CacheLoader <> nil then CacheLoader.ClearPauseRequest;
     ClearShipPath;
     PlayerArcadeShip := nil;
     ab_Object_Clear;
@@ -700,7 +700,7 @@ begin
   begin
     if (GetPlayer <> nil) and (GetPlayer.GetHull.HullPoints > 0) and VictoryPanel.Active then
     begin
-      if ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormAB.QueryExit'), mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+      if ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormAB.QueryExit'), messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
       begin
         if (GetPlayer.Order = order_black_hole) or (ActiveArcadeRequest <> nil) then BeginBattleExit
         else BeginMapTransition;
@@ -763,9 +763,9 @@ begin
     ab_Weapon_Initialize(@PlayerArcadeShip.Weapons[2], 52);
     PlayerArcadeShip.Weapons[2].SlotData := 2;
     ab_Weapon_Initialize(@PlayerArcadeShip.Weapons[3], 53);
-    PlayerArcadeShip.Weapons[3].SlotData := 3 or EquipmentSecondaryFireFlag;
+    PlayerArcadeShip.Weapons[3].SlotData := 3 or equipment_secondary_fire;
     ab_Weapon_Initialize(@PlayerArcadeShip.Weapons[4], 54);
-    PlayerArcadeShip.Weapons[4].SlotData := 4 or EquipmentSecondaryFireFlag;
+    PlayerArcadeShip.Weapons[4].SlotData := 4 or equipment_secondary_fire;
     NormalizeWeaponSelection;
     UpdateWeaponPanel;
   end
@@ -778,9 +778,9 @@ begin
     ab_Weapon_Initialize(@PlayerArcadeShip.Weapons[2], 57);
     PlayerArcadeShip.Weapons[2].SlotData := 2;
     ab_Weapon_Initialize(@PlayerArcadeShip.Weapons[3], 58);
-    PlayerArcadeShip.Weapons[3].SlotData := 3 or EquipmentSecondaryFireFlag;
+    PlayerArcadeShip.Weapons[3].SlotData := 3 or equipment_secondary_fire;
     ab_Weapon_Initialize(@PlayerArcadeShip.Weapons[4], 59);
-    PlayerArcadeShip.Weapons[4].SlotData := 4 or EquipmentSecondaryFireFlag;
+    PlayerArcadeShip.Weapons[4].SlotData := 4 or equipment_secondary_fire;
     NormalizeWeaponSelection;
     UpdateWeaponPanel;
   end
@@ -793,9 +793,9 @@ begin
     ab_Weapon_Initialize(@PlayerArcadeShip.Weapons[2], 62);
     PlayerArcadeShip.Weapons[2].SlotData := 2;
     ab_Weapon_Initialize(@PlayerArcadeShip.Weapons[3], 63);
-    PlayerArcadeShip.Weapons[3].SlotData := 3 or EquipmentSecondaryFireFlag;
+    PlayerArcadeShip.Weapons[3].SlotData := 3 or equipment_secondary_fire;
     ab_Weapon_Initialize(@PlayerArcadeShip.Weapons[4], 64);
-    PlayerArcadeShip.Weapons[4].SlotData := 4 or EquipmentSecondaryFireFlag;
+    PlayerArcadeShip.Weapons[4].SlotData := 4 or equipment_secondary_fire;
     NormalizeWeaponSelection;
     UpdateWeaponPanel;
   end
@@ -1136,7 +1136,7 @@ begin
       SlotIndex := PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSlotIndexMask;
       if Value - 1 = SlotIndex then
       begin
-        if (PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSecondaryFireFlag) <> 0 then Group := 1;
+        if (PlayerArcadeShip.Weapons[Index].SlotData and equipment_secondary_fire) <> 0 then Group := 1;
         Break;
       end;
     end;
@@ -1171,7 +1171,7 @@ begin
     end;
     if GetPlayer <> nil then
     begin
-      Item := GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, Value - 1) as TWeapon;
+      Item := GetPlayer.FindEquippedItemInSlot(weapon_category, Value - 1) as TWeapon;
       if GetPlayer.GetSlotCount(slot_weapon) <= Value - 1 then
         Button.SetImageDisabledPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'H')
       else if Item = nil then
@@ -1184,10 +1184,10 @@ begin
     WeaponSecondaryImages[Value - 1].IsActive := False;
     with WeaponIcons[Value - 1] do
     begin
-      if (GetPlayer <> nil) and (GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, Value - 1) <> nil) then
+      if (GetPlayer <> nil) and (GetPlayer.FindEquippedItemInSlot(weapon_category, Value - 1) <> nil) then
       begin
         WeaponIcons[Value - 1].IsActive := True;
-        ImageSourcePath := 'GI,' + GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, Value - 1).GetBitmapResourceName + 's';
+        ImageSourcePath := 'GI,' + GetPlayer.FindEquippedItemInSlot(weapon_category, Value - 1).GetBitmapResourceName + 's';
       end
       else if Integer(Button.UserIndex) >= 0 then
       begin
@@ -1208,16 +1208,16 @@ begin
     WeaponButtons[SlotIndex].HelpCallback := UpdateHelp;
     if WeaponButtons[SlotIndex].UserState = 0 then
       WeaponButtons[SlotIndex].UserState := Integer(TImageGI.Create(WeaponButtons[SlotIndex]));
-    if (GetPlayer <> nil) and (GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, SlotIndex) <> nil) then
+    if (GetPlayer <> nil) and (GetPlayer.FindEquippedItemInSlot(weapon_category, SlotIndex) <> nil) then
     begin
-      Item := GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, SlotIndex) as TWeapon;
+      Item := GetPlayer.FindEquippedItemInSlot(weapon_category, SlotIndex) as TWeapon;
       MicroModule := Item.MicroModuleIndex;
       Item.MicroModuleIndex := 0;
       WeaponName := Item.GetShortName;
       Item.MicroModuleIndex := MicroModule;
     end
     else WeaponName := LocalizedText('Items.Weapon.Name.' + IntToStr(PlayerArcadeShip.Weapons[Value].ItemType - 50 + 1));
-    if (PlayerArcadeShip.Weapons[Value].SlotData and EquipmentSecondaryFireFlag) <> 0 then
+    if (PlayerArcadeShip.Weapons[Value].SlotData and equipment_secondary_fire) <> 0 then
       WeaponButtons[SlotIndex].HelpText := ReplaceAllWideString(ReplaceAllWideString(LookupLocalizedTextByKey('Help.ABWeapon2'), '<SelectKey>', IntToStr(Value + 1)), '<WeaponName>', WeaponName)
     else
       WeaponButtons[SlotIndex].HelpText := ReplaceAllWideString(ReplaceAllWideString(LookupLocalizedTextByKey('Help.ABWeapon1'), '<SelectKey>', IntToStr(Value + 1)), '<WeaponName>', WeaponName);
@@ -1431,10 +1431,10 @@ begin
   if PlayerArcadeShip = nil then Exit;
   Index := Sender.UserValue;
   if Index < 0 then Exit;
-  PlayerArcadeShip.Weapons[Index].SlotData := PlayerArcadeShip.Weapons[Index].SlotData xor EquipmentSecondaryFireFlag;
+  PlayerArcadeShip.Weapons[Index].SlotData := PlayerArcadeShip.Weapons[Index].SlotData xor equipment_secondary_fire;
   if Galaxy <> nil then Galaxy.CheckIntegrityChecksum1(640);
   if GetPlayer <> nil then
-    with GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSlotIndexMask) as TWeapon do
+    with GetPlayer.FindEquippedItemInSlot(weapon_category, PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSlotIndexMask) as TWeapon do
       AssignedSlotData := PlayerArcadeShip.Weapons[Index].SlotData;
   NormalizeWeaponSelection;
   UpdateWeaponPanel;
@@ -1456,21 +1456,21 @@ var
   Index: Integer;
 begin
   if (PlayerArcadeShip.PrimaryWeapon >= 0) and
-     ((PlayerArcadeShip.Weapons[PlayerArcadeShip.PrimaryWeapon].SlotData and EquipmentSecondaryFireFlag) <> 0) then
+     ((PlayerArcadeShip.Weapons[PlayerArcadeShip.PrimaryWeapon].SlotData and equipment_secondary_fire) <> 0) then
     PlayerArcadeShip.PrimaryWeapon := -1;
   if PlayerArcadeShip.PrimaryWeapon < 0 then
     for Index := 0 to PlayerArcadeShip.WeaponCount - 1 do
-      if (PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSecondaryFireFlag) = 0 then
+      if (PlayerArcadeShip.Weapons[Index].SlotData and equipment_secondary_fire) = 0 then
       begin
         PlayerArcadeShip.PrimaryWeapon := Index;
         Break;
       end;
   if (PlayerArcadeShip.SecondaryWeapon >= 0) and
-     ((PlayerArcadeShip.Weapons[PlayerArcadeShip.SecondaryWeapon].SlotData and EquipmentSecondaryFireFlag) = 0) then
+     ((PlayerArcadeShip.Weapons[PlayerArcadeShip.SecondaryWeapon].SlotData and equipment_secondary_fire) = 0) then
     PlayerArcadeShip.SecondaryWeapon := -1;
   if PlayerArcadeShip.SecondaryWeapon < 0 then
     for Index := 0 to PlayerArcadeShip.WeaponCount - 1 do
-      if (PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSecondaryFireFlag) <> 0 then
+      if (PlayerArcadeShip.Weapons[Index].SlotData and equipment_secondary_fire) <> 0 then
       begin
         PlayerArcadeShip.SecondaryWeapon := Index;
         Break;
@@ -2112,7 +2112,7 @@ begin
   PauseButton.IsActive := ArcadePaused;
   ab_StopLine_Clear;
   ab_StopPoint_Clear;
-  if (GetPlayer <> nil) and CampaignTransitionStarted and CampaignLoadStarted and not CampaignLoadFinished then CacheLoader.ClearFlag18;
+  if (GetPlayer <> nil) and CampaignTransitionStarted and CampaignLoadStarted and not CampaignLoadFinished then CacheLoader.ClearPauseRequest;
   GetByName('PRight').IsActive := True;
 end;
 { @end $66C280 }
@@ -2145,7 +2145,7 @@ begin
   ArcadeViewMode := 3;
   StarField.SetViewPosition(MakePointF(0, 0));
   ClearShipPath;
-  if (GetPlayer <> nil) and CampaignTransitionStarted and CampaignLoadStarted and not CampaignLoadFinished then CacheLoader.SetFlag18;
+  if (GetPlayer <> nil) and CampaignTransitionStarted and CampaignLoadStarted and not CampaignLoadFinished then CacheLoader.RequestPause;
   PlayerArcadeShip.StopThrust;
   PlayerArcadeShip.Velocity := MakePointF(0, 0);
   PlayerArcadeShip.SetTurnInput(0);
@@ -2649,7 +2649,7 @@ begin
         if Loads.Count > 0 then
         begin
           CacheLoader.SetPendingLoads(Loads, True);
-          if ArcadeViewMode = 5 then CacheLoader.SetPriority(ThreadPriorityNormal);
+          if ArcadeViewMode = 5 then CacheLoader.SetPriority(priority_normal);
         end
         else
         begin
@@ -3849,7 +3849,7 @@ begin
   ArcadeViewMode := 5;
   NextArcadeSpace := EndArcadeSpace;
   CurrentArcadeSpace := EndArcadeSpace;
-  if CampaignLoadStarted and not CampaignLoadFinished then CacheLoader.SetPriority(ThreadPriorityNormal);
+  if CampaignLoadStarted and not CampaignLoadFinished then CacheLoader.SetPriority(priority_normal);
   LoadPanel.SetProgress(0);
   LoadPanel.SetShutterOpenFraction(0);
   LoadPanel.Show;
@@ -4238,7 +4238,7 @@ begin
   SlotCount := GetPlayer.GetSlotCount(slot_weapon);
   for SlotIndex := 0 to SlotCount - 1 do
   begin
-    Item := GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, SlotIndex) as TWeapon;
+    Item := GetPlayer.FindEquippedItemInSlot(weapon_category, SlotIndex) as TWeapon;
     if not GetPlayer.IsEquipmentUsable(Item) then Continue;
     if (CampaignWeapons[PlayerArcadeShip.WeaponCount] <> Item) or
       (PlayerArcadeShip.Weapons[PlayerArcadeShip.WeaponCount].SlotData <> Item.AssignedSlotData) then

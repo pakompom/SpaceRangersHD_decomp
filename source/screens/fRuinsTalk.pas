@@ -6158,7 +6158,7 @@ begin
         Inc(Count);
       end;
     end;
-  if not (Kind in [item_hull..item_engine, item_cargo_hook]) and ((Kind <> WeaponCategoryItemType) or (ConstructionWeapons[1].Item <> nil)) then
+  if not (Kind in [item_hull..item_engine, item_cargo_hook]) and ((Kind <> weapon_category) or (ConstructionWeapons[1].Item <> nil)) then
     AddChoice('- ' + LocalizedColorText('FormRuins.CB.ConstructPirate.skip'), 0, SkipConstructionItem);
   AddChoice('- ' + LocalizedColorText('FormRuins.CB.ConstructPirate.cancel'), 0, DeclineDominionShipConstruction);
   Result := Count;
@@ -6333,7 +6333,7 @@ begin
   end
   else if ConstructionWeapons[1].Item = nil then
   begin
-    BuildConstructionItemChoices(WeaponCategoryItemType);
+    BuildConstructionItemChoices(weapon_category);
     DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.PickWeapon');
   end
   else
@@ -6379,7 +6379,7 @@ begin
   DialogText := '';
   AppendConstructionItemList;
   ClearChoices;
-  BuildConstructionItemChoices(WeaponCategoryItemType);
+  BuildConstructionItemChoices(weapon_category);
   DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.PickWeapon');
 end;
 { @end $582D2C }

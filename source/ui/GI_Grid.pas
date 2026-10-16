@@ -82,7 +82,7 @@ const
   // Cell UserValue packs the column below the row; decorations use -1.
   GridCellCoordinateMask = $FFFF;
   GridCellRowShift = 16;
-  GridDecorationTag = -1;
+  grid_decoration_tag = -1;
 
 { @routine $4A5540 TGridGI_Create }
 constructor TGridGI.Create(Owner: TObjectGI);
@@ -96,7 +96,7 @@ begin
   ActiveCellFrame.SetKind(frame_rect_border);
   ActiveCellFrame.SetDepth(-3);
   ActiveCellFrame.SetColor(CurrentPixelFormat.PackRgbBytes(255, 0, 0));
-  ActiveCellFrame.UserValue := GridDecorationTag;
+  ActiveCellFrame.UserValue := grid_decoration_tag;
   SetDragScrollingEnabled(True);
   SetScrollbarsOutside(True);
   SetUnlimitedWorldEnabled(False);
@@ -213,7 +213,7 @@ begin
       Line.World := True;
       Line.SetColor(GridColor);
       Line.SetDepth(-2);
-      Line.UserValue := GridDecorationTag;
+      Line.UserValue := grid_decoration_tag;
       Inc(Position, GetRowHeight(I));
     end;
   end;
@@ -228,7 +228,7 @@ begin
       Line.World := True;
       Line.SetColor(GridColor);
       Line.SetDepth(-2);
-      Line.UserValue := GridDecorationTag;
+      Line.UserValue := grid_decoration_tag;
       Inc(Position, GetColumnWidth(I));
     end;
   end;
@@ -238,28 +238,28 @@ begin
   Line.World := True;
   Line.SetColor(GridColor);
   Line.SetDepth(-2);
-  Line.UserValue := GridDecorationTag;
+  Line.UserValue := grid_decoration_tag;
   Line := TLineGI.Create(Self);
   Line.Pos := Classes.Point(0, Y);
   Line.ObjectSize := Classes.Point(X + 1, 1);
   Line.World := True;
   Line.SetColor(GridColor);
   Line.SetDepth(-2);
-  Line.UserValue := GridDecorationTag;
+  Line.UserValue := grid_decoration_tag;
   Line := TLineGI.Create(Self);
   Line.Pos := Classes.Point(0, 0);
   Line.ObjectSize := Classes.Point(1, Y + 1);
   Line.World := True;
   Line.SetColor(GridColor);
   Line.SetDepth(-2);
-  Line.UserValue := GridDecorationTag;
+  Line.UserValue := grid_decoration_tag;
   Line := TLineGI.Create(Self);
   Line.Pos := Classes.Point(X, 0);
   Line.ObjectSize := Classes.Point(1, Y + 1);
   Line.World := True;
   Line.SetColor(GridColor);
   Line.SetDepth(-2);
-  Line.UserValue := GridDecorationTag;
+  Line.UserValue := grid_decoration_tag;
 end;
 { @end $4A5970 }
 
@@ -319,7 +319,7 @@ begin
     begin
       Current := Child;
       Child := Child.NextSibling;
-      if (Current is TLabelGI) and (Current.UserValue and GridCellCoordinateMask >= Value) and (Current.UserValue <> GridDecorationTag) then
+      if (Current is TLabelGI) and (Current.UserValue and GridCellCoordinateMask >= Value) and (Current.UserValue <> grid_decoration_tag) then
         FreeOwnedChild(Current);
     end;
   end else
@@ -355,7 +355,7 @@ begin
     begin
       Current := Child;
       Child := Child.NextSibling;
-      if (Current is TLabelGI) and (Current.UserValue shr GridCellRowShift and GridCellCoordinateMask >= Value) and (Current.UserValue <> GridDecorationTag) then
+      if (Current is TLabelGI) and (Current.UserValue shr GridCellRowShift and GridCellCoordinateMask >= Value) and (Current.UserValue <> grid_decoration_tag) then
         FreeOwnedChild(Current);
     end;
   end else
@@ -492,7 +492,7 @@ begin
     BackgroundImage := nil;
   end;
   Image := TImageGI.Create(Self);
-  Image.UserValue := GridDecorationTag;
+  Image.UserValue := grid_decoration_tag;
   Image.SetDepth(2);
   Image.ImageSourcePath := Path;
   Image.KindX := image_x_tile_left;
@@ -519,7 +519,7 @@ begin
     ActiveCellImage.ImageSourcePath := Path;
     ActiveCellImage.KindX := image_x_tile_left;
     ActiveCellImage.KindY := image_y_tile_top;
-    ActiveCellImage.UserValue := GridDecorationTag;
+    ActiveCellImage.UserValue := grid_decoration_tag;
     ActiveCellImage.SetDepth(1);
     ActiveCellImage.World := True;
   end;

@@ -43,7 +43,7 @@ begin
   BufferCapacity := (BufferBytes div BlockSize) * BlockSize + BlockSize;
   ReadBuffer := AllocEC(BufferCapacity);
   FillBuffer := AllocEC(BufferCapacity);
-  SetPriority(ThreadPriorityLowest);
+  SetPriority(priority_lowest);
   Start;
 end;
 { @end $481E60 }

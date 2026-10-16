@@ -193,7 +193,7 @@ type
     procedure BeginTrailingEffects(StepIndex: Integer); // @addr 0x00783ED4 @note "Appends the kind-24 boundary consumed by film playback."
 
     procedure SetObjectOrbitCenter(StepIndex: Integer; Obj: TEFilmObj; Position: TPointF); // @addr $783964
-    procedure SetPlanetState(StepIndex: Integer; Obj: TEFilmObj; RotationInterval, SurfaceMapStep: Integer; ScaleThousandths: Word; RingKind, Owner: Byte); // @addr $783A34 Scale is decoded as a signed 16-bit value divided by 1000 during playback.
+    procedure SetPlanetState(StepIndex: Integer; Obj: TEFilmObj; RotationInterval, SurfaceMapStep: Integer; OrbitalVelocityThousandths: Word; RingKind, Owner: Byte); // @addr $783A34 Orbital velocity is stored as Word bits and decoded as signed SmallInt / 1000 during playback.
     procedure SetShipSizeAndTailMode(StepIndex: Integer; Obj: TEFilmObj; ASize: TPoint; ATailMode: Integer); // @addr $783A98
     procedure SetRuinsState(StepIndex: Integer; Obj: TEFilmObj; State: Integer); // @addr $783AFC
     procedure SetEffectImagePosition(StepIndex: Integer; Obj: TEFilmObj; Position: TPoint); // @addr $783C14
@@ -683,7 +683,7 @@ end;
 { @end $783A28 }
 
 { @routine $783A34 TEFilm_SetPlanetState }
-procedure TEFilm.SetPlanetState(StepIndex: Integer; Obj: TEFilmObj; RotationInterval, SurfaceMapStep: Integer; ScaleThousandths: Word; RingKind, Owner: Byte);
+procedure TEFilm.SetPlanetState(StepIndex: Integer; Obj: TEFilmObj; RotationInterval, SurfaceMapStep: Integer; OrbitalVelocityThousandths: Word; RingKind, Owner: Byte);
 var Command: PEFilmCommand;
 begin
   if Obj = nil then raise Exception.Create('obj=nil');
@@ -694,7 +694,7 @@ begin
   begin
     Value := (Integer(RingKind) shl 24) or RotationInterval;
     ExtraValue := SurfaceMapStep;
-    Flags := ScaleThousandths or (Integer(Owner) shl 24);
+    Flags := OrbitalVelocityThousandths or (Integer(Owner) shl 24);
   end;
 end;
 { @end $783A34 }

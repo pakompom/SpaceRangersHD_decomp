@@ -425,7 +425,7 @@ end;
 procedure TfJournal.DeleteEntryClicked(Sender: TObjectGI);
 var Position: Integer;
 begin
-  if ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormInfo.DelRecord'), mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+  if ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormInfo.DelRecord'), messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
   begin
     if GetPlayer <> nil then GetPlayer.DeleteJournalRecord(Sender.UserValue);
     Position := InfoPanel.VerticalScrollBar.Position;
@@ -444,7 +444,7 @@ begin
   if GetPlayer = nil then Exit;
   if JournalSelected then
   begin
-    if ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormInfo.ClearRecord'), mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+    if ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormInfo.ClearRecord'), messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
     begin
       GetPlayer.ClearJournal;
       RebuildJournalEntries;
@@ -453,7 +453,7 @@ begin
   end
   else
   begin
-    if ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormInfo.ClearNews'), mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+    if ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormInfo.ClearNews'), messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
     begin
       GetPlayer.TrimNewsEntries(0);
       RebuildNewsEntries;
@@ -471,19 +471,19 @@ begin
   if JournalSelected then
   begin
     if GetPlayer.JournalRecords.Count > 0 then
-      if ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormInfo.ExtractRecord'), mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+      if ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormInfo.ExtractRecord'), messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
       begin
         FileName := GetPlayer.ExportJournal;
-        ShowMessageBoxGI(Self, ReplaceColoredToken(LocalizedText('FormInfo.ExtractRecordDone'), '<FileName>', FileName, TextHighlightColorTag), mbgOK or mbgUnused04);
+        ShowMessageBoxGI(Self, ReplaceColoredToken(LocalizedText('FormInfo.ExtractRecordDone'), '<FileName>', FileName, TextHighlightColorTag), messagebox_ok or messagebox_info);
         RebuildJournalEntries;
         BreakUiMessage;
       end;
   end
   else if GetPlayer.NewsEntries.Count > 0 then
-    if ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormInfo.ExtractNews'), mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+    if ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormInfo.ExtractNews'), messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
     begin
       FileName := GetPlayer.ExportNews;
-      ShowMessageBoxGI(Self, ReplaceColoredToken(LocalizedText('FormInfo.ExtractNewsDone'), '<FileName>', FileName, TextHighlightColorTag), mbgOK or mbgUnused04);
+      ShowMessageBoxGI(Self, ReplaceColoredToken(LocalizedText('FormInfo.ExtractNewsDone'), '<FileName>', FileName, TextHighlightColorTag), messagebox_ok or messagebox_info);
       RebuildNewsEntries;
       BreakUiMessage;
     end;

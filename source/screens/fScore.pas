@@ -1373,7 +1373,7 @@ begin
   Entry := Entries[SelectedIndex];
   Text := FormatText2(LanguageDataConfig.GetParamByPathOrMarker('FormScore.QueryDelete'),
     TextHighlightColorTag, '<Name>', Entry.PlayerName, '<Score>', IntToStr(Entry.TotalScore));
-  if ShowMessageBoxGI(Self, Text, mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then PostMouseMoveMessage
+  if ShowMessageBoxGI(Self, Text, messagebox_ok or messagebox_cancel or messagebox_question) <> messagebox_result_ok then PostMouseMoveMessage
   else
   begin
     PostMouseMoveMessage;
@@ -1387,7 +1387,7 @@ end;
 { @routine $68E6E8 TfScore_ClearTableClicked }
 procedure TfScore.ClearTableClicked(Sender: TObjectGI);
 begin
-  if ShowMessageBoxGI(Self, LanguageDataConfig.GetParamByPathOrMarker('FormScore.QueryClear'), mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then
+  if ShowMessageBoxGI(Self, LanguageDataConfig.GetParamByPathOrMarker('FormScore.QueryClear'), messagebox_ok or messagebox_cancel or messagebox_question) <> messagebox_result_ok then
     PostMouseMoveMessage
   else
   begin
@@ -1694,7 +1694,7 @@ begin
   Text := ReplaceColoredToken(Text, '<File>', ReplaceAllWideString(FileName, '\', ' \ '), TextHighlightColorTag);
   Text := ReplaceColoredToken(Text, '<WinGameDate>', FormatGameTurnDate(Entry.FinishedTurn), TextHighlightColorTag);
   Entry.Exported := True;
-  ShowMessageBoxGI(Self, Text, mbgOK or mbgUnused04 or mbgLeftAlign);
+  ShowMessageBoxGI(Self, Text, messagebox_ok or messagebox_info or messagebox_align_left);
   RefreshDetails;
 end;
 { @end $691480 }

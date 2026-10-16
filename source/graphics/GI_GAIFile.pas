@@ -122,7 +122,7 @@ begin
   ImageFile := TFileEC.Create;
   LoaderThread := TGAIFileThreadGI.Create;
   LoaderThread.Owner := Self;
-  LoaderThread.SetPriority(ThreadPriorityLowest);
+  LoaderThread.SetPriority(priority_lowest);
   ImageKindX := image_x_center;
   ImageKindY := image_y_center;
   Stopped := False;

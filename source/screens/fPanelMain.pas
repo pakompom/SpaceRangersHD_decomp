@@ -654,7 +654,7 @@ begin
   if GetInnermostScreenLoop.ParentLoop <> nil then Exit;
   if Galaxy.IronWill then
   begin
-    ShowMessageBoxGI(Screen, LocalizedColorText('FormGameSet2.IronWillText'), mbgCancel or mbgUnused04);
+    ShowMessageBoxGI(Screen, LocalizedColorText('FormGameSet2.IronWillText'), messagebox_cancel or messagebox_info);
     FullFrameRedrawRequested := True;
     Exit;
   end;
@@ -688,7 +688,7 @@ begin
       Text := ReplaceColoredToken(LookupLocalizedTextByKey('FormSaveManager.QueryQuickN'), '<Num>', IntToStr(SlotIndex), TextHighlightColorTag)
     else
       Text := LookupLocalizedTextByKey('FormSaveManager.QueryQuick');
-    if ShowMessageBoxGI(Screen, Text, mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+    if ShowMessageBoxGI(Screen, Text, messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
     begin
       PendingLoadFileName := AnsiString(SaveManagerScreen.GetQuickSavePath(SlotIndex));
       RequestedScreenId := screen_save_loading;
@@ -702,7 +702,7 @@ begin
       Text := ReplaceColoredToken(LookupLocalizedTextByKey('FormSaveManager.QuickNotExistN'), '<Num>', IntToStr(SlotIndex), TextHighlightColorTag)
     else
       Text := LookupLocalizedTextByKey('FormSaveManager.QuickNotExist');
-    ShowMessageBoxGI(Screen, Text, mbgOK or mbgUnused04);
+    ShowMessageBoxGI(Screen, Text, messagebox_ok or messagebox_info);
     FullFrameRedrawRequested := True;
   end;
   Screen.ShowCursor := True;
@@ -1440,7 +1440,7 @@ begin
   if Key = VK_F2 then
   begin
     if Galaxy.IronWill then
-      ShowMessageBoxGI(Screen, LocalizedColorText('FormGameSet2.IronWillText'), mbgCancel or mbgUnused04)
+      ShowMessageBoxGI(Screen, LocalizedColorText('FormGameSet2.IronWillText'), messagebox_cancel or messagebox_info)
     else if Galaxy.SpecialSimulationMode = 0 then
     begin
       CaptureSavePreview;

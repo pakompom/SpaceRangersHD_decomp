@@ -212,7 +212,7 @@ begin
   Count := PendingLoads.Count;
   for I := 0 to Count - 1 do
   begin
-    while (Flag18 or ((Galaxy <> nil) and Galaxy.Destroying)) and
+    while (PauseRequested or ((Galaxy <> nil) and Galaxy.Destroying)) and
       not ExitScreenLoop and not IsStopRequested do SysUtils.Sleep(100);
     Control := PendingLoads[I];
     if not ExitScreenLoop and not IsStopRequested then
@@ -235,7 +235,7 @@ begin
   PendingLoads := Loads;
   CompletedLoadCount := 0;
   TotalLoadCount := PendingLoads.Count;
-  SetPriority(ThreadPriorityLowest);
+  SetPriority(priority_lowest);
   if StartImmediately then Start;
 end;
 { @end $5E8E94 }

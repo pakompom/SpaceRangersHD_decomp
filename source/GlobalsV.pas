@@ -223,8 +223,8 @@ var
   SputnikShow: Boolean = True; // @addr $80A994
   SatelliteLightMapPath: WideString = 'Bm.Planet.S.Light094'; // @addr $80A998 Used by TPlanetGI.SetImageFromTemplate when creating its light buffers.
 var
-  SatelliteTemplateParameter1: Integer = 128; // @addr $80A99C
-  SatelliteTemplateParameter2: Integer = 60; // @addr $80A9A0
+  SatelliteSurfaceTextureWidth: Integer = 128; // @addr $80A99C
+  SatelliteSurfaceTextureHeight: Integer = 60; // @addr $80A9A0
   MinimumSatelliteTemplateRadius: Integer = 10; // @addr $80A9A4
   GeneratedSatelliteBaseRadius: Integer = 13; // @addr $80A9A8 Base for procedural satellite display sizes, separate from render-template limits.
   MaximumSatelliteTemplateRadius: Integer = 60; // @addr $80A9AC

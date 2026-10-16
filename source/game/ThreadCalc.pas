@@ -7,7 +7,9 @@ uses EC_Thread;
 type
   TTurnCalculationJob = (
     turn_job_galaxy = 1, turn_job_player_star = 2, turn_job_prepare_player_star = 3,
-    turn_job_unknown_5 = 5 // Native hover guards exclude this job; its operation is not identified.
+    // Hover guards exclude 5; Execute falls back to player-star preparation.
+    // No assignment of 5 is recovered, so its distinct historical purpose is unknown.
+    turn_job_unknown_5 = 5
   ); // @size 0x4
   TTurnCalculationPhase = (
     turn_idle = 0, // Zero-initialized phase; accepted by the native debug-key callback.

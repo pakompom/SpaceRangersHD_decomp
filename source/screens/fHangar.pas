@@ -645,7 +645,7 @@ begin
     Galaxy.CheckIntegrityChecksum(215);
     GetPlayer.SetMoney(0);
     Galaxy.PrimeIntegrityChecksum(216);
-    ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormHangar.HullStatus.NotMoney'),TextHighlightColorTag,'<Money>',IntToStr(GetPlayer.GetHull.CalculateRepairCost)),mbgCancel or mbgError);
+    ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormHangar.HullStatus.NotMoney'),TextHighlightColorTag,'<Money>',IntToStr(GetPlayer.GetHull.CalculateRepairCost)),messagebox_cancel or messagebox_error);
     MainPanel.FlashMoneyWarning;
     Exit;
   end;
@@ -684,7 +684,7 @@ begin
   if LoadPanel.IsAnimatingShutters or MainPanel.NavigationLocked or HasPendingScriptRequests then Exit;
   if GetPlayer.GetFullRefuelCost > GetPlayer.Money then
   begin
-    ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormHangar.FuelTankStatus.NotMoney'),TextHighlightColorTag,'<Money>',IntToStr(GetPlayer.GetFullRefuelCost)),mbgCancel or mbgError);
+    ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormHangar.FuelTankStatus.NotMoney'),TextHighlightColorTag,'<Money>',IntToStr(GetPlayer.GetFullRefuelCost)),messagebox_cancel or messagebox_error);
     MainPanel.FlashMoneyWarning;
     Exit;
   end;

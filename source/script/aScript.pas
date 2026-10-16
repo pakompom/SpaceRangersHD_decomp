@@ -714,7 +714,7 @@ begin
     end;
     if Failed then
     begin
-      if ShowMessageBoxGI(TMessageLoopGI(RegisteredScreens[CurrentScreenId]), LocalizedColorText('FormGov.BattlePlanetQuestCrashed'), mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+      if ShowMessageBoxGI(TMessageLoopGI(RegisteredScreens[CurrentScreenId]), LocalizedColorText('FormGov.BattlePlanetQuestCrashed'), messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
         Status := 3
       else raise Exception.Create('Error in Matrix.dll');
     end;

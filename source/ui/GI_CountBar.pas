@@ -5,7 +5,7 @@ interface
 uses EC_BlockPar, GI_GraphButton, GI_Image, GI_MessageLoop, Types;
 
 const
-  cbHorizontal = 1;
+  countbar_horizontal = 1;
 
 type
   TCountBarGI = class(TObjectGI) // @size 0x15C
@@ -51,7 +51,7 @@ uses Classes, EC_Struct, GI_Main;
 constructor TCountBarGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
-  Orientation := cbHorizontal;
+  Orientation := countbar_horizontal;
   Minimum := 0;
   Maximum := 100;
   Position := 0;
@@ -166,7 +166,7 @@ var
   TrackWidth, ThumbLeft, ThumbRight: Integer;
   ThumbSize, IncreaseSize, DecreaseSize: TPoint;
 begin
-  if Orientation <> cbHorizontal then Exit;
+  if Orientation <> countbar_horizontal then Exit;
   ThumbSize := ThumbButton.GetMaxStateImageSize;
   DecreaseSize := DecreaseButton.GetMaxStateImageSize;
   IncreaseSize := IncreaseButton.GetMaxStateImageSize;
@@ -238,7 +238,7 @@ var TrackStart, TrackEnd: Integer;
 begin
   inherited ProcessMouseMove(KeyState, Point);
   Point := ToLocalPoint(Point);
-  if not ThumbButton.Down or (Orientation <> cbHorizontal) then Exit;
+  if not ThumbButton.Down or (Orientation <> countbar_horizontal) then Exit;
   TrackStart := DecreaseButton.GetMaxStateImageSize.X + ThumbButton.GetMaxStateImageSize.X div 2;
   TrackEnd := ClientSize.X - IncreaseButton.GetMaxStateImageSize.X -
     (ThumbButton.GetMaxStateImageSize.X - ThumbButton.GetMaxStateImageSize.X div 2);
@@ -268,7 +268,7 @@ begin
   inherited ProcessLeftButtonDown(KeyState, Point);
   if Active then MessageLoop.SetFocusedControl(Self);
   Point := ToLocalPoint(Point);
-  if Orientation <> cbHorizontal then Exit;
+  if Orientation <> countbar_horizontal then Exit;
   TrackStart := DecreaseButton.GetMaxStateImageSize.X + ThumbButton.GetMaxStateImageSize.X div 2;
   TrackEnd := ClientSize.X - IncreaseButton.GetMaxStateImageSize.X -
     (ThumbButton.GetMaxStateImageSize.X - ThumbButton.GetMaxStateImageSize.X div 2);

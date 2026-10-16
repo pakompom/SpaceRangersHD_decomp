@@ -214,7 +214,7 @@ begin
   if Sender.UserValue <> 0 then
     if ShowMessageBoxGI(Self,
       LocalizedText('FormGov.QuestCertificate.NotCertificateAttention'),
-      mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
+      messagebox_ok or messagebox_cancel or messagebox_question) <> messagebox_result_ok then Exit;
   Galaxy.CheckIntegrityChecksum(162);
   CaptureSavePreview;
   CaptureGalaxyPreview(Self);

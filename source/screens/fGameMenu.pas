@@ -85,7 +85,7 @@ end;
 { @routine $532F94 TfGameMenu_SaveClicked }
 procedure TfGameMenu.SaveClicked(Sender: TObjectGI);
 begin
-  if Galaxy.IronWill then ShowMessageBoxGI(Self,LocalizedColorText('FormGameSet2.IronWillText'),mbgCancel or mbgUnused04)
+  if Galaxy.IronWill then ShowMessageBoxGI(Self,LocalizedColorText('FormGameSet2.IronWillText'),messagebox_cancel or messagebox_info)
   else if Galaxy.SpecialSimulationMode = 0 then
   begin
     SaveManagerReturnScreenId := GameMenuReturnScreenId;
@@ -126,7 +126,7 @@ end;
 { @routine $533190 TfGameMenu_ExitClicked }
 procedure TfGameMenu.ExitClicked(Sender: TObjectGI);
 begin
-  if ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormGameMenu.QExit'),mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
+  if ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormGameMenu.QExit'),messagebox_ok or messagebox_cancel or messagebox_question) <> messagebox_result_ok then Exit;
   if MemorySnapshotBuffer <> nil then MemorySnapshotBuffer.Free;
   MemorySnapshotBuffer := nil;
   MemorySnapshotActive := False;

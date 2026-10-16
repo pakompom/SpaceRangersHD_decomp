@@ -1262,7 +1262,7 @@ begin
   for I := 0 to 7 do
   begin
     SlotCount := 1;
-    if EquipmentSlotLayouts[I].ItemType = WeaponCategoryItemType then SlotCount := 5;
+    if EquipmentSlotLayouts[I].ItemType = weapon_category then SlotCount := 5;
     for J := 0 to SlotCount - 1 do
       with GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(J) + 'Repair') as TgaiGI do
         if Active then
@@ -1852,7 +1852,7 @@ begin
   for I := 0 to 7 do
   begin
     MaximumSlots := 1;
-    if EquipmentSlotLayouts[I].ItemType = WeaponCategoryItemType then MaximumSlots := 5;
+    if EquipmentSlotLayouts[I].ItemType = weapon_category then MaximumSlots := 5;
     Count := PlayerHoldShip.GetSlotCountForItemType(EquipmentSlotLayouts[I].ItemType);
     for Slot := 0 to Count - 1 do
     begin
@@ -1862,7 +1862,7 @@ begin
       GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(Slot) + 'off').SetActive(False);
       GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(Slot) + 'Set').SetActive(False);
     end;
-    if EquipmentSlotLayouts[I].ItemType = WeaponCategoryItemType then
+    if EquipmentSlotLayouts[I].ItemType = weapon_category then
     begin
       for Slot := Count to 4 do
       begin
@@ -2014,7 +2014,7 @@ begin
       GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(Slot) + 'b').SetActive((Item <> nil) and not Highlight and not PlayerHoldShip.IsEquipmentUsable(Item) and not Boost);
       GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(Slot) + 'Ex').SetActive(Boost);
     end;
-    if EquipmentSlotLayouts[I].ItemType = WeaponCategoryItemType then
+    if EquipmentSlotLayouts[I].ItemType = weapon_category then
     begin
       for Slot := SlotCount to 4 do
         (GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(Slot) + 'z') as TZoneGI).ZoneMouseDownCallback := nil;
@@ -2416,7 +2416,7 @@ begin
   if (GetPlayer.InHyperspace or (QueuedArcadeBattles.Count > 0)) and not Galaxy.IsArcadeEquipmentChangeEnabled then
   begin
     SoundManager.PlaySound('Sound.NoMoney');
-    ShowMessageBoxGI(Self,LocalizedColorText('FormShip.NoEquipChangeInHyper'),mbgOK);
+    ShowMessageBoxGI(Self,LocalizedColorText('FormShip.NoEquipChangeInHyper'),messagebox_ok);
     Exit;
   end;
   Galaxy.CheckIntegrityChecksum1(438);
@@ -2428,13 +2428,13 @@ begin
       if (PlayerHoldShip is TRuins) and ((Item is TEngine) or (Item is TFuelTanks) or ((Item is TCargoHook) and (PlayerHoldShip.TypeId = station_dominion))) then
       begin
         SoundManager.PlaySound('Sound.NoMoney');
-        ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.RuinMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(Item.GetDisplayName)),mbgCancel or mbgWarning);
+        ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.RuinMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(Item.GetDisplayName)),messagebox_cancel or messagebox_warning);
         Exit;
       end;
       if (PlayerHoldShip is TTranclucator) and ((Item is TEngine) or (Item is TFuelTanks)) then
       begin
         SoundManager.PlaySound('Sound.NoMoney');
-        ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.TrancMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(Item.GetDisplayName)),mbgCancel or mbgWarning);
+        ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.TrancMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(Item.GetDisplayName)),messagebox_cancel or messagebox_warning);
         Exit;
       end;
       if Item.EquippedFlag <> 0 then PlayerHoldShip.UnequipItem(Item);
@@ -2460,7 +2460,7 @@ begin
     begin
       Item := PlayerHoldShip.FindEquippedItemInSlot(ItemType,Slot);
       Text := FormatText2(LocalizedText('MicroModuls.AddToItem'),TextHighlightColorTag,'<ModuleName>',(SelectedHoldItem as TMicroModule).GetPlainName,'<ItemName>',RemoveTextTagsW(Item.GetDisplayName));
-      if ShowMessageBoxGI(Self,Text,mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+      if ShowMessageBoxGI(Self,Text,messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
       begin
         PlayerHoldShip.ScriptItemsAct(event_player_use_micromodule,Item,SelectedHoldItem,0);
         ApplyMicroModule((SelectedHoldItem as TMicroModule).MicroModuleIndex - 1,Item);
@@ -2478,7 +2478,7 @@ begin
     begin
       Item := PlayerHoldShip.FindEquippedItemInSlot(ItemType,Slot);
       Text := LocalizedColorText('Items.Cistern.ToFuelTanks');
-      if ShowMessageBoxGI(Self,Text,mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+      if ShowMessageBoxGI(Self,Text,messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
       begin
         Quantity := Min((SelectedHoldItem as TCistern).Fuel,(Item as TFuelTanks).Capacity - (Item as TFuelTanks).Fuel);
         Dec((SelectedHoldItem as TCistern).Fuel,Quantity);
@@ -2493,13 +2493,13 @@ begin
       Item := PlayerHoldShip.FindEquippedItemInSlot(ItemType,Slot);
       if (Item <> nil) and (Item.EquippedFlag <> 0) then PlayerHoldShip.UnequipItem(Item);
       PlayerHoldShip.Inventory.Add(SelectedHoldItem);
-      (SelectedHoldItem as TEquipment).AssignedSlotData := ((SelectedHoldItem as TEquipment).AssignedSlotData and EquipmentSecondaryFireFlag) or Slot;
+      (SelectedHoldItem as TEquipment).AssignedSlotData := ((SelectedHoldItem as TEquipment).AssignedSlotData and equipment_secondary_fire) or Slot;
       (SelectedHoldItem as TEquipment).Equip;
       if SelectedHoldItem is TWeapon then (SelectedHoldItem as TWeapon).Target := nil;
       SoundManager.PlaySound('Sound.SlotPut');
       if PlayerHoldShip is TTranclucator then
         if (SelectedHoldItem is TWeapon) and (TWeapon(SelectedHoldItem).GetWeaponInfo.ShotType in [shot_torpedo..shot_rocket]) and (PlayerHoldShip.GetRadar = nil) then
-          ShowMessageBoxGI(Self,LocalizedColorText('FormShip.TrancMissileWarning'),mbgOK or mbgWarning);
+          ShowMessageBoxGI(Self,LocalizedColorText('FormShip.TrancMissileWarning'),messagebox_ok or messagebox_warning);
       SelectedHoldKind := hold_empty;
       SelectedHoldItem := nil;
       if Item <> nil then
@@ -2743,7 +2743,7 @@ begin
   if (SelectedHoldKind = hold_equipment) and (SelectedHoldItem.ItemType = item_hull) then
   begin
     if not RemoteHoldVisible then
-      ShowMessageBoxGI(Self,LocalizedText('FormShip.HullInHoldError'),mbgCancel or mbgWarning);
+      ShowMessageBoxGI(Self,LocalizedText('FormShip.HullInHoldError'),messagebox_cancel or messagebox_warning);
     Exit;
   end;
   if not Expanded then
@@ -3071,7 +3071,7 @@ TransferEquipment:
         ((SelectedHoldItem as TCistern).Fuel > 0) and ((Entry.Item as TCistern).Fuel < (Entry.Item as TCistern).Capacity) then
       begin
         Text := LocalizedColorText('Items.Cistern.Merge');
-        if ShowMessageBoxGI(Self,Text,mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+        if ShowMessageBoxGI(Self,Text,messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
         begin
           Count := Min((SelectedHoldItem as TCistern).Fuel,(Entry.Item as TCistern).Capacity - (Entry.Item as TCistern).Fuel);
           Dec((SelectedHoldItem as TCistern).Fuel,Count);
@@ -3090,7 +3090,7 @@ TransferEquipment:
         if (FuelFrom.Fuel > 0) and (FuelTo.Fuel < FuelTo.Capacity) then
         begin
           Text := LocalizedColorText('Items.Cistern.Merge');
-          if ShowMessageBoxGI(Self,Text,mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+          if ShowMessageBoxGI(Self,Text,messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
           begin
             Count := Min(FuelFrom.Fuel,FuelTo.Capacity - FuelTo.Fuel);
             Dec(FuelFrom.Fuel,Count);
@@ -3107,7 +3107,7 @@ TransferEquipment:
         ((SelectedHoldItem as TCistern).Fuel > 0) and ((Entry.Item as TFuelTanks).Fuel < (Entry.Item as TFuelTanks).Capacity) then
       begin
         Text := LocalizedColorText('Items.Cistern.ToFuelTanks');
-        if ShowMessageBoxGI(Self,Text,mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+        if ShowMessageBoxGI(Self,Text,messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
         begin
           Count := Min((SelectedHoldItem as TCistern).Fuel,(Entry.Item as TFuelTanks).Capacity - (Entry.Item as TFuelTanks).Fuel);
           Dec((SelectedHoldItem as TCistern).Fuel,Count);
@@ -3123,7 +3123,7 @@ TransferEquipment:
         ((SelectedHoldItem as TFuelTanks).Fuel > 0) and ((Entry.Item as TCistern).Fuel < (Entry.Item as TCistern).Capacity) then
       begin
         Text := LocalizedColorText('Items.Cistern.FromFuelTanks');
-        if ShowMessageBoxGI(Self,Text,mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+        if ShowMessageBoxGI(Self,Text,messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
         begin
           Count := Min((SelectedHoldItem as TFuelTanks).Fuel,(Entry.Item as TCistern).Capacity - (Entry.Item as TCistern).Fuel);
           Dec((SelectedHoldItem as TFuelTanks).Fuel,Count);
@@ -3140,7 +3140,7 @@ TransferEquipment:
         not PlayerHoldShip.InHyperspace and (QueuedArcadeBattles.Count <= 0) then
       begin
         Text := FormatText2(LocalizedText('MicroModuls.AddToItem'),TextHighlightColorTag,'<ModuleName>',(SelectedHoldItem as TMicroModule).GetPlainName,'<ItemName>',RemoveTextTagsW(Entry.Item.GetDisplayName));
-        if ShowMessageBoxGI(Self,Text,mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+        if ShowMessageBoxGI(Self,Text,messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
         begin
           Equipment := TEquipment(Entry.Item);
           PlayerHoldShip.ScriptItemsAct(event_player_use_micromodule,Equipment,SelectedHoldItem,0);
@@ -3412,7 +3412,7 @@ begin
     (SelectedHoldItem as TMicroModule).CanInstallOn(PlayerHoldShip.GetHull) then
   begin
     Text := FormatText2(LocalizedText('MicroModuls.AddToItem'),TextHighlightColorTag,'<ModuleName>',(SelectedHoldItem as TMicroModule).GetPlainName,'<ItemName>',RemoveTextTagsW(PlayerHoldShip.GetHull.GetDisplayName));
-    if ShowMessageBoxGI(Self,Text,mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+    if ShowMessageBoxGI(Self,Text,messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
     begin
       PlayerHoldShip.ScriptItemsAct(event_player_use_micromodule,PlayerHoldShip.GetHull,SelectedHoldItem,0);
       ApplyMicroModule((SelectedHoldItem as TMicroModule).MicroModuleIndex - 1,PlayerHoldShip.GetHull);
@@ -3861,7 +3861,7 @@ begin
       GetPlayer.SaveEquipmentConfiguration(Index);
       RefreshEquipmentConfigurationButtons;
       SoundManager.PlaySound('Sound.UserMsgAdd');
-      ShowMessageBoxGI(Self,FormatText1(LocalizedText('FormShip.SetHotEqu'),TextHighlightColorTag,'<Key>','"' + Chr(Key) + '"'),mbgOK or mbgUnused04);
+      ShowMessageBoxGI(Self,FormatText1(LocalizedText('FormShip.SetHotEqu'),TextHighlightColorTag,'<Key>','"' + Chr(Key) + '"'),messagebox_ok or messagebox_info);
     end
     else SelectEquipmentConfiguration(Index);
     Galaxy.PrimeIntegrityChecksum1(473);
@@ -4611,7 +4611,7 @@ begin
     begin
       if PlayerHoldShip.NeedsEquipmentType(SelectedHoldItem.ItemType) then
       begin
-        ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.RuinMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(SelectedHoldItem.GetDisplayName)),mbgCancel or mbgWarning);
+        ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.RuinMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(SelectedHoldItem.GetDisplayName)),messagebox_cancel or messagebox_warning);
         Exit;
       end;
     end
@@ -4619,7 +4619,7 @@ begin
     begin
       if ((SelectedHoldItem.ItemType = item_fuel_tanks) or (SelectedHoldItem.ItemType = item_engine)) and PlayerHoldShip.NeedsEquipmentType(SelectedHoldItem.ItemType) then
       begin
-        ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.TrancMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(SelectedHoldItem.GetDisplayName)),mbgCancel or mbgWarning);
+        ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.TrancMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(SelectedHoldItem.GetDisplayName)),messagebox_cancel or messagebox_warning);
         Galaxy.PrimeIntegrityChecksum1(478);
         Exit;
       end;
@@ -4631,7 +4631,7 @@ begin
         if PlayerHoldShip is TRuins then
           Text := FormatText1(LocalizedColorText('FormShip.RuinMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(SelectedHoldItem.GetDisplayName))
         else Text := LocalizedText('FormShip.ThrowFuelTanksError');
-        ShowMessageBoxGI(Self,Text,mbgCancel or mbgWarning);
+        ShowMessageBoxGI(Self,Text,messagebox_cancel or messagebox_warning);
         Galaxy.PrimeIntegrityChecksum1(479);
         Exit;
       end;
@@ -4643,7 +4643,7 @@ begin
         if PlayerHoldShip is TRuins then
           Text := FormatText1(LocalizedColorText('FormShip.RuinMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(SelectedHoldItem.GetDisplayName))
         else Text := LocalizedText('FormShip.ThrowEngineError');
-        ShowMessageBoxGI(Self,Text,mbgCancel or mbgWarning);
+        ShowMessageBoxGI(Self,Text,messagebox_cancel or messagebox_warning);
         Galaxy.PrimeIntegrityChecksum1(480);
         Exit;
       end;
@@ -4798,14 +4798,14 @@ begin
     begin
       if PlayerHoldShip.GetFuelTanks = nil then
       begin
-        ShowMessageBoxGI(Self,LocalizedText('FormShip.ThrowFuelTanksError'),mbgCancel or mbgWarning);
+        ShowMessageBoxGI(Self,LocalizedText('FormShip.ThrowFuelTanksError'),messagebox_cancel or messagebox_warning);
         Exit;
       end;
     end
     else if SelectedHoldItem.ItemType = item_engine then
       if PlayerHoldShip.GetEngine = nil then
       begin
-        ShowMessageBoxGI(Self,LocalizedText('FormShip.ThrowEngineError'),mbgCancel or mbgWarning);
+        ShowMessageBoxGI(Self,LocalizedText('FormShip.ThrowEngineError'),messagebox_cancel or messagebox_warning);
         Exit;
       end;
     SoundManager.PlaySound('Sound.Drop');
@@ -4860,9 +4860,9 @@ begin
   if GetPlayer.IsOnPlanet and (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) <= relation_level_bad) and not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
   begin
     if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
-      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),mbgCancel or mbgWarning)
+      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),messagebox_cancel or messagebox_warning)
     else
-      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),mbgCancel or mbgWarning);
+      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),messagebox_cancel or messagebox_warning);
     Exit;
   end;
   Galaxy.CheckIntegrityChecksum1(493);
@@ -4871,7 +4871,7 @@ begin
     if not GetPlayer.CanRepairEquipmentTech(SelectedHoldItem as TEquipment) then
     begin
       ShipStateChanged := True;
-      ShowMessageBoxGI(Self,LocalizedText('FormShip.TooAdvancedForRepair'),mbgCancel or mbgUnused04);
+      ShowMessageBoxGI(Self,LocalizedText('FormShip.TooAdvancedForRepair'),messagebox_cancel or messagebox_info);
       RefreshShipView;
     end
     else if GetPlayer.CanRepairArtefactsAtLocation or
@@ -4891,10 +4891,10 @@ begin
         if GetPlayer.GetAvailableNodeCount(PlayerHoldShip) < Nodes then
         begin
           SoundManager.PlaySound('Sound.NoMoney');
-          ShowMessageBoxGI(Self,FormatText1(LocalizedText('FormShip.RepairMsgNeedNode'),TextHighlightColorTag,'<NeedNode>',IntToStr(Nodes - GetPlayer.GetAvailableNodeCount(PlayerHoldShip))),mbgCancel);
+          ShowMessageBoxGI(Self,FormatText1(LocalizedText('FormShip.RepairMsgNeedNode'),TextHighlightColorTag,'<NeedNode>',IntToStr(Nodes - GetPlayer.GetAvailableNodeCount(PlayerHoldShip))),messagebox_cancel);
           Exit;
         end;
-        if ShowMessageBoxGI(Self,FormatText1(LocalizedText('FormShip.RepairMsgEnoughNode'),TextHighlightColorTag,'<NeedNode>',IntToStr(Nodes)),mbgOK or mbgCancel) <> mbgResultOK then Exit;
+        if ShowMessageBoxGI(Self,FormatText1(LocalizedText('FormShip.RepairMsgEnoughNode'),TextHighlightColorTag,'<NeedNode>',IntToStr(Nodes)),messagebox_ok or messagebox_cancel) <> messagebox_result_ok then Exit;
         GetPlayer.ConsumeAvailableNodes(Nodes,PlayerHoldShip);
       end;
       GetPlayer.SetMoney(GetPlayer.Money - (SelectedHoldItem as TEquipment).CalculateRepairCost);
@@ -4913,7 +4913,7 @@ begin
         begin
           if SelectedHoldItem is TWeapon then (SelectedHoldItem as TWeapon).Target := nil;
           PlayerHoldShip.Inventory.Add(SelectedHoldItem);
-          (SelectedHoldItem as TEquipment).AssignedSlotData := ((SelectedHoldItem as TEquipment).AssignedSlotData and EquipmentSecondaryFireFlag) or I;
+          (SelectedHoldItem as TEquipment).AssignedSlotData := ((SelectedHoldItem as TEquipment).AssignedSlotData and equipment_secondary_fire) or I;
           (SelectedHoldItem as TEquipment).EquippedFlag := 0;
           (SelectedHoldItem as TEquipment).Equip;
           SelectedHoldKind := hold_empty;
@@ -4958,7 +4958,7 @@ begin
       else if PlayerHoldShip.CurrentPlanet <> nil then
         Text := LocalizedText('FormShip.NotLicenseForRepair' + OwnerInfo[PlayerHoldShip.CurrentPlanet.OwnerId].InternalName);
       if Text = '' then Text := LocalizedText('FormShip.NotLicenseForRepair');
-      ShowMessageBoxGI(Self,Text,mbgCancel or mbgUnused04);
+      ShowMessageBoxGI(Self,Text,messagebox_cancel or messagebox_info);
       RefreshShipView;
     end;
   end;
@@ -4985,9 +4985,9 @@ begin
     (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) <= relation_level_bad) and not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
   begin
     if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
-      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),mbgCancel or mbgWarning)
+      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),messagebox_cancel or messagebox_warning)
     else
-      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),mbgCancel or mbgWarning);
+      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),messagebox_cancel or messagebox_warning);
     Exit;
   end;
   if SelectedHoldKind = hold_empty then Exit;
@@ -4998,18 +4998,18 @@ begin
     begin
       if PlayerHoldShip.NeedsEquipmentType(SelectedHoldItem.ItemType) then
       begin
-        ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.RuinMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(SelectedHoldItem.GetDisplayName)),mbgCancel or mbgWarning);
+        ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.RuinMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(SelectedHoldItem.GetDisplayName)),messagebox_cancel or messagebox_warning);
         Exit;
       end;
     end
     else if (PlayerHoldShip is TTranclucator) and
       ((SelectedHoldItem.ItemType = item_fuel_tanks) or (SelectedHoldItem.ItemType = item_engine)) and PlayerHoldShip.NeedsEquipmentType(SelectedHoldItem.ItemType) then
     begin
-      ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.TrancMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(SelectedHoldItem.GetDisplayName)),mbgCancel or mbgWarning);
+      ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.TrancMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(SelectedHoldItem.GetDisplayName)),messagebox_cancel or messagebox_warning);
       Exit;
     end;
     if (SelectedHoldItem is TArtefactTranclucator) and
-      (ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.SellItemQuestion'),TextHighlightColorTag,'<Item>',SelectedHoldItem.GetDisplayName),mbgOK or mbgCancel or mbgQuestion) = 2) then Exit;
+      (ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.SellItemQuestion'),TextHighlightColorTag,'<Item>',SelectedHoldItem.GetDisplayName),messagebox_ok or messagebox_cancel or messagebox_question) = 2) then Exit;
     if (SelectedHoldItem is TCountableItem) and ((SelectedHoldItem as TCountableItem).StackCount > 1) then
     begin
       Count := (SelectedHoldItem as TCountableItem).StackCount;
@@ -5091,7 +5091,7 @@ begin
       hold_goods:
         begin
           if GetPlayer.IsCargoGoodIllegalOnCurrentPlanet(SelectedGoodsIndex) and
-            (ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormGS.NotPermitGoods'),mbgOK or mbgCancel) <> mbgResultOK) then Exit;
+            (ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormGS.NotPermitGoods'),messagebox_ok or messagebox_cancel) <> messagebox_result_ok) then Exit;
           Count := SelectedGoodsQuantity;
           if SelectedGoodsQuantity > 1 then
             if (ShowCountDialog(Self,'GI,' + GetItemTypeBitmapPath(TItemType(SelectedGoodsIndex)),
@@ -5351,9 +5351,9 @@ begin
     if GetPlayer.IsOnPlanet and (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) <= relation_level_bad) and not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
     begin
       if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
-        ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),mbgCancel or mbgWarning)
+        ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),messagebox_cancel or messagebox_warning)
       else
-        ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),mbgCancel or mbgWarning);
+        ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),messagebox_cancel or messagebox_warning);
       Exit;
     end;
     if (SelectedHoldKind = hold_equipment) and (SelectedHoldItem is TWeapon) and
@@ -5396,7 +5396,7 @@ begin
       begin
         if SelectedHoldItem is TWeapon then (SelectedHoldItem as TWeapon).Target := nil;
         PlayerHoldShip.Inventory.Add(SelectedHoldItem);
-        (SelectedHoldItem as TEquipment).AssignedSlotData := ((SelectedHoldItem as TEquipment).AssignedSlotData and EquipmentSecondaryFireFlag) or Cost;
+        (SelectedHoldItem as TEquipment).AssignedSlotData := ((SelectedHoldItem as TEquipment).AssignedSlotData and equipment_secondary_fire) or Cost;
         (SelectedHoldItem as TEquipment).EquippedFlag := 0;
         (SelectedHoldItem as TEquipment).Equip;
         SelectedHoldKind := hold_empty;
@@ -5424,9 +5424,9 @@ begin
   if GetPlayer.IsOnPlanet and (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) <= relation_level_bad) and not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
   begin
     if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
-      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),mbgCancel or mbgWarning)
+      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),messagebox_cancel or messagebox_warning)
     else
-      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),mbgCancel or mbgWarning);
+      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),messagebox_cancel or messagebox_warning);
     Exit;
   end;
   Cost := 0;
@@ -5458,10 +5458,10 @@ begin
     if Nodes = 0 then Nodes := 1;
     if GetPlayer.GetAvailableNodeCount(PlayerHoldShip) < Nodes then
     begin
-      ShowMessageBoxGI(Self,FormatText1(LocalizedText('FormShip.RepairMsgAllNeedNode'),TextHighlightColorTag,'<NeedNode>',IntToStr(Nodes)),mbgCancel);
+      ShowMessageBoxGI(Self,FormatText1(LocalizedText('FormShip.RepairMsgAllNeedNode'),TextHighlightColorTag,'<NeedNode>',IntToStr(Nodes)),messagebox_cancel);
       Nodes := 0;
     end
-    else if ShowMessageBoxGI(Self,FormatText1(LocalizedText('FormShip.RepairMsgEnoughNode'),TextHighlightColorTag,'<NeedNode>',IntToStr(Nodes)),mbgOK or mbgCancel) = mbgResultOK then
+    else if ShowMessageBoxGI(Self,FormatText1(LocalizedText('FormShip.RepairMsgEnoughNode'),TextHighlightColorTag,'<NeedNode>',IntToStr(Nodes)),messagebox_ok or messagebox_cancel) = messagebox_result_ok then
       GetPlayer.ConsumeAvailableNodes(Nodes,PlayerHoldShip)
     else Nodes := 0;
   end;
@@ -5497,7 +5497,7 @@ begin
     begin
       if SelectedHoldItem is TWeapon then (SelectedHoldItem as TWeapon).Target := nil;
       PlayerHoldShip.Inventory.Add(SelectedHoldItem);
-      (SelectedHoldItem as TEquipment).AssignedSlotData := ((SelectedHoldItem as TEquipment).AssignedSlotData and EquipmentSecondaryFireFlag) or I;
+      (SelectedHoldItem as TEquipment).AssignedSlotData := ((SelectedHoldItem as TEquipment).AssignedSlotData and equipment_secondary_fire) or I;
       (SelectedHoldItem as TEquipment).EquippedFlag := 0;
       (SelectedHoldItem as TEquipment).Equip;
       SelectedHoldKind := hold_empty;
@@ -5558,9 +5558,9 @@ begin
   if GetPlayer.IsOnPlanet and (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) <= relation_level_bad) and not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
   begin
     if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
-      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),mbgCancel or mbgWarning)
+      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),messagebox_cancel or messagebox_warning)
     else
-      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),mbgCancel or mbgWarning);
+      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),messagebox_cancel or messagebox_warning);
     Exit;
   end;
   Cost := 0;
@@ -5573,15 +5573,15 @@ begin
   if Equipped then Suffix := 'Slot' else Suffix := 'Hold';
   if Cost <= 0 then
   begin
-    ShowMessageBoxGI(Self,LocalizedColorText('FormShip.ReloadAll.' + Suffix + '.NoItem'),mbgCancel or mbgWarning);
+    ShowMessageBoxGI(Self,LocalizedColorText('FormShip.ReloadAll.' + Suffix + '.NoItem'),messagebox_cancel or messagebox_warning);
     Exit;
   end;
   if GetPlayer.Money < Cost then
   begin
-    ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.ReloadAll.' + Suffix + '.NoMoney'),TextHighlightColorTag,'<Money>',IntToStr(Cost)),mbgCancel or mbgWarning);
+    ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.ReloadAll.' + Suffix + '.NoMoney'),TextHighlightColorTag,'<Money>',IntToStr(Cost)),messagebox_cancel or messagebox_warning);
     Exit;
   end;
-  if ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.ReloadAll.' + Suffix + '.Confirm'),TextHighlightColorTag,'<Money>',IntToStr(Cost)),mbgOK or mbgCancel or mbgQuestion) = 2 then Exit;
+  if ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.ReloadAll.' + Suffix + '.Confirm'),TextHighlightColorTag,'<Money>',IntToStr(Cost)),messagebox_ok or messagebox_cancel or messagebox_question) = 2 then Exit;
   if GetPlayer.Money < Cost then
   begin
     SoundManager.PlaySound('Sound.NoMoney');
@@ -5617,7 +5617,7 @@ begin
     begin
       if SelectedHoldItem is TWeapon then (SelectedHoldItem as TWeapon).Target := nil;
       PlayerHoldShip.Inventory.Add(SelectedHoldItem);
-      (SelectedHoldItem as TEquipment).AssignedSlotData := ((SelectedHoldItem as TEquipment).AssignedSlotData and EquipmentSecondaryFireFlag) or I;
+      (SelectedHoldItem as TEquipment).AssignedSlotData := ((SelectedHoldItem as TEquipment).AssignedSlotData and equipment_secondary_fire) or I;
       (SelectedHoldItem as TEquipment).EquippedFlag := 0;
       (SelectedHoldItem as TEquipment).Equip;
       SelectedHoldKind := hold_empty;
@@ -5656,7 +5656,7 @@ begin
   if PlayerHoldShip.AfterburnerActive then SoundManager.PlaySound('Sound.ForsageOn')
   else SoundManager.PlaySound('Sound.ForsageOff');
   if PlayerHoldShip.AfterburnerActive then
-    ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormShip.ForsageActivate'),mbgOK);
+    ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormShip.ForsageActivate'),messagebox_ok);
 end;
 { @end $6B9240 }
 
@@ -6954,7 +6954,7 @@ begin
     begin
       if PlayerHoldShip.NeedsEquipmentType(SelectedHoldItem.ItemType) then
       begin
-        ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.RuinMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(SelectedHoldItem.GetDisplayName)),mbgCancel or mbgWarning);
+        ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.RuinMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(SelectedHoldItem.GetDisplayName)),messagebox_cancel or messagebox_warning);
         Galaxy.PrimeIntegrityChecksum1(515);
         Exit;
       end;
@@ -6962,7 +6962,7 @@ begin
     else if (PlayerHoldShip is TTranclucator) and
       ((SelectedHoldItem.ItemType = item_fuel_tanks) or (SelectedHoldItem.ItemType = item_engine)) and PlayerHoldShip.NeedsEquipmentType(SelectedHoldItem.ItemType) then
     begin
-      ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.TrancMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(SelectedHoldItem.GetDisplayName)),mbgCancel or mbgWarning);
+      ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.TrancMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(SelectedHoldItem.GetDisplayName)),messagebox_cancel or messagebox_warning);
       Galaxy.PrimeIntegrityChecksum1(515);
       Exit;
     end;
@@ -7553,7 +7553,7 @@ begin
   if Value > 0 then
   begin
     ReplaceTextToken(Text,'<Cost>',IntToStr(Value),TextHighlightColorTag);
-    if ShowMessageBoxGI(Self,Text,mbgOK or mbgCancel or mbgQuestion) <> 2 then SellAllItems(1);
+    if ShowMessageBoxGI(Self,Text,messagebox_ok or messagebox_cancel or messagebox_question) <> 2 then SellAllItems(1);
   end;
 end;
 { @end $6C0738 }
@@ -7642,7 +7642,7 @@ begin
       if Value > 0 then
       begin
         ReplaceTextToken(Text,'<Cost>',IntToStr(Value),TextHighlightColorTag);
-        if ShowMessageBoxGI(Self,Text,mbgOK or mbgCancel or mbgQuestion) <> 2 then SellAllItems(0);
+        if ShowMessageBoxGI(Self,Text,messagebox_ok or messagebox_cancel or messagebox_question) <> 2 then SellAllItems(0);
       end;
     end;
 end;
@@ -7852,9 +7852,9 @@ begin
     (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) <= relation_level_bad) and not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
   begin
     if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
-      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),mbgCancel or mbgWarning)
+      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),messagebox_cancel or messagebox_warning)
     else
-      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),mbgCancel or mbgWarning);
+      ShowMessageBoxGI(Self,ReplaceColoredToken(LocalizedColorText('FormShip.SellOrBuyInPlanetAndBadRelations'),'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag),messagebox_cancel or messagebox_warning);
     Exit;
   end;
   Galaxy.CheckIntegrityChecksum1(517);
@@ -7881,7 +7881,7 @@ begin
         ((Item.ScriptItem = nil) or TScriptItem(Item.ScriptItem).CanSell) and GetPlayer.CanAccessStoredItem(Item) then
       begin
         if Item is TArtefactTranclucator then
-          if ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.SellItemQuestion'),TextHighlightColorTag,'<Item>',Item.GetDisplayName),mbgOK or mbgCancel or mbgQuestion) = 2 then
+          if ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.SellItemQuestion'),TextHighlightColorTag,'<Item>',Item.GetDisplayName),messagebox_ok or messagebox_cancel or messagebox_question) = 2 then
           begin
             Dec(I);
             Continue;
@@ -7897,7 +7897,7 @@ begin
         begin
           if GetPlayer.IsCargoGoodIllegalOnCurrentPlanet(Good) and not AllowIllegal and not DeclineIllegal then
           begin
-            if ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormGS.NotPermitGoods'),mbgOK or mbgCancel) <> mbgResultOK then DeclineIllegal := True
+            if ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormGS.NotPermitGoods'),messagebox_ok or messagebox_cancel) <> messagebox_result_ok then DeclineIllegal := True
             else AllowIllegal := True;
           end;
           if not (GetPlayer.IsCargoGoodIllegalOnCurrentPlanet(Good) and DeclineIllegal) then
@@ -7936,7 +7936,7 @@ begin
           Continue;
         end;
         if Item is TArtefactTranclucator then
-          if ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.SellItemQuestion'),TextHighlightColorTag,'<Item>',Item.GetDisplayName),mbgOK or mbgCancel or mbgQuestion) = 2 then
+          if ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.SellItemQuestion'),TextHighlightColorTag,'<Item>',Item.GetDisplayName),messagebox_ok or messagebox_cancel or messagebox_question) = 2 then
           begin
             Dec(I);
             Continue;
@@ -7944,7 +7944,7 @@ begin
         if Item is TGoods then
           if GetPlayer.IsCargoGoodIllegalOnCurrentPlanet(Byte(Item.ItemType)) and not AllowIllegal and not DeclineIllegal then
           begin
-            if ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormGS.NotPermitGoods'),mbgOK or mbgCancel) <> mbgResultOK then DeclineIllegal := True
+            if ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormGS.NotPermitGoods'),messagebox_ok or messagebox_cancel) <> messagebox_result_ok then DeclineIllegal := True
             else AllowIllegal := True;
           end;
         if (Item is TGoods) and GetPlayer.IsCargoGoodIllegalOnCurrentPlanet(Byte(Item.ItemType)) and DeclineIllegal then

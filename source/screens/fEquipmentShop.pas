@@ -969,7 +969,7 @@ begin
     begin
       SoundManager.PlaySound('Sound.NoMoney');
       if Slot.Item is THull then
-        ShowMessageBoxGI(Self, FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormShop.NoMoney'), TextHighlightColorTag, '<Money>', IntToWideString(Galaxy.PendingEquipmentPurchasePrice - GetPlayer.Money)), mbgCancel or mbgError);
+        ShowMessageBoxGI(Self, FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormShop.NoMoney'), TextHighlightColorTag, '<Money>', IntToWideString(Galaxy.PendingEquipmentPurchasePrice - GetPlayer.Money)), messagebox_cancel or messagebox_error);
       Galaxy.CheckIntegrityChecksum(309);
       MainPanel.FlashMoneyWarning;
       if not (Slot.Item is THull) and (GetPlayer.CargoFreeSpace < Slot.Item.Weight) then MainPanel.FlashCargoWarning;
@@ -987,16 +987,16 @@ begin
       begin
         if GetPlayer.Money >= Slot.Item.GetConditionAdjustedCost then
         begin
-          if ShowMessageBoxGI(Self, FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormShop.BuyHull'), TextHighlightColorTag, '<Money>', IntToWideString(Galaxy.PendingEquipmentPurchasePrice)), mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
+          if ShowMessageBoxGI(Self, FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormShop.BuyHull'), TextHighlightColorTag, '<Money>', IntToWideString(Galaxy.PendingEquipmentPurchasePrice)), messagebox_ok or messagebox_cancel or messagebox_question) <> messagebox_result_ok then Exit;
         end
         else
         begin
-          if ShowMessageBoxGI(Self, FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormShop.UpgradeHull'), TextHighlightColorTag, '<Money>', IntToWideString(Galaxy.PendingEquipmentPurchasePrice)), mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
+          if ShowMessageBoxGI(Self, FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormShop.UpgradeHull'), TextHighlightColorTag, '<Money>', IntToWideString(Galaxy.PendingEquipmentPurchasePrice)), messagebox_ok or messagebox_cancel or messagebox_question) <> messagebox_result_ok then Exit;
         end;
       end
       else
       begin
-        if ShowMessageBoxGI(Self, FormatText2(LanguageDataConfig.GetParamByPathOrMarker('FormShop.Buy'), TextHighlightColorTag, '<Item>', RemoveTextTagsW(Slot.Item.GetDisplayName), '<Money>', IntToWideString(Galaxy.PendingEquipmentPurchasePrice)), mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
+        if ShowMessageBoxGI(Self, FormatText2(LanguageDataConfig.GetParamByPathOrMarker('FormShop.Buy'), TextHighlightColorTag, '<Item>', RemoveTextTagsW(Slot.Item.GetDisplayName), '<Money>', IntToWideString(Galaxy.PendingEquipmentPurchasePrice)), messagebox_ok or messagebox_cancel or messagebox_question) <> messagebox_result_ok then Exit;
       end;
       SoundManager.PlaySound('Sound.Buy');
       Galaxy.CheckIntegrityChecksum(196);
@@ -1075,7 +1075,7 @@ begin
           if GetPlayer.IsOnPlanet then GetPlayer.AddItemToPlayerStorage(Slot.Item, GetPlayer.CurrentPlanet, -1)
           else GetPlayer.AddItemToPlayerStorage(Slot.Item, GetPlayer.DockedTo, -1);
           Slot.Item := nil;
-          ShowMessageBoxGI(Self, LanguageDataConfig.GetParamByPathOrMarker('FormShop.AfterBuyHull'), mbgOK);
+          ShowMessageBoxGI(Self, LanguageDataConfig.GetParamByPathOrMarker('FormShop.AfterBuyHull'), messagebox_ok);
           if GetPlayer.CurrentPlanet <> nil then Destination := Integer(GetPlayer.CurrentPlanet)
           else Destination := Integer(GetPlayer.DockedTo);
         end;

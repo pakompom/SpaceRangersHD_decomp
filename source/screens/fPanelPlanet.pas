@@ -119,11 +119,11 @@ begin
     if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
       ShowMessageBoxGI(Screen, ReplaceColoredToken(
         LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),
-        '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), mbgCancel or mbgWarning)
+        '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), messagebox_cancel or messagebox_warning)
     else
       ShowMessageBoxGI(Screen, ReplaceColoredToken(
         LocalizedColorText('FormShip.SellOrBuyInPlanetAndBadRelations'),
-        '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), mbgCancel or mbgWarning);
+        '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), messagebox_cancel or messagebox_warning);
   end
   else
   begin
@@ -148,11 +148,11 @@ begin
     if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
       ShowMessageBoxGI(Screen, ReplaceColoredToken(
         LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),
-        '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), mbgCancel or mbgWarning)
+        '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), messagebox_cancel or messagebox_warning)
     else
       ShowMessageBoxGI(Screen, ReplaceColoredToken(
         LocalizedColorText('FormShip.SellOrBuyInPlanetAndBadRelations'),
-        '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), mbgCancel or mbgWarning);
+        '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), messagebox_cancel or messagebox_warning);
   end
   else
   begin
@@ -191,11 +191,11 @@ begin
     if GetPlayer.CurrentPlanet.OwnerId = owner_pirate then
       ShowMessageBoxGI(Screen, ReplaceColoredToken(
         LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),
-        '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), mbgCancel or mbgWarning)
+        '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), messagebox_cancel or messagebox_warning)
     else
       ShowMessageBoxGI(Screen, ReplaceColoredToken(
         LocalizedColorText('FormShip.SellOrBuyInPlanetAndBadRelations'),
-        '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), mbgCancel or mbgWarning);
+        '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), messagebox_cancel or messagebox_warning);
   end
   else
   begin

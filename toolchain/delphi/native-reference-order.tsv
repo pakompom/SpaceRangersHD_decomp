@@ -743,7 +743,7 @@
 00812AEC	aConst.LastMedicalPolicyTicks
 0041FE50	-
 0041FF48	-
-0080A9A0	GlobalsV.SatelliteTemplateParameter2
+0080A9A0	GlobalsV.SatelliteSurfaceTextureHeight
 0080E8F8	ab_Global.SpeedBonusScale
 0080A8CC	GlobalsV.ScreenshotFormat
 0080A888	GlobalsV.MusicEnabled
@@ -809,7 +809,7 @@
 0081CEB4	Globals.ShipGreetingCount
 00812E74	Globals.PlayerStarDayPrepared
 00408CEC	-
-0080A99C	GlobalsV.SatelliteTemplateParameter1
+0080A99C	GlobalsV.SatelliteSurfaceTextureWidth
 0080F7E8	fEquipmentShop.TemporaryShopStation
 0080E900	ab_Global.WeaponDamageBonusScale
 008129C4	aConst.CoalitionProjectNames

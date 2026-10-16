@@ -110,7 +110,7 @@ begin
   if (GetPlayer.RuinsMode > 0) and (RuinsTalkScreen = Screen) then Exit;
   if HasPendingScriptRequests then Exit;
   if (GetPlayer.DockedTo.TypeId = station_business_center) and (GetPlayer.DebtDefaultCount > 1) then
-    ShowMessageBoxGI(Screen, LocalizedColorText('FormRuins.BK.DebtNoAccess'), mbgCancel or mbgWarning)
+    ShowMessageBoxGI(Screen, LocalizedColorText('FormRuins.BK.DebtNoAccess'), messagebox_cancel or messagebox_warning)
   else
   begin
     RequestedScreenId := screen_equipment_shop;
@@ -128,7 +128,7 @@ begin
   if (GetPlayer.RuinsMode > 0) and (RuinsTalkScreen = Screen) then Exit;
   if HasPendingScriptRequests then Exit;
   if (GetPlayer.DockedTo.TypeId = station_business_center) and (GetPlayer.DebtDefaultCount > 1) then
-    ShowMessageBoxGI(Screen, LocalizedColorText('FormRuins.BK.DebtNoAccess'), mbgCancel or mbgWarning)
+    ShowMessageBoxGI(Screen, LocalizedColorText('FormRuins.BK.DebtNoAccess'), messagebox_cancel or messagebox_warning)
   else
   begin
     RequestedScreenId := screen_goods_shop;
@@ -146,7 +146,7 @@ begin
   if (GetPlayer.RuinsMode > 0) and (RuinsTalkScreen = Screen) then Exit;
   if HasPendingScriptRequests then Exit;
   if (GetPlayer.DockedTo.TypeId = station_business_center) and (GetPlayer.DebtDefaultCount > 1) then
-    ShowMessageBoxGI(Screen, LocalizedColorText('FormRuins.BK.DebtNoAccess'), mbgCancel or mbgWarning)
+    ShowMessageBoxGI(Screen, LocalizedColorText('FormRuins.BK.DebtNoAccess'), messagebox_cancel or messagebox_warning)
   else
   begin
     RequestedScreenId := screen_info;

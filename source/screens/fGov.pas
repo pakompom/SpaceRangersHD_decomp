@@ -402,7 +402,7 @@ begin
       Stage := 12;
       if Failed then
       begin
-        if ShowMessageBoxGI(Self, LocalizedColorText('FormGov.BattlePlanetQuestCrashed'), mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+        if ShowMessageBoxGI(Self, LocalizedColorText('FormGov.BattlePlanetQuestCrashed'), messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
           PendingTransition := 3
         else raise Exception.Create('Error in Matrix.dll');
       end;

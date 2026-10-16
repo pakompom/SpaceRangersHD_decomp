@@ -27,13 +27,13 @@ const
   // order_black_hole has finished transit and is following its emergence path.
   HoleExitOrderState = -65536;
   // The landing target and stored-item loader use opposite high-bit tags.
-  OrderTargetShipFlag = $80000000;
-  StoredItemPlanetFlag = $80000000;
+  order_target_ship_flag = $80000000;
+  stored_item_planet_flag = $80000000;
   TaggedObjectIdMask = $7FFFFFFF;
 
   // Configuration/adverts leave goods unspecified; greetings translate that to a skip marker.
-  UnspecifiedGoods = 42;
-  NoGreetingGoods = 50;
+  goods_unspecified = 42;
+  greeting_goods_none = 50;
   // Higher text-quest IDs use PlanetQuestLic rather than standalone completion records.
   FirstLicensedQuestId = 10000;
 

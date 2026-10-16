@@ -498,7 +498,7 @@ begin
   if (UserSettingsConfig.CountParams('WeWarnedUserAboutMods') = 0) or
     not ParseEnabledNameGI(TrimWideString(UserSettingsConfig.GetParamByPathOrMarker('WeWarnedUserAboutMods'))) then
   begin
-    ShowMessageBoxGI(Self, LocalizedColorText('FormMods.WarningAchievements'), mbgCancel or mbgUnused04);
+    ShowMessageBoxGI(Self, LocalizedColorText('FormMods.WarningAchievements'), messagebox_cancel or messagebox_info);
     if UserSettingsConfig.CountParams('WeWarnedUserAboutMods') = 0 then
       UserSettingsConfig.AddParam('WeWarnedUserAboutMods', 'True')
     else UserSettingsConfig.SetOrAddParam('WeWarnedUserAboutMods', 'True');
@@ -842,7 +842,7 @@ begin
         Break;
       end;
     if Ordered or
-      (ShowMessageBoxGI(GetInnermostScreenLoop, LocalizedText('FormMods.QueryWrongOrderFix'), mbgOK or mbgCancel or mbgWarning) <> mbgResultOK) then
+      (ShowMessageBoxGI(GetInnermostScreenLoop, LocalizedText('FormMods.QueryWrongOrderFix'), messagebox_ok or messagebox_cancel or messagebox_warning) <> messagebox_result_ok) then
     begin
       if ExitCode = 0 then RequestClose(2) else RequestClose(ExitCode);
       Exit;
@@ -944,7 +944,7 @@ var
       begin
         Name := LocalizedText('FormMods.ErrorNoDependency');
         ReplaceTextToken(Name, '<ModName>', TextHighlightColorTag + TrimWideString(ExtractDelimitedPartW(Info.DependencyNames, PartIndex, ',')) + EndColorTag, '');
-        ShowMessageBoxGI(Self, Name, mbgOK or mbgError);
+        ShowMessageBoxGI(Self, Name, messagebox_ok or messagebox_error);
         Exit;
       end;
       Name := Related.Name;
@@ -973,7 +973,7 @@ var
       if AskBeforeDependency then
       begin
         AskBeforeDependency := False;
-        if ShowMessageBoxGI(GetInnermostScreenLoop, LocalizedText('FormMods.QuerySelectDependencyFirst'), mbgOK or mbgCancel or mbgUnused04) <> mbgResultOK then Exit;
+        if ShowMessageBoxGI(GetInnermostScreenLoop, LocalizedText('FormMods.QuerySelectDependencyFirst'), messagebox_ok or messagebox_cancel or messagebox_info) <> messagebox_result_ok then Exit;
       end;
       if Choices = nil then Choices := TList.Create;
       I := 0;
@@ -1076,7 +1076,7 @@ begin
       Text := LocalizedText('FormMods.QueryTurnOffWithExtra');
       ReplaceTextToken(Text, '<ModName>', TextHighlightColorTag + Info.Name + EndColorTag, '');
       ReplaceTextToken(Text, '<ModsList>', TextHighlightColorTag + Value + EndColorTag, '');
-      if ShowMessageBoxGI(GetInnermostScreenLoop, Text, mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
+      if ShowMessageBoxGI(GetInnermostScreenLoop, Text, messagebox_ok or messagebox_cancel or messagebox_question) <> messagebox_result_ok then Exit;
       for I := 0 to DisableIndices.GetParamCount - 1 do
       begin
         Index := ExtractDigitsToIntW(DisableIndices.GetParamName(I));
@@ -1109,7 +1109,7 @@ begin
           begin
             Text := LocalizedText('FormMods.ErrorInvalidConfiguration');
             ReplaceTextToken(Text, '<ModName>', Dependency.Name, '');
-            ShowMessageBoxGI(Self, Text, mbgOK or mbgError);
+            ShowMessageBoxGI(Self, Text, messagebox_ok or messagebox_error);
             Exit;
           end;
           DisableNames.AddParam(Dependency.Name, '');
@@ -1140,7 +1140,7 @@ begin
                 begin
                   Text := LocalizedText('FormMods.ErrorInvalidConfiguration');
                   ReplaceTextToken(Text, '<ModName>', Related.Name, '');
-                  ShowMessageBoxGI(Self, Text, mbgOK or mbgError);
+                  ShowMessageBoxGI(Self, Text, messagebox_ok or messagebox_error);
                 end;
                 DisableIndices.AddParam(Text, '');
                 if DisableNames.CountParams(Related.Name) <= 0 then DisableNames.AddParam(Related.Name, '');
@@ -1186,7 +1186,7 @@ begin
                 Text := LocalizedText('FormMods.ErrorInvalidConfiguration');
                 if Related <> Info then ReplaceTextToken(Text, '<ModName>', Related.Name, '')
                 else ReplaceTextToken(Text, '<ModName>', Info.Folder, '');
-                ShowMessageBoxGI(Self, Text, mbgOK or mbgError);
+                ShowMessageBoxGI(Self, Text, messagebox_ok or messagebox_error);
                 Exit;
               end;
               DisableIndices.AddParam(Temp, '');
@@ -1233,7 +1233,7 @@ begin
       if (Temp <> '') and (Value <> '') then Value := Value + #13#10 + Temp
       else Value := Value + Temp;
       Temp := LocalizedText('FormMods.QueryTurnOnWithExtra0') + #13#10 + Value + #13#10 + LocalizedText('FormMods.QueryTurnOnWithExtra3');
-      if ShowMessageBoxGI(GetInnermostScreenLoop, Temp, mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
+      if ShowMessageBoxGI(GetInnermostScreenLoop, Temp, messagebox_ok or messagebox_cancel or messagebox_question) <> messagebox_result_ok then Exit;
       Changed := True;
       for I := 0 to DisableIndices.GetParamCount - 1 do
       begin
@@ -1350,7 +1350,7 @@ begin
   Text := LocalizedText('FormMods.InfoPath');
   ReplaceTextToken(Text, '<Path>', TextHighlightColorTag + Info.Folder + EndColorTag, '');
   Body := Body + Text;
-  ShowMessageBoxGI(Self, Body, mbgOK or mbgUnused04 or mbgLeftAlign);
+  ShowMessageBoxGI(Self, Body, messagebox_ok or messagebox_info or messagebox_align_left);
 end;
 { @end $52D964 }
 
@@ -1471,7 +1471,7 @@ begin
     end;
   end;
   if Critical then Options := $20 else Options := $08;
-  ShowMessageBoxGI(Self, Body, Options or (mbgOK or mbgUnused04));
+  ShowMessageBoxGI(Self, Body, Options or (messagebox_ok or messagebox_info));
 end;
 { @end $52DE58 }
 
@@ -1494,7 +1494,7 @@ begin
   InitializeModInfos;
   if ModInfos.Count <= 0 then
   begin
-    ShowMessageBoxGI(Parent, LocalizedText('FormMods.NoMods'), mbgOK or mbgUnused04);
+    ShowMessageBoxGI(Parent, LocalizedText('FormMods.NoMods'), messagebox_ok or messagebox_info);
     Result := 0;
     Exit;
   end;

@@ -677,8 +677,8 @@ begin
       begin
         if (DraggedGoodsIndex >= 10) and (DraggedGoodsIndex < 20) then
         begin
-          if PartnerCargoLimit <= 0 then ShowMessageBoxGI(Self, TalkShip.LookupTalkText('Talk.Trade.NoSpace'), mbgCancel or mbgError)
-          else ShowMessageBoxGI(Self, TalkShip.LookupTalkText('Talk.Trade.NoMoney'), mbgOK or mbgError);
+          if PartnerCargoLimit <= 0 then ShowMessageBoxGI(Self, TalkShip.LookupTalkText('Talk.Trade.NoSpace'), messagebox_cancel or messagebox_error)
+          else ShowMessageBoxGI(Self, TalkShip.LookupTalkText('Talk.Trade.NoMoney'), messagebox_ok or messagebox_error);
           goto TradeFinished;
         end;
         if DraggedGoodsIndex < 10 then
@@ -735,15 +735,15 @@ begin
       begin
         if (GetMaximumTradeCount(DraggedGoodsIndex, False) < Count) and (DraggedGoodsIndex >= 10) and GetPlayer.InNormalSpace then
         begin
-          if Count > PartnerCargoLimit then ShowMessageBoxGI(Self, TalkShip.LookupTalkText('Talk.Trade.NoSpace'), mbgCancel or mbgError)
-          else ShowMessageBoxGI(Self, TalkShip.LookupTalkText('Talk.Trade.NoMoney'), mbgOK or mbgError);
+          if Count > PartnerCargoLimit then ShowMessageBoxGI(Self, TalkShip.LookupTalkText('Talk.Trade.NoSpace'), messagebox_cancel or messagebox_error)
+          else ShowMessageBoxGI(Self, TalkShip.LookupTalkText('Talk.Trade.NoMoney'), messagebox_ok or messagebox_error);
         end
         else if (Count > 0) and (GetMaximumTradeCount(DraggedGoodsIndex, not GetPlayer.InNormalSpace) >= Count) then
         begin
           // Native legality check uses the hovered row, even when a different
           // row supplied the dragged good; preserve that original selection.
           if GetPlayer.IsCargoGoodIllegalOnCurrentPlanet(ShopGoodsOrder[Index mod 10]) then
-            if ShowMessageBoxGI(Self, LanguageDataConfig.GetParamByPathOrMarker('FormGS.NotPermitGoods'), mbgOK or mbgCancel) <> mbgResultOK then
+            if ShowMessageBoxGI(Self, LanguageDataConfig.GetParamByPathOrMarker('FormGS.NotPermitGoods'), messagebox_ok or messagebox_cancel) <> messagebox_result_ok then
             begin
               DraggedGoodsIndex := -1;
               UpdateActionCursor(False);

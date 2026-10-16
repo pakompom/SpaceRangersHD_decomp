@@ -6,22 +6,22 @@ uses GI_MessageLoop;
 
 const
   // Native OnOpen ($4D74B8) reads the button, icon and text-alignment bits.
-  mbgOK = $01;
-  mbgCancel = $02;
-  mbgUnused04 = $04; // Present in callers; no recovered reader.
-  mbgWarning = $08;
-  mbgQuestion = $10;
-  mbgError = $20;
-  mbgLeftAlign = $40;
+  messagebox_ok = $01;
+  messagebox_cancel = $02;
+  messagebox_info = $04; // Documented IconInfo marker; Info is the fallback, with no explicit bit test.
+  messagebox_warning = $08;
+  messagebox_question = $10;
+  messagebox_error = $20;
+  messagebox_align_left = $40;
   // Native AcceptClick / CancelClick return these when no exit is pending.
-  mbgResultOK = 1;
-  mbgResultCancel = 2;
+  messagebox_result_ok = 1;
+  messagebox_result_cancel = 2;
 
 type
   TMessageBoxGI = class(TMessageLoopGI) // @size $E4
   public
     MessageText: WideString; // @offset $D0
-    Options: Cardinal; // @offset $D4 // mbg* option bits.
+    Options: Cardinal; // @offset $D4 Button, icon and text-alignment option bits.
     UnusedOption: Integer; // @offset $D8 // Stored by ShowMessageBoxGI; no recovered reader.
     OffsetX: Integer; // @offset $DC
     OffsetY: Integer; // @offset $E0
@@ -62,15 +62,15 @@ begin
   Borders := Window.WorkSubRect;
   CandidateSize := Window.AlignSizeToBorderTiles(Classes.Point(0, 0));
   Light := TImageGI.Create(ContentPanel);
-  if Options and mbgWarning = mbgWarning then Light.ImageSourcePath := 'GI,Bm.FormMessageBox.' + GiResourceSuffix + 'LightRed'
-  else if Options and mbgQuestion = mbgQuestion then Light.ImageSourcePath := 'GI,Bm.FormMessageBox.' + GiResourceSuffix + 'LightBlue'
-  else if Options and mbgError = mbgError then Light.ImageSourcePath := 'GI,Bm.FormMessageBox.' + GiResourceSuffix + 'LightRed'
+  if Options and messagebox_warning = messagebox_warning then Light.ImageSourcePath := 'GI,Bm.FormMessageBox.' + GiResourceSuffix + 'LightRed'
+  else if Options and messagebox_question = messagebox_question then Light.ImageSourcePath := 'GI,Bm.FormMessageBox.' + GiResourceSuffix + 'LightBlue'
+  else if Options and messagebox_error = messagebox_error then Light.ImageSourcePath := 'GI,Bm.FormMessageBox.' + GiResourceSuffix + 'LightRed'
   else Light.ImageSourcePath := 'GI,Bm.FormMessageBox.' + GiResourceSuffix + 'LightBlue';
   Light.ObjectSize := Light.GetContentSize;
   Icon := TImageGI.Create(ContentPanel);
-  if Options and mbgWarning = mbgWarning then Icon.ImageSourcePath := 'GI,Bm.FormMessageBox.' + GiResourceSuffix + 'Warning'
-  else if Options and mbgQuestion = mbgQuestion then Icon.ImageSourcePath := 'GI,Bm.FormMessageBox.' + GiResourceSuffix + 'Question'
-  else if Options and mbgError = mbgError then Icon.ImageSourcePath := 'GI,Bm.FormMessageBox.' + GiResourceSuffix + 'Error'
+  if Options and messagebox_warning = messagebox_warning then Icon.ImageSourcePath := 'GI,Bm.FormMessageBox.' + GiResourceSuffix + 'Warning'
+  else if Options and messagebox_question = messagebox_question then Icon.ImageSourcePath := 'GI,Bm.FormMessageBox.' + GiResourceSuffix + 'Question'
+  else if Options and messagebox_error = messagebox_error then Icon.ImageSourcePath := 'GI,Bm.FormMessageBox.' + GiResourceSuffix + 'Error'
   else Icon.ImageSourcePath := 'GI,Bm.FormMessageBox.' + GiResourceSuffix + 'Info';
   Icon.ObjectSize := Icon.GetContentSize;
   Icon.Pos := Classes.Point(Borders.Left, Borders.Top);
@@ -101,7 +101,7 @@ begin
     else Break;
     Dec(Attempts);
   end;
-  if Options and mbgOK = mbgOK then
+  if Options and messagebox_ok = messagebox_ok then
   begin
     AcceptButton := TGraphButtonGI.Create(ContentPanel);
     AcceptButton.EnterSound := 'Sound.ButtonEnter';
@@ -113,7 +113,7 @@ begin
     AcceptButton.SetImageNormalActivePath('GI,Bm.FormMessageBox.' + GiResourceSuffix + 'OkA');
     AcceptButton.SetImageDownPath('GI,Bm.FormMessageBox.' + GiResourceSuffix + 'OkD');
     AcceptButton.ObjectSize := AcceptButton.GetMaxStateImageSize;
-    if Options and mbgCancel <> mbgCancel then
+    if Options and messagebox_cancel <> messagebox_cancel then
       AcceptButton.Pos := Classes.Point(WindowSize.X div 2 - AcceptButton.ClientSize.X div 2,
         WindowSize.Y - Borders.Bottom - AcceptButton.ClientSize.Y)
     else
@@ -124,7 +124,7 @@ begin
     AcceptButton.UpdateStateVisuals;
     AcceptButton.UpCallback := AcceptClick;
   end;
-  if Options and mbgCancel = mbgCancel then
+  if Options and messagebox_cancel = messagebox_cancel then
   begin
     CancelButton := TGraphButtonGI.Create(ContentPanel);
     CancelButton.EnterSound := 'Sound.ButtonEnter';
@@ -136,7 +136,7 @@ begin
     CancelButton.SetImageNormalActivePath('GI,Bm.FormMessageBox.' + GiResourceSuffix + 'CancelA');
     CancelButton.SetImageDownPath('GI,Bm.FormMessageBox.' + GiResourceSuffix + 'CancelD');
     CancelButton.ObjectSize := CancelButton.GetMaxStateImageSize;
-    if Options and mbgOK <> mbgOK then
+    if Options and messagebox_ok <> messagebox_ok then
       CancelButton.Pos := Classes.Point(WindowSize.X div 2 - CancelButton.ClientSize.X div 2,
         WindowSize.Y - Borders.Bottom - CancelButton.ClientSize.Y)
     else
@@ -155,7 +155,7 @@ begin
   ContentPanel.ObjectSize := WindowSize;
   ContentPanel.UpdateAbsolutePosition;
   ContentPanel.UpdateSubtreeHitBounds;
-  if Options and mbgLeftAlign = mbgLeftAlign then TextLabel.SetTextAlignX(text_x_left)
+  if Options and messagebox_align_left = messagebox_align_left then TextLabel.SetTextAlignX(text_x_left)
   else TextLabel.SetTextAlignX(text_x_center);
   TextLabel.SetTextAlignY(text_y_fit_height);
   TextLabel.Pos := Classes.Point(Icon.ClientSize.X + Borders.Left + GiScalePixels(10),
@@ -175,23 +175,23 @@ end;
 { @routine $4D81DC TMessageBoxGI_AcceptClick }
 procedure TMessageBoxGI.AcceptClick(Sender: TObjectGI);
 begin
-  if ExitCode = 0 then RequestClose(mbgResultOK) else RequestClose(ExitCode);
+  if ExitCode = 0 then RequestClose(messagebox_result_ok) else RequestClose(ExitCode);
 end;
 { @end $4D81DC }
 
 { @routine $4D81F4 TMessageBoxGI_CancelClick }
 procedure TMessageBoxGI.CancelClick(Sender: TObjectGI);
 begin
-  if ExitCode = 0 then RequestClose(mbgResultCancel) else RequestClose(ExitCode);
+  if ExitCode = 0 then RequestClose(messagebox_result_cancel) else RequestClose(ExitCode);
 end;
 { @end $4D81F4 }
 
 { @routine $4D820C TMessageBoxGI_DialogKeyDown }
 procedure TMessageBoxGI.DialogKeyDown(Sender: TObjectGI; VirtualKey: Cardinal);
 begin
-  if (Options and mbgCancel = mbgCancel) and ((VirtualKey = VK_ESCAPE) or (VirtualKey = Ord('N')) or ((VirtualKey = VK_RETURN) and (Options and mbgOK <> mbgOK))) then
+  if (Options and messagebox_cancel = messagebox_cancel) and ((VirtualKey = VK_ESCAPE) or (VirtualKey = Ord('N')) or ((VirtualKey = VK_RETURN) and (Options and messagebox_ok <> messagebox_ok))) then
     CancelClick(Sender)
-  else if (Options and mbgOK = mbgOK) and ((VirtualKey = VK_RETURN) or (VirtualKey = Ord('Y'))) then
+  else if (Options and messagebox_ok = messagebox_ok) and ((VirtualKey = VK_RETURN) or (VirtualKey = Ord('Y'))) then
     AcceptClick(Sender);
 end;
 { @end $4D820C }

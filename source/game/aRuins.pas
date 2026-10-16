@@ -937,7 +937,7 @@ begin
     Attempts := 0;
     repeat
       Inc(Attempts);
-      Kind := TItemType(SeededRandomIntRange(Ord(item_hull), Ord(WeaponCategoryItemType), (Seed * Cardinal(Galaxy.CurrentTurn)) * 175 + Cardinal(Attempts)));
+      Kind := TItemType(SeededRandomIntRange(Ord(item_hull), Ord(weapon_category), (Seed * Cardinal(Galaxy.CurrentTurn)) * 175 + Cardinal(Attempts)));
     until (Attempts > 20) or (CountEquipmentShopItems(Kind) < StationEquipmentOfferQuotas[TypeId].ByItemCategory[Kind]);
     Item := GenerateEquipmentOffer(GetPlayer, Planet, Kind);
     if Item <> nil then
@@ -954,7 +954,7 @@ function TRuins.CalculateEquipmentShopTargetCount: Integer;
 var Count: Integer; Kind: TItemType;
 begin
   Count := 0;
-  for Kind := item_hull to WeaponCategoryItemType do Inc(Count, StationEquipmentOfferQuotas[TypeId].ByItemCategory[Kind]);
+  for Kind := item_hull to weapon_category do Inc(Count, StationEquipmentOfferQuotas[TypeId].ByItemCategory[Kind]);
   Result := Round(Count + NextRandomIntRange(-2, 2, RandomState));
   Result := Max(10, Min(Result, 18));
 end;
@@ -968,8 +968,8 @@ begin
   for I := 0 to EquipmentShop.Count - 1 do
   begin
     Item := EquipmentShop[I];
-    // The WeaponCategoryItemType shop bucket counts every weapon subtype.
-    if (Item.ItemType = ItemType) or ((Item.ItemType in WeaponItemTypes) and (ItemType = WeaponCategoryItemType)) then Inc(Count);
+    // The weapon_category shop bucket counts every weapon subtype.
+    if (Item.ItemType = ItemType) or ((Item.ItemType in WeaponItemTypes) and (ItemType = weapon_category)) then Inc(Count);
   end;
   Result := Count;
 end;
@@ -2200,7 +2200,7 @@ begin
   for I := 1 to StationEquipmentOfferQuotas[TypeId].Weapons do
   begin
     Planet := TPlanet(CurrentStar.SelectRandomInhabitedPlanet);
-    Item := GenerateEquipmentOffer(Ship, Planet, WeaponCategoryItemType);
+    Item := GenerateEquipmentOffer(Ship, Planet, weapon_category);
     if Item <> nil then Result.Add(Item);
   end;
 end;

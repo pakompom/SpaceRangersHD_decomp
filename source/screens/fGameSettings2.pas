@@ -1175,7 +1175,7 @@ begin
   NewGameGenerationThread.PlayerRace := PlayerRace;
   NewGameGenerationThread.CharacterPreset := CharacterPreset;
   for I := Low(DifficultyLevels) to High(DifficultyLevels) do NewGameGenerationThread.DifficultyLevels[I] := DifficultyLevels[I];
-  NewGameGenerationThread.SetPriority(ThreadPriorityBelowNormal);
+  NewGameGenerationThread.SetPriority(priority_below_normal);
   NewGameGenerationThread.CaptainPortraitIndex := CaptainPortraitIndex;
   for I := 0 to 1 do NewGameGenerationThread.StartingItemTypes[I] := ItemTypeByChoice[StartingItemChoices[I] - 1];
   for I := 0 to 1 do NewGameGenerationThread.StartingSkills[I] := StartingSkills[I];

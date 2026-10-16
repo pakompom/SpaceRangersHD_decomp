@@ -89,7 +89,7 @@ begin
     Buffer.AddAnsiChar(AnsiChar(Order.Kind));
     if Order.Kind = order_jump then Buffer.AddDWord((Order.Target as TStar).Id)
     else if Order.Kind = order_black_hole then Buffer.AddDWord((Order.Target as THole).Id)
-    else if Order.Kind = order_land then begin if Order.Target is TShip then Buffer.AddDWord((Order.Target as TShip).Id or OrderTargetShipFlag)
+    else if Order.Kind = order_land then begin if Order.Target is TShip then Buffer.AddDWord((Order.Target as TShip).Id or order_target_ship_flag)
          else Buffer.AddDWord((Order.Target as TPlanet).Id);
     end else if Order.Kind = order_follow_ship then Buffer.AddDWord((Order.Target as TShip).Id)
     else Buffer.AddDWord(0);
@@ -140,7 +140,7 @@ begin
   for I := 0 to Length(Route) - 1 do begin
     if Route[I].Kind = order_jump then Route[I].Target := TObject(Galaxy.IdToStar(Cardinal(Route[I].Target))) as TStar
     else if Route[I].Kind = order_black_hole then Route[I].Target := TObject(Galaxy.IdToHole(Cardinal(Route[I].Target))) as THole
-    else if Route[I].Kind = order_land then begin if Cardinal(Route[I].Target) and OrderTargetShipFlag = OrderTargetShipFlag then
+    else if Route[I].Kind = order_land then begin if Cardinal(Route[I].Target) and order_target_ship_flag = order_target_ship_flag then
            Route[I].Target := Galaxy.IdToShip(Cardinal(Route[I].Target) and TaggedObjectIdMask, True) as TShip
          else Route[I].Target := Galaxy.IdToPlanet(Cardinal(Route[I].Target)) as TPlanet;
     end else if Route[I].Kind = order_follow_ship then Route[I].Target := Galaxy.IdToShip(Cardinal(Route[I].Target), True) as TShip

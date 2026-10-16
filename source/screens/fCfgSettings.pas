@@ -1115,7 +1115,7 @@ begin
   SetOptionValue('RobotMusic', 1);
   SetOptionValue('RobotMusicVolume', 75);
   ActiveGroupIndex := SavedGroup;
-  ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormCfgSettings.AutoMax'), mbgOK or mbgUnused04);
+  ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormCfgSettings.AutoMax'), messagebox_ok or messagebox_info);
 end;
 { @end $53C944 }
 
@@ -1175,7 +1175,7 @@ begin
   SetOptionValue('RobotMusic', 1);
   SetOptionValue('RobotMusicVolume', 75);
   ActiveGroupIndex := SavedGroup;
-  ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormCfgSettings.AutoMiddle'), mbgOK or mbgUnused04);
+  ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormCfgSettings.AutoMiddle'), messagebox_ok or messagebox_info);
 end;
 { @end $53D238 }
 
@@ -1235,7 +1235,7 @@ begin
   SetOptionValue('RobotMusic', 0);
   SetOptionValue('RobotMusicVolume', 75);
   ActiveGroupIndex := SavedGroup;
-  ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormCfgSettings.AutoMin'), mbgOK or mbgUnused04);
+  ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormCfgSettings.AutoMin'), messagebox_ok or messagebox_info);
 end;
 { @end $53DB00 }
 
@@ -1392,7 +1392,7 @@ begin
   SetOptionValue('RobotMusic', Ord(ClockMHz >= 1500));
   SetOptionValue('RobotMusicVolume', 75);
   ActiveGroupIndex := SavedGroup;
-  ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormCfgSettings.Auto'), mbgOK or mbgUnused04);
+  ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormCfgSettings.Auto'), messagebox_ok or messagebox_info);
 end;
 { @end $53E394 }
 

@@ -190,7 +190,7 @@ begin
   end;
   Slots.Clear;
   PreviewSound.SetVolume(0);
-  if Galaxy <> nil then Galaxy.CampaignFlag183 := 0;
+  if Galaxy <> nil then Galaxy.EditableSaveDumpRequested := 0;
   if PreviewTimer <> 0 then
   begin
     CancelCallbackTimer(PreviewTimer);
@@ -492,13 +492,13 @@ begin
   MainMenuScreen.LoadPanel.SelectBackgroundStyle(0);
   if SelectedSlot < 0 then Exit;
   if not IsSlotEmpty(SelectedSlot) and (ReadSaveVersion(PSMSlot(Slots[SelectedSlot]).FileName) < MinimumLoadableSaveVersion) then
-    ShowMessageBoxGI(TMessageLoopGI(GetRegisteredScreenLoop(CurrentScreenId)),LanguageDataConfig.GetParamByPathOrMarker('FormSaveManager.LoadError'),mbgCancel or mbgError)
+    ShowMessageBoxGI(TMessageLoopGI(GetRegisteredScreenLoop(CurrentScreenId)),LanguageDataConfig.GetParamByPathOrMarker('FormSaveManager.LoadError'),messagebox_cancel or messagebox_error)
   else if not IsSlotEmpty(SelectedSlot) then
   begin
     PendingLoadFileName := PSMSlot(Slots[SelectedSlot]).FileName;
     EditableSaveFileName := GetSaveConfigPath(PendingLoadFileName);
     if SysUtils.FileExists(EditableSaveFileName) then
-      if ShowMessageBoxGI(Self,LocalizedColorText('FormSaveManager.LoadDumpConfirm'),mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+      if ShowMessageBoxGI(Self,LocalizedColorText('FormSaveManager.LoadDumpConfirm'),messagebox_ok or messagebox_cancel or messagebox_question) = messagebox_result_ok then
       begin
         EditableSaveBlock.Clear;
         EditableSaveBlock.LoadFromTextFileWithEncodingProbe(PWideChar(EditableSaveFileName),True);
@@ -538,7 +538,7 @@ begin
     if SuffixIndex > 0 then Description := Description + ' (' + IntToStr(SuffixIndex) + ')';
     Saved := SaveGameToFile(FileName,Description);
     if not Saved then
-      ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormSaveManager.SaveError'),mbgOK or mbgError);
+      ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormSaveManager.SaveError'),messagebox_ok or messagebox_error);
     CloseClicked(Sender);
   end;
 end;
@@ -551,7 +551,7 @@ var
 begin
   if SelectedSlot < 0 then Exit;
   if IsSlotEmpty(SelectedSlot) then Exit;
-  if ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormSaveManager.QueryDelete'),mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
+  if ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormSaveManager.QueryDelete'),messagebox_ok or messagebox_cancel or messagebox_question) <> messagebox_result_ok then Exit;
   if (SelectedSlot = FindAutoSaveSlot) and (SaveManagerMode = save_dialog_load) then WasAutoSave := True else WasAutoSave := False;
   SysUtils.DeleteFile(AnsiString(PSMSlot(Slots[SelectedSlot]).FileName));
   if SysUtils.FileExists(GetSaveConfigPath(PSMSlot(Slots[SelectedSlot]).FileName)) then
